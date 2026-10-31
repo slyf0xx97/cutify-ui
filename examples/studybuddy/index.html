@@ -1,0 +1,858 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>StudyBuddy</title>
+<meta name="description" content="StudyBuddy: three AI tutors help you prepare for exams, and you approve the weekly plan. A cutify-ui example with made-up sample data.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Pixelify+Sans:wght@600&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' shape-rendering='crispEdges'%3E%3Crect x='2' y='3' width='12' height='11' fill='%2316171a'/%3E%3Crect x='3' y='5' width='10' height='8' fill='%23fff'/%3E%3Crect x='3' y='4' width='10' height='1' fill='%23c93a25'/%3E%3Crect x='5' y='7' width='2' height='2' fill='%231fa98a'/%3E%3Crect x='9' y='9' width='2' height='2' fill='%23e8912d'/%3E%3C/svg%3E">
+<style>
+/* ===== cutify-ui Glass theme (copied from assets/glass.css) ===== */
+:root {
+  --sky: #8fd0f0; --sky-soft: #d9f0fb; --water: #3bb4d6; --water-deep: #1b86a8;
+  --grass: #7cc65a; --leaf: #3f9e57; --leaf-deep: #2d7d46; --link: #0f6a88;
+  --ink: #1f2430; --ink-soft: #3a4955; --text: #12343f;
+  --teal: #1fa98a; --teal-dark: #167a66; --orange: #e8912d; --orange-dark: #b9651a; --lime: #dbe86a; --coral: #c93a25; --ok: #1f7a4d;
+  --teal-soft: #d7eff2; --mint-soft: #dbf2e5; --coral-soft: #fde4de; --yellow-soft: #fcefc2;
+  --cast-1: #8fd6df; --cast-2: #a8e2bd; --cast-3: #f6b5a6; --cast-4: #f6d877;
+  --glass-fill: linear-gradient(145deg, rgb(255 255 255 / 94%), rgb(255 255 255 / 88%));
+  --glass-edge: rgb(255 255 255 / 85%); --glass-card: rgb(255 255 255 / 78%);
+  --glass-shadow: 0 10px 30px rgb(16 70 100 / 18%); --glass-ring: 0 0 0 1px rgb(31 36 48 / 14%);
+  --glass-blur: blur(14px) saturate(1.25);
+  --btn-shadow: 0 3px 0 rgb(16 70 100 / 30%), 0 6px 14px rgb(16 70 100 / 14%);
+  --radius: 18px; --spring: cubic-bezier(.34, 1.56, .64, 1);
+  --display: 'Pixelify Sans', 'Trebuchet MS', sans-serif; --body: 'Atkinson Hyperlegible', ui-sans-serif, system-ui, sans-serif;
+  --mono: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { background: #a9d8e8; scroll-padding-top: 5rem; scroll-behavior: smooth; }
+body { margin: 0; color: var(--ink); font: 400 1.0625rem/1.6 var(--body); }
+body::before { content: ""; position: fixed; inset: 0; height: 100lvh; z-index: -1; pointer-events: none; transform: translateZ(0);
+  background: var(--scene, linear-gradient(#bfe6f6, #d9f0fb 55%, #a8dc8a 56%, #7cc65a)) center bottom / cover no-repeat, #a9d8e8; }
+h1, h2 { font-family: var(--display); font-weight: 600; letter-spacing: .01em; line-height: 1.15; }
+h3, h4 { font-weight: 700; line-height: 1.15; }
+a { color: var(--link); } a:hover { color: var(--coral); }
+:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; border-radius: 6px; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { animation: none !important; transition: none !important; } }
+.is-off, .is-off *, .is-off *::before, .is-off *::after { animation-play-state: paused !important; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.glass { background: var(--glass-fill); border: 1.5px solid var(--glass-edge); border-radius: var(--radius);
+  box-shadow: var(--glass-shadow), var(--glass-ring), inset 0 1px 0 rgb(255 255 255 / 90%); backdrop-filter: var(--glass-blur); padding: 1.1rem 1.25rem; }
+.glass .card, .card { background: var(--glass-card); border: 1.5px solid rgb(255 255 255 / 70%); border-radius: 14px; padding: 1rem; }
+@supports not (backdrop-filter: blur(1px)) { .glass { background: rgb(255 255 255 / 94%); } }
+.hl, mark { background: linear-gradient(transparent 55%, var(--lime) 55%, var(--lime) 92%, transparent 92%); color: inherit; padding: 0 .1em; }
+.num { display: inline-grid; place-items: center; min-width: 1.9rem; height: 1.9rem; padding: 0 .3rem; background: var(--lime); border: 2px solid var(--ink);
+  border-radius: 4px; box-shadow: 2px 2px 0 rgb(31 36 48 / 45%); font: 600 1rem var(--display); }
+.stage-tab { display: inline-block; padding: .25rem .75rem; border-radius: 999px; background: var(--teal-dark); color: #fff; font: 800 .95rem var(--body); text-shadow: 0 1px 0 rgb(0 0 0 / 25%); }
+button { font: inherit; cursor: pointer; }
+.btn { display: inline-flex; align-items: center; gap: .5rem; min-height: 2.75rem; padding: .55rem 1.1rem; border: 2px solid var(--ink); border-radius: 12px;
+  background: #fff; color: var(--ink); font: 700 1rem var(--body); text-decoration: none; box-shadow: var(--btn-shadow); }
+.btn.primary { background: var(--orange); } .btn.primary:hover { background: #f2a246; color: var(--ink); } .btn.primary:active { background: var(--orange-dark); color: #fff8e6; }
+:where(button, .btn) { transition: transform .14s ease, box-shadow .14s ease, filter .14s ease, background-color .14s ease; }
+@media (prefers-reduced-motion: no-preference) {
+  :where(button, .btn):not(:disabled):hover { transform: translateY(-2px); box-shadow: 0 5px 0 rgb(16 70 100 / 30%), 0 10px 18px rgb(16 70 100 / 16%); filter: brightness(1.06); }
+  :where(button, .btn):not(:disabled):active { transform: translateY(1px); box-shadow: 0 1px 0 rgb(16 70 100 / 30%); filter: brightness(.97); } }
+.kind { display: inline-block; padding: .1rem .45rem; border: 1.5px solid var(--ink); border-radius: 999px; font: 700 .72rem var(--body); letter-spacing: .05em; text-transform: uppercase; line-height: 1.3; }
+.kind.ai { background: var(--teal-soft); } .kind.you { background: var(--orange); }
+.i { display: inline-grid; place-items: center; flex: none; width: 1.3rem; height: 1.3rem; border-radius: 50%; border: 1.5px solid currentColor; font: 700 .75rem var(--body); color: var(--teal-dark); cursor: help; position: relative; margin-left: .35rem; vertical-align: middle; background: #fff; }
+.i[data-tip]:hover::after, .i[data-tip]:focus-visible::after { content: attr(data-tip); position: absolute; left: 50%; top: calc(100% + 10px); transform: translateX(calc(-50% + var(--tip-shift, 0px)));
+  width: var(--tip-w); padding: .7rem .85rem; background: #fff; color: var(--ink); border: 2px solid var(--ink); border-radius: 14px; font: 400 .95rem/1.45 var(--body); text-align: left;
+  box-shadow: 3px 3px 0 rgb(31 36 48 / 20%), 0 12px 28px rgb(16 70 100 / 26%); white-space: pre-line; z-index: 200; pointer-events: none; }
+/* --tip-shift is set from JS so a tip never leaves the screen */
+:root { --tip-w: min(300px, calc(100vw - 2rem)); }
+:has(> .i:hover), :has(> .i:focus-visible) { z-index: 60; }
+.pill { display: inline-block; padding: .15rem .6rem; border-radius: 999px; font: 700 .85rem var(--body); white-space: nowrap; }
+.pill.done { background: var(--mint-soft); color: #14502f; } .pill.working { background: var(--yellow-soft); } .pill.gap { background: var(--coral-soft); color: #7a1f10; }
+.sprite { image-rendering: pixelated; display: block; }
+@keyframes bob { 50% { transform: translateY(-4px); } }
+@keyframes fade-up { from { opacity: .35; transform: translateY(14px); } }
+.px-blink { animation: px-blink 1.2s steps(1) infinite; } @keyframes px-blink { 50% { opacity: .2; } }
+.px-wl { animation: px-wave .5s steps(1) infinite; } .px-wr { animation: px-wave .5s steps(1) infinite reverse; } @keyframes px-wave { 50% { transform: translateY(-1px); } }
+dialog.pop { width: min(34rem, 94vw); max-height: 90dvh; padding: 0; border: 0; border-radius: 22px; background: rgb(255 255 255 / 97%); box-shadow: 0 24px 60px rgb(10 40 60 / 35%); color: var(--ink); }
+dialog.pop::backdrop { background: rgb(14 43 36 / 62%); }
+@media (prefers-reduced-motion: no-preference) { dialog.pop[open] { animation: pop-in .18s ease-out; } }
+@keyframes pop-in { from { opacity: 0; transform: translateY(10px) scale(.98); } }
+.pop-head { display: flex; align-items: center; gap: .75rem; padding: .9rem 1.1rem; background: var(--pop-hue, var(--sky-soft)); border-bottom: 3px solid var(--pop-bar, transparent); }
+.pop-title { margin: 0; flex: 1; font: 800 1.4rem var(--body); }
+.pop-close { border: 2px solid var(--ink); border-radius: 999px; background: #fff; padding: .3rem .8rem; font-weight: 700; }
+.pop-close:hover { background: var(--lime); }
+.pop-body { padding: 1.1rem 1.25rem; overflow: auto; }
+
+/* ===== StudyBuddy page ===== */
+:root {
+  --scene: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1600 1000' preserveAspectRatio='xMidYMax slice'%3E%3Cdefs%3E%3ClinearGradient id='s' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%2398d6f2'/%3E%3Cstop offset='1' stop-color='%23e3f4fb'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='1600' height='1000' fill='url(%23s)'/%3E%3Ccircle cx='1300' cy='170' r='70' fill='%23fff3b8'/%3E%3Cpath d='M0 640 L220 420 L360 540 L560 330 L760 560 L920 440 L1120 600 L1320 380 L1600 600 V1000 H0Z' fill='%23a9c9dc'/%3E%3Cpath d='M560 330 L620 392 L590 400 L560 380 L530 402 L505 386Z M1320 380 L1376 436 L1346 440 L1320 424 L1294 442 L1272 428Z' fill='%23f4fbff'/%3E%3Cpath d='M0 720 C260 640 420 700 640 670 C880 636 1040 700 1260 660 C1420 632 1520 650 1600 640 V1000 H0Z' fill='%2393cf72'/%3E%3Cpath d='M0 820 C300 760 520 820 800 790 C1080 760 1300 820 1600 780 V1000 H0Z' fill='%237cc65a'/%3E%3Cpath d='M0 900 C360 860 640 910 980 880 C1240 858 1420 890 1600 870 V1000 H0Z' fill='%2363b04f'/%3E%3C/svg%3E");
+  --c-coach: #f6b5a6; --c-planner: #8fd6df; --c-quizzer: #f6d877; --c-you: #a8e2bd;
+}
+body { overflow-x: clip; }
+.wrap { width: min(1180px, 100% - 2rem); margin-inline: auto; }
+.mono { font-family: var(--mono); letter-spacing: .02em; }
+.label { font: 700 .75rem var(--body); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-soft); }
+.sample { display: inline-flex; align-items: center; gap: .35rem; padding: .1rem .55rem; border-radius: 999px; background: var(--yellow-soft); border: 1.5px dashed var(--ink-soft);
+  font: 700 .74rem var(--body); letter-spacing: .05em; text-transform: uppercase; color: var(--ink); white-space: nowrap; }
+
+/* nav */
+.nav { position: sticky; top: .6rem; z-index: 50; margin-top: .6rem; }
+.nav .glass { display: flex; align-items: center; gap: 1rem; padding: .5rem .6rem .5rem 1rem; }
+.brand { display: inline-flex; align-items: center; gap: .55rem; font: 600 1.35rem var(--display); color: var(--ink); text-decoration: none; }
+.brand svg { width: 30px; height: 30px; }
+.nav-links { display: flex; gap: .25rem; margin-left: auto; align-items: center; }
+.nav-links a:not(.btn) { padding: .4rem .7rem; border-radius: 10px; font-weight: 700; color: var(--ink); text-decoration: none; }
+.nav-links a:not(.btn):hover { background: var(--lime); color: var(--ink); }
+.nav .btn { min-height: 2.5rem; padding: .4rem .9rem; white-space: nowrap; }
+
+/* hero */
+.hero { display: grid; grid-template-columns: 1fr 1.15fr; gap: 1.5rem; align-items: center; padding: 2.25rem 0 1rem; }
+.hero-text { padding: 1.6rem 1.6rem 1.5rem; }
+.hero h1 { font-size: clamp(2.2rem, 4.6vw, 3.4rem); margin: .4rem 0 .5rem; line-height: 1.02; }
+.hero h1 .two { color: var(--teal-dark); }
+.tagline { font-size: 1.2rem; margin: 0 0 1rem; color: var(--text); }
+.benefits { list-style: none; padding: 0; margin: 0 0 1.1rem; display: grid; gap: .45rem; }
+.benefits li { display: grid; grid-template-columns: 1.7rem 1fr; gap: .55rem; align-items: center; font-weight: 700; }
+.tick { display: grid; place-items: center; width: 1.7rem; height: 1.7rem; border-radius: 6px; background: var(--mint-soft); border: 2px solid var(--ink); color: var(--ok); font-weight: 800; font-size: .95rem; box-shadow: 0 2px 0 rgb(31 36 48 / 25%); }
+.cta-row { display: flex; flex-wrap: wrap; align-items: center; gap: .8rem; margin-top: .9rem; }
+.play-btn { display: inline-grid; grid-template-columns: auto 1fr; column-gap: .65rem; align-items: center; text-align: left; padding: .6rem 1.2rem .6rem .9rem; min-height: 3.4rem; }
+.play-btn .tri { grid-row: span 2; display: grid; place-items: center; width: 2rem; height: 2rem; border-radius: 8px; background: var(--ink); color: var(--orange); font-size: .85rem; }
+.play-btn b { font-size: 1.08rem; line-height: 1.2; }
+.play-btn small { font-weight: 400; font-size: .85rem; line-height: 1.2; }
+.live { display: inline-flex; align-items: center; gap: .45rem; font-size: .9rem; font-weight: 700; }
+.live::before { content: ""; width: .6rem; height: .6rem; border-radius: 50%; background: var(--orange); box-shadow: 0 0 0 0 rgb(232 145 45 / 60%); }
+@media (prefers-reduced-motion: no-preference) { .live::before { animation: live 1.6s infinite; } }
+@keyframes live { to { box-shadow: 0 0 0 10px rgb(232 145 45 / 0%); } }
+
+/* hero scene */
+.scene-card { padding: .75rem; }
+.scene-head { display: flex; align-items: center; justify-content: space-between; gap: .5rem; flex-wrap: wrap; padding: 0 .25rem .55rem; }
+.scene-head h2 { font-size: 1.15rem; margin: 0; display: flex; align-items: center; }
+.scene { position: relative; aspect-ratio: 16 / 10; border-radius: 14px; overflow: hidden; border: 2px solid var(--ink); background: #bfe6f6; isolation: isolate; }
+.scene > svg.bg { position: absolute; inset: 0; width: 100%; height: 100%; z-index: -1; }
+.clouds { animation: drift 60s linear infinite; }
+@keyframes drift { to { transform: translateX(-640px); } }
+.actor { position: absolute; top: 47%; width: 19%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: .3rem; transition: opacity .3s; }
+.actor .pos { width: min(84px, 82%); }
+.actor .pos > .bobber { display: block; }
+@media (prefers-reduced-motion: no-preference) {
+  .actor .bobber { animation: bob 3.6s ease-in-out infinite; }
+  .actor:nth-of-type(2) .bobber { animation-delay: -.9s; } .actor:nth-of-type(3) .bobber { animation-delay: -1.8s; } .actor:nth-of-type(4) .bobber { animation-delay: -2.7s; }
+  .actor.talking .hopper { animation: hop .4s steps(2) infinite alternate; }
+  .actor:hover .hopper { transform: translateY(-10px) scale(1.06); transition: transform .25s var(--spring); } }
+@keyframes hop { to { transform: translateY(-7px); } }
+.hopper { display: block; }
+.actor .sprite { width: 100%; height: auto; aspect-ratio: 1; filter: drop-shadow(0 3px 0 rgb(31 36 48 / 25%)); }
+.actor.quiet { opacity: .45; }
+.shadow { width: 60%; height: 6px; margin-top: -4px; border-radius: 50%; background: rgb(31 60 30 / 28%); }
+.slab { display: inline-flex; align-items: center; gap: .3rem; padding: .15rem .45rem .15rem .2rem; border-radius: 999px; background: rgb(255 255 255 / 92%); border: 2px solid var(--ink);
+  font: 700 .8rem var(--body); white-space: nowrap; box-shadow: 0 2px 0 rgb(31 36 48 / 25%); }
+.slab .kind { font-size: .62rem; padding: 0 .3rem; border-width: 1.5px; }
+.bubble { position: absolute; left: 0; top: 0; max-width: min(240px, 70%); padding: .45rem .65rem; background: #fff; border: 2px solid var(--ink); border-radius: 12px;
+  font: 700 .88rem/1.3 var(--body); box-shadow: 2px 3px 0 rgb(31 36 48 / 25%); opacity: 0; transition: opacity .2s; z-index: 5; pointer-events: none; }
+.bubble.on { opacity: 1; }
+.bubble::after { content: ""; position: absolute; left: var(--tail, 50%); bottom: -9px; width: 12px; height: 12px; background: #fff; border-right: 2px solid var(--ink); border-bottom: 2px solid var(--ink); transform: translateX(-50%) rotate(45deg); }
+.note { position: absolute; left: 0; top: 0; width: 28px; height: 28px; opacity: 0; z-index: 4; pointer-events: none; }
+.chat { list-style: none; margin: .6rem 0 0; padding: .5rem .7rem; height: 7.6rem; overflow-y: auto; background: rgb(255 255 255 / 80%); border: 2px solid rgb(31 36 48 / 18%); border-radius: 12px; font-size: .93rem; line-height: 1.4; }
+.chat li { display: flex; gap: .45rem; align-items: baseline; padding: .15rem 0; }
+@media (prefers-reduced-motion: no-preference) { .chat li { animation: fade-up .35s cubic-bezier(.2, .8, .2, 1) backwards; } }
+.chat .who { flex: none; display: inline-flex; align-items: center; gap: .3rem; font-weight: 800; }
+.chat .idle { color: var(--ink-soft); font-style: italic; }
+.legend { display: flex; flex-wrap: wrap; gap: .4rem .9rem; margin-top: .55rem; padding: 0 .25rem; font-size: .85rem; font-weight: 700; }
+.legend span { display: inline-flex; align-items: center; gap: .35rem; }
+
+/* glyphs: shape + letter so colour is never the only cue */
+.g { display: inline-grid; place-items: center; width: 1.25rem; height: 1.25rem; flex: none; font: 800 .68rem var(--body); color: var(--ink); border: 2px solid var(--ink); }
+.g.coach { background: var(--c-coach); border: 0; clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%); box-shadow: inset 0 0 0 2px var(--ink); }
+.g.planner { background: var(--c-planner); border-radius: 3px; }
+.g.quizzer { background: var(--c-quizzer); border-radius: 50%; }
+.g.you { background: var(--c-you); border: 0; clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); width: 1.4rem; height: 1.4rem; position: relative; }
+.g.coach, .g.you { background-image: none; }
+.g.coach::before, .g.you::before { content: none; }
+
+/* stages */
+.section-head { text-align: center; margin: 3rem auto 1.25rem; max-width: 46rem; }
+.section-head h2 { font-size: clamp(1.6rem, 3vw, 2.2rem); margin: .2rem 0 .4rem; }
+.section-head p { margin: 0; }
+.section-head .plate { display: inline-block; padding: 1rem 1.4rem; }
+.stage { position: relative; margin: 0 0 0; padding: 1.1rem 1.25rem 1.3rem; scroll-margin-top: 5.5rem; }
+.stage-top { display: flex; align-items: center; gap: .6rem; flex-wrap: wrap; }
+.stage-title { margin: 0; font: 800 clamp(1.3rem, 2.3vw, 1.7rem)/1.2 var(--body); }
+.stage-top .who { display: inline-flex; gap: .3rem; margin-left: auto; align-items: center; }
+.explain { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem; margin: .7rem 0 1rem; }
+.explain span { padding: .25rem .65rem; background: var(--sky-soft); border-radius: 999px; font-size: .92rem; font-weight: 700; }
+.explain i { font-style: normal; font-weight: 900; color: var(--teal-dark); }
+.stage-body { display: grid; grid-template-columns: 9rem 1fr; gap: 1.1rem; align-items: start; }
+.stage-sprite { display: grid; justify-items: center; gap: .35rem; padding-top: .3rem; }
+.stage-sprite .sprite { width: 96px; height: 96px; }
+@media (prefers-reduced-motion: no-preference) { .stage-sprite .sprite { animation: bob 3.6s ease-in-out infinite; } }
+.feed { position: relative; height: 3.2rem; display: flex; justify-content: center; }
+.feed i { width: 4px; height: 100%; background-image: linear-gradient(var(--teal-dark) 50%, transparent 50%); background-size: 4px 12px; }
+@media (prefers-reduced-motion: no-preference) { .feed i { animation: flowd .7s linear infinite; } }
+@keyframes flowd { to { background-position: 0 12px; } }
+.feed b { position: absolute; bottom: -2px; left: 50%; transform: translateX(-50%); border: 8px solid transparent; border-top: 10px solid var(--teal-dark); border-bottom: 0; }
+.feed small { position: absolute; left: calc(50% + 14px); top: 50%; transform: translateY(-50%); font-size: .8rem; font-weight: 700; padding: .05rem .5rem; background: rgb(255 255 255 / 85%); border-radius: 999px; white-space: nowrap; }
+
+/* stage 1: mood */
+.moods { display: grid; grid-template-columns: repeat(4, 1fr); gap: .6rem; border: 0; padding: 0; margin: 0; }
+.moods legend { font-weight: 700; margin-bottom: .55rem; padding: 0; }
+.mood { position: relative; }
+.mood input { position: absolute; opacity: 0; left: 50%; top: 50%; width: 1px; height: 1px; margin: 0; pointer-events: none; }
+.mood label { display: grid; justify-items: center; gap: .25rem; padding: .7rem .4rem; border: 2px solid var(--ink); border-radius: 12px; background: #fff; box-shadow: 0 3px 0 rgb(16 70 100 / 30%); font-weight: 700; cursor: pointer;
+  transition: transform .14s ease, box-shadow .14s ease, background-color .14s; }
+.mood label svg { width: 40px; height: 40px; }
+@media (prefers-reduced-motion: no-preference) { .mood input:hover + label { transform: translateY(-2px); box-shadow: 0 5px 0 rgb(16 70 100 / 30%); } }
+.mood input:checked + label { background: var(--lime); transform: translateY(1px); box-shadow: 0 1px 0 rgb(16 70 100 / 30%); }
+.mood input:checked + label::after { content: "✓ Picked"; font-size: .75rem; }
+.mood input:focus-visible + label { outline: 3px solid var(--ink); outline-offset: 3px; }
+.reply { display: flex; gap: .6rem; align-items: flex-start; margin-top: 1rem; padding: .7rem .9rem; background: var(--coral-soft); border-radius: 0 12px 12px 12px; border-left: 4px solid var(--coral); min-height: 3.2rem; }
+.reply p { margin: 0; }
+
+/* stage 2: timetable */
+.week { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: .5rem; }
+.day { background: rgb(255 255 255 / 80%); border: 1.5px solid rgb(31 36 48 / 16%); border-radius: 12px; padding: .5rem; min-height: 8.5rem; display: flex; flex-direction: column; gap: .4rem; }
+.day h4 { margin: 0; font: 700 .78rem var(--body); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-soft); }
+.slot { padding: .45rem .5rem; border-radius: 9px; border: 2px solid var(--ink); background: var(--teal-soft); box-shadow: 0 2px 0 rgb(31 36 48 / 25%); font-size: .86rem; line-height: 1.25; }
+.slot b { display: block; font-weight: 800; overflow-wrap: anywhere; hyphens: auto; }
+.slot .mono { font-size: .76rem; }
+.slot .qn { display: inline-flex; gap: .25rem; align-items: center; margin-top: .25rem; font-size: .74rem; font-weight: 700; }
+.slot .qn .g { width: .95rem; height: .95rem; font-size: .5rem; border-width: 1.5px; }
+.free { color: var(--ink-soft); font-size: .85rem; font-style: italic; margin: auto 0; text-align: center; }
+.foot-note { margin: .8rem 0 0; font-size: .9rem; color: var(--ink-soft); }
+@media (prefers-reduced-motion: no-preference) { .week.pop .slot { animation: fade-up .45s cubic-bezier(.2, .8, .2, 1) backwards; } }
+
+/* stage 3: quiz */
+.quiz { background: rgb(255 255 255 / 85%); border: 2px solid var(--ink); border-radius: 14px; padding: 1rem 1.1rem; box-shadow: 0 3px 0 rgb(16 70 100 / 30%); }
+.quiz-top { display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; margin-bottom: .4rem; }
+.quiz h4 { margin: .2rem 0 .8rem; font-size: 1.2rem; line-height: 1.35; }
+.opts { display: grid; gap: .5rem; }
+.opt { text-align: left; padding: .6rem .8rem; border: 2px solid var(--ink); border-radius: 12px; background: #fff; box-shadow: 0 3px 0 rgb(16 70 100 / 30%); font-weight: 700; color: var(--ink); display: flex; justify-content: space-between; gap: .5rem; }
+.opt.right { background: var(--mint-soft); } .opt.wrong { background: var(--coral-soft); }
+.opt:disabled { cursor: default; color: var(--ink); }
+.quiz-foot { display: flex; align-items: center; justify-content: space-between; gap: .6rem; flex-wrap: wrap; margin-top: .8rem; }
+.verdict { font-weight: 800; min-height: 1.6rem; }
+@media (prefers-reduced-motion: no-preference) { .verdict.stamp { animation: stamp .22s cubic-bezier(.5, 1.8, .6, 1); } }
+@keyframes stamp { from { transform: scale(1.8); opacity: 0; } }
+
+/* stage 4: approve */
+.kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .6rem; }
+.kpi { background: rgb(255 255 255 / 85%); border: 1.5px solid rgb(31 36 48 / 16%); border-top: 4px solid var(--teal); border-radius: 12px; padding: .6rem .8rem; display: flex; flex-direction: column; gap: .1rem; }
+.kpi small { font: 700 .72rem var(--body); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-soft); }
+.kpi b { font: 700 1.6rem/1.2 var(--mono); }
+.kpi span { font-size: .82rem; color: var(--ink-soft); }
+.kpi.planner { border-top-color: #4fb8c4; } .kpi.quizzer { border-top-color: #d9b11f; } .kpi.coach { border-top-color: var(--coral); }
+.approve-row { display: flex; align-items: center; gap: .8rem; flex-wrap: wrap; margin-top: 1rem; }
+.approve-row .btn { font-size: 1.05rem; }
+.stage.approved { box-shadow: var(--glass-shadow), 0 0 0 3px var(--leaf), inset 0 1px 0 rgb(255 255 255 / 90%); }
+@media (prefers-reduced-motion: no-preference) { .stage.nudge { animation: nudge .6s ease-in-out 2; } }
+@keyframes nudge { 50% { box-shadow: var(--glass-shadow), 0 0 0 5px var(--orange); } }
+.summary { list-style: none; margin: 0 0 1rem; padding: 0; display: grid; gap: .45rem; }
+.summary li { display: grid; grid-template-columns: 1.6rem 1fr auto; gap: .55rem; align-items: center; padding: .45rem .6rem; background: var(--sky-soft); border-radius: 10px; }
+.pop-actions { display: flex; justify-content: flex-end; gap: .6rem; flex-wrap: wrap; }
+
+/* how it works */
+.how { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; align-items: start; }
+.route-wrap { position: relative; padding: 1.1rem 1.1rem 1rem; }
+.route-head { display: flex; align-items: center; justify-content: space-between; gap: .5rem; flex-wrap: wrap; margin-bottom: .6rem; }
+.route-head h3 { margin: 0; font: 600 1.25rem var(--display); }
+.route-ctl { display: flex; gap: .4rem; }
+.route-ctl .btn { min-height: 2.3rem; padding: .3rem .75rem; font-size: .9rem; }
+.route { position: relative; list-style: none; margin: 0; padding: 0 0 0 3.4rem; display: grid; gap: .8rem; }
+.route svg.path { position: absolute; left: 0; top: 0; width: 3.4rem; height: 100%; overflow: visible; pointer-events: none; }
+.route path { fill: none; stroke: var(--ink); stroke-width: 3; stroke-dasharray: 2 8; stroke-linecap: round; opacity: .45; }
+.token { position: absolute; left: 0; top: 0; width: 34px; height: 34px; z-index: 3; pointer-events: none; transform: translate(-50%, -50%); }
+.rcard { display: grid; grid-template-columns: auto 1fr; gap: .2rem .7rem; padding: .7rem .85rem; background: rgb(255 255 255 / 80%); border: 2px solid rgb(31 36 48 / 16%); border-radius: 14px; transition: border-color .2s, background-color .2s, transform .2s; }
+.rcard .num { grid-row: span 2; }
+.rcard h4 { margin: 0; font-size: 1.05rem; display: flex; align-items: center; gap: .4rem; flex-wrap: wrap; }
+.rcard p { margin: 0; font-size: .95rem; grid-column: 2; }
+.rcard.on { border-color: var(--ink); background: #fff; box-shadow: 0 3px 0 rgb(31 36 48 / 30%); }
+@media (prefers-reduced-motion: no-preference) { .rcard.on { transform: translateX(4px); } }
+.rcard.done .num { background: var(--mint-soft); }
+.diagram { padding: 1.1rem; }
+.diagram h3 { margin: 0 0 .8rem; font: 600 1.25rem var(--display); }
+.tutors { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .5rem; }
+.box { display: grid; justify-items: center; text-align: center; gap: .3rem; padding: .7rem .5rem; background: rgb(255 255 255 / 85%); border: 2px solid var(--ink); border-radius: 12px; box-shadow: 0 3px 0 rgb(31 36 48 / 25%); font-size: .9rem; }
+.box .sprite { width: 48px; height: 48px; }
+.box b { font-size: 1rem; }
+.arrow-down { display: grid; justify-items: center; color: var(--teal-dark); font-weight: 900; font-size: 1.4rem; line-height: 1; margin: .35rem 0; }
+.arrow-down small { font: 700 .78rem var(--body); color: var(--ink-soft); }
+.box.plan { background: var(--lime); }
+.box.you { background: #fff6e8; }
+.who-legend { margin: 1rem 0 0; padding: .7rem .85rem; background: var(--sky-soft); border-radius: 12px; font-size: .95rem; }
+.who-legend p { margin: .15rem 0; display: flex; gap: .5rem; align-items: center; flex-wrap: wrap; }
+
+/* footer */
+footer { margin: 3rem 0 1.5rem; }
+footer .glass { border-top: 4px solid var(--orange); display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 1.25rem; padding: 1.3rem 1.4rem; }
+footer h5 { margin: 0 0 .4rem; font: 700 .75rem var(--body); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-soft); }
+footer p, footer ul { margin: 0; font-size: .95rem; }
+footer ul { padding: 0; list-style: none; display: grid; gap: .2rem; }
+footer .copy { grid-column: 1 / -1; border-top: 1.5px dashed rgb(31 36 48 / 18%); padding-top: .8rem; font-size: .88rem; color: var(--ink-soft); display: flex; justify-content: space-between; gap: .5rem; flex-wrap: wrap; }
+
+/* responsive */
+@media (max-width: 1000px) {
+  .hero, .how { grid-template-columns: 1fr; }
+  footer .glass { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 760px) {
+  .stage-body { grid-template-columns: 1fr; }
+  .stage-sprite { grid-auto-flow: column; justify-content: start; align-items: center; }
+  .stage-sprite .sprite { width: 64px; height: 64px; }
+  .week { grid-template-columns: 1fr; }
+  .day { min-height: 0; flex-direction: row; flex-wrap: wrap; align-items: center; }
+  .day h4 { width: 2.6rem; }
+  .day .slot { flex: 1; }
+  .free { margin: 0; text-align: left; }
+  .kpis { grid-template-columns: 1fr 1fr; }
+  .moods { grid-template-columns: 1fr 1fr; }
+  .stage-top .who { margin-left: 0; }
+}
+@media (max-width: 560px) {
+  .nav-links a.hide-sm { display: none; }
+  .brand span { font-size: 1.15rem; }
+  .hero-text { padding: 1.2rem 1.1rem; }
+  .slab { font-size: .68rem; padding: .1rem .35rem .1rem .15rem; }
+  .slab .kind, .scene .slab .g { display: none; }
+  .slab { padding: .1rem .4rem; }
+  .scene { aspect-ratio: 4 / 3; }
+  .actor { top: 50%; }
+  .actor { width: 24%; }
+  .bubble { font-size: .78rem; }
+  .tutors { grid-template-columns: 1fr; }
+  .box { grid-template-columns: 48px 1fr; justify-items: start; text-align: left; }
+  .box .sprite { grid-row: span 3; }
+  footer .glass { grid-template-columns: 1fr; }
+  .feed small { display: none; }
+}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs id="pixdefs"></defs></svg>
+<a class="sr-only" href="#stages">Skip to the stages</a>
+
+<header class="nav wrap">
+  <nav class="glass" aria-label="Main">
+    <a class="brand" href="#top" aria-label="StudyBuddy home">
+      <svg viewBox="0 0 16 16" aria-hidden="true" class="sprite"><use href="#logo"/></svg><span>StudyBuddy</span>
+    </a>
+    <div class="nav-links">
+      <a class="hide-sm" href="#stages">Stages</a>
+      <a class="hide-sm" href="#how">How it works</a>
+      <a class="btn primary" href="#approve">Approve my week</a>
+    </div>
+  </nav>
+</header>
+
+<main id="top">
+<section class="hero wrap" id="hero" aria-labelledby="hero-title">
+  <div class="hero-text glass">
+    <span class="sample">Sample week, made-up data</span>
+    <h1 id="hero-title">Study<span class="two"><mark>Buddy</mark></span></h1>
+    <p class="tagline">Three AI tutors help you prepare for exams. They plan, they quiz, they check in. You approve the week.</p>
+    <ul class="benefits">
+      <li><span class="tick" aria-hidden="true">✓</span>A revision timetable built for your week</li>
+      <li><span class="tick" aria-hidden="true">✓</span>Practice questions for every session</li>
+      <li><span class="tick" aria-hidden="true">✓</span>A friendly check-in on how you feel</li>
+    </ul>
+    <div class="cta-row">
+      <button class="btn primary play-btn" id="playBtn" type="button">
+        <span class="tri" aria-hidden="true">▶</span><b>Play the sample week</b><small>Watch the tutors work together</small>
+      </button>
+      <span class="live" id="liveBadge">Ready to play</span>
+    </div>
+  </div>
+
+  <div class="scene-card glass">
+    <div class="scene-head">
+      <h2>Your study crew <span class="i left" tabindex="0" role="note" aria-label="About the crew" data-tip="Your study crew&#10;• Three AI tutors, each with one job&#10;• Coach checks in on your mood&#10;• Planner builds the revision timetable&#10;• Quizzer writes practice questions&#10;• You approve the weekly plan&#10;Why a crew: each tutor stays good at one thing.">i</span></h2>
+      <span class="sample">Sample run</span>
+    </div>
+    <div class="scene" id="scene">
+      <svg class="bg" viewBox="0 0 640 400" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+        <defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8fd0f0"/><stop offset="1" stop-color="#d9f0fb"/></linearGradient></defs>
+        <rect width="640" height="400" fill="url(#sky)"/>
+        <circle cx="548" cy="64" r="30" fill="#fff3b8"/>
+        <g class="clouds" fill="#fff" opacity=".9">
+          <g id="cl"><ellipse cx="90" cy="60" rx="38" ry="14"/><ellipse cx="112" cy="50" rx="24" ry="14"/><ellipse cx="320" cy="96" rx="30" ry="10"/><ellipse cx="336" cy="88" rx="18" ry="10"/><ellipse cx="470" cy="40" rx="26" ry="9"/></g>
+          <use href="#cl" x="640"/>
+        </g>
+        <path d="M0 230 L90 160 L150 200 L240 120 L330 210 L400 170 L480 220 L560 150 L640 210 V400 H0Z" fill="#a9c9dc"/>
+        <path d="M240 120 L266 146 L252 150 L240 142 L226 152 L216 144Z M560 150 L584 174 L570 176 L560 170 L548 178 L540 172Z" fill="#f4fbff"/>
+        <path d="M0 250 C120 220 220 250 330 236 C450 220 540 250 640 236 V400 H0Z" fill="#93cf72"/>
+        <path d="M0 300 C140 276 260 300 400 290 C510 282 580 296 640 290 V400 H0Z" fill="#7cc65a"/>
+        <path d="M-10 352 C120 330 210 340 320 336 C430 332 520 344 650 330" fill="none" stroke="#f3e4b8" stroke-width="22" stroke-linecap="round"/>
+        <path d="M-10 352 C120 330 210 340 320 336 C430 332 520 344 650 330" fill="none" stroke="#e6cf8e" stroke-width="2" stroke-dasharray="6 10"/>
+        <g transform="translate(596 238)"><rect x="-4" y="20" width="8" height="26" fill="#7a5235"/><circle cx="0" cy="10" r="22" fill="#3f9e57"/><circle cx="-8" cy="2" r="12" fill="#56b265"/></g>
+        <g transform="translate(26 250)"><rect x="-3" y="16" width="6" height="22" fill="#7a5235"/><circle cx="0" cy="8" r="17" fill="#2d7d46"/></g>
+        <path d="M0 400 V372 C200 360 420 380 640 366 V400Z" fill="#63b04f"/>
+      </svg>
+      <div class="actor" data-id="coach" style="left:14%">
+        <span class="pos"><span class="bobber"><span class="hopper"><svg class="sprite" viewBox="0 0 16 16" role="img" aria-label="Coach, the AI tutor who checks in on your mood"><use href="#ch-coach"/></svg></span></span></span>
+        <span class="shadow" aria-hidden="true"></span>
+        <span class="slab"><i class="g coach" aria-hidden="true">C</i><span class="kind ai">AI</span>Coach</span>
+      </div>
+      <div class="actor" data-id="planner" style="left:38%">
+        <span class="pos"><span class="bobber"><span class="hopper"><svg class="sprite" viewBox="0 0 16 16" role="img" aria-label="Planner, the AI tutor who builds your revision timetable"><use href="#ch-planner"/></svg></span></span></span>
+        <span class="shadow" aria-hidden="true"></span>
+        <span class="slab"><i class="g planner" aria-hidden="true">P</i><span class="kind ai">AI</span>Planner</span>
+      </div>
+      <div class="actor" data-id="quizzer" style="left:62%">
+        <span class="pos"><span class="bobber"><span class="hopper"><svg class="sprite" viewBox="0 0 16 16" role="img" aria-label="Quizzer, the AI tutor who writes practice questions"><use href="#ch-quizzer"/></svg></span></span></span>
+        <span class="shadow" aria-hidden="true"></span>
+        <span class="slab"><i class="g quizzer" aria-hidden="true">Q</i><span class="kind ai">AI</span>Quizzer</span>
+      </div>
+      <div class="actor" data-id="you" style="left:86%">
+        <span class="pos"><span class="bobber"><span class="hopper"><svg class="sprite" viewBox="0 0 16 16" role="img" aria-label="You, the student who approves the weekly plan"><use href="#ch-you"/></svg></span></span></span>
+        <span class="shadow" aria-hidden="true"></span>
+        <span class="slab"><i class="g you" aria-hidden="true">Y</i><span class="kind you">You</span>You</span>
+      </div>
+      <div class="bubble" id="bubble" aria-hidden="true"></div>
+      <svg class="note sprite" id="note" viewBox="0 0 16 16" aria-hidden="true"><use href="#paper"/></svg>
+    </div>
+    <ol class="chat" id="chat" aria-live="polite" aria-label="What the tutors say">
+      <li class="idle">Press “Play the sample week” to watch the tutors work together.</li>
+    </ol>
+    <div class="legend" aria-label="Legend">
+      <span><i class="g coach" aria-hidden="true">C</i>Coach, mood</span>
+      <span><i class="g planner" aria-hidden="true">P</i>Planner, timetable</span>
+      <span><i class="g quizzer" aria-hidden="true">Q</i>Quizzer, questions</span>
+      <span><i class="g you" aria-hidden="true">Y</i>You, approve</span>
+    </div>
+  </div>
+</section>
+
+<div class="section-head wrap" id="stages">
+  <div class="plate glass">
+    <span class="label">Your week in four stages</span>
+    <h2>From check-in to <mark>approved</mark></h2>
+    <p>AI tutors suggest, you decide. Everything below is a made-up sample.</p>
+  </div>
+</div>
+
+<div class="wrap">
+  <!-- Stage 1 -->
+  <section class="stage glass" id="st1" aria-labelledby="st1-title">
+    <div class="stage-top">
+      <span class="num" aria-hidden="true">1</span>
+      <span class="stage-tab">Stage 1</span>
+      <h3 class="stage-title" id="st1-title">Check in with the Coach</h3>
+      <span class="i" tabindex="0" role="note" aria-label="About stage 1" data-tip="Check in with the Coach&#10;• The Coach asks how you feel about exams&#10;• Pick the mood that fits today&#10;• The Coach answers in plain words&#10;• Replies here are made-up samples&#10;Why it matters: revising goes better when someone asks how you are.">i</span>
+      <span class="who"><span class="kind ai">AI</span><span class="kind you">You</span></span>
+    </div>
+    <div class="explain"><span>Coach asks</span><i>→</i><span>You pick a mood</span><i>→</i><span>Coach replies</span></div>
+    <div class="stage-body">
+      <div class="stage-sprite"><svg class="sprite" viewBox="0 0 16 16" role="img" aria-label="Coach"><use href="#ch-coach"/></svg><span class="slab"><i class="g coach" aria-hidden="true">C</i>Coach</span></div>
+      <div>
+        <fieldset class="moods" id="moods">
+          <legend>How are you feeling about exams this week?</legend>
+          <div class="mood"><input type="radio" name="mood" id="m1" value="great"><label for="m1"><svg class="sprite" viewBox="0 0 16 16" aria-hidden="true"><use href="#face-great"/></svg>Great</label></div>
+          <div class="mood"><input type="radio" name="mood" id="m2" value="okay"><label for="m2"><svg class="sprite" viewBox="0 0 16 16" aria-hidden="true"><use href="#face-okay"/></svg>Okay</label></div>
+          <div class="mood"><input type="radio" name="mood" id="m3" value="tired"><label for="m3"><svg class="sprite" viewBox="0 0 16 16" aria-hidden="true"><use href="#face-tired"/></svg>Tired</label></div>
+          <div class="mood"><input type="radio" name="mood" id="m4" value="stressed"><label for="m4"><svg class="sprite" viewBox="0 0 16 16" aria-hidden="true"><use href="#face-stressed"/></svg>Stressed</label></div>
+        </fieldset>
+        <div class="reply" aria-live="polite"><i class="g coach" aria-hidden="true">C</i><p id="reply">Pick a mood and the Coach will answer. <span class="sample">Sample reply</span></p></div>
+      </div>
+    </div>
+  </section>
+  <div class="feed" aria-hidden="true"><i></i><b></b><small>then the Planner builds your week</small></div>
+
+  <!-- Stage 2 -->
+  <section class="stage glass" id="st2" aria-labelledby="st2-title">
+    <div class="stage-top">
+      <span class="num" aria-hidden="true">2</span>
+      <span class="stage-tab">Stage 2</span>
+      <h3 class="stage-title" id="st2-title">Get your revision timetable</h3>
+      <span class="i" tabindex="0" role="note" aria-label="About stage 2" data-tip="Get your revision timetable&#10;• The Planner lays out revision sessions across the week&#10;• Each card shows the day, time and subject&#10;• Times use the 24-hour clock&#10;• Subjects and times here are made-up samples&#10;Why a timetable: a plan you can see is easier to stick to.">i</span>
+      <span class="who"><span class="kind ai">AI</span></span>
+    </div>
+    <div class="explain"><span>Planner looks at your week</span><i>→</i><span>Builds sessions</span><i>→</i><span>You see the timetable</span></div>
+    <div class="stage-body">
+      <div class="stage-sprite"><svg class="sprite" viewBox="0 0 16 16" role="img" aria-label="Planner"><use href="#ch-planner"/></svg><span class="slab"><i class="g planner" aria-hidden="true">P</i>Planner</span></div>
+      <div>
+        <div class="week" id="week"></div>
+        <p class="foot-note"><span class="sample">Made-up timetable</span> Each session also lists the practice questions the Quizzer wrote for it.</p>
+      </div>
+    </div>
+  </section>
+  <div class="feed" aria-hidden="true"><i></i><b></b><small>the Quizzer writes questions for each session</small></div>
+
+  <!-- Stage 3 -->
+  <section class="stage glass" id="st3" aria-labelledby="st3-title">
+    <div class="stage-top">
+      <span class="num" aria-hidden="true">3</span>
+      <span class="stage-tab">Stage 3</span>
+      <h3 class="stage-title" id="st3-title">Practise with the Quizzer</h3>
+      <span class="i" tabindex="0" role="note" aria-label="About stage 3" data-tip="Practise with the Quizzer&#10;• The Quizzer writes practice questions for your sessions&#10;• Pick an answer to see if you got it&#10;• Press Next for another subject&#10;• These three questions are made-up samples&#10;Why practise: answering questions sticks better than rereading notes.">i</span>
+      <span class="who"><span class="kind ai">AI</span><span class="kind you">You</span></span>
+    </div>
+    <div class="explain"><span>Quizzer writes a question</span><i>→</i><span>You answer</span><i>→</i><span>✓ or ✕ straight away</span></div>
+    <div class="stage-body">
+      <div class="stage-sprite"><svg class="sprite" viewBox="0 0 16 16" role="img" aria-label="Quizzer"><use href="#ch-quizzer"/></svg><span class="slab"><i class="g quizzer" aria-hidden="true">Q</i>Quizzer</span></div>
+      <div class="quiz">
+        <div class="quiz-top"><span class="pill working" id="qSubject">Subject</span><span class="mono" id="qCount">1 / 3</span><span class="sample">Sample question</span></div>
+        <h4 id="qText">Question</h4>
+        <div class="opts" id="qOpts"></div>
+        <div class="quiz-foot"><span class="verdict" id="qVerdict" aria-live="polite"></span><button class="btn" id="qNext" type="button">Next question →</button></div>
+      </div>
+    </div>
+  </section>
+  <div class="feed" aria-hidden="true"><i></i><b></b><small>it all lands with you</small></div>
+
+  <!-- Stage 4 -->
+  <section class="stage glass" id="approve" aria-labelledby="st4-title">
+    <div class="stage-top">
+      <span class="num" aria-hidden="true">4</span>
+      <span class="stage-tab">Stage 4</span>
+      <h3 class="stage-title" id="st4-title">Approve your week</h3>
+      <span class="i left" tabindex="0" role="note" aria-label="About stage 4" data-tip="Approve your week&#10;• The tutors only suggest; you decide&#10;• Check the timetable, the questions and your check-in&#10;• Press Approve, then confirm&#10;• Not ready? Choose Not yet and look again&#10;Why you approve: it’s your week, so the final say is yours.">i</span>
+      <span class="who"><span class="kind you">You</span></span>
+    </div>
+    <div class="explain"><span>Tutors hand over the plan</span><i>→</i><span>You check it</span><i>→</i><span>You approve</span></div>
+    <div class="stage-body">
+      <div class="stage-sprite"><svg class="sprite" viewBox="0 0 16 16" role="img" aria-label="You, the student"><use href="#ch-you"/></svg><span class="slab"><i class="g you" aria-hidden="true">Y</i>You</span></div>
+      <div>
+        <div class="kpis">
+          <div class="kpi planner"><small>Sessions</small><b class="mono" id="kSessions">0</b><span>from the Planner</span></div>
+          <div class="kpi planner"><small>Revision time</small><b class="mono" id="kHours">0 h</b><span>hours this week</span></div>
+          <div class="kpi quizzer"><small>Practice questions</small><b class="mono" id="kQs">0</b><span>from the Quizzer</span></div>
+          <div class="kpi coach"><small>Mood check-in</small><b id="kMood">?</b><span id="kMoodNote">pick a mood in stage 1</span></div>
+        </div>
+        <div class="approve-row">
+          <button class="btn primary" id="approveBtn" type="button">Approve my week</button>
+          <span class="pill working" id="planStatus">… Waiting for you</span>
+          <span class="sample">Sample plan</span>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<section class="wrap" id="how" aria-labelledby="how-title">
+  <div class="section-head">
+    <div class="plate glass">
+      <span class="label">How it works</span>
+      <h2 id="how-title">Three tutors, <mark>one</mark> plan</h2>
+      <p>AI checks in, plans and quizzes. You approve.</p>
+    </div>
+  </div>
+  <div class="how">
+    <div class="route-wrap glass">
+      <div class="route-head">
+        <h3>The route</h3>
+        <div class="route-ctl"><button class="btn" id="routePause" type="button" aria-pressed="false">❚❚ Pause</button><button class="btn" id="routeReset" type="button">↺ Reset</button></div>
+      </div>
+      <ol class="route" id="route">
+        <li class="rcard"><span class="num">1</span><h4>Coach checks in <span class="kind ai">AI</span></h4><p>Asks how you feel about your exams this week.</p></li>
+        <li class="rcard"><span class="num">2</span><h4>Planner builds the timetable <span class="kind ai">AI</span></h4><p>Lays out revision sessions by day and time.</p></li>
+        <li class="rcard"><span class="num">3</span><h4>Quizzer writes questions <span class="kind ai">AI</span></h4><p>Adds practice questions for each session.</p></li>
+        <li class="rcard"><span class="num">4</span><h4>You approve the week <span class="kind you">You</span></h4><p>You look over the plan and give the final yes.</p></li>
+      </ol>
+    </div>
+    <div class="diagram glass">
+      <h3>Who does what <span class="i left" tabindex="0" role="note" aria-label="About who does what" data-tip="Who does what&#10;• AI chips mark work an AI tutor does&#10;• You chips mark your choices and approvals&#10;• Each tutor has one colour, one shape and a letter&#10;Why the tags: you can always tell who suggested what.">i</span></h3>
+      <div class="tutors">
+        <div class="box"><svg class="sprite" viewBox="0 0 16 16" aria-hidden="true"><use href="#ch-coach"/></svg><b>Coach</b><span class="kind ai">AI</span><span>Mood check-in</span></div>
+        <div class="box"><svg class="sprite" viewBox="0 0 16 16" aria-hidden="true"><use href="#ch-planner"/></svg><b>Planner</b><span class="kind ai">AI</span><span>Revision timetable</span></div>
+        <div class="box"><svg class="sprite" viewBox="0 0 16 16" aria-hidden="true"><use href="#ch-quizzer"/></svg><b>Quizzer</b><span class="kind ai">AI</span><span>Practice questions</span></div>
+      </div>
+      <div class="arrow-down" aria-hidden="true">↓<small>together they make</small></div>
+      <div class="box plan"><svg class="sprite" viewBox="0 0 16 16" aria-hidden="true"><use href="#paper"/></svg><b>Your weekly plan</b><span>timetable, questions, check-in</span></div>
+      <div class="arrow-down" aria-hidden="true">↓<small>you decide</small></div>
+      <div class="box you"><svg class="sprite" viewBox="0 0 16 16" aria-hidden="true"><use href="#ch-you"/></svg><b>You approve</b><span class="kind you">You</span></div>
+      <div class="who-legend">
+        <p><span class="kind ai">AI</span> An AI tutor did this.</p>
+        <p><span class="kind you">You</span> You chose or approved this.</p>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="wrap">
+  <div class="glass">
+    <div>
+      <a class="brand" href="#top"><svg viewBox="0 0 16 16" aria-hidden="true" class="sprite"><use href="#logo"/></svg>StudyBuddy</a>
+      <p>Three AI tutors help university students prepare for exams. The student approves the weekly plan.</p>
+    </div>
+    <div><h5>Data</h5><p>Every subject, time, mood reply and question on this page is a made-up sample.</p></div>
+    <div><h5>Built with</h5><ul><li>cutify-ui, Glass theme</li><li>Pixelify Sans</li><li>Atkinson Hyperlegible</li><li>Plain HTML, CSS and SVG</li></ul></div>
+    <div><h5>Project</h5><p>A showcase example for the cutify-ui Claude skill.</p></div>
+    <div class="copy"><span>© 2026 StudyBuddy example</span><span>Sample data only</span></div>
+  </div>
+</footer>
+
+<dialog class="pop" id="approveDlg" aria-labelledby="dlgTitle" style="--pop-hue:#fff6e8;--pop-bar:var(--orange)">
+  <div class="pop-head"><svg class="sprite" viewBox="0 0 16 16" width="40" height="40" aria-hidden="true"><use href="#ch-you"/></svg><h3 class="pop-title" id="dlgTitle">Approve this week?</h3><button class="pop-close" type="button" data-close>Close ✕</button></div>
+  <div class="pop-body">
+    <ul class="summary" id="dlgSummary"></ul>
+    <div class="pop-actions"><button class="btn" type="button" data-close>Not yet</button><button class="btn primary" type="button" id="dlgApprove">✓ Approve my week</button></div>
+  </div>
+</dialog>
+
+<script>
+// ---- pixel sprites (from cutify-ui assets/pixel-sprites.js) ----
+function pixelSprites({ palette, sprites, animate = {}, defsId = 'pixdefs' }) {
+  const defs = document.getElementById(defsId);
+  for (const [id, rows] of Object.entries(sprites)) {
+    console.assert(rows.length === 16 && rows.every(r => r.length === 16), 'sprite ' + id + ' must be 16 x 16');
+    let out = `<symbol id="${id}" viewBox="0 0 16 16" shape-rendering="crispEdges">`;
+    rows.forEach((row, y) => [...row].forEach((ch, x) => {
+      if (ch === '.' || !palette[ch]) return;
+      const a = animate[ch];
+      const cls = !a ? '' : ` class="${Array.isArray(a) ? a[x < 8 ? 0 : 1] : a}"`;
+      out += `<rect x="${x}" y="${y}" width="1.02" height="1.02" fill="${palette[ch]}"${cls}/>`;
+    }));
+    defs.insertAdjacentHTML('beforeend', out + '</symbol>');
+  }
+}
+pixelSprites({
+  palette: { k: '#16171a', s: '#f1c7a3', h: '#6b3e26', W: '#ffffff', T: '#8fd6df', C: '#c93a25', x: '#dbe86a',
+    y: '#f6d877', P: '#e8912d', c: '#f6b5a6', r: '#c93a25', v: '#f1c7a3', m: '#a8e2bd', M: '#2d7d46', o: '#e8912d', p: '#fffbe8', l: '#9aa6b2', g: '#1fa98a' },
+  animate: { x: 'px-blink', P: 'px-wl', v: ['px-wl', 'px-wr'], r: 'px-blink' },
+  sprites: {
+    'ch-planner': ['....kkkkkkkk....', '...kTTTTTTTTk...', '..kTTTTWWTTTTk..', '..kkkkkkkkkkkk..', '...kssssssssk...', '...kskksskksk...',
+      '...kssssssssk...', '...kssksskssk...', '....ksskkssk....', '.....kkkkkk.....', '...kTTTTTTTTk...', '..kTTTTkkkkkkkk.',
+      '..kTTTTkCCCCCCk.', '..kTTTTkWkxkWWk.', '..kTsTTkWWWWWWk.', '..kkkkkkkkkkkkk.'],
+    'ch-quizzer': ['......kkkk......', '....kkyyyykk....', '...kyyyyyyyyk...', '..kyyyyyyyyyyk..', '..kkkkkkkkkkkk..', '...kssssssssk...',
+      '...kskksskksk...', '...kssssssssk...', '...kssskksssk...', '....kssssssk....', '.....kkkkkk..kk.', '...kyyyyyyyykPk.',
+      '..kyyyyyyyyykPk.', '..kyyyWWWWyyksk.', '..kyyyyyyyyyk...', '..kkkkkkkkkkk...'],
+    'ch-coach': ['....kkkkkkkk....', '...khhhhhhhhk...', '..khhhhhhhhhhk..', '..kCCCCCCCCCCk..', '..khsssssssshk..', '...kskksskksk...',
+      '...kssssssssk...', '...kssksskssk...', '....ksskkssk....', '.vv..kkkkkk..vv.', '.kvkccccccccvk..', '..kcccrcrcccck..',
+      '..kcccrrrcccck..', '..kccccrccccck..', '..kcccccccccck..', '..kkkkkkkkkkkk..'],
+    'ch-you': ['................', '....kkkkkkkk....', '...khhhhhhhhk...', '..khhhhhhhhhhk..', '..khsssssssshk..', '...kskksskksk...',
+      '...kssssssssk...', '...kssksskssk...', '....ksskkssk....', '.....kkkkkk.....', '...kmmmmmmmmk...', '..kmMmmmmmmMmk..',
+      '..kmMmmmmmmMmk..', '..ksMmmmmmmMsk..', '...kooooooook...', '...kkkkkkkkkk...'],
+    'paper': ['................', '..kkkkkkkkkk....', '..kppppppppkk...', '..kpllllllpkpk..', '..kppppppppkkkk.', '..kplllllllllpk.',
+      '..kpppppppppppk.', '..kpllllllllppk.', '..kpppppppppppk.', '..kpgggplllllpk.', '..kpppppppppppk.', '..kplllllllpppk.',
+      '..kpppppppppppk.', '..kkkkkkkkkkkkk.', '................', '................'],
+    'logo': ['................', '..kkkkkkkkkkkk..', '..kCCCCCCCCCCk..', '..kCkCCCCCCkCk..', '..kkkkkkkkkkkk..', '..kWWWWWWWWWWk..',
+      '..kWggWWWWWWWk..', '..kWggWWWWWWWk..', '..kWWWWWWooWWk..', '..kWWWWWWooWWk..', '..kWWWWWWWWWWk..', '..kWWWxxWWWWWk..',
+      '..kWWWxxWWWWWk..', '..kWWWWWWWWWWk..', '..kkkkkkkkkkkk..', '................'],
+    'face-great': ['................', '.....kkkkkk.....', '...kkyyyyyykk...', '..kyyyyyyyyyyk..', '.kyyyyyyyyyyyyk.', '.kyykkyyyykkyyk.',
+      'kyyykkyyyykkyyyk', 'kyyyyyyyyyyyyyyk', 'kyykyyyyyyyykyyk', 'kyyykyyyyyykyyyk', '.kyyykkkkkkyyyk.', '.kyyyyyyyyyyyyk.',
+      '..kyyyyyyyyyyk..', '...kkyyyyyykk...', '.....kkkkkk.....', '................'],
+    'face-okay': ['................', '.....kkkkkk.....', '...kkmmmmmmkk...', '..kmmmmmmmmmmk..', '.kmmmmmmmmmmmmk.', '.kmmkkmmmmkkmmk.',
+      'kmmmkkmmmmkkmmmk', 'kmmmmmmmmmmmmmmk', 'kmmmmmmmmmmmmmmk', 'kmmmmkkkkkkmmmmk', '.kmmmmmmmmmmmmk.', '.kmmmmmmmmmmmmk.',
+      '..kmmmmmmmmmmk..', '...kkmmmmmmkk...', '.....kkkkkk.....', '................'],
+    'face-tired': ['................', '.....kkkkkk.....', '...kkTTTTTTkk...', '..kTTTTTTTTTTk..', '.kTTTTTTTTTTTTk.', '.kTTTTTTTTTTTTk.',
+      'kTTkkkTTTTkkkTTk', 'kTTTTTTTTTTTTTTk', 'kTTTTTTTTTTTTTTk', 'kTTTTTkkkkTTTTTk', '.kTTTTkTTkTTTTk.', '.kTTTTTkkTTTTTk.',
+      '..kTTTTTTTTTTk..', '...kkTTTTTTkk...', '.....kkkkkk.....', '................'],
+    'face-stressed': ['................', '.....kkkkkk.....', '...kkcccccckkW..', '..kcccccccccckW.', '.kckcccccccckck.', '.kcckcccccckcck.',
+      'kccckkcccckkccck', 'kcccccccccccccck', 'kcccccccccccccck', 'kcccckkkkkkcccck', '.kcccccccccccck.', '.kcccccccccccck.',
+      '..kcccccccccck..', '...kkcccccckk...', '.....kkkkkk.....', '................'],
+  },
+});
+
+// ---- made-up sample data ----
+const SESSIONS = [
+  { day: 'Mon', from: '18:00', to: '19:30', subject: 'Calculus', qs: 4 },
+  { day: 'Tue', from: '17:00', to: '18:00', subject: 'Microeconomics', qs: 3 },
+  { day: 'Wed', from: '19:00', to: '20:30', subject: 'Organic chemistry', qs: 4 },
+  { day: 'Thu', from: '18:00', to: '19:00', subject: 'Calculus', qs: 3 },
+  { day: 'Sat', from: '10:00', to: '12:00', subject: 'Microeconomics', qs: 5 },
+  { day: 'Sun', from: '14:00', to: '15:30', subject: 'Organic chemistry', qs: 4 },
+];
+const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+const mins = t => { const [h, m] = t.split(':').map(Number); return h * 60 + m; };
+const totalMin = SESSIONS.reduce((a, s) => a + mins(s.to) - mins(s.from), 0);
+const totalQs = SESSIONS.reduce((a, s) => a + s.qs, 0);
+const hoursText = (totalMin / 60).toLocaleString('en-GB', { maximumFractionDigits: 1 }) + ' h';
+console.assert(totalMin === 510 && totalQs === 23, 'sample totals changed');
+
+const QUESTIONS = [
+  { subject: 'Calculus', text: 'What is the derivative of x³?', opts: ['3x²', 'x²', '3x'], answer: 0 },
+  { subject: 'Microeconomics', text: 'When a good’s price rises, the quantity demanded usually…', opts: ['Rises', 'Falls', 'Stays the same'], answer: 1 },
+  { subject: 'Organic chemistry', text: 'Which group makes a molecule an alcohol?', opts: ['–COOH', '–NH₂', '–OH'], answer: 2 },
+];
+const MOODS = {
+  great: { label: 'Great', reply: 'Love that. Keep the energy and enjoy the week’s sessions.' },
+  okay: { label: 'Okay', reply: 'Okay is a fine place to start. One session at a time.' },
+  tired: { label: 'Tired', reply: 'Thanks for telling me. Rest counts too, so look after yourself.' },
+  stressed: { label: 'Stressed', reply: 'Exams can feel like a lot. You don’t have to do it all today.' },
+};
+
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const $ = s => document.querySelector(s);
+const state = { mood: null, approved: false };
+
+// ---- stage 2: timetable ----
+function renderWeek() {
+  $('#week').innerHTML = DAYS.map(d => {
+    const ss = SESSIONS.filter(s => s.day === d);
+    const inner = ss.length ? ss.map(s => `<div class="slot"><b>${s.subject}</b><span class="mono">${s.from}–${s.to}</span><br>
+      <span class="qn"><i class="g quizzer" aria-hidden="true">Q</i>${s.qs} questions</span></div>`).join('') : '<p class="free">No session</p>';
+    return `<div class="day"><h4>${d}</h4>${inner}</div>`;
+  }).join('');
+}
+renderWeek();
+
+// ---- stage 1: mood ----
+$('#moods').addEventListener('change', e => {
+  const m = MOODS[e.target.value]; state.mood = m.label;
+  $('#reply').innerHTML = `${m.reply} <span class="sample">Sample reply</span>`;
+  $('#kMood').textContent = '✓ Done'; $('#kMoodNote').textContent = 'you said: ' + m.label.toLowerCase();
+});
+
+// ---- stage 3: quiz ----
+let qi = 0;
+function renderQ() {
+  const q = QUESTIONS[qi];
+  $('#qSubject').textContent = q.subject; $('#qCount').textContent = `${qi + 1} / ${QUESTIONS.length}`;
+  $('#qText').textContent = q.text; $('#qVerdict').textContent = ''; $('#qVerdict').className = 'verdict';
+  $('#qOpts').innerHTML = q.opts.map((o, i) => `<button class="opt" type="button" data-i="${i}"><span>${o}</span><span class="mark"></span></button>`).join('');
+}
+$('#qOpts').addEventListener('click', e => {
+  const b = e.target.closest('.opt'); if (!b) return;
+  const q = QUESTIONS[qi], pick = +b.dataset.i;
+  $('#qOpts').querySelectorAll('.opt').forEach((o, i) => {
+    o.disabled = true;
+    if (i === q.answer) { o.classList.add('right'); o.querySelector('.mark').textContent = '✓ Right answer'; }
+    else if (i === pick) { o.classList.add('wrong'); o.querySelector('.mark').textContent = '✕ Your pick'; }
+  });
+  const v = $('#qVerdict'); v.textContent = pick === q.answer ? '✓ Correct, nice one' : '✕ Not quite, the right one is marked';
+  v.classList.remove('stamp'); void v.offsetWidth; v.classList.add('stamp');
+});
+$('#qNext').addEventListener('click', () => { qi = (qi + 1) % QUESTIONS.length; renderQ(); });
+renderQ();
+
+// ---- stage 4: approve ----
+$('#kSessions').textContent = SESSIONS.length; $('#kHours').textContent = hoursText; $('#kQs').textContent = totalQs;
+const dlg = $('#approveDlg');
+let opener = null;
+$('#approveBtn').addEventListener('click', e => {
+  opener = e.currentTarget;
+  $('#dlgSummary').innerHTML = `
+    <li><i class="g planner" aria-hidden="true">P</i><span>Revision sessions</span><b class="mono">${SESSIONS.length}, ${hoursText}</b></li>
+    <li><i class="g quizzer" aria-hidden="true">Q</i><span>Practice questions</span><b class="mono">${totalQs}</b></li>
+    <li><i class="g coach" aria-hidden="true">C</i><span>Mood check-in</span><b>${state.mood ? '✓ ' + state.mood : '? Not yet'}</b></li>`;
+  dlg.showModal();
+});
+dlg.addEventListener('click', e => { if (e.target === dlg || e.target.closest('[data-close]')) dlg.close(); });
+dlg.addEventListener('close', () => opener?.focus());
+$('#dlgApprove').addEventListener('click', () => {
+  state.approved = true; dlg.close();
+  const st = $('#planStatus'); st.className = 'pill done'; st.textContent = '✓ Approved';
+  const btn = $('#approveBtn'); btn.disabled = true; btn.textContent = '✓ Week approved';
+  $('#approve').classList.add('approved');
+  say('you', 'I approved my week.');
+  hopOnce('you');
+});
+
+// ---- hero: scripted story (cancellable sleeps) + note hand-offs ----
+const scene = $('#scene'), bubble = $('#bubble'), note = $('#note'), chat = $('#chat');
+const actors = Object.fromEntries([...document.querySelectorAll('.actor')].map(a => [a.dataset.id, a]));
+const NAMES = { coach: 'Coach', planner: 'Planner', quizzer: 'Quizzer', you: 'You' };
+const KIND = { coach: 'ai', planner: 'ai', quizzer: 'ai', you: 'you' };
+let timers = [], runId = 0;
+const sleep = ms => new Promise(r => timers.push(setTimeout(r, reduced ? Math.min(ms, 120) : ms)));
+
+function centre(id) {
+  const s = scene.getBoundingClientRect(), r = actors[id].querySelector('.sprite').getBoundingClientRect();
+  return { x: r.left - s.left + r.width / 2, y: r.top - s.top + r.height / 2, top: r.top - s.top };
+}
+function say(id, text) {
+  chat.querySelector('.idle')?.remove();
+  const li = document.createElement('li');
+  li.innerHTML = `<span class="who"><i class="g ${id}" aria-hidden="true">${NAMES[id][0]}</i>${NAMES[id]}</span><span>${text}</span>`;
+  chat.appendChild(li); chat.scrollTop = chat.scrollHeight;
+  Object.entries(actors).forEach(([k, a]) => { a.classList.toggle('talking', k === id); a.classList.toggle('quiet', k !== id); });
+  bubble.textContent = text; bubble.classList.add('on');
+  const c = centre(id), sw = scene.clientWidth, bw = bubble.offsetWidth, bh = bubble.offsetHeight;
+  const left = Math.max(6, Math.min(c.x - bw / 2, sw - bw - 6));
+  bubble.style.left = left + 'px'; bubble.style.top = Math.max(6, c.top - bh - 14) + 'px';
+  bubble.style.setProperty('--tail', Math.max(14, Math.min(c.x - left, bw - 14)) + 'px');
+}
+function quietAll() { Object.values(actors).forEach(a => a.classList.remove('talking', 'quiet')); bubble.classList.remove('on'); }
+function hopOnce(id) {
+  if (reduced) return;
+  actors[id].querySelector('.hopper').animate([{ transform: 'none' }, { transform: 'translateY(-14px) scale(1.06)' }, { transform: 'none' }], { duration: 420, easing: 'steps(4)' });
+}
+function pass(from, to) {
+  if (reduced) return Promise.resolve();
+  const a = centre(from), b = centre(to), mx = (a.x + b.x) / 2, my = Math.min(a.y, b.y) - 60;
+  const t = (x, y, s, r) => `translate(${x - 14}px, ${y - 14}px) scale(${s}) rotate(${r}deg)`;
+  const anim = note.animate([
+    { transform: t(a.x, a.y, .6, -8), opacity: 0, easing: 'steps(3)' },
+    { transform: t(a.x, a.y, 1, -8), opacity: 1, offset: .12, easing: 'steps(8)' },
+    { transform: t(mx, my, 1.15, 6), opacity: 1, offset: .55, easing: 'steps(8)' },
+    { transform: t(b.x, b.y, 1, 0), opacity: 1, offset: .92 },
+    { transform: t(b.x, b.y, .8, 0), opacity: 0 }], { duration: 900, fill: 'both' });
+  actors[to].querySelector('.hopper').animate([{ transform: 'scale(1)' }, { transform: 'scale(1.15) rotate(-4deg)' }, { transform: 'scale(1)' }], { duration: 300, delay: 800, easing: 'steps(4)' });
+  return anim.finished.catch(() => {});
+}
+async function play() {
+  timers.forEach(clearTimeout); timers = []; const id = ++runId;
+  chat.innerHTML = ''; $('#liveBadge').textContent = 'Playing the sample week…';
+  const beats = [
+    ['coach', 'Hi! How are you feeling about exams this week?', 2200],
+    ['you', 'Honestly? A bit stressed.', 1800],
+    ['coach', 'Thanks for telling me. One step at a time.', 2000],
+    ['planner', `Here’s your revision timetable: ${SESSIONS.length} sessions, ${hoursText}.`, 1600, 'quizzer'],
+    ['quizzer', `I wrote ${totalQs} practice questions, one set per session.`, 1600, 'you'],
+    ['you', 'My weekly plan is ready. Time to check it and approve.', 2200],
+  ];
+  for (const [who, text, wait, to] of beats) {
+    if (id !== runId) return;
+    say(who, text); await sleep(wait);
+    if (to) { if (id !== runId) return; await pass(who, to); await sleep(300); }
+  }
+  if (id !== runId) return;
+  quietAll(); $('#liveBadge').textContent = 'Plan waiting for you ↓';
+  const st = $('#approve'); st.classList.remove('nudge'); void st.offsetWidth; st.classList.add('nudge');
+}
+$('#playBtn').addEventListener('click', play);
+addEventListener('resize', () => { if (bubble.classList.contains('on')) bubble.classList.remove('on'); });
+
+// ---- how it works: route with stops ----
+const route = $('#route'), cards = [...route.querySelectorAll('.rcard')];
+const NS = 'http://www.w3.org/2000/svg';
+const pathSvg = document.createElementNS(NS, 'svg'); pathSvg.classList.add('path'); pathSvg.setAttribute('aria-hidden', 'true');
+const path = document.createElementNS(NS, 'path'); pathSvg.appendChild(path); route.prepend(pathSvg);
+const token = document.createElementNS(NS, 'svg'); token.setAttribute('viewBox', '0 0 16 16'); token.setAttribute('class', 'token sprite'); token.setAttribute('aria-hidden', 'true');
+token.innerHTML = '<use href="#paper"/>'; route.appendChild(token);
+let stops = [], total = 0, dist = 0, stopIdx = 0, holdUntil = 0, paused = false, last = performance.now();
+function layoutRoute() {
+  const rr = route.getBoundingClientRect();
+  const pts = cards.map((c, i) => { const r = c.getBoundingClientRect(); return [i % 2 ? 30 : 18, r.top - rr.top + r.height / 2]; });
+  let d = `M${pts[0][0]} ${pts[0][1]}`;
+  for (let i = 1; i < pts.length; i++) { const [x0, y0] = pts[i - 1], [x1, y1] = pts[i], my = (y0 + y1) / 2; d += ` C${x0} ${my} ${x1} ${my} ${x1} ${y1}`; }
+  path.setAttribute('d', d); total = path.getTotalLength();
+  stops = pts.map(p => { let best = 0, bd = 1e9; for (let l = 0; l <= total; l += 2) { const q = path.getPointAtLength(l), dd = Math.abs(q.y - p[1]); if (dd < bd) { bd = dd; best = l; } } return best; });
+  placeToken();
+}
+function placeToken() { const p = path.getPointAtLength(Math.min(dist, total)); token.style.left = p.x + 'px'; token.style.top = p.y + 'px'; }
+function mark() { cards.forEach((c, i) => { c.classList.toggle('on', i === stopIdx); c.classList.toggle('done', i < stopIdx); }); }
+function resetRoute() { dist = 0; stopIdx = 0; holdUntil = performance.now() + 1500; mark(); placeToken(); }
+function tick(now) {
+  const dt = Math.min(.1, (now - last) / 1000); last = now;
+  if (!paused && !$('#how').classList.contains('is-off') && now >= holdUntil) {
+    const next = stops[stopIdx + 1];
+    if (next === undefined) { resetRoute(); }
+    else { dist = Math.min(next, dist + 160 * dt); placeToken(); if (dist >= next) { stopIdx++; mark(); holdUntil = now + 1500; } }
+  }
+  requestAnimationFrame(tick);
+}
+new ResizeObserver(layoutRoute).observe(route);
+layoutRoute();
+if (reduced) {
+  stopIdx = cards.length - 1; dist = total; mark(); cards.forEach(c => c.classList.add('done')); placeToken();
+  ['#routePause', '#routeReset'].forEach(s => { const b = $(s); b.disabled = true; b.title = 'Motion is off because your system asks for reduced motion'; });
+} else {
+  resetRoute(); requestAnimationFrame(tick);
+  $('#routePause').addEventListener('click', e => { paused = !paused; e.currentTarget.setAttribute('aria-pressed', paused); e.currentTarget.textContent = paused ? '▶ Play' : '❚❚ Pause'; });
+  $('#routeReset').addEventListener('click', resetRoute);
+}
+
+// ---- keep tooltips on screen: shift the tip sideways by however much it would overflow ----
+function fitTip(e) {
+  const el = e.target.closest?.('.i[data-tip]'); if (!el) return;
+  const r = el.getBoundingClientRect(), w = parseFloat(getComputedStyle(el, '::after').width) || Math.min(300, innerWidth - 32);
+  const want = r.left + r.width / 2 - w / 2, fit = Math.max(12, Math.min(want, document.documentElement.clientWidth - w - 12));
+  el.style.setProperty('--tip-shift', (fit - want) + 'px');
+}
+['mouseover', 'focusin'].forEach(t => document.addEventListener(t, fitTip));
+
+// ---- pause loops off screen ----
+const io = new IntersectionObserver(es => es.forEach(e => e.target.classList.toggle('is-off', !e.isIntersecting)), { rootMargin: '100% 0px' });
+document.querySelectorAll('.hero, .stage, #how').forEach(el => io.observe(el));
+</script>
+</body>
+</html>

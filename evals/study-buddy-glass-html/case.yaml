@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: study-buddy-glass-html
+expected_outcome: |
+  A single index.html landing page in a light, friendly, game-like style: three tutor characters drawn as pixel art, numbered stages explaining how they work together, tooltips, game-style buttons, purposeful animation with reduced-motion support.

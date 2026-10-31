@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: robot-fleet-apron-html
+expected_outcome: |
+  A single demo.html in a dark control-room style: pixel robot characters, AI/Code/You tags on who does what, robots animated along drawn aisle paths, rule list with plain-English descriptions, a before/after KPI dashboard labelled as sample data, reduced-motion support.

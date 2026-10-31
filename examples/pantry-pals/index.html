@@ -1,0 +1,749 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pantry Pals</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' shape-rendering='crispEdges'%3E%3Crect x='1' y='1' width='14' height='14' rx='2' fill='%2316171a'/%3E%3Crect x='4' y='4' width='8' height='8' fill='%23ffd400'/%3E%3C/svg%3E">
+<meta name="description" content="Two AI helpers plan your week from what's in your fridge. You approve the plan. A cutify-ui Glass example.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Pixelify+Sans:wght@600&display=swap">
+<!-- Static copy of the Next.js example in this folder (app/ and components/), with the same CSS and markup, for GitHub Pages. -->
+<style>
+/* Pantry Pals: a cutify-ui Glass example. Tokens and base components copied from cutify-ui/assets/glass.css. MIT. */
+:root {
+  --sky: #8fd0f0; --sky-soft: #d9f0fb; --water: #3bb4d6; --water-deep: #1b86a8;
+  --grass: #7cc65a; --leaf: #3f9e57; --leaf-deep: #2d7d46; --link: #0f6a88;
+  --ink: #1f2430; --ink-soft: #3a4955; --text: #12343f;
+  --teal: #1fa98a; --teal-dark: #167a66; --orange: #e8912d; --orange-dark: #b9651a; --lime: #dbe86a; --coral: #c93a25; --ok: #1f7a4d;
+  --teal-soft: #d7eff2; --mint-soft: #dbf2e5; --coral-soft: #fde4de; --yellow-soft: #fcefc2;
+  --glass-fill: linear-gradient(145deg, rgb(255 255 255 / 94%), rgb(255 255 255 / 88%));
+  --glass-edge: rgb(255 255 255 / 85%); --glass-card: rgb(255 255 255 / 78%);
+  --glass-shadow: 0 10px 30px rgb(16 70 100 / 18%); --glass-ring: 0 0 0 1px rgb(31 36 48 / 14%);
+  --glass-blur: blur(14px) saturate(1.25);
+  --btn-shadow: 0 3px 0 rgb(16 70 100 / 30%), 0 6px 14px rgb(16 70 100 / 14%);
+  --radius: 18px; --spring: cubic-bezier(.34, 1.56, .64, 1);
+  /* next/font sets --font-pixel and --font-read; the static page falls back to the Google Fonts names */
+  --display: var(--font-pixel, 'Pixelify Sans'), 'Trebuchet MS', sans-serif;
+  --body: var(--font-read, 'Atkinson Hyperlegible'), ui-sans-serif, system-ui, sans-serif;
+  --mono: ui-monospace, 'Cascadia Mono', Menlo, Consolas, monospace;
+  /* cast: one colour each, always paired with a glyph shape and a name */
+  --chef: #8fd6df; --chef-soft: var(--teal-soft); --chef-bar: var(--teal-dark);
+  --shopper: #f6b5a6; --shopper-soft: var(--coral-soft); --shopper-bar: #b0402c;
+  --you: var(--orange); --you-soft: var(--yellow-soft); --you-bar: var(--orange-dark);
+  --scene: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 900' preserveAspectRatio='xMidYMax slice'%3E%3Cdefs%3E%3ClinearGradient id='s' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23a9dcf2'/%3E%3Cstop offset='.7' stop-color='%23e3f5fb'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='1440' height='900' fill='url(%23s)'/%3E%3Cg fill='%23fff' opacity='.85'%3E%3Cellipse cx='220' cy='170' rx='96' ry='26'/%3E%3Cellipse cx='272' cy='148' rx='60' ry='32'/%3E%3Cellipse cx='1130' cy='230' rx='118' ry='28'/%3E%3Cellipse cx='1180' cy='204' rx='66' ry='34'/%3E%3Cellipse cx='760' cy='96' rx='70' ry='18'/%3E%3C/g%3E%3Cpath d='M0 650C240 570 430 610 650 630S1080 550 1440 610V900H0Z' fill='%23b6e29a'/%3E%3Cpath d='M0 730C300 670 560 710 820 730S1240 670 1440 710V900H0Z' fill='%238fd06e'/%3E%3Cpath d='M0 820C360 785 760 805 1440 792V900H0Z' fill='%235cb15e'/%3E%3Cg fill='%233f9e57'%3E%3Ccircle cx='160' cy='812' r='10'/%3E%3Ccircle cx='196' cy='808' r='10'/%3E%3Ccircle cx='232' cy='806' r='10'/%3E%3Ccircle cx='1220' cy='800' r='10'/%3E%3Ccircle cx='1256' cy='798' r='10'/%3E%3Ccircle cx='1292' cy='797' r='10'/%3E%3C/g%3E%3C/svg%3E");
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { background: #a9d8e8; scroll-padding-top: 5.5rem; overflow-x: clip; }
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+body { margin: 0; color: var(--ink); font: 400 1.0625rem/1.6 var(--body); overflow-x: clip; }
+body::before { content: ""; position: fixed; inset: 0; height: 100lvh; z-index: -1; pointer-events: none; transform: translateZ(0);
+  background: var(--scene) center bottom / cover no-repeat, #a9d8e8; }
+h1, h2 { font-family: var(--display); font-weight: 600; letter-spacing: .01em; line-height: 1.15; }
+h3, h4 { font-weight: 700; line-height: 1.15; }
+a { color: var(--link); } a:hover { color: var(--coral); }
+:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; border-radius: 6px; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { animation: none !important; transition: none !important; } }
+.is-off, .is-off *, .is-off *::before, .is-off *::after { animation-play-state: paused !important; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.mono { font-family: var(--mono); }
+
+/* surfaces: blur only top-level panels */
+.glass { background: var(--glass-fill); border: 1.5px solid var(--glass-edge); border-radius: var(--radius);
+  box-shadow: var(--glass-shadow), var(--glass-ring), inset 0 1px 0 rgb(255 255 255 / 90%); backdrop-filter: var(--glass-blur); padding: 1.1rem 1.25rem; }
+.card { background: var(--glass-card); border: 1.5px solid rgb(255 255 255 / 70%); border-radius: 14px; padding: 1rem; box-shadow: 0 0 0 1px rgb(31 36 48 / 10%); }
+@supports not (backdrop-filter: blur(1px)) { .glass { background: rgb(255 255 255 / 94%); } }
+
+/* highlighter, badges, tags */
+.hl, mark { background: linear-gradient(transparent 55%, var(--lime) 55%, var(--lime) 92%, transparent 92%); color: inherit; padding: 0 .1em; }
+.num { display: inline-grid; place-items: center; min-width: 1.9rem; height: 1.9rem; padding: 0 .3rem; background: var(--lime); border: 2px solid var(--ink);
+  border-radius: 4px; box-shadow: 2px 2px 0 rgb(31 36 48 / 45%); font: 600 1rem var(--display); }
+.tag { display: inline-block; padding: .2rem .6rem; border-radius: 999px; background: var(--orange); color: var(--ink); font: 700 .78rem var(--body);
+  letter-spacing: .04em; text-transform: uppercase; box-shadow: 0 2px 0 rgb(185 101 26 / 55%); }
+.tag.sample { background: #fff; border: 1.5px dashed var(--ink-soft); box-shadow: none; }
+.stage-tab { display: inline-block; padding: .25rem .75rem; border-radius: 999px; background: var(--teal-dark); color: #fff; font: 800 .95rem var(--body); text-shadow: 0 1px 0 rgb(0 0 0 / 25%); }
+
+/* buttons: game feel */
+button { font: inherit; cursor: pointer; color: inherit; }
+.btn { display: inline-flex; align-items: center; gap: .5rem; min-height: 2.75rem; padding: .55rem 1.1rem; border: 2px solid var(--ink); border-radius: 12px;
+  background: #fff; color: var(--ink); font: 700 1rem var(--body); text-decoration: none; box-shadow: var(--btn-shadow); }
+.btn:hover { color: var(--ink); }
+.btn.primary { background: var(--orange); } .btn.primary:hover { background: #f2a246; } .btn.primary:active { background: var(--orange-dark); color: #fff8e6; }
+.btn:disabled { opacity: .5; cursor: not-allowed; box-shadow: none; }
+.btn.small { min-height: 2.25rem; padding: .3rem .7rem; font-size: .92rem; border-radius: 10px; }
+.btn.big { flex-direction: column; align-items: flex-start; gap: 0; padding: .7rem 1.4rem; font-size: 1.2rem; }
+.btn.big small { font: 400 .85rem var(--body); }
+:where(button, .btn) { transition: transform .14s ease, box-shadow .14s ease, filter .14s ease, background-color .14s ease; }
+@media (prefers-reduced-motion: no-preference) {
+  :where(button, .btn):not(:disabled):hover { transform: translateY(-2px); box-shadow: 0 5px 0 rgb(16 70 100 / 30%), 0 10px 18px rgb(16 70 100 / 16%); filter: brightness(1.06); }
+  :where(button, .btn):not(:disabled):active { transform: translateY(1px); box-shadow: 0 1px 0 rgb(16 70 100 / 30%); filter: brightness(.97); } }
+
+/* kind chips: AI / You (this product has no non-AI "Code" step) */
+.kind { display: inline-block; padding: .1rem .45rem; border: 1.5px solid var(--ink); border-radius: 999px; font: 700 .72rem var(--body); letter-spacing: .05em; text-transform: uppercase; line-height: 1.4; white-space: nowrap; }
+.kind.ai { background: var(--teal-soft); } .kind.code { background: #fff; } .kind.you { background: var(--orange); }
+
+/* cast glyphs: a shape per actor so identity never rests on colour */
+.glyph { display: inline-block; width: .95rem; height: .95rem; border: 2px solid var(--ink); vertical-align: -.1em; flex: none; }
+.glyph.chef { background: var(--chef); border-radius: 3px; }
+.glyph.shopper { background: var(--shopper); border-radius: 50%; }
+.glyph.you { background: var(--you); border: 0; clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%); box-shadow: inset 0 0 0 2px var(--ink); }
+
+/* status pills: mark + word */
+.pill { display: inline-flex; align-items: center; gap: .3rem; padding: .15rem .6rem; border-radius: 999px; font: 700 .85rem var(--body); background: #fff; border: 1.5px solid rgb(31 36 48 / 25%); white-space: nowrap; }
+.pill.done { background: var(--mint-soft); color: #14502f; } .pill.working { background: var(--yellow-soft); } .pill.gap { background: var(--coral-soft); color: #7a1f10; }
+.dots::after { content: "…"; }
+@media (prefers-reduced-motion: no-preference) { .dots::after { content: ""; animation: dots 1.2s steps(4) infinite; } }
+@keyframes dots { 0% { content: ""; } 25% { content: "."; } 50% { content: ".."; } 75% { content: "..."; } }
+
+/* pixel art */
+.sprite { image-rendering: pixelated; display: block; }
+@media (prefers-reduced-motion: no-preference) {
+  .bob { animation: bob 3.6s ease-in-out infinite; } .bob.d1 { animation-delay: -.9s; } .bob.d2 { animation-delay: -1.8s; }
+  .talking { animation: hop .4s steps(2) infinite alternate; }
+  .fade-up { animation: fade-up .5s cubic-bezier(.2, .8, .2, 1) backwards; } }
+@keyframes bob { 50% { transform: translateY(-4px); } }
+@keyframes hop { to { transform: translateY(-6px); } }
+@keyframes fade-up { from { opacity: .35; transform: translateY(14px); } }
+.px-blink { animation: px-blink 1.2s steps(1) infinite; } @keyframes px-blink { 50% { opacity: .2; } }
+.px-wl { animation: px-wave .5s steps(1) infinite; } .px-wr { animation: px-wave .5s steps(1) infinite reverse; } @keyframes px-wave { 50% { transform: translateY(-1px); } }
+.quiet { opacity: .55; filter: grayscale(.5); }
+
+/* tooltips (WordTip on the Popover API) */
+.word-tip-wrap { display: inline-flex; }
+.word-tip-word { all: unset; cursor: help; font-weight: 700; border-bottom: 2px dotted var(--teal-dark); }
+.word-tip-word:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; border-radius: 4px; }
+.word-tip-word:has(.i-dot) { border-bottom: 0; border-radius: 50%; }
+.i-dot { display: inline-grid; place-items: center; width: 1.6rem; height: 1.6rem; border-radius: 50%; border: 2px solid var(--teal-dark); color: var(--teal-dark);
+  background: #fff; font: 700 .9rem var(--body); box-shadow: 0 2px 0 rgb(16 70 100 / 30%); }
+.word-tip-word:hover .i-dot, .word-tip-word[aria-expanded="true"] .i-dot { background: var(--lime); }
+.word-tip { position: fixed; inset: auto; margin: 0; width: min(22rem, calc(100vw - 16px)); padding: 0; overflow: visible;
+  background: #fff; color: var(--ink); border: 2px solid var(--ink); border-radius: 14px;
+  box-shadow: 3px 3px 0 rgb(31 36 48 / 20%), 0 12px 28px rgb(16 70 100 / 26%); animation: tip-in .15s ease-out; }
+.word-tip[hidden] { display: none; }
+.word-tip-head { padding: .5rem .8rem; background: var(--tip-bg); color: #fff; border-radius: 11px 11px 0 0; font: 600 1.15rem var(--display); }
+.word-tip-body { padding: .6rem .8rem .75rem; font: 400 1rem/1.45 var(--body); }
+.word-tip-body ul { margin: 0; padding: 0; }
+.word-tip-body li { list-style: none; position: relative; padding-left: .9rem; }
+.word-tip-body li + li { margin-top: .2rem; }
+.word-tip-body li::before { content: ""; position: absolute; left: 0; top: .55em; width: .4rem; height: .4rem; background: var(--tip-bg); }
+@keyframes tip-in { from { opacity: 0; transform: translateY(4px); } }
+
+/* dialog */
+dialog.pop { width: min(44rem, 94vw); max-height: 90dvh; padding: 0; border: 0; border-radius: 22px; background: #fff; box-shadow: 0 24px 60px rgb(10 40 60 / 35%); color: var(--ink); }
+dialog.pop[open] { display: flex; flex-direction: column; }
+dialog.pop::backdrop { background: rgb(14 43 36 / 62%); }
+@media (prefers-reduced-motion: no-preference) { dialog.pop[open] { animation: pop-in .18s ease-out; } }
+@keyframes pop-in { from { opacity: 0; transform: translateY(10px) scale(.98); } }
+.pop-head { display: flex; align-items: center; gap: .75rem; padding: .9rem 1.1rem; background: var(--pop-hue, var(--sky-soft)); border-bottom: 3px solid var(--pop-bar, transparent); }
+.pop-icon { display: grid; place-items: center; width: 3rem; height: 3rem; border-radius: 14px; background: #fff; border: 2px solid var(--ink); flex: none; }
+.pop-title { margin: 0; flex: 1; font: 800 1.5rem/1.2 var(--body); }
+.pop-close { border: 2px solid var(--ink); border-radius: 999px; background: #fff; padding: .3rem .8rem; font-weight: 700; white-space: nowrap; }
+.pop-close:hover { background: var(--lime); }
+.pop-body { padding: 1.1rem 1.25rem 1.25rem; overflow: auto; }
+@media (max-width: 560px) { dialog.pop { width: calc(100vw - .75rem); max-height: 94dvh; } .pop-title { font-size: 1.2rem; } }
+
+/* ---------- page ---------- */
+.wrap { width: min(1180px, 100% - 2rem); margin-inline: auto; }
+
+.site-header { position: sticky; top: .6rem; z-index: 50; display: flex; align-items: center; gap: .9rem; margin-top: .6rem; padding: .45rem .55rem .45rem .9rem; }
+.brand { display: inline-flex; align-items: center; gap: .55rem; color: var(--ink); text-decoration: none; font: 600 1.35rem var(--display); }
+.brand:hover { color: var(--ink); }
+.site-nav { margin-left: auto; display: flex; align-items: center; gap: .8rem; }
+.site-nav a:not(.btn) { color: var(--ink); font-weight: 700; text-decoration: none; padding: .3rem .4rem; }
+.site-nav a:not(.btn):hover { color: var(--coral); }
+@media (max-width: 560px) { .site-nav .nav-link { display: none; } }
+
+/* hero */
+.hero { display: grid; grid-template-columns: 1.05fr 1fr; gap: 2rem; align-items: center; margin-top: 1.25rem; padding: 1.75rem; }
+.hero h1 { margin: .5rem 0 .4rem; font-size: clamp(2.4rem, 5vw, 3.6rem); line-height: 1; }
+.hero .tagline { margin: 0 0 1rem; font-size: 1.2rem; font-weight: 700; color: var(--text); max-width: 32rem; }
+.benefits { margin: 0 0 1.25rem; padding: 0; display: grid; gap: .45rem; }
+.benefits li { list-style: none; display: flex; gap: .55rem; align-items: baseline; }
+.benefits li::before { content: "✓"; display: inline-grid; place-items: center; flex: none; width: 1.35rem; height: 1.35rem; border-radius: 4px; background: var(--mint-soft);
+  border: 1.5px solid var(--ok); color: var(--ok); font-weight: 700; font-size: .85rem; }
+.hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: .9rem; }
+.badge-line { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; }
+@media (max-width: 860px) { .hero { grid-template-columns: 1fr; padding: 1.2rem; gap: 1.25rem; } }
+
+/* hero scene: everything inside is placed in cqw so it scales as one picture */
+.scene { position: relative; container-type: inline-size; aspect-ratio: 4 / 3; border-radius: 16px; overflow: hidden; border: 2px solid var(--ink);
+  box-shadow: 0 4px 0 rgb(16 70 100 / 30%); background: #eaf7fb; }
+.scene-bg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.actor { position: absolute; left: calc(var(--x) - var(--w) / 2); top: var(--y); width: var(--w); }
+.actor .sprite { width: 100%; height: auto; }
+.alab { position: absolute; left: var(--x); top: var(--y); transform: translate(-50%, -100%); display: inline-flex; align-items: center; gap: .35rem;
+  padding: .2rem .5rem .2rem .3rem; background: #fff; border: 2px solid var(--ink); border-radius: 999px; font: 700 .85rem var(--body); white-space: nowrap;
+  box-shadow: 0 2px 0 rgb(31 36 48 / 30%); z-index: 3; }
+.alab.mid { transform: translate(-50%, -50%); }
+/* small scenes: the legend below carries the AI chips, so the labels drop them to stay inside the frame */
+@container (max-width: 420px) { .alab { font-size: .78rem; padding: .1rem .45rem .1rem .25rem; } .alab .kind.ai { display: none; } }
+.fly { position: absolute; left: 0; top: 0; width: 8cqw; height: 8cqw; display: grid; place-items: center; font-size: 4.6cqw; line-height: 1;
+  background: #fff; border: 2px solid var(--ink); border-radius: 8px; box-shadow: 2px 2px 0 rgb(31 36 48 / 35%); opacity: 0; z-index: 2; }
+@media (prefers-reduced-motion: no-preference) {
+  .scene .fly, .scene .hopper { animation-duration: 7.5s; animation-iteration-count: infinite; }
+  .fly.f1 { animation-name: fly1; } .fly.f2 { animation-name: fly2; } .fly.f3 { animation-name: fly3; }
+  .hopper.h1 { animation-name: hop1; } .hopper.h2 { animation-name: hop2; } .hopper.h3 { animation-name: hop3; } }
+/* fridge → Chef, Chef → Shopper (over the fridge), Shopper → You. Points are centres minus half the 8cqw tile. */
+@keyframes fly1 { 0% { opacity: 0; transform: translate(46cqw, 20cqw) scale(.5); } 4% { opacity: 1; transform: translate(46cqw, 20cqw) scale(1); animation-timing-function: steps(6); }
+  16% { transform: translate(31cqw, 10cqw) rotate(-8deg); animation-timing-function: steps(6); } 27% { opacity: 1; transform: translate(18cqw, 44cqw); } 30%, 100% { opacity: 0; transform: translate(18cqw, 44cqw) scale(.6); } }
+@keyframes fly2 { 0%, 33% { opacity: 0; transform: translate(18cqw, 40cqw) scale(.5); } 37% { opacity: 1; transform: translate(18cqw, 40cqw) scale(1); animation-timing-function: steps(6); }
+  48% { transform: translate(46cqw, 0cqw) rotate(6deg); animation-timing-function: steps(6); } 60% { opacity: 1; transform: translate(74cqw, 40cqw); } 63%, 100% { opacity: 0; transform: translate(74cqw, 40cqw) scale(.6); } }
+@keyframes fly3 { 0%, 66% { opacity: 0; transform: translate(74cqw, 44cqw) scale(.5); } 70% { opacity: 1; transform: translate(74cqw, 44cqw) scale(1); animation-timing-function: steps(6); }
+  80% { transform: translate(64cqw, 36cqw) rotate(-6deg); animation-timing-function: steps(5); } 92% { opacity: 1; transform: translate(53cqw, 52cqw); } 95%, 100% { opacity: 0; transform: translate(53cqw, 52cqw) scale(.6); } }
+@keyframes hop1 { 0%, 26%, 33%, 100% { transform: none; } 27%, 31% { transform: translateY(-3cqw) scale(1.06); } 29% { transform: translateY(-1cqw); } }
+@keyframes hop2 { 0%, 59%, 66%, 100% { transform: none; } 60%, 64% { transform: translateY(-3cqw) scale(1.06); } 62% { transform: translateY(-1cqw); } }
+@keyframes hop3 { 0%, 91%, 98%, 100% { transform: none; } 92%, 96% { transform: translateY(-3cqw) scale(1.06); } 94% { transform: translateY(-1cqw); } }
+.hopper { animation-timing-function: steps(1); }
+.legend { display: flex; flex-wrap: wrap; gap: .4rem .9rem; margin: .7rem .2rem 0; padding: 0; font-size: .92rem; }
+.legend li { list-style: none; display: inline-flex; align-items: center; gap: .4rem; }
+
+/* stages */
+.journey { margin-top: 2.25rem; }
+.stage { position: relative; isolation: isolate; container-type: inline-size; container-name: stage; scroll-margin-top: 5.5rem;
+  background: rgb(217 240 251 / 82%); border: 1.5px solid rgb(255 255 255 / 70%); border-radius: var(--radius); box-shadow: var(--glass-shadow), var(--glass-ring); }
+.stage-plate { margin: .75rem; padding: .85rem 1rem; background: rgb(255 255 255 / 76%); border-radius: 14px; backdrop-filter: blur(10px); }
+.stage-top { display: flex; align-items: center; gap: .75rem; flex-wrap: wrap; }
+.stage-title { margin: 0; font: 800 clamp(1.3rem, 2.3vw, 1.7rem)/1.2 var(--body); }
+.stage-aside { margin-left: auto; display: flex; align-items: center; gap: .5rem; }
+.stage-line { margin: .4rem 0 0; font-weight: 700; font-size: 1.1rem; }
+.explain { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem; margin: 0 .75rem .25rem; padding: 0 .25rem; }
+.explain span { display: inline-flex; align-items: center; gap: .35rem; padding: .25rem .6rem; background: rgb(255 255 255 / 70%); border-radius: 999px; font-size: .92rem; font-weight: 700; }
+.explain i { font-style: normal; font-weight: 900; color: var(--orange-dark); }
+.stage-body { padding: .75rem; }
+.note-gap { margin: 0 0 .7rem; padding: .45rem .8rem; border-radius: 12px; background: var(--coral-soft); color: #7a1f10; font-weight: 700; }
+.prov { margin: .75rem 0 0; font-size: .92rem; color: var(--ink-soft); }
+.feed { position: relative; height: 3rem; display: flex; justify-content: center; }
+.feed::before { content: ""; width: 4px; height: 100%; background-image: linear-gradient(var(--orange-dark) 50%, transparent 50%); background-size: 4px 12px; }
+.feed::after { content: ""; position: absolute; bottom: -2px; left: 50%; transform: translateX(-50%); border: 7px solid transparent; border-top: 8px solid var(--orange-dark); border-bottom: 0; }
+@media (prefers-reduced-motion: no-preference) { .feed::before { animation: flowd .7s linear infinite; } }
+@keyframes flowd { to { background-position: 0 12px; } }
+
+/* stage 1: fridge */
+.fridge-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .5rem; margin-bottom: .75rem; }
+.fridge-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr)); gap: .6rem; margin: 0; padding: 0; }
+.fridge-grid li { list-style: none; }
+.food { display: grid; grid-template-columns: 2.6rem 1fr; align-items: center; gap: .6rem; width: 100%; padding: .5rem .6rem; text-align: left;
+  border: 2px dashed rgb(31 36 48 / 35%); border-radius: 12px; background: rgb(255 255 255 / 55%); }
+.food .ico { display: grid; place-items: center; width: 2.6rem; height: 2.6rem; border-radius: 10px; background: #fff; font-size: 1.5rem; filter: grayscale(1); opacity: .6; }
+.food b { display: block; font-size: 1rem; }
+.food small { display: block; font-size: .82rem; color: var(--ink-soft); }
+.food[aria-pressed="true"] { border: 2px solid var(--ink); background: #fff; box-shadow: 0 3px 0 rgb(16 70 100 / 30%); }
+.food[aria-pressed="true"] .ico { background: var(--lime); filter: none; opacity: 1; }
+.food[aria-pressed="true"] small { color: var(--ok); font-weight: 700; }
+
+/* agents */
+.agent-row { display: grid; grid-template-columns: 15rem 1fr; gap: 1rem; align-items: start; }
+@container stage (max-width: 700px) { .agent-row { grid-template-columns: 1fr; } }
+.agent { display: grid; justify-items: center; gap: .45rem; text-align: center; border-top: 5px solid var(--agent, var(--chef)); }
+.agent.chef { --agent: var(--chef); background: linear-gradient(var(--chef-soft), rgb(255 255 255 / 80%)); }
+.agent.shopper { --agent: var(--shopper); background: linear-gradient(var(--shopper-soft), rgb(255 255 255 / 80%)); }
+.agent.you { --agent: var(--you); background: linear-gradient(var(--you-soft), rgb(255 255 255 / 80%)); }
+.agent h3 { margin: 0; display: flex; align-items: center; gap: .4rem; font-size: 1.3rem; }
+.agent p { margin: 0; font-size: .95rem; }
+.agent .sprite-box { padding: .3rem; transition: opacity .3s, filter .3s; }
+@container stage (max-width: 700px) {
+  .agent { grid-template-columns: auto 1fr; justify-items: start; text-align: left; column-gap: .9rem; }
+  .agent .sprite-box { grid-row: span 4; align-self: center; }
+  .agent .sprite-box .sprite { width: 64px; height: 64px; } }
+
+.empty { display: grid; place-items: center; min-height: 9rem; padding: 1rem; text-align: center; border: 2px dashed rgb(31 36 48 / 30%); border-radius: 14px;
+  background: rgb(255 255 255 / 45%); color: var(--ink-soft); font-weight: 700; }
+
+/* stage 2: the week */
+.week { display: grid; grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr)); gap: .6rem; margin: 0; padding: 0; }
+.day { list-style: none; display: grid; grid-template-rows: auto auto 1fr auto; gap: .35rem; padding: .7rem; background: #fff; border: 2px solid var(--ink);
+  border-radius: 14px; box-shadow: 0 3px 0 rgb(16 70 100 / 25%); }
+.day-top { display: flex; align-items: center; justify-content: space-between; gap: .4rem; }
+.day-name { font: 700 .78rem var(--mono); letter-spacing: .12em; text-transform: uppercase; padding: .1rem .4rem; background: var(--chef-soft); border-radius: 4px; }
+.day-ico { font-size: 1.6rem; line-height: 1; }
+.day h4 { margin: 0; font-size: 1.05rem; }
+.uses { font-size: .85rem; color: var(--ink-soft); }
+.meter { display: block; height: 8px; margin-top: .25rem; border: 1.5px solid var(--ink); border-radius: 4px; background: #fff; overflow: hidden; }
+.meter i { display: block; height: 100%; background: var(--leaf); }
+.day .btn { justify-self: start; }
+
+/* stage 3: list */
+.kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: .6rem; margin-bottom: .8rem; }
+.kpi { padding: .55rem .8rem; background: #fff; border-radius: 12px; border: 1.5px solid rgb(31 36 48 / 18%); border-top: 4px solid var(--kpi, var(--teal)); }
+.kpi small { display: block; font: 700 .72rem var(--body); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-soft); }
+.kpi b { display: block; font: 600 1.7rem/1.2 var(--mono); }
+.kpi span { display: block; font-size: .82rem; color: var(--ink-soft); }
+@container stage (max-width: 520px) { .kpis { grid-template-columns: 1fr; } .kpi { display: flex; align-items: baseline; gap: .6rem; flex-wrap: wrap; } }
+.list { margin: 0; padding: 0 .9rem; background: #fff; border: 2px solid var(--ink); border-radius: 14px; box-shadow: 0 3px 0 rgb(16 70 100 / 25%);
+  background-image: repeating-linear-gradient(transparent 0 2.6rem, rgb(59 180 214 / 25%) 2.6rem calc(2.6rem + 1px)); columns: 2 14rem; column-gap: 2rem; }
+.list li { list-style: none; display: flex; align-items: center; gap: .55rem; min-height: 2.6rem; break-inside: avoid; }
+.list li::before { content: ""; flex: none; width: .9rem; height: .9rem; border: 2px solid var(--ink); border-radius: 3px; background: #fff; }
+.list .for { margin-left: auto; font: 600 .82rem var(--mono); color: var(--ink-soft); white-space: nowrap; }
+
+/* stage 4: decision */
+.decide { display: grid; grid-template-columns: auto 1fr auto; gap: 1rem; align-items: center; justify-items: start; text-align: left; }
+.decide p { margin: 0; }
+.decide .big-line { font-size: 1.15rem; font-weight: 700; }
+@container stage (max-width: 640px) { .decide { grid-template-columns: auto 1fr; } .decide .btn { grid-column: 1 / -1; justify-self: start; } }
+.stamp { display: inline-block; padding: .25rem .8rem; border: 3px solid var(--ok); border-radius: 8px; color: var(--ok); background: var(--mint-soft);
+  font: 600 1.25rem var(--display); transform: rotate(-4deg); }
+@media (prefers-reduced-motion: no-preference) { .stamp { animation: stamp .22s cubic-bezier(.5, 1.8, .6, 1); } }
+@keyframes stamp { from { transform: scale(2.2) rotate(-4deg); opacity: 0; } }
+
+/* approval dialog content */
+.review { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+@media (max-width: 560px) { .review { grid-template-columns: 1fr; } }
+.review h3 { margin: 0 0 .4rem; font-size: 1.05rem; display: flex; align-items: center; gap: .4rem; }
+.review ol, .review ul { margin: 0; padding: 0; }
+.review li { list-style: none; display: flex; gap: .5rem; padding: .3rem 0; border-top: 1.5px dashed rgb(31 36 48 / 18%); font-size: .98rem; }
+.review li .mono { width: 2.6rem; flex: none; font-size: .85rem; color: var(--ink-soft); padding-top: .1rem; }
+.pop-actions { display: flex; flex-wrap: wrap; gap: .7rem; margin-top: 1.1rem; padding-top: 1rem; border-top: 2px solid rgb(31 36 48 / 12%); }
+.pop-note { margin: .8rem 0 0; font-size: .92rem; color: var(--ink-soft); }
+
+/* how it works */
+.how { margin-top: 2.5rem; scroll-margin-top: 5.5rem; }
+.how > h2 { margin: 0 0 .25rem; font-size: clamp(1.7rem, 3vw, 2.3rem); }
+.how > p { margin: 0 0 1.1rem; font-weight: 700; }
+.how-grid { display: grid; grid-template-columns: 1fr 1.1fr; gap: 1.25rem; align-items: start; }
+@media (max-width: 860px) { .how-grid { grid-template-columns: 1fr; } }
+.route { position: relative; display: grid; grid-auto-rows: 1fr; gap: .7rem; margin: 0; padding: 0 0 0 3rem; }
+.route::before { content: ""; position: absolute; left: 1.15rem; top: 1.5rem; bottom: 1.5rem; width: 4px; background-image: linear-gradient(var(--teal-dark) 50%, transparent 50%); background-size: 4px 12px; }
+.route li { list-style: none; position: relative; display: grid; grid-template-columns: auto 1fr; gap: .2rem .7rem; align-content: center; padding: .75rem .9rem;
+  background: rgb(255 255 255 / 85%); border: 2px solid transparent; border-radius: 14px; box-shadow: 0 0 0 1px rgb(31 36 48 / 12%); }
+.route li .num { grid-row: span 2; align-self: center; }
+.route li b { display: flex; align-items: center; gap: .45rem; flex-wrap: wrap; }
+.route li span { font-size: .95rem; }
+.route-wrap { position: relative; }
+.route-wrap > .runner { position: absolute; left: 1.65rem; top: 1.1rem; bottom: 1.1rem; width: 1.6rem; pointer-events: none; }
+.runner i { display: block; height: 100%; transform: translateY(12.5%); }
+.runner svg { display: block; width: 1.6rem; height: 1.6rem; margin-top: -.8rem; }
+@media (prefers-reduced-motion: no-preference) {
+  .runner i { animation: run 10s infinite; }
+  .route li { animation: lit 10s infinite; } .route li:nth-child(2) { animation-delay: -7.5s; } .route li:nth-child(3) { animation-delay: -5s; } .route li:nth-child(4) { animation-delay: -2.5s; } }
+@keyframes run { 0%, 15% { transform: translateY(12.5%); animation-timing-function: steps(8); } 25%, 40% { transform: translateY(37.5%); animation-timing-function: steps(8); }
+  50%, 65% { transform: translateY(62.5%); animation-timing-function: steps(8); } 75%, 92% { transform: translateY(87.5%); opacity: 1; } 96% { transform: translateY(87.5%); opacity: 0; } 97% { transform: translateY(12.5%); opacity: 0; } 100% { transform: translateY(12.5%); opacity: 1; } }
+@keyframes lit { 0%, 16% { border-color: var(--ink); background: #fff; box-shadow: 0 3px 0 rgb(16 70 100 / 30%); } 20%, 100% { border-color: transparent; } }
+.diagram { padding: 1.1rem; }
+.diagram h3 { margin: 0 0 .8rem; font-size: 1.15rem; }
+.flow { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; grid-template-areas: "a x1 b x2 c" ". . . . d" "g x4 f x3 e"; align-items: center; gap: .45rem; margin: 0; padding: 0; }
+.flow li { list-style: none; }
+.flow li:nth-child(1) { grid-area: a; } .flow li:nth-child(2) { grid-area: x1; } .flow li:nth-child(3) { grid-area: b; } .flow li:nth-child(4) { grid-area: x2; }
+.flow li:nth-child(5) { grid-area: c; } .flow li:nth-child(6) { grid-area: d; } .flow li:nth-child(7) { grid-area: e; } .flow li:nth-child(8) { grid-area: x3; }
+.flow li:nth-child(9) { grid-area: f; } .flow li:nth-child(10) { grid-area: x4; } .flow li:nth-child(11) { grid-area: g; }
+.node { display: grid; justify-items: center; gap: .3rem; padding: .6rem .4rem; text-align: center; background: #fff; border: 2px solid var(--ink); border-radius: 12px;
+  box-shadow: 0 3px 0 rgb(16 70 100 / 25%); font-weight: 700; font-size: .95rem; line-height: 1.2; height: 100%; }
+.node .sprite { width: 40px; height: 40px; }
+.node .ico { font-size: 1.6rem; line-height: 40px; height: 40px; }
+.arrow { display: block; text-align: center; font-weight: 900; color: var(--orange-dark); font-size: 1.3rem; line-height: 1; }
+.arrow.back { transform: rotate(180deg); } .arrow.down { transform: rotate(90deg); }
+@media (max-width: 560px) {
+  .flow { grid-template-columns: 1fr; grid-template-areas: none; }
+  .flow li { grid-area: auto !important; }
+  .flow .arrow, .flow .arrow.back { transform: rotate(90deg); } }
+.flow-note { margin: .9rem 0 0; font-size: .92rem; color: var(--ink-soft); }
+
+/* footer */
+.footer { margin: 2.5rem auto 1.5rem; display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 1.25rem; border-top: 4px solid var(--orange); }
+.footer h5 { margin: 0 0 .4rem; font: 700 .78rem var(--body); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-soft); }
+.footer p, .footer ul { margin: 0; padding: 0; font-size: .95rem; }
+.footer li { list-style: none; }
+.footer .copy { grid-column: 1 / -1; padding-top: .8rem; border-top: 1.5px dashed rgb(31 36 48 / 18%); font-size: .88rem; color: var(--ink-soft); }
+@media (max-width: 1100px) { .footer { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 560px) { .footer { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<header class="site-header glass wrap">
+  <a class="brand" href="#top"><svg data-sprite="chef" data-size="30"></svg>Pantry Pals</a>
+  <nav class="site-nav" aria-label="Main">
+    <a class="nav-link" href="#how-it-works">How it works</a>
+    <a class="btn primary small" href="#fridge">Plan my week</a>
+  </nav>
+</header>
+
+<main>
+<section class="hero glass wrap" id="top" aria-labelledby="hero-title">
+  <div>
+    <div class="badge-line"><span class="tag">Meal planner</span><span class="tag sample">Sample data, made-up</span></div>
+    <h1 id="hero-title">Pantry <span class="hl">Pals</span></h1>
+    <p class="tagline">Two AI helpers plan your week from what’s already in your fridge. You get the final say.</p>
+    <ul class="benefits">
+      <li>Cook with what you already have</li>
+      <li>One grocery list for the whole week</li>
+      <li>Nothing’s final until you approve</li>
+    </ul>
+    <div class="hero-actions">
+      <a class="btn primary big" href="#fridge"><span>▶ Plan my week</span><small>Starts with a sample fridge</small></a>
+      <span class="pill">AI suggests <span aria-hidden="true">→</span> You approve</span>
+    </div>
+  </div>
+  <div>
+    <div class="scene" role="img" aria-label="The Chef takes food from the fridge and passes a meal plan to the Shopper, who hands you the grocery list.">
+      <svg class="scene-bg" viewBox="0 0 400 300" aria-hidden="true">
+        <rect width="400" height="300" fill="#eaf7fb"/>
+        <g><rect x="22" y="22" width="76" height="66" rx="6" fill="#bfe6f6" stroke="#1f2430" stroke-width="4"/><ellipse cx="52" cy="50" rx="16" ry="6" fill="#fff"/><path d="M60 22v66M22 55h76" stroke="#1f2430" stroke-width="3"/></g>
+        <g><rect x="302" y="22" width="76" height="66" rx="6" fill="#bfe6f6" stroke="#1f2430" stroke-width="4"/><ellipse cx="332" cy="50" rx="16" ry="6" fill="#fff"/><path d="M340 22v66M302 55h76" stroke="#1f2430" stroke-width="3"/></g>
+        <rect y="248" width="400" height="52" fill="#fcefc2"/>
+        <path d="M0 274h400M40 248v52M120 248v52M200 248v52M280 248v52M360 248v52" stroke="#e9d48f" stroke-width="2"/>
+        <path d="M0 248h400" stroke="#1f2430" stroke-width="3"/>
+        <ellipse cx="68" cy="257" rx="38" ry="6" fill="rgb(31 36 48 / 16%)"/>
+        <ellipse cx="332" cy="257" rx="38" ry="6" fill="rgb(31 36 48 / 16%)"/>
+        <rect x="148" y="40" width="104" height="210" rx="14" fill="#fff" stroke="#1f2430" stroke-width="4"/>
+        <path d="M148 104h104" stroke="#1f2430" stroke-width="3"/>
+        <rect x="234" y="60" width="7" height="30" rx="3" fill="#1f2430"/>
+        <rect x="234" y="116" width="7" height="52" rx="3" fill="#1f2430"/>
+        <rect x="160" y="52" width="6" height="36" rx="3" fill="#d9f0fb"/>
+        <rect x="160" y="116" width="6" height="70" rx="3" fill="#d9f0fb"/>
+        <circle cx="214" cy="60" r="6" fill="#f6b5a6" stroke="#1f2430" stroke-width="2"/>
+        <rect x="182" y="54" width="12" height="12" rx="2" fill="#8fd6df" stroke="#1f2430" stroke-width="2"/>
+        <g transform="rotate(-6 186 150)"><rect x="170" y="128" width="34" height="42" rx="3" fill="#fcefc2" stroke="#1f2430" stroke-width="2"/><path d="M176 140h22M176 148h22M176 156h14" stroke="#b9651a" stroke-width="2"/></g>
+        <rect x="160" y="248" width="14" height="6" fill="#1f2430"/>
+        <rect x="226" y="248" width="14" height="6" fill="#1f2430"/>
+      </svg>
+      <div class="actor" style="--x:17cqw;--y:40cqw;--w:24cqw"><div class="hopper h1"><svg data-sprite="chef" data-size="96" class="bob"></svg></div></div>
+      <div class="actor" style="--x:83cqw;--y:40cqw;--w:24cqw"><div class="hopper h2"><svg data-sprite="shopper" data-size="96" class="bob d1"></svg></div></div>
+      <div class="actor" style="--x:50cqw;--y:57cqw;--w:16cqw"><div class="hopper h3"><svg data-sprite="you" data-size="64" class="bob d2"></svg></div></div>
+      <span class="fly f1" aria-hidden="true">🍅</span>
+      <span class="fly f2" aria-hidden="true">📋</span>
+      <span class="fly f3" aria-hidden="true">🧾</span>
+      <span class="alab" style="--x:17cqw;--y:38cqw" aria-hidden="true"><span class="glyph chef"></span>Chef <span class="kind ai">AI</span></span>
+      <span class="alab" style="--x:83cqw;--y:38cqw" aria-hidden="true"><span class="glyph shopper"></span>Shopper <span class="kind ai">AI</span></span>
+      <span class="alab mid" style="--x:74cqw;--y:69cqw" aria-hidden="true"><span class="glyph you"></span><span class="kind you">You</span> approve</span>
+    </div>
+    <ul class="legend" aria-label="Who does what">
+      <li><span class="glyph chef"></span> <b>Chef</b> <span class="kind ai">AI</span> suggests recipes</li>
+      <li><span class="glyph shopper"></span> <b>Shopper</b> <span class="kind ai">AI</span> builds the list</li>
+      <li><span class="glyph you"></span> <b>You</b> approve the week</li>
+    </ul>
+  </div>
+</section>
+
+<div class="journey wrap">
+  <section class="stage" id="fridge" aria-labelledby="s1-title">
+    <div class="stage-header"><div class="stage-plate">
+      <div class="stage-top"><span class="stage-tab">Stage 1</span><h2 id="s1-title" class="stage-title">Fill your fridge</h2>
+        <div class="stage-aside"><span class="kind you">You</span><span data-tip="stage 1" data-title="Why start with the fridge"
+          data-lines="Each tile is one thing in your fridge.|Tap to add or remove it.|The Chef ranks recipes by how much they use from here.|Why: cooking what you have means less waste and a shorter list."></span></div></div>
+      <p class="stage-line"><span aria-hidden="true">🧊 </span><span>Tap what you have. The Chef plans around it.</span></p>
+    </div></div>
+    <p class="explain"><span>You tick what’s inside</span><i aria-hidden="true">→</i><span>The Chef reads the list</span><i aria-hidden="true">→</i><span>Fewer things to buy</span></p>
+    <div class="stage-body">
+      <div class="fridge-head"><span class="mono" aria-live="polite" id="fridgeCount"></span><span class="tag sample">Sample fridge</span></div>
+      <ul class="fridge-grid" id="fridgeGrid"></ul>
+    </div>
+  </section>
+
+  <div class="feed" aria-hidden="true"></div>
+
+  <section class="stage" id="chef" aria-labelledby="s2-title">
+    <div class="stage-header"><div class="stage-plate">
+      <div class="stage-top"><span class="stage-tab">Stage 2</span><h2 id="s2-title" class="stage-title">Let the Chef plan your week</h2>
+        <div class="stage-aside"><span class="kind ai">AI</span><span data-tip="stage 2" data-title="What the Chef does" data-tone="var(--chef-bar)"
+          data-lines="Reads what’s in your fridge.|Picks seven dinners that use the most of it.|Shows how much of each dinner you already have.|Swap any day you don’t fancy.|Why an AI helper: it can weigh what you have against many recipes at once."></span></div></div>
+      <p class="stage-line"><span aria-hidden="true">🍳 </span><span>Seven dinners, picked to use up your fridge first.</span></p>
+    </div></div>
+    <p class="explain"><span><span class="glyph chef"></span>Chef reads your fridge</span><i aria-hidden="true">→</i><span>Ranks recipes</span><i aria-hidden="true">→</i><span>Fills Mon to Sun</span></p>
+    <div class="stage-body agent-row">
+      <div class="card agent chef">
+        <div class="sprite-box quiet" id="chefBox"><svg data-sprite="chef" data-size="88" data-label="Chef, the recipe helper" class="bob"></svg></div>
+        <h3><span class="glyph chef" aria-hidden="true"></span>Chef <span class="kind ai">AI</span></h3>
+        <span id="chefStatus"></span>
+        <p>Suggests recipes from what’s in your fridge.</p>
+        <button type="button" class="btn primary" id="askBtn">▶ Ask the Chef</button>
+      </div>
+      <div>
+        <p class="note-gap" role="status" id="staleNote" hidden>↺ Your fridge changed. Ask the Chef again for a fresh plan.</p>
+        <div id="weekArea"></div>
+        <p class="prov">ⓘ Sample run. Here the Chef picks from 10 made-up recipes, not a live AI model.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="feed" aria-hidden="true"></div>
+
+  <section class="stage" id="shopper" aria-labelledby="s3-title">
+    <div class="stage-header"><div class="stage-plate">
+      <div class="stage-top"><span class="stage-tab">Stage 3</span><h2 id="s3-title" class="stage-title">Let the Shopper build your list</h2>
+        <div class="stage-aside"><span class="kind ai">AI</span><span data-tip="stage 3" data-title="What the Shopper does" data-tone="var(--shopper-bar)"
+          data-lines="Reads the Chef’s plan and your fridge.|Lists every missing ingredient once.|Says how many dinners need each one.|Updates the list when you swap a day.|Why: one list means one trip to the shop."></span></div></div>
+      <p class="stage-line"><span aria-hidden="true">🧺 </span><span>Only what the plan needs and your fridge doesn’t have.</span></p>
+    </div></div>
+    <p class="explain"><span><span class="glyph shopper"></span>Shopper reads the plan</span><i aria-hidden="true">→</i><span>Checks your fridge</span><i aria-hidden="true">→</i><span>Writes one list</span></p>
+    <div class="stage-body agent-row">
+      <div class="card agent shopper">
+        <div class="sprite-box quiet" id="shopperBox"><svg data-sprite="shopper" data-size="88" data-label="Shopper, the grocery list helper" class="bob d1"></svg></div>
+        <h3><span class="glyph shopper" aria-hidden="true"></span>Shopper <span class="kind ai">AI</span></h3>
+        <span id="shopperStatus"></span>
+        <p>Builds the grocery list from the Chef’s plan.</p>
+      </div>
+      <div id="listArea"></div>
+    </div>
+  </section>
+
+  <div class="feed" aria-hidden="true"></div>
+
+  <section class="stage" id="approve" aria-labelledby="s4-title">
+    <div class="stage-header"><div class="stage-plate">
+      <div class="stage-top"><span class="stage-tab">Stage 4</span><h2 id="s4-title" class="stage-title">Approve your week</h2>
+        <div class="stage-aside"><span class="kind you">You</span><span data-tip="stage 4" data-title="Why you approve" data-tone="var(--you-bar)"
+          data-lines="The helpers suggest. You decide.|Review the seven dinners and the list together.|Change anything first: swap a day or edit your fridge.|Any change after approving asks you again."></span></div></div>
+      <p class="stage-line"><span aria-hidden="true">✅ </span><span>Nothing’s final until you say so.</span></p>
+    </div></div>
+    <div class="stage-body">
+      <div class="card agent you decide">
+        <svg data-sprite="you" data-size="64" data-label="You" class="bob d2"></svg>
+        <div id="decideText"></div>
+        <button type="button" class="btn primary" id="reviewBtn" disabled>Review and approve</button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<section class="how wrap" id="how-it-works" aria-labelledby="how-title">
+  <h2 id="how-title">How it works</h2>
+  <p>AI suggests <span aria-hidden="true">→</span> AI lists <span aria-hidden="true">→</span> You approve</p>
+  <div class="how-grid">
+    <div class="glass route-wrap">
+      <ol class="route">
+        <li><span class="num">1</span><b><span class="glyph you" aria-hidden="true"></span>Fill your fridge <span class="kind you">You</span></b><span>You: Tap what you have at home.</span></li>
+        <li><span class="num">2</span><b><span class="glyph chef" aria-hidden="true"></span>Plan the week <span class="kind ai">AI</span></b><span>Chef: Seven dinners that use your fridge first.</span></li>
+        <li><span class="num">3</span><b><span class="glyph shopper" aria-hidden="true"></span>Build the list <span class="kind ai">AI</span></b><span>Shopper: Everything the plan needs that you don’t have.</span></li>
+        <li><span class="num">4</span><b><span class="glyph you" aria-hidden="true"></span>Approve <span class="kind you">You</span></b><span>You: Check it all in one place, then say yes.</span></li>
+      </ol>
+      <div class="runner" aria-hidden="true"><i><svg data-sprite="tomato" viewBox="0 0 14 14"></svg></i></div>
+    </div>
+    <div class="glass diagram">
+      <h3>Who sees what</h3>
+      <ol class="flow">
+        <li><div class="node"><span class="ico" aria-hidden="true">🧊</span>Your fridge<span class="kind you">You</span></div></li>
+        <li class="arrow" aria-hidden="true">→</li>
+        <li><div class="node"><svg data-sprite="chef" data-size="40"></svg>Chef<span class="kind ai">AI</span></div></li>
+        <li class="arrow" aria-hidden="true">→</li>
+        <li><div class="node"><span class="ico" aria-hidden="true">📋</span>Week plan</div></li>
+        <li class="arrow down" aria-hidden="true">→</li>
+        <li><div class="node"><svg data-sprite="shopper" data-size="40"></svg>Shopper<span class="kind ai">AI</span></div></li>
+        <li class="arrow back" aria-hidden="true">→</li>
+        <li><div class="node"><span class="ico" aria-hidden="true">🧾</span>Grocery list</div></li>
+        <li class="arrow back" aria-hidden="true">→</li>
+        <li><div class="node"><svg data-sprite="you" data-size="40"></svg>Your approval<span class="kind you">You</span></div></li>
+      </ol>
+      <p class="flow-note">The Shopper reads both the plan and your fridge, so it never lists what you already have.</p>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="footer glass wrap">
+  <div><h5>Pantry Pals</h5><p>A sample meal planner. The Chef suggests dinners from your fridge, the Shopper builds the list, and you approve the week.</p></div>
+  <div><h5>Data</h5><ul><li>Sample fridge, made-up</li><li>10 made-up recipes</li></ul></div>
+  <div><h5>Built with</h5><ul><li>Next.js and React 19</li><li>Plain CSS, no Tailwind</li><li>cutify-ui Glass theme</li></ul></div>
+  <div><h5>Project</h5><ul><li>An example for the cutify-ui skill</li></ul></div>
+  <p class="copy">Sample page. The helpers here follow a script, not a live AI model.</p>
+</footer>
+
+<dialog class="pop" id="review" aria-labelledby="reviewTitle" style="--pop-hue:var(--you-soft);--pop-bar:var(--you-bar)">
+  <header class="pop-head">
+    <span class="pop-icon" aria-hidden="true"><svg data-sprite="you" data-size="36"></svg></span>
+    <h2 id="reviewTitle" class="pop-title">Approve this week?</h2>
+    <button type="button" class="pop-close" aria-label="Close" data-close>Close <span aria-hidden="true">✕</span></button>
+  </header>
+  <div class="pop-body">
+    <div class="review">
+      <div><h3><span class="glyph chef" aria-hidden="true"></span>Chef’s dinners <span class="kind ai">AI</span></h3><ol id="reviewPlan"></ol></div>
+      <div><h3><span class="glyph shopper" aria-hidden="true"></span>Shopper’s list <span class="kind ai">AI</span></h3><ul id="reviewList"></ul></div>
+    </div>
+    <p class="pop-note">Sample plan and list, made-up.</p>
+    <div class="pop-actions">
+      <button type="button" class="btn primary" id="approveBtn">✓ Approve plan</button>
+      <button type="button" class="btn" data-close>Keep editing</button>
+    </div>
+  </div>
+</dialog>
+
+<script>
+// Same data and logic as components/data.ts and components/Planner.tsx, in plain JS.
+const FOODS = [["eggs","Eggs","🥚",1],["spinach","Spinach","🥬",1],["cheese","Cheese","🧀",1],["onion","Onion","🧅",1],["tomatoes","Tomatoes","🍅",1],["garlic","Garlic","🧄",1],
+  ["rice","Rice","🍚",1],["chicken","Chicken","🍗",1],["peppers","Peppers","🫑",0],["milk","Milk","🥛",0],["pasta","Pasta","🍝",0],["yogurt","Yogurt","🥣",0]]
+  .map(([id, name, icon, inFridge]) => ({ id, name, icon, inFridge: !!inFridge }));
+const RECIPES = [
+  ["omelette","Spinach omelette","🍳",["eggs","spinach","cheese","onion"]],
+  ["tomato-pasta","Tomato pasta","🍝",["pasta","tomatoes","garlic","onion","basil"]],
+  ["fried-rice","Chicken fried rice","🍚",["rice","chicken","eggs","peppers","onion","soy sauce"]],
+  ["stuffed-peppers","Stuffed peppers","🫑",["peppers","rice","cheese","tomatoes"]],
+  ["curry","Chicken curry","🍛",["chicken","onion","garlic","yogurt","rice","curry paste"]],
+  ["pasta-bake","Cheesy pasta bake","🧀",["pasta","cheese","milk","tomatoes"]],
+  ["shakshuka","Shakshuka","🍅",["eggs","tomatoes","peppers","onion","bread"]],
+  ["stir-fry","Veggie stir-fry","🥬",["peppers","spinach","garlic","noodles","soy sauce"]],
+  ["wraps","Chicken wraps","🌯",["chicken","tortillas","peppers","yogurt","lettuce"]],
+  ["soup","Tomato soup","🥣",["tomatoes","onion","garlic","milk","bread"]],
+].map(([id, name, icon, needs]) => ({ id, name, icon, needs }));
+const DAYS = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+const recipe = id => RECIPES.find(r => r.id === id);
+const label = id => FOODS.find(f => f.id === id)?.name ?? id[0].toUpperCase() + id.slice(1);
+function chefPlan(fridge) {
+  const have = r => r.needs.filter(n => fridge.has(n)).length;
+  const ranked = [...RECIPES].sort((a, b) => have(b) - have(a) || (a.needs.length - have(a)) - (b.needs.length - have(b)));
+  return { plan: ranked.slice(0, 7).map(r => r.id), bench: ranked.slice(7).map(r => r.id) };
+}
+function shopperList(plan, fridge) {
+  const count = new Map();
+  for (const id of plan) for (const n of recipe(id).needs) if (!fridge.has(n)) count.set(n, (count.get(n) ?? 0) + 1);
+  return [...count].map(([id, meals]) => ({ id, name: label(id), meals })).sort((a, b) => b.meals - a.meals || a.name.localeCompare(b.name));
+}
+
+const ink = "#16171a", skin = "#f1c7a3", mouth = "#7a3b2e";
+const CAST = {
+  chef: { palette: { k: ink, W: "#ffffff", s: skin, m: mouth, t: "#1fa98a", y: "#c99470" }, animate: { y: "px-wl" }, grid: [
+    "....kkkkkkkk....", "...kWWWWWWWWk...", "..kWWWWWWWWWWk..", "..kWWWWWWWWWWk..", "...kWWWWWWWWk...", "...kkttttttkk...", "...kssssssssk...", "...kskksskksk...",
+    "...kssssssssk.y.", "...ksssmmsssk.y.", "....kssssssk..y.", "...kkkkkkkkkk.y.", "..kWWWtWWtWWWksk", "..kWWWWWWWWWWk..", "..kWWWtWWtWWWk..", "..kkkkkkkkkkkk.."] },
+  shopper: { palette: { k: ink, c: "#ef8b74", s: skin, m: mouth, g: "#3f9e57", b: "#c99470" }, animate: { g: "px-wl" }, grid: [
+    "................", "....kkkkkkkk....", "...kccccccccck..", "...kkkkkkkkkkkk.", "...kssssssssk...", "...kskksskksk...", "...kssssssssk...", "...ksssmmsssk...",
+    "....kssssssk....", "...kkkkkkkkkk...", "..kcccccccck.kk.", "..kcccccccckk..k", "..kcccccccskkkkk", "..kcccccccckgggk", "..kcccccccckbbbk", "..kkkkkkkkkkkkkk"] },
+  you: { palette: { k: ink, h: "#6b3f2a", s: skin, m: mouth, o: "#e8912d", d: "#3a4955" }, animate: {}, grid: [
+    "................", "....kkkkkkkk....", "...khhhhhhhhk...", "..khhhhhhhhhhk..", "..khsssssssshk..", "..khskksskkshk..", "...kssssssssk...", "...ksssmmsssk...",
+    "....kssssssk....", "...kkkkkkkkkk...", "..kooooooooook..", ".kooooooooooook.", ".koookooookoook.", ".ksookooookoosk.", "....kddkkddk....", "....kkk..kkk...."] },
+};
+const TOMATO = ["......gg......", ".....gggg.....", "...kkkkkkkk...", "..krrrrrrrrk..", ".krrwrrrrrrrk.", ".krwrrrrrrrrk.", ".krrrrrrrrrrk.", ".krrrrrrrrrrk.", "..krrrrrrrrk..", "...kkkkkkkk..."];
+
+function rects(grid, palette, animate = {}, dy = 0) {
+  let out = "";
+  grid.forEach((row, y) => [...row].forEach((ch, x) => {
+    if (ch === "." || !palette[ch]) return;
+    const a = animate[ch], cls = !a ? "" : ` class="${Array.isArray(a) ? a[x < 8 ? 0 : 1] : a}"`;
+    out += `<rect x="${x}" y="${y + dy}" width="1.02" height="1.02" fill="${palette[ch]}"${cls}/>`;
+  }));
+  return out;
+}
+// same output as PixelSprite.tsx
+document.querySelectorAll("svg[data-sprite]").forEach(el => {
+  const name = el.dataset.sprite;
+  if (name === "tomato") { el.setAttribute("shape-rendering", "crispEdges"); el.innerHTML = rects(TOMATO, { g: "#3f9e57", k: ink, r: "#e0533c", w: "#fff" }, {}, 2); return; }
+  const c = CAST[name], size = el.dataset.size, lab = el.dataset.label;
+  el.setAttribute("viewBox", "0 0 16 16"); el.setAttribute("width", size); el.setAttribute("height", size); el.setAttribute("shape-rendering", "crispEdges");
+  el.classList.add("sprite");
+  if (lab) { el.setAttribute("role", "img"); el.setAttribute("aria-label", lab); } else { el.setAttribute("aria-hidden", "true"); el.setAttribute("focusable", "false"); }
+  el.innerHTML = rects(c.grid, c.palette, c.animate);
+});
+
+// Tooltips: same markup and behaviour as WordTip.tsx (Popover API, hover + focus + tap, Escape, flips above)
+let tipN = 0;
+document.querySelectorAll("[data-tip]").forEach(host => {
+  const id = "tip" + ++tipN;
+  host.outerHTML = `<span class="word-tip-wrap" data-wrap><button type="button" class="word-tip-word" aria-describedby="${id}"><span class="i-dot" aria-hidden="true">i</span><span class="sr-only">About ${host.dataset.tip}</span></button>`
+    + `<div id="${id}" class="word-tip" popover="manual" role="tooltip" hidden style="--tip-bg:${host.dataset.tone || "var(--teal-dark)"}"><div class="word-tip-head">${host.dataset.title}</div>`
+    + `<div class="word-tip-body"><ul>${host.dataset.lines.split("|").map(l => `<li>${l}</li>`).join("")}</ul></div></div></span>`;
+});
+document.querySelectorAll("[data-wrap]").forEach(wrap => {
+  const btn = wrap.querySelector("button"), tip = wrap.querySelector(".word-tip");
+  let open = false, pinned = false;
+  const place = () => {
+    const m = 8, r = btn.getBoundingClientRect(), b = tip.getBoundingClientRect();
+    const below = r.bottom + 10, roomBelow = innerHeight - m - below, roomAbove = r.top - 10 - m;
+    const flip = b.height > roomBelow && roomAbove > roomBelow;
+    tip.style.left = Math.max(m, Math.min(r.left, innerWidth - b.width - m)) + "px";
+    tip.style.top = (flip ? r.top - 10 - Math.min(b.height, roomAbove) : below) + "px";
+    tip.dataset.side = flip ? "above" : "below";
+  };
+  const show = () => { if (open) return; open = true; tip.hidden = false; try { tip.showPopover(); } catch {} place();
+    addEventListener("scroll", place, true); addEventListener("resize", place); };
+  const hide = () => { if (!open) return; open = pinned = false; try { tip.hidePopover(); } catch {} tip.hidden = true;
+    removeEventListener("scroll", place, true); removeEventListener("resize", place); };
+  wrap.addEventListener("pointerenter", e => { if (e.pointerType === "mouse") show(); });
+  wrap.addEventListener("pointerleave", e => { if (e.pointerType === "mouse" && !pinned) hide(); });
+  btn.addEventListener("focus", () => { if (btn.matches(":focus-visible")) show(); });
+  btn.addEventListener("blur", () => { if (!pinned) hide(); });
+  btn.addEventListener("click", () => { pinned = !pinned; show(); });
+  addEventListener("keydown", e => { if (open && e.key === "Escape") { hide(); btn.focus(); } });
+  addEventListener("pointerdown", e => { if (open && !tip.contains(e.target) && !btn.contains(e.target)) hide(); });
+});
+
+// Pause animations in sections that are off screen (useOffscreenPause.ts)
+const io = new IntersectionObserver(es => es.forEach(e => e.target.classList.toggle("is-off", !e.isIntersecting)), { rootMargin: "100% 0px" });
+document.querySelectorAll(".hero, .stage, #how-it-works").forEach(el => io.observe(el));
+
+// The planner (Planner.tsx)
+const $ = id => document.getElementById(id);
+const S = { fridge: new Set(FOODS.filter(f => f.inFridge).map(f => f.id)), plan: null, bench: [], phase: "idle", approved: false, stale: false, run: 0 };
+const wait = ms => new Promise(r => setTimeout(r, matchMedia("(prefers-reduced-motion: reduce)").matches ? Math.min(ms, 120) : ms));
+const pill = (cls, text) => `<span class="pill ${cls}">${text}</span>`;
+const working = pill("working", 'Working<span class="dots"></span>');
+
+$("fridgeGrid").innerHTML = FOODS.map(f => `<li><button type="button" class="food" data-food="${f.id}"><span class="ico" aria-hidden="true">${f.icon}</span><span><b>${f.name}</b><small></small></span></button></li>`).join("");
+$("fridgeGrid").addEventListener("click", e => {
+  const b = e.target.closest("[data-food]"); if (!b) return;
+  const id = b.dataset.food; if (!S.fridge.delete(id)) S.fridge.add(id);
+  S.approved = false; if (S.plan) S.stale = true; render();
+});
+$("askBtn").addEventListener("click", async () => {
+  const id = ++S.run;
+  Object.assign(S, { approved: false, stale: false, phase: "chef", plan: null }); render();
+  await wait(1400); if (id !== S.run) return;
+  Object.assign(S, chefPlan(S.fridge), { phase: "shopper" }); render(true);
+  await wait(1100); if (id !== S.run) return;
+  S.phase = "ready"; render(true);
+});
+$("weekArea").addEventListener("click", e => {
+  const b = e.target.closest("[data-swap]"); if (!b || !S.plan || !S.bench.length) return;
+  const i = +b.dataset.swap, out = S.plan[i];
+  S.plan[i] = S.bench[0]; S.bench = [...S.bench.slice(1), out]; S.approved = false;
+  render(true); $("weekArea").querySelector(`[data-swap="${i}"]`)?.focus();
+});
+
+function render(fresh) {
+  const { fridge, plan, phase } = S;
+  $("fridgeCount").textContent = `${fridge.size} of ${FOODS.length} items in your fridge`;
+  document.querySelectorAll("[data-food]").forEach(b => {
+    const on = fridge.has(b.dataset.food);
+    b.setAttribute("aria-pressed", on); b.querySelector("small").textContent = on ? "✓ In fridge" : "＋ Not in fridge";
+  });
+  // Chef
+  const chefBox = $("chefBox"), chefSvg = chefBox.querySelector("svg");
+  chefBox.className = "sprite-box" + (phase === "chef" ? " talking" : plan ? "" : " quiet");
+  chefSvg.classList.toggle("bob", phase !== "chef");
+  $("chefStatus").innerHTML = phase === "chef" ? working : plan ? pill("done", "✓ Done") : pill("", "Waiting for you");
+  $("askBtn").disabled = phase === "chef" || phase === "shopper";
+  $("askBtn").textContent = plan ? "↻ Ask again" : "▶ Ask the Chef";
+  $("staleNote").hidden = !(S.stale && phase === "ready");
+  const week = $("weekArea");
+  if (plan) {
+    if (fresh || !week.querySelector(".week")) week.innerHTML = `<ol class="week" aria-label="Your week">${plan.map((id, i) => {
+      const r = recipe(id), have = r.needs.filter(n => fridge.has(n)).length;
+      return `<li class="day fade-up" style="animation-delay:${i * 60}ms"><div class="day-top"><span class="day-name">${DAYS[i]}</span><span class="day-ico" aria-hidden="true">${r.icon}</span></div>
+        <h4>${r.name}</h4><div class="uses"><span class="mono">${have} of ${r.needs.length}</span> from your fridge<span class="meter" aria-hidden="true"><i style="width:${have / r.needs.length * 100}%"></i></span></div>
+        <button type="button" class="btn small" data-swap="${i}" aria-label="Swap ${DAYS[i]}: ${r.name}"${phase !== "ready" ? " disabled" : ""}>↻ Swap</button></li>`; }).join("")}</ol>`;
+    else week.querySelectorAll(".day").forEach((li, i) => {  // fridge changed: update counts in place, no re-entrance
+      const r = recipe(plan[i]), have = r.needs.filter(n => fridge.has(n)).length;
+      li.querySelector(".uses .mono").textContent = `${have} of ${r.needs.length}`;
+      li.querySelector(".meter i").style.width = have / r.needs.length * 100 + "%";
+    });
+  } else week.innerHTML = `<div class="empty" role="status">${phase === "chef" ? "The Chef is reading your fridge…" : "The Chef’s plan shows up here."}</div>`;
+  // Shopper
+  const list = plan ? shopperList(plan, fridge) : [];
+  const used = new Set(plan ? plan.flatMap(id => recipe(id).needs.filter(n => fridge.has(n))) : []);
+  const shopBox = $("shopperBox");
+  shopBox.className = "sprite-box" + (phase === "shopper" ? " talking" : phase === "ready" ? "" : " quiet");
+  shopBox.querySelector("svg").classList.toggle("bob", phase !== "shopper");
+  $("shopperStatus").innerHTML = phase === "shopper" ? working : phase === "ready" ? pill("done", "✓ Done") : pill("", "Waiting for the Chef");
+  $("listArea").innerHTML = phase === "ready" && plan
+    ? `<div class="kpis"><div class="kpi"><small>Dinners planned</small><b>${plan.length}</b><span>Mon to Sun</span></div>
+       <div class="kpi" style="--kpi:var(--leaf)"><small>From your fridge</small><b>${used.size}</b><span>of ${fridge.size} items used</span></div>
+       <div class="kpi" style="--kpi:var(--orange)"><small>To buy</small><b>${list.length}</b><span>items, sample</span></div></div>`
+      + (list.length ? `<ul class="list" aria-label="Grocery list">${list.map(it => `<li class="${fresh ? "fade-up" : ""}">${it.name}<span class="for">for ${it.meals} ${it.meals === 1 ? "dinner" : "dinners"}</span></li>`).join("")}</ul>`
+        : `<div class="empty">✓ Nothing to buy. Your fridge covers the whole week.</div>`)
+    : `<div class="empty" role="status">${phase === "shopper" ? "The Shopper is checking the plan…" : "The list shows up after the Chef’s plan."}</div>`;
+  // You
+  $("decideText").innerHTML = (S.approved ? `<p class="stamp" role="status">✓ Approved</p>`
+    : `<p class="big-line" role="status">${phase === "ready" ? "Your plan and list are ready to review." : "Waiting for the Chef and the Shopper."}</p>`)
+    + `<p>${S.approved ? "Your week is set. Take the list to the shop." : "You’ll see every dinner and every item before you agree."}</p>`;
+  $("reviewBtn").disabled = phase !== "ready";
+  $("reviewBtn").textContent = S.approved ? "Review again" : "Review and approve";
+  $("reviewPlan").innerHTML = (plan || []).map((id, i) => `<li><span class="mono">${DAYS[i]}</span>${recipe(id).icon} ${recipe(id).name}</li>`).join("");
+  $("reviewList").innerHTML = list.length ? list.map(it => `<li><span class="mono">×${it.meals}</span>${it.name}</li>`).join("") : "<li>Nothing to buy</li>";
+}
+
+// Approval dialog (Popup.tsx): native <dialog>, Escape and focus trap from the browser, backdrop click closes, focus returns
+const dlg = $("review"); let opener = null;
+$("reviewBtn").addEventListener("click", () => { opener = document.activeElement; dlg.showModal(); });
+dlg.addEventListener("click", e => { if (e.target === dlg || e.target.closest("[data-close]")) dlg.close(); });
+dlg.addEventListener("close", () => opener?.focus());
+$("approveBtn").addEventListener("click", () => { S.approved = true; dlg.close(); render(); });
+render();
+</script>
+</body>
+</html>

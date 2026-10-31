@@ -1,0 +1,7 @@
+node_modules/
+.next/
+.DS_Store
+Thumbs.db
+.playwright-mcp/
+evals/results/
+*.log

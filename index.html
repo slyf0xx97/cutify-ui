@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>cutify-ui gallery</title>
+<meta name="description" content="Examples built by Claude with the cutify-ui skill: pixel-art characters, story stages, sticker shadows and motion that explains the product.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' shape-rendering='crispEdges'%3E%3Crect x='2' y='2' width='12' height='12' fill='%2316171a'/%3E%3Crect x='3' y='3' width='10' height='10' fill='%23ffb3c7'/%3E%3Crect x='5' y='6' width='2' height='2' fill='%2316171a'/%3E%3Crect x='9' y='6' width='2' height='2' fill='%2316171a'/%3E%3Crect x='6' y='10' width='4' height='1' fill='%2316171a'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@600&family=Atkinson+Hyperlegible:wght@400;700&family=Spline+Sans+Mono:wght@500;700&display=swap">
+<style>
+:root { --paper: #fbf7ee; --rule: #e6dcc8; --ink: #1f2430; --soft: #4a5260; --pink: #ffb3c7; --butter: #ffe28a; --mint: #b8ecd3; --sky: #bfe3ff; --lilac: #d9c8ff; }
+*, *::before, *::after { box-sizing: border-box; }
+html { background: var(--paper); }
+/* grid paper: two repeating gradients, plus a red margin line */
+body { margin: 0; color: var(--ink); font: 400 17px/1.6 'Atkinson Hyperlegible', system-ui, sans-serif;
+  background:
+    linear-gradient(90deg, transparent 63px, #f4a7a7 63px, #f4a7a7 65px, transparent 65px),
+    repeating-linear-gradient(0deg, transparent 0 27px, var(--rule) 27px 28px),
+    repeating-linear-gradient(90deg, transparent 0 27px, var(--rule) 27px 28px), var(--paper); }
+:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; border-radius: 6px; }
+.wrap { width: min(1180px, calc(100% - 2.5rem)); margin: 0 auto; }
+header { padding: 4.5rem 0 2.5rem; }
+.tape { display: inline-block; padding: .25rem .8rem; background: var(--butter); border: 2px solid var(--ink); transform: rotate(-2deg);
+  font: 700 .8rem 'Spline Sans Mono', monospace; letter-spacing: .08em; text-transform: uppercase; box-shadow: 3px 3px 0 var(--ink); }
+h1 { margin: 1.2rem 0 .6rem; font: 600 clamp(3rem, 8vw, 6rem)/1 'Pixelify Sans', sans-serif; letter-spacing: .01em; }
+h1 span { background: linear-gradient(transparent 58%, var(--pink) 58%, var(--pink) 92%, transparent 92%); padding: 0 .1em; }
+.lede { max-width: 40rem; font-size: 1.2rem; color: var(--soft); margin: 0 0 1.5rem; }
+.btns { display: flex; flex-wrap: wrap; gap: .8rem; }
+.btn { display: inline-flex; align-items: center; gap: .5rem; min-height: 2.9rem; padding: .6rem 1.2rem; border: 2px solid var(--ink); border-radius: 12px;
+  background: #fff; color: var(--ink); font-weight: 700; text-decoration: none; box-shadow: 0 4px 0 var(--ink); transition: transform .14s ease, box-shadow .14s ease; }
+.btn.main { background: var(--pink); }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 330px), 1fr)); gap: 2.2rem 1.8rem; padding: 1rem 0 4rem; list-style: none; margin: 0; }
+.card { position: relative; display: block; background: #fff; border: 2px solid var(--ink); border-radius: 16px; box-shadow: 6px 7px 0 var(--ink);
+  color: inherit; text-decoration: none; transform: rotate(var(--tilt, 0deg)); transition: transform .2s cubic-bezier(.34,1.56,.64,1), box-shadow .2s ease; }
+.card img { display: block; width: 100%; aspect-ratio: 16 / 10; object-fit: cover; object-position: top; border-bottom: 2px solid var(--ink); border-radius: 14px 14px 0 0; }
+.card .meta { padding: .9rem 1rem 1.1rem; }
+.card h2 { margin: 0 0 .2rem; font: 600 1.5rem 'Pixelify Sans', sans-serif; }
+.card p { margin: 0 0 .7rem; color: var(--soft); font-size: .98rem; line-height: 1.45; }
+.chips { display: flex; flex-wrap: wrap; gap: .4rem; }
+.chip { padding: .1rem .55rem; border: 1.5px solid var(--ink); border-radius: 999px; font: 700 .72rem 'Spline Sans Mono', monospace; letter-spacing: .05em; text-transform: uppercase; background: var(--c, #fff); }
+.pin { position: absolute; top: -12px; left: 50%; width: 22px; height: 22px; margin-left: -11px; border-radius: 50%; background: var(--c, var(--pink)); border: 2px solid var(--ink); box-shadow: 0 2px 0 var(--ink); }
+@media (prefers-reduced-motion: no-preference) {
+  .btn:hover, .btn:focus-visible { transform: translateY(-2px); box-shadow: 0 6px 0 var(--ink); }
+  .btn:active { transform: translateY(2px); box-shadow: 0 2px 0 var(--ink); }
+  .card:hover, .card:focus-visible { transform: rotate(0deg) translateY(-6px); box-shadow: 8px 12px 0 var(--ink); }
+  .tape { animation: wobble 3.2s ease-in-out infinite; } @keyframes wobble { 50% { transform: rotate(1deg); } } }
+section.about { padding: 0 0 4rem; }
+.about .panel { background: #fff; border: 2px solid var(--ink); border-radius: 16px; box-shadow: 6px 7px 0 var(--ink); padding: 1.4rem 1.6rem; }
+.about h3 { font: 600 1.6rem 'Pixelify Sans', sans-serif; margin: 0 0 .5rem; }
+pre { background: var(--ink); color: #fbf7ee; padding: .9rem 1rem; border-radius: 10px; overflow-x: auto; font: 500 .9rem 'Spline Sans Mono', monospace; }
+footer { padding: 2rem 0 3rem; font: 500 .85rem 'Spline Sans Mono', monospace; color: var(--soft); }
+footer a, .about a { color: var(--ink); }
+</style>
+</head>
+<body>
+<header class="wrap">
+  <span class="tape">A Claude skill, MIT</span>
+  <h1>cutify<span>-ui</span></h1>
+  <p class="lede">Playful, game-like interfaces with pixel-art characters, numbered story stages, sticker shadows and motion that shows what the product does. Every page below was built by Claude with the skill from a short brief.</p>
+  <div class="btns"><a class="btn main" href="https://github.com/slyf0xx97/cutify-ui">Get the skill on GitHub</a><a class="btn" href="#gallery">See the examples ↓</a></div>
+</header>
+
+<main class="wrap">
+  <ul class="grid" id="gallery">
+    <li><a class="card" style="--tilt:-1.2deg" href="examples/studybuddy/"><span class="pin" style="--c:var(--mint)"></span><img src="docs/gallery/studybuddy.png" alt="StudyBuddy landing page: three pixel tutors and a student on a sunny trail" loading="lazy"><div class="meta"><h2>StudyBuddy</h2><p>Three AI tutors plan, quiz and check in. You approve the week.</p><div class="chips"><span class="chip" style="--c:var(--sky)">Glass</span><span class="chip">HTML</span></div></div></a></li>
+    <li><a class="card" style="--tilt:1deg" href="examples/fleet-queue/"><span class="pin" style="--c:var(--butter)"></span><img src="docs/gallery/fleet-queue.png" alt="Fleet Queue: pixel robots on a dark warehouse floor plan" loading="lazy"><div class="meta"><h2>Fleet Queue</h2><p>Warehouse robots plan the order queue, code blocks unsafe moves, a manager approves.</p><div class="chips"><span class="chip" style="--c:var(--butter)">Apron</span><span class="chip">HTML</span></div></div></a></li>
+    <li><a class="card" style="--tilt:-.6deg" href="examples/sprout/"><span class="pin" style="--c:var(--pink)"></span><img src="docs/gallery/sprout.png" alt="Sprout: a droopy plant on a window sill with Dr. Leaf and Drip" loading="lazy"><div class="meta"><h2>Sprout</h2><p>Dr. Leaf diagnoses your plant, Drip plans the watering, the plant perks up.</p><div class="chips"><span class="chip" style="--c:var(--sky)">Glass</span><span class="chip">HTML</span></div></div></a></li>
+    <li><a class="card" style="--tilt:1.4deg" href="examples/gridline/"><span class="pin" style="--c:var(--lilac)"></span><img src="docs/gallery/gridline.png" alt="Gridline: power packets flowing between solar roofs, a battery and homes" loading="lazy"><div class="meta"><h2>Gridline</h2><p>A microgrid control room on a heatwave evening, with power flowing along the wires.</p><div class="chips"><span class="chip" style="--c:var(--butter)">Apron</span><span class="chip">HTML</span></div></div></a></li>
+    <li><a class="card" style="--tilt:-1deg" href="examples/pantry-pals/"><span class="pin" style="--c:var(--butter)"></span><img src="docs/gallery/pantry-pals.png" alt="Pantry Pals: a pixel chef and shopper beside a fridge" loading="lazy"><div class="meta"><h2>Pantry Pals</h2><p>A Chef and a Shopper plan your week from what's in the fridge. Next.js source included.</p><div class="chips"><span class="chip" style="--c:var(--sky)">Glass</span><span class="chip" style="--c:var(--mint)">React</span></div></div></a></li>
+    <li><a class="card" style="--tilt:.8deg" href="examples/portfolio/"><span class="pin" style="--c:var(--mint)"></span><img src="docs/gallery/portfolio.png" alt="A sample portfolio: a pixel avatar on a trail of six flags" loading="lazy"><div class="meta"><h2>Mika Tan, portfolio</h2><p>A sample designer portfolio where the avatar walks the trail as you scroll.</p><div class="chips"><span class="chip" style="--c:var(--sky)">Glass</span><span class="chip">HTML</span><span class="chip" style="--c:var(--pink)">No AI</span></div></div></a></li>
+  </ul>
+
+  <section class="about">
+    <div class="panel">
+      <h3>Use it</h3>
+      <p>In Claude Code, clone it into your skills folder, then ask for something like "a cute landing page for my study app with three AI tutors".</p>
+      <pre>git clone https://github.com/slyf0xx97/cutify-ui ~/.claude/skills/cutify-ui</pre>
+      <p>For Claude.ai, upload the zip from the latest release under Settings → Capabilities → Skills. More in the <a href="https://github.com/slyf0xx97/cutify-ui#readme">README</a>.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="wrap">Made by <a href="https://github.com/slyf0xx97">Ghernie</a>. Examples use made-up data. © 2026, MIT License.</footer>
+</body>
+</html>

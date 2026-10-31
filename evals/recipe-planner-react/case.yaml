@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: recipe-planner-react
+expected_outcome: |
+  Next.js App Router files (app/page.tsx, components, app/globals.css) in a playful light style: pixel-art helper characters, numbered stages, accessible tooltips and a native dialog, game-style buttons, reduced-motion handling, AI/You tags.

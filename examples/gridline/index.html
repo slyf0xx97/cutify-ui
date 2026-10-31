@@ -1,0 +1,871 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gridline</title>
+<meta name="description" content="Gridline: a control room for a neighbourhood microgrid on a heatwave evening. A cutify-ui example in an electric take on the Apron theme. All numbers are sample data.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' shape-rendering='crispEdges'%3E%3Crect width='16' height='16' rx='3' fill='%230b0e13'/%3E%3Cpath fill='%233ee6ff' d='M9 1h3v2h-1v2h-1v2h4v2h-1v1h-1v1h-1v1h-1v1H8v1H7v1H5v-1h1v-2h1v-2h1V9H3V7h1V6h1V5h1V4h1V3h1V2h1z'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anybody:wdth,wght@50..150,400..900&family=Spline+Sans+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+/* cutify-ui Apron grammar, electric palette for energy */
+:root {
+  --bg: #0b0e13; --panel: #131821; --panel-2: #1a202b;
+  --line: #3ee6ff;   /* accent: actions, numbers, focus, power routes; also the Code kind */
+  --vis: #ff5fd2;    /* hi-vis: AI kind */
+  --chalk: #eef3f7;  /* text; also the You kind */
+  --dim: #8f99a8; --body: #cdd3db; --sub: #b4bcc8; --on-bright: #0b0e13;
+  --ok: #5ef08a; --bad: #ff5a4e;
+  --sun: #ffc23d; --batt: #a6ff4d; --homes: #b48cff;
+  --chart-before: #e04438; --chart-after: #3f8ee6;
+  --hard: 0 6px 0 #00000066;
+  --display: 'Anybody', system-ui, sans-serif; --mono: 'Spline Sans Mono', ui-monospace, monospace;
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+html, body { margin: 0; background: var(--bg); color: var(--chalk); font: 400 16px/1.5 var(--display); }
+body { background: radial-gradient(#3ee6ff0d 1px, transparent 1.5px) 0 0/18px 18px, var(--bg); overflow-x: hidden; }
+.mono { font-family: var(--mono); }
+a { color: var(--line); }
+:focus-visible { outline: 3px solid var(--line); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { animation: none !important; transition: none !important; } }
+.is-off, .is-off *, .is-off *::before, .is-off *::after { animation-play-state: paused !important; }
+.wrap { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+
+/* surfaces */
+.panel { background: radial-gradient(#ffffff08 1px, transparent 1.5px) 0 0/14px 14px, linear-gradient(135deg, #161c26, #10141b);
+  border: 1px solid #ffffff14; border-radius: 6px; padding: 16px 18px; }
+.card { background: var(--panel-2); border-radius: 6px; padding: 12px 14px; }
+.lab { font: 500 12px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--dim); }
+.sample { display: inline-block; font: 700 10px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--dim); border: 1px dashed #ffffff40; border-radius: 3px; padding: 1px 6px; white-space: nowrap; }
+
+/* type */
+.display { font-family: var(--display); font-weight: 900; font-stretch: 118%; text-transform: uppercase; line-height: .86; letter-spacing: -.02em; margin: 0; }
+.display span, h2 span { color: var(--line); text-shadow: 0 0 18px #3ee6ff66; }
+h2 { font: 900 34px/.95 var(--display); font-stretch: 118%; text-transform: uppercase; margin: 0; }
+
+/* nav */
+nav { position: sticky; top: 0; z-index: 50; background: #0b0e13e8; backdrop-filter: blur(6px); border-bottom: 1px solid #ffffff14; }
+nav .wrap { display: flex; align-items: center; gap: 18px; height: 60px; }
+.brand { display: flex; align-items: center; gap: 10px; font: 900 20px var(--display); font-stretch: 120%; text-transform: uppercase; color: var(--chalk); text-decoration: none; }
+.brand svg { width: 26px; height: 26px; color: var(--line); filter: drop-shadow(0 0 6px #3ee6ff88); }
+nav .grow { flex: 1; }
+nav .navlink { font: 700 12px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--body); text-decoration: none; }
+nav .navlink:hover { color: var(--line); }
+
+/* buttons */
+button { font: inherit; color: inherit; cursor: pointer; }
+:where(button, .btn) { transition: transform .14s ease, box-shadow .14s ease, filter .14s ease, border-color .14s ease, color .14s ease; }
+@media (prefers-reduced-motion: no-preference) {
+  :where(button, .btn):not(:disabled):hover { transform: translateY(-2px); filter: brightness(1.06); }
+  :where(button, .btn):not(:disabled):active { transform: translateY(1px); filter: brightness(.97); } }
+.go { background: var(--line); color: var(--on-bright); border: 0; border-radius: 4px; padding: 13px 24px; font: 800 18px var(--display); font-stretch: 110%; text-transform: uppercase; box-shadow: 0 4px 0 #00000077; }
+.go:not(:disabled):hover { box-shadow: 0 6px 0 #00000077; } .go:not(:disabled):active { box-shadow: 0 2px 0 #00000077; }
+.go:disabled { opacity: .35; cursor: not-allowed; }
+.go small { display: block; font: 500 12px var(--mono); text-transform: none; letter-spacing: 0; }
+.go.sm { padding: 9px 16px; font-size: 15px; }
+.btn { background: transparent; color: var(--chalk); border: 2px solid #ffffff40; border-radius: 4px; padding: 8px 14px; font: 700 13px var(--mono); letter-spacing: .08em; text-transform: uppercase; box-shadow: 0 3px 0 #00000066; }
+.btn:hover { border-color: var(--line); color: var(--line); }
+.btn:disabled { opacity: .4; cursor: not-allowed; }
+
+/* kind chips: AI / Code / You */
+.kind { display: inline-block; font: 700 10px var(--mono); letter-spacing: .1em; text-transform: uppercase; padding: 2px 5px; border-radius: 2px; color: var(--on-bright); vertical-align: 2px; }
+.kind.ai { background: var(--vis); } .kind.code { background: var(--line); } .kind.you { background: var(--chalk); }
+
+/* glyphs: shape per actor so colour is never the only cue */
+.gl { display: inline-grid; place-items: center; width: 20px; height: 20px; font: 700 11px var(--mono); color: var(--on-bright); flex: none; vertical-align: middle; }
+.gl.f { background: var(--sun); border-radius: 50%; }
+.gl.d { background: var(--batt); border-radius: 3px; }
+.gl.s { background: var(--line); clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%); }
+.gl.y { background: var(--chalk); clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); }
+
+/* info button + tooltip (one positioned element, clamped to the viewport) */
+.i { display: inline-grid; place-items: center; width: 20px; height: 20px; padding: 0; border-radius: 50%; border: 1.5px solid currentColor; background: none; font: 700 11px var(--mono); color: var(--dim); cursor: help; margin-left: 6px; vertical-align: middle; flex: none; }
+.i:hover, .i:focus-visible { color: var(--line); }
+#tip { position: fixed; z-index: 300; width: min(320px, calc(100vw - 24px)); padding: 10px 12px 10px; background: var(--chalk); color: var(--on-bright); border-radius: 6px; box-shadow: var(--hard);
+  font: 500 13px/1.45 var(--display); pointer-events: none; opacity: 0; transform: translateY(4px); transition: opacity .15s ease-out, transform .15s ease-out; }
+#tip.on { opacity: 1; transform: none; }
+#tip b { display: block; font: 700 11px var(--mono); letter-spacing: .1em; text-transform: uppercase; margin-bottom: 4px; }
+#tip ul { margin: 0; padding: 0; list-style: none; }
+#tip li { padding-left: 14px; position: relative; }
+#tip li::before { content: ""; position: absolute; left: 1px; top: .55em; width: 6px; height: 6px; background: #0b0e13; }
+#tip .row { display: flex; align-items: center; gap: 8px; font: 500 12px var(--mono); }
+#tip .row i { width: 10px; height: 10px; border-radius: 2px; flex: none; }
+#tip .row em { margin-left: auto; font-style: normal; font-weight: 700; }
+
+/* pills */
+.pill { display: inline-block; font: 700 11px var(--mono); padding: 3px 8px; border-radius: 3px; white-space: nowrap; }
+.pill.ok { background: var(--ok); color: #0c2a17; } .pill.bad { background: var(--bad); color: #fff; } .pill.amb { background: var(--sun); color: #2a1f00; } .pill.q { background: #ffffff14; color: var(--body); }
+
+/* hero */
+.hero { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.25fr); gap: 36px; align-items: center; padding: 48px 0 24px; }
+.hero h1 { font-size: clamp(44px, 6.4vw, 84px); }
+@media (max-width: 980px) { .hero h1 { font-size: clamp(44px, 14vw, 104px); } }
+.tag { font: 700 20px/1.3 var(--display); color: var(--vis); margin: 18px 0 12px; max-width: 30ch; }
+.benefits { list-style: none; padding: 0; margin: 0 0 20px; display: grid; gap: 6px; }
+.benefits li { display: flex; gap: 10px; align-items: baseline; font-size: 17px; color: var(--body); }
+.benefits li::before { content: "✓"; color: var(--ok); font-weight: 900; }
+.badge { display: inline-flex; align-items: center; gap: 10px; font: 500 12px var(--mono); color: var(--body); margin-bottom: 18px; }
+.live-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--ok); flex: none; }
+@media (prefers-reduced-motion: no-preference) { .live-dot { animation: live 1.6s infinite; } }
+@keyframes live { from { box-shadow: 0 0 0 0 #5ef08aaa; } to { box-shadow: 0 0 0 12px #5ef08a00; } }
+
+/* scene */
+.scene-panel { padding: 12px; }
+.scene-head { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; justify-content: space-between; margin-bottom: 8px; }
+.clock { font: 700 26px var(--mono); color: var(--line); letter-spacing: .04em; }
+.scene { position: relative; }
+.scene svg { display: block; width: 100%; height: auto; }
+.olab { position: absolute; transform: translate(-50%, 0); font: 700 10px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--body); background: #0b0e13d9; padding: 2px 6px; border-radius: 3px; white-space: nowrap; pointer-events: none; }
+.pv { opacity: .25; transition: opacity .4s; }
+.win { fill: #2a3242; transition: fill .6s; }
+.lit .win { fill: #ffe9a8; }
+.wire { fill: none; stroke: #ffffff1f; stroke-width: 4; stroke-linejoin: round; }
+.wire.hot { stroke: #3ee6ff40; }
+.toggle { display: inline-flex; border: 2px solid #ffffff30; border-radius: 4px; overflow: hidden; }
+.toggle label { position: relative; padding: 5px 10px; font: 700 11px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--body); cursor: pointer; }
+.toggle input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.toggle label:has(input:checked) { background: var(--line); color: var(--on-bright); text-decoration: underline; text-underline-offset: 3px; }
+.toggle label:has(input:focus-visible) { outline: 3px solid var(--chalk); outline-offset: -3px; }
+.readout { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; margin-top: 10px; }
+.ro { background: var(--panel-2); border-radius: 4px; padding: 6px 9px; border-top: 3px solid #ffffff25; min-width: 0; }
+.ro small { display: block; font: 700 10px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--dim); }
+.ro b { font: 700 15px var(--mono); white-space: nowrap; }
+.ro span { display: block; font-size: 12px; color: var(--sub); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ro.sun { border-top-color: var(--sun); } .ro.bat { border-top-color: var(--batt); } .ro.hom { border-top-color: var(--homes); } .ro.grd { border-top-color: var(--line); }
+.cast { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; margin-top: 8px; }
+.who { display: flex; align-items: center; gap: 8px; background: var(--panel-2); border-radius: 4px; padding: 6px 8px; min-width: 0; }
+.who .sprite { width: 36px; height: 36px; flex: none; }
+.who div { flex: 1; min-width: 0; font: 800 12px/1.2 var(--display); font-stretch: 90%; letter-spacing: -.01em; text-transform: uppercase; overflow-wrap: normal; word-break: keep-all; hyphens: none; }
+.who .i { margin-left: 0; }
+.who div small { display: block; margin-top: 2px; }
+
+/* pixel art */
+.sprite { image-rendering: pixelated; display: block; overflow: visible; }
+.px-blink { animation: px-blink 1.2s steps(1) infinite; }
+.px-wl { animation: px-wave .5s steps(1) infinite; } .px-wr { animation: px-wave .5s steps(1) infinite reverse; }
+@keyframes px-blink { 50% { opacity: .2; } }
+@keyframes px-wave { 50% { transform: translateY(-1px); } }
+@media (prefers-reduced-motion: no-preference) {
+  .bob { animation: px-bob 2.4s steps(2) infinite; }
+  .talking { animation: hop .4s steps(2) infinite alternate; } }
+.quiet { opacity: .45; transition: opacity .3s; }
+@keyframes px-bob { 50% { transform: translateY(-2px); } }
+@keyframes hop { to { transform: translateY(-5px); } }
+
+/* stages */
+section.stage { padding: 6px 0 4px; scroll-margin-top: 50px; }
+.step { display: flex; align-items: center; gap: 12px; margin: 26px 0 12px; scroll-margin-top: 76px; }
+.step .n { display: grid; place-items: center; width: 34px; height: 34px; background: var(--line); color: var(--on-bright); font: 800 18px var(--mono); border-radius: 4px; flex: none; box-shadow: 0 3px 0 #00000066; }
+.step h3 { min-width: 0; margin: 0; font: 800 24px/1.05 var(--display); font-stretch: 112%; text-transform: uppercase; }
+.step .kind { margin-left: 2px; }
+.explain { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 12px; }
+.explain span { padding: 6px 10px; background: var(--panel-2); border-radius: 4px; font-size: 14px; }
+.explain i { font-style: normal; font-weight: 900; color: var(--line); }
+.feed { height: 46px; margin-left: 15px; display: flex; align-items: center; gap: 12px; }
+.feed i { display: block; width: 4px; height: 100%; background-image: linear-gradient(var(--line) 50%, transparent 50%); background-size: 4px 12px; }
+@media (prefers-reduced-motion: no-preference) { .feed i { animation: flowd .7s linear infinite; } }
+@keyframes flowd { to { background-position: 0 12px; } }
+.feed span { font: 500 11px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--dim); }
+.ptitle { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+
+/* charts */
+.chart { position: relative; width: 100%; min-height: 220px; }
+.chart svg { display: block; overflow: visible; }
+.chart text { font: 500 11px var(--mono); fill: var(--dim); }
+.chart .dl { font: 700 12px var(--mono); fill: var(--chalk); }
+.chart .grid { stroke: #ffffff14; }
+.chart .band { fill: #ffffff08; }
+.chart .ln { fill: none; stroke-width: 2.5; stroke-linejoin: round; }
+@media (prefers-reduced-motion: no-preference) { .chart .ln.draw { stroke-dasharray: 1 1; animation: draw 1.6s ease-out both; } }
+@keyframes draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+.chart .xh { stroke: var(--chalk); stroke-width: 1; opacity: 0; }
+.chart .dot { stroke: var(--panel-2); stroke-width: 2; opacity: 0; }
+.chart.hov .xh, .chart.hov .dot { opacity: 1; }
+.legend { display: flex; gap: 14px; flex-wrap: wrap; font: 500 12px var(--mono); color: var(--body); margin-top: 6px; }
+.legend i { display: inline-block; width: 14px; height: 4px; vertical-align: middle; margin-right: 6px; border-radius: 2px; }
+
+/* stage 1 */
+.two { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 12px; }
+.facts { display: grid; gap: 8px; align-content: start; }
+.fact { display: flex; gap: 10px; align-items: center; }
+.fact b { font: 700 18px var(--mono); }
+.fact span { font-size: 14px; color: var(--sub); }
+
+/* stage 2: crew + plan */
+.crew { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; align-items: center; gap: 8px; margin-bottom: 12px; position: relative; }
+.mate { display: flex; align-items: center; gap: 10px; background: var(--panel-2); border-radius: 6px; padding: 8px 10px; border: 2px solid transparent; min-width: 0; }
+.mate .sprite { width: 52px; height: 52px; flex: none; }
+.mate b { display: block; font: 800 15px var(--display); text-transform: uppercase; }
+.mate span:not(.kind) { font-size: 13px; color: var(--sub); }
+.mate.on { border-color: var(--line); box-shadow: 0 0 0 4px #3ee6ff22; }
+.arrow { font: 900 22px var(--display); color: var(--line); }
+.packet { position: absolute; left: 0; top: 0; z-index: 10; pointer-events: none; padding: 3px 7px; border-radius: 3px; background: var(--sun); color: var(--on-bright); font: 700 11px var(--mono); box-shadow: 0 3px 0 #00000077; opacity: 0; white-space: nowrap; }
+.plan { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 4px; }
+.cell { background: var(--panel-2); border-radius: 4px; padding: 6px 2px; text-align: center; border-bottom: 4px solid #ffffff20; min-width: 0; }
+.cell .h { display: block; font: 700 11px var(--mono); color: var(--dim); }
+.cell .m { display: block; font: 900 16px var(--display); line-height: 1.3; }
+.cell .k { display: block; font: 700 11px var(--mono); }
+.cell.chg { border-bottom-color: var(--sun); } .cell.chg .m { color: var(--sun); }
+.cell.dis { border-bottom-color: var(--batt); } .cell.dis .m { color: var(--batt); }
+.cell.trim { box-shadow: inset 0 0 0 2px var(--line); }
+.cell.hide { opacity: 0; transform: translateY(8px); }
+.cell { transition: opacity .3s ease-out, transform .3s cubic-bezier(.2,.8,.2,1); }
+.soc { margin-top: 10px; }
+.log { margin-top: 12px; background: #070a0ecc; border: 1px solid #ffffff22; border-radius: 4px; padding: 8px 10px; font: 500 14px/1.5 var(--display); color: #e2e8ef; }
+.log .cl { display: flex; gap: 8px; align-items: baseline; padding: 3px 0; }
+.log .cl .t { font: 500 12px var(--mono); color: var(--dim); flex: none; }
+.log .cl .gl { width: 16px; height: 16px; font-size: 9px; align-self: center; }
+.log .cl.hide { display: none; }
+@media (prefers-reduced-motion: no-preference) { .log .cl { animation: clin .25s ease-out; } }
+@keyframes clin { from { opacity: 0; transform: translateY(4px); } }
+
+/* stage 3: rules */
+.rgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.rule { display: grid; grid-template-columns: 64px 1fr auto; gap: 10px; align-items: center; padding: 8px 10px; background: var(--panel-2); border-radius: 4px; font-size: 14px; line-height: 1.35; border-left: 3px solid #ffffff20; transition: background .2s, border-color .2s; }
+.rule .mono { font-size: 12px; color: var(--line); font-weight: 700; }
+.rule.pass { border-left-color: var(--ok); }
+.rule.hit { background: #ff5a4e30; border-left-color: var(--bad); } .rule.hit .mono { color: var(--bad); }
+.rule.shake { animation: shake .5s; }
+@keyframes shake { 20%, 60% { transform: translateX(-4px); } 40%, 80% { transform: translateX(4px); } }
+.rule small { display: block; color: var(--sub); font-size: 12.5px; }
+
+/* stage 4 */
+.kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin-bottom: 12px; }
+.kpi { padding: 8px 12px; background: var(--panel-2); border-radius: 6px; border-top: 3px solid #ffffff25; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.kpi small { font: 700 10px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--dim); }
+.kpi b { font: 900 26px var(--display); font-stretch: 110%; }
+.kpi span { font-size: 12px; color: var(--sub); }
+.kpi.good { border-top-color: var(--ok); }
+.decide { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-top: 14px; }
+.stamp { font: 800 16px var(--display); text-transform: uppercase; color: var(--ok); border: 3px solid var(--ok); border-radius: 4px; padding: 6px 12px; transform: rotate(-3deg); }
+.stamp[hidden] { display: none; }
+@media (prefers-reduced-motion: no-preference) { .stamp.in { animation: stamp .22s cubic-bezier(.5, 1.8, .6, 1); } }
+@keyframes stamp { from { transform: scale(2.2) rotate(-3deg); opacity: 0; } }
+
+/* dialog */
+dialog { background: var(--panel); color: var(--chalk); border: 2px solid var(--line); border-radius: 8px; padding: 0; width: min(480px, calc(100vw - 24px)); box-shadow: 0 10px 30px #000a; }
+dialog::backdrop { background: #05070acc; }
+@media (prefers-reduced-motion: no-preference) { dialog[open] { animation: pop-in .18s ease-out; } }
+@keyframes pop-in { from { opacity: 0; transform: translateY(10px) scale(.98); } }
+.dh { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-bottom: 1px solid #ffffff1f; }
+.dh .sprite { width: 36px; height: 36px; }
+.dh h4 { margin: 0; flex: 1; font: 800 18px var(--display); text-transform: uppercase; }
+.db { padding: 14px; }
+.db ul { margin: 0 0 12px; padding-left: 18px; color: var(--body); }
+.db .acts { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
+
+/* how it works */
+#how { padding-top: 30px; scroll-margin-top: 70px; }
+.how { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; margin-top: 14px; }
+.route { position: relative; }
+.route ol { list-style: none; margin: 0; padding: 0 0 0 46px; display: grid; gap: 10px; }
+.route li { background: var(--panel-2); border-radius: 6px; padding: 10px 12px; border: 2px solid transparent; transition: border-color .2s, opacity .2s; }
+.route li b { font: 800 15px var(--display); text-transform: uppercase; }
+.route li p { margin: 2px 0 0; font-size: 14px; color: var(--sub); }
+.route li.on { border-color: var(--line); box-shadow: 0 0 0 4px #3ee6ff22; }
+.route li.done { opacity: .7; }
+.route svg.track { position: absolute; left: 0; top: 0; width: 40px; height: 100%; overflow: visible; }
+.route .ctl { display: flex; gap: 8px; margin-top: 10px; padding-left: 46px; }
+.arch svg { width: 100%; height: auto; display: block; max-width: 460px; margin: 0 auto; }
+.arch text { font: 700 13px var(--display); fill: var(--chalk); text-transform: uppercase; }
+.arch .sm { font: 500 11px var(--mono); fill: var(--dim); text-transform: none; }
+.arch .box { fill: var(--panel-2); stroke: #ffffff30; stroke-width: 1.5; }
+.arch .ar { fill: none; stroke: var(--line); stroke-width: 2.5; stroke-dasharray: 6 7; }
+@media (prefers-reduced-motion: no-preference) { .arch .ar { animation: march 1.6s linear infinite; } }
+@keyframes march { to { stroke-dashoffset: -26; } }
+
+/* footer */
+.foot { margin-top: 40px; padding: 26px 0 18px; border-top: 4px solid var(--line); }
+.foot-grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 24px; }
+.foot h5 { margin: 0 0 8px; font: 700 11px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--dim); }
+.foot p, .foot li { font-size: 14px; color: var(--body); margin: 0; }
+.foot ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 4px; }
+.foot .copy { margin-top: 20px; font: 500 12px var(--mono); color: var(--dim); }
+
+/* entrances */
+@media (prefers-reduced-motion: no-preference) { .reveal { opacity: 0; animation: reveal .8s ease-out forwards; } }
+@keyframes reveal { from { opacity: 0; transform: translateX(-24px); } to { opacity: 1; transform: none; } }
+
+@media (max-width: 980px) {
+  .hero { grid-template-columns: 1fr; gap: 22px; padding-top: 28px; }
+  .two, .how, .rgrid { grid-template-columns: 1fr; }
+  .foot-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 760px) {
+  .wrap { padding: 0 16px; }
+  nav .navlink { display: none; }
+  .kpis, .readout, .cast { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .plan { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  .crew { grid-template-columns: 1fr; }
+  .crew .arrow { transform: rotate(90deg); justify-self: center; line-height: 1; }
+  .olab { display: none; }
+  .foot-grid { grid-template-columns: 1fr; }
+  h2 { font-size: 28px; }
+  .step { gap: 8px; }
+  .step h3 { font-size: 18px; }
+  .step .i { margin-left: 0; }
+  nav .long { display: none; }
+  .kpi b { font-size: 22px; }
+  .route ol, .route .ctl { padding-left: 38px; }
+  .who { padding: 6px; gap: 6px; }
+  .who .sprite { width: 28px; height: 28px; }
+  .who div { font-size: 11.5px; overflow-wrap: normal; }
+  .who .i { margin-left: auto; }
+  .rule { grid-template-columns: 58px 1fr; }
+  .rule .pill { grid-column: 2; justify-self: start; }
+}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs id="pixdefs"></defs></svg>
+<div id="tip" role="tooltip" aria-hidden="true"></div>
+
+<nav aria-label="Main">
+  <div class="wrap">
+    <a class="brand" href="#top"><svg viewBox="0 0 16 16" shape-rendering="crispEdges" fill="currentColor" aria-hidden="true"><path d="M9 0h4v2h-1v2h-1v2h4v2h-1v1h-1v1h-1v1h-1v1h-1v1H8v1H7v2H5v-1h1v-2h1v-2h1V9H3V7h1V6h1V5h1V4h1V3h1V2h1z"/></svg>Gridline</a>
+    <span class="grow"></span>
+    <a class="navlink" href="#how">How it works</a>
+    <button class="go sm" type="button" data-play aria-label="Play the evening">▶ Play<span class="long"> the evening</span></button>
+  </div>
+</nav>
+
+<main id="top">
+<div class="wrap">
+  <header class="hero">
+    <div>
+      <h1 class="display reveal">Grid<span>line</span></h1>
+      <p class="tag reveal" style="animation-delay:.15s">A control room for a neighbourhood microgrid on a heatwave evening.</p>
+      <ul class="benefits reveal" style="animation-delay:.3s">
+        <li>Shave the 7 pm peak with the street’s own battery</li>
+        <li>Keep frequency and battery inside safe limits</li>
+        <li>Nothing dispatches until you approve the plan</li>
+      </ul>
+      <div class="badge reveal" style="animation-delay:.45s"><span class="live-dot" aria-hidden="true"></span><span id="heroStatus">Sample heatwave evening, 36 °C. Plan waiting for you.</span></div>
+      <div class="reveal" style="animation-delay:.6s"><button class="go" type="button" data-play>▶ Play the evening<small>Forecast, plan, safety check, your call</small></button></div>
+    </div>
+
+    <div class="panel scene-panel" id="hero">
+      <div class="scene-head">
+        <div><span class="lab">Feeder 3, sample day</span><div class="clock mono" id="clock" aria-live="off">18:00</div></div>
+        <div role="radiogroup" aria-label="Show the street without or with the battery plan" class="toggle">
+          <label><input type="radio" name="mode" value="before">Before plan</label>
+          <label><input type="radio" name="mode" value="after" checked>With plan</label>
+        </div>
+      </div>
+      <div class="scene">
+        <svg id="sceneSvg" viewBox="0 0 640 400" role="img" aria-label="Microgrid map: three solar roofs, the main grid and a community battery meet at a feeder hub that supplies five homes. Pixel packets show power moving along the wires.">
+          <g shape-rendering="crispEdges" id="sceneArt"></g>
+          <g id="wires"></g>
+          <g id="packets" shape-rendering="crispEdges"></g>
+          <g id="sceneCast"></g>
+        </svg>
+        <span class="olab" style="left:26%;top:33.5%">Solar roofs</span>
+        <span class="olab" style="left:83%;top:1%">Main grid</span>
+        <span class="olab" style="left:83%;top:41%">Community battery</span>
+        <span class="olab" style="left:47%;top:94%">Homes</span>
+      </div>
+      <div class="readout" aria-live="off">
+        <div class="ro sun"><small>Solar</small><b id="roSun">0 kW</b><span>forecast, sample</span></div>
+        <div class="ro hom"><small>Homes use</small><b id="roHom">0 kW</b><span>forecast, sample</span></div>
+        <div class="ro bat"><small>Battery</small><b id="roBat">Idle</b><span id="roSoc">charge 30%</span></div>
+        <div class="ro grd"><small>From grid</small><b id="roGrd">0 kW</b><span id="roPeak">evening peak 260 kW</span></div>
+      </div>
+      <div class="cast" id="castList"></div>
+    </div>
+  </header>
+
+  <!-- STAGE 1 -->
+  <section class="stage" id="st1">
+    <div class="step"><span class="n">1</span><h3>Read the forecast</h3><span class="kind ai">AI</span>
+      <button class="i" type="button" aria-label="About stage 1" data-tip="Forecaster, an AI agent&#10;Reads the weather forecast and two weeks of meter history&#10;Predicts how much the homes will use and how much the roofs will make, hour by hour&#10;Every number here is an estimate on sample data&#10;Why an agent: heat, cloud and habits mix in ways a fixed formula misses">i</button></div>
+    <div class="explain"><span>Weather + meter history</span><i>→</i><span>Forecaster predicts use and solar</span><i>→</i><span>Forecast goes to the Dispatcher</span></div>
+    <div class="two">
+      <div class="panel">
+        <div class="ptitle"><span class="lab">Homes use vs solar, 12:00 to 23:00</span><span class="sample">Estimate, sample data</span></div>
+        <div class="chart" id="chForecast"></div>
+        <div class="legend"><span><i style="background:var(--homes)"></i>Homes use (kW)</span><span><i style="background:var(--sun)"></i>Solar output (kW)</span></div>
+      </div>
+      <div class="panel facts">
+        <span class="lab">What the Forecaster expects</span>
+        <div class="fact"><span class="gl f" aria-hidden="true">F</span><div><b class="mono">420 kW at 19:00</b><br><span>Homes peak as air-con runs and people get home</span></div></div>
+        <div class="fact"><span class="gl f" aria-hidden="true">F</span><div><b class="mono">Solar gone by 19:30</b><br><span>Right when the street needs it most</span></div></div>
+        <div class="fact"><span class="gl f" aria-hidden="true">F</span><div><b class="mono">335 kWh spare at noon</b><br><span>Without a plan it’s exported for little</span></div></div>
+        <span class="sample">All three are sample estimates</span>
+      </div>
+    </div>
+  </section>
+  <div class="feed" aria-hidden="true"><i></i><span>forecast feeds the plan</span></div>
+
+  <!-- STAGE 2 -->
+  <section class="stage" id="st2">
+    <div class="step"><span class="n">2</span><h3>Plan the battery</h3><span class="kind ai">AI</span>
+      <button class="i" type="button" aria-label="About stage 2" data-tip="Dispatcher, an AI agent&#10;Takes the forecast and decides, hour by hour, when the community battery charges and when it sends power to the street&#10;Goal: soak up spare solar at noon, flatten the evening peak&#10;It proposes; it can’t switch anything on its own&#10;Why an agent: it weighs goals that trade off, like peak cut against charge left for tomorrow">i</button></div>
+    <div class="explain"><span>Forecast arrives</span><i>→</i><span>Dispatcher drafts an hourly plan</span><i>→</i><span>Safety layer checks it</span></div>
+    <div class="panel">
+      <div class="crew" id="crew">
+        <div class="mate" id="mF"><svg class="sprite bob" viewBox="0 0 16 16" role="img" aria-label="Forecaster"><use href="#ch-forecaster"/></svg><div><b>Forecaster <span class="kind ai">AI</span></b><span>sends the forecast</span></div></div>
+        <span class="arrow" aria-hidden="true">→</span>
+        <div class="mate" id="mD"><svg class="sprite bob" style="animation-delay:-.8s" viewBox="0 0 16 16" role="img" aria-label="Dispatcher"><use href="#ch-dispatcher"/></svg><div><b>Dispatcher <span class="kind ai">AI</span></b><span>drafts the plan</span></div></div>
+        <span class="arrow" aria-hidden="true">→</span>
+        <div class="mate" id="mS"><svg class="sprite bob" style="animation-delay:-1.6s" viewBox="0 0 16 16" role="img" aria-label="Safety layer"><use href="#ch-safety"/></svg><div><b>Safety layer <span class="kind code">Code</span></b><span>checks the limits</span></div></div>
+        <span class="packet" id="packet">forecast.json</span>
+      </div>
+      <div class="ptitle"><span class="lab">Battery plan, hour by hour</span><span class="sample">Sample data</span></div>
+      <div class="plan" id="plan"></div>
+      <div class="ptitle soc" style="margin-top:12px"><span class="lab">Battery charge through the day</span><span class="sample">Sample data</span></div>
+      <div class="chart" id="chSoc" style="min-height:150px"></div>
+      <div class="log" id="log" aria-live="polite"></div>
+    </div>
+  </section>
+  <div class="feed" aria-hidden="true"><i></i><span>every plan passes the rules</span></div>
+
+  <!-- STAGE 3 -->
+  <section class="stage" id="st3">
+    <div class="step"><span class="n">3</span><h3>Check the safety limits</h3><span class="kind code">Code</span>
+      <button class="i" type="button" aria-label="About stage 3" data-tip="Safety layer, plain code, no AI&#10;Runs every hour of the plan through six fixed rules&#10;Can trim or block a step; it never invents a new strategy&#10;Same input, same answer, every time&#10;Why code: frequency and battery limits are physics, so they must never be up for debate">i</button></div>
+    <div class="explain"><span>Draft plan</span><i>→</i><span>Six fixed rules, hour by hour</span><i>→</i><span>Trim anything unsafe</span></div>
+    <div class="panel">
+      <div class="ptitle"><span class="lab">Rules the plan must pass</span><span class="sample" id="ruleSum">6 of 6 pass after 1 trim, sample run</span></div>
+      <div class="rgrid" id="rules"></div>
+    </div>
+  </section>
+  <div class="feed" aria-hidden="true"><i></i><span>only a safe plan reaches you</span></div>
+
+  <!-- STAGE 4 -->
+  <section class="stage" id="st4">
+    <div class="step"><span class="n">4</span><h3>Approve the evening plan</h3><span class="kind you">You</span>
+      <button class="i" type="button" aria-label="About stage 4" data-tip="Grid operator, that’s you&#10;See the evening peak before and after the plan&#10;Approve to send the plan to the battery inverter&#10;Until you approve, the battery stays idle&#10;Why a person: you answer for the feeder, so the last word is yours">i</button></div>
+    <div class="explain"><span>Before vs after peak</span><i>→</i><span>You approve</span><i>→</i><span>Battery runs the plan</span></div>
+    <div class="panel">
+      <div class="kpis" id="kpis">
+        <div class="kpi good"><small>Evening peak</small><b class="mono">260 kW</b><span>was 410 kW, sample data</span></div>
+        <div class="kpi good"><small>Peak cut</small><b class="mono">−37%</b><span>−150 kW at 19:00, sample</span></div>
+        <div class="kpi good"><small>Spare solar stored</small><b class="mono">335 kWh</b><span>instead of exported, sample</span></div>
+        <div class="kpi good"><small>Safety rules</small><b class="mono">6 / 6 ✓</b><span>1 trim at 22:00 (BATT-01)</span></div>
+      </div>
+      <div class="ptitle"><span class="lab">Power drawn from the grid, before vs after</span><span class="sample">Sample data</span></div>
+      <div class="chart" id="chPeak"></div>
+      <div class="legend"><span><i style="background:var(--chart-before)"></i>Before plan</span><span><i style="background:var(--chart-after)"></i>With plan</span><span><i style="background:#ffffff30"></i>Evening peak window</span></div>
+      <div class="decide">
+        <button class="go" type="button" id="approveBtn">Approve evening plan<small>Sends it to the battery inverter</small></button>
+        <span class="stamp" id="stamp" tabindex="-1" role="status" hidden>✓ Approved by you</span>
+        <span class="lab" id="decideNote">Battery stays idle until you approve</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section id="how">
+    <h2>How it <span>works</span></h2>
+    <div class="how">
+      <div class="panel route" id="route">
+        <svg class="track" aria-hidden="true"><path id="trackPath" fill="none" stroke="#3ee6ff55" stroke-width="3" stroke-dasharray="6 6"/><g id="token"><rect x="-7" y="-7" width="14" height="14" fill="#3ee6ff" shape-rendering="crispEdges"/><rect x="-3" y="-3" width="6" height="6" fill="#0b0e13" shape-rendering="crispEdges"/></g></svg>
+        <ol>
+          <li><b>Forecast</b> <span class="kind ai">AI</span><p>The Forecaster turns weather and meter history into hourly use and solar estimates.</p></li>
+          <li><b>Plan</b> <span class="kind ai">AI</span><p>The Dispatcher drafts when the battery charges and when it sends power.</p></li>
+          <li><b>Check</b> <span class="kind code">Code</span><p>The safety layer runs six fixed rules and trims anything unsafe.</p></li>
+          <li><b>Approve</b> <span class="kind you">You</span><p>You see the before and after peak and approve the evening plan.</p></li>
+          <li><b>Run</b> <span class="kind code">Code</span><p>The inverter follows the approved plan; the safety layer keeps watching frequency live.</p></li>
+        </ol>
+        <div class="ctl"><button class="btn" type="button" id="routePause">Pause</button><button class="btn" type="button" id="routeReset">Reset</button></div>
+      </div>
+      <div class="panel arch">
+        <div class="ptitle"><span class="lab">Who does what</span><span class="sample">Illustration</span></div>
+        <svg viewBox="0 0 420 470" role="img" aria-label="Architecture: weather and meter history feed the Forecaster (AI), which feeds the Dispatcher (AI). The Dispatcher's draft goes to the safety layer (Code), which also reads live grid frequency and battery state. The checked plan goes to you for approval, then to the battery inverter.">
+          <path class="ar" d="M210 58 V86"/><path class="ar" d="M210 138 V166"/><path class="ar" d="M210 218 V246"/><path class="ar" d="M210 298 V326"/><path class="ar" d="M210 378 V406"/>
+          <path class="ar" d="M370 160 V272 H322"/>
+          <rect class="box" x="90" y="10" width="240" height="48" rx="6"/><text x="210" y="32" text-anchor="middle">Weather + meters</text><text class="sm" x="210" y="49" text-anchor="middle">sample history, 2 weeks</text>
+          <rect class="box" x="90" y="88" width="240" height="50" rx="6" style="stroke:var(--sun)"/><text x="210" y="111" text-anchor="middle">Forecaster</text><text class="sm" x="210" y="128" text-anchor="middle">AI: predicts use and solar</text>
+          <rect class="box" x="90" y="168" width="240" height="50" rx="6" style="stroke:var(--batt)"/><text x="210" y="191" text-anchor="middle">Dispatcher</text><text class="sm" x="210" y="208" text-anchor="middle">AI: drafts the battery plan</text>
+          <rect class="box" x="90" y="248" width="230" height="50" rx="6" style="stroke:var(--line)"/><text x="205" y="271" text-anchor="middle">Safety layer</text><text class="sm" x="205" y="288" text-anchor="middle">Code: 6 fixed rules</text>
+          <rect class="box" x="90" y="328" width="240" height="50" rx="6" style="stroke:var(--chalk)"/><text x="210" y="351" text-anchor="middle">Grid operator</text><text class="sm" x="210" y="368" text-anchor="middle">You: approve or hold</text>
+          <rect class="box" x="90" y="408" width="240" height="50" rx="6"/><text x="210" y="431" text-anchor="middle">Battery inverter</text><text class="sm" x="210" y="448" text-anchor="middle">runs the approved plan</text>
+          <rect class="box" x="342" y="112" width="70" height="46" rx="6"/><text class="sm" x="377" y="131" text-anchor="middle">live Hz</text><text class="sm" x="377" y="147" text-anchor="middle">+ charge</text>
+        </svg>
+      </div>
+    </div>
+  </section>
+</div>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div><a class="brand" href="#top"><svg viewBox="0 0 16 16" shape-rendering="crispEdges" fill="currentColor" aria-hidden="true"><path d="M9 0h4v2h-1v2h-1v2h4v2h-1v1h-1v1h-1v1h-1v1h-1v1H8v1H7v2H5v-1h1v-2h1v-2h1V9H3V7h1V6h1V5h1V4h1V3h1V2h1z"/></svg>Gridline</a>
+        <p style="margin-top:8px">Two AI agents plan the street battery, plain code keeps it safe, and the operator has the last word.</p></div>
+      <div><h5>Data</h5><ul><li>Every number is made-up sample data</li><li>Forecasts are estimates</li><li>One heatwave evening, one feeder</li></ul></div>
+      <div><h5>Built with</h5><ul><li>Plain HTML, CSS and SVG</li><li>Pixel sprites from string grids</li><li><a href="../../SKILL.md">cutify-ui</a>, Apron grammar</li></ul></div>
+      <div><h5>Project</h5><ul><li>A cutify-ui example</li><li><a href="#how">How it works</a></li><li><a href="#top">Back to top</a></li></ul></div>
+    </div>
+    <p class="copy">© 2026 Gridline example. Not a real grid, not real data.</p>
+  </div>
+</footer>
+
+<dialog id="dlg" aria-labelledby="dlgTitle">
+  <div class="dh"><svg class="sprite" viewBox="0 0 16 16" aria-hidden="true"><use href="#ch-operator"/></svg><h4 id="dlgTitle">Send the evening plan?</h4><button class="btn" type="button" data-close>Close ✕</button></div>
+  <div class="db">
+    <ul>
+      <li>Battery charges from spare solar, 12:00 to 16:00</li>
+      <li>Sends 60 to 150 kW to the street, 18:00 to 23:00</li>
+      <li>Evening peak drops from 410 to 260 kW (sample data)</li>
+      <li>All 6 safety rules pass; the safety layer keeps watching live</li>
+    </ul>
+    <div class="acts"><button class="btn" type="button" data-close>Not yet</button><button class="go sm" type="button" id="confirmBtn">Send to battery</button></div>
+  </div>
+</dialog>
+
+<script>
+// ---------- sample data (made-up), hourly from 12:00 to 23:00 ----------
+const HOURS = [12,13,14,15,16,17,18,19,20,21,22,23];
+const USE   = [220,235,250,270,295,330,380,420,395,330,280,240];   // kW, homes
+const SUN   = [340,350,330,290,220,140, 60, 10,  0,  0,  0,  0];   // kW, solar
+const BAT   = [-120,-115,-80,-20,0,0,60,150,135,70,40,0];          // kW, + sends to street, - charges
+const DRAFT22 = 80;                                                  // the Dispatcher's first ask at 22:00
+const CAP = 600, SOC0 = 180;                                         // kWh
+const NET_BEFORE = USE.map((u, i) => u - SUN[i]);
+const NET_AFTER  = USE.map((u, i) => u - SUN[i] - BAT[i]);
+const SOC_END = []; { let s = SOC0; for (const b of BAT) { s -= b; SOC_END.push(s); } }
+// self-check: the plan the page shows must obey its own rules
+console.assert(Math.max(...NET_BEFORE) === 410 && Math.max(...NET_AFTER) === 260, 'peak numbers drifted');
+console.assert(Math.min(...SOC_END) >= CAP * .10 && Math.max(...SOC_END) <= CAP * .95, 'SOC limits broken');
+console.assert(BAT.every((b, i) => Math.abs(b) <= 200 && (i === 0 || Math.abs(b - BAT[i - 1]) <= 100)), 'power or ramp limit broken');
+
+const $ = id => document.getElementById(id);
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const hh = t => `${String(Math.floor(t)).padStart(2, '0')}:${String(Math.floor((t % 1) * 60)).padStart(2, '0')}`;
+const lerp = (arr, t) => { const x = Math.max(0, Math.min(HOURS.length - 1, t - 12)), i = Math.floor(x), f = x - i; return arr[i] + ((arr[i + 1] ?? arr[i]) - arr[i]) * f; };
+const socAt = t => { let s = SOC0; for (let i = 0; i < BAT.length; i++) { const span = Math.max(0, Math.min(1, t - HOURS[i])); s -= BAT[i] * span; } return s; };
+
+// ---------- pixel sprites (from assets/pixel-sprites.js) ----------
+function pixelSprites({ palette, sprites, animate = {}, defsId = 'pixdefs' }) {
+  const defs = document.getElementById(defsId);
+  for (const [id, rows] of Object.entries(sprites)) {
+    console.assert(rows.length === 16 && rows.every(r => r.length === 16), `sprite ${id} is not 16x16`);
+    let out = `<symbol id="${id}" viewBox="0 0 16 16" shape-rendering="crispEdges">`;
+    rows.forEach((row, y) => [...row].forEach((ch, x) => {
+      if (ch === '.' || !palette[ch]) return;
+      const a = animate[ch], cls = !a ? '' : ` class="${Array.isArray(a) ? a[x < 8 ? 0 : 1] : a}"`;
+      out += `<rect x="${x}" y="${y}" width="1.02" height="1.02" fill="${palette[ch]}"${cls}/>`;
+    }));
+    defs.insertAdjacentHTML('beforeend', out + '</symbol>');
+  }
+}
+pixelSprites({
+  palette: { k: '#0b0e13', a: '#ffc23d', y: '#fff27a', W: '#eef3f7', g: '#5b6577', b: '#b48cff', l: '#a6ff4d', c: '#c99470',
+    v: '#3ee6ff', n: '#1a202b', m: '#7a3b2e', s: '#f1c7a3', h: '#8f99a8', d: '#2d3550', q: '#3ee6ff', e: '#eafcff' },
+  animate: { y: 'px-blink', e: 'px-blink', v: ['px-wl', 'px-wr'] },
+  sprites: {
+    'ch-forecaster': ['.......yy.......', '.......kk.......', '...kkkkkkkkkk...', '..kaaaaaaaaaak..', '..kakkaaaakkak..', '..kakWaaaakWak..',
+      '..kaaaaaaaaaak..', '..kaaakkkkaaak..', '...kkkkkkkkkk...', '.....kggggk.....', '..kkkkkkkkkkkk..', '.kgkWWWWWWWWkgk.',
+      '.kgkWbWWbWbWkgk.', '.kgkbbWbbbbbkgk.', '..kkkkkkkkkkkk..', '...kgk....kgk...'],
+    'ch-dispatcher': ['....kkkkkkkk....', '...kllllllllk...', '..kllllllllllk..', '..kkkkkkkkkkkk..', '...kcccccccck...', '...kckkcckkck...',
+      '...kcccccccck...', '....kcccccck....', 'vv...kkkkkk...vv', '.vvkllllllllkvv.', '..kkllllnnllkk..', '...klllnnlllk...',
+      '...kllnnnnllk...', '...kllnnllllk...', '...kllk..kllk...', '...kkk....kkk...'],
+    'ch-safety': ['.......ee.......', '..kkkkkkkkkkkk..', '..kqqqqqqqqqqk..', '..kqqqqqqqqWqk..', '..kqqqqqqqWWqk..', '..kqWqqqqWWqqk..',
+      '..kqWWqqWWqqqk..', '..kqqWWWWqqqqk..', '..kqqqWWqqqqqk..', '...kqqqqqqqqk...', '...kqqqqqqqqk...', '....kqqqqqqk....',
+      '.....kqqqqk.....', '......kqqk......', '.......kk.......', '................'],
+    'ch-operator': ['....kkkkkkkk....', '...kmmmmmmmmk...', '..kmmmmmmmmmmk..', '.hkmssssssssmkh.', '.hksskksskksskh.', '..kssssssssssk..',
+      '..kssssmmssssk..', '...kssssssssk...', '....kkkkkkkk....', '...kWWWWWWWWk...', '..kWWWWkkWWWWk..', '..kWWWWWWWWWWk..',
+      '..kWkWWWWWWkWk..', '..kskddddddksk..', '...kddk..kddk...', '...kkk....kkk...'],
+  },
+});
+
+// ---------- tooltip: one element, flips below if no room, clamped to the viewport ----------
+const tip = $('tip');
+function showTip(html, r) {
+  tip.innerHTML = html; tip.classList.add('on');
+  const w = tip.offsetWidth, h = tip.offsetHeight;
+  let x = Math.max(12, Math.min(r.left + r.width / 2 - w / 2, innerWidth - w - 12));
+  let y = r.top - h - 10; if (y < 70) y = r.bottom + 10;
+  tip.style.left = x + 'px'; tip.style.top = Math.min(y, innerHeight - h - 8) + 'px';
+}
+const hideTip = () => tip.classList.remove('on');
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+function tipHtml(text) { const [t, ...rest] = text.split('\n'); return `<b>${esc(t)}</b><ul>${rest.map(l => `<li>${esc(l)}</li>`).join('')}</ul>`; }
+document.addEventListener('pointerover', e => { const el = e.target.closest('[data-tip]'); if (el) showTip(tipHtml(el.dataset.tip), el.getBoundingClientRect()); });
+document.addEventListener('pointerout', e => { const el = e.target.closest('[data-tip]'); if (el && !el.contains(e.relatedTarget) && document.activeElement !== el) hideTip(); });
+document.addEventListener('focusin', e => { const el = e.target.closest('[data-tip]'); if (el) showTip(tipHtml(el.dataset.tip), el.getBoundingClientRect()); });
+document.addEventListener('focusout', e => { if (e.target.closest('[data-tip]')) hideTip(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') hideTip(); });
+addEventListener('scroll', hideTip, { passive: true });
+
+// ---------- cast list under the scene ----------
+const CAST = [
+  { id: 'ch-forecaster', gl: 'f', name: 'Forecaster', kind: 'ai', tip: 'Forecaster, AI agent\nPredicts homes use and solar output for each hour\nWorks from the weather forecast and meter history\nIts numbers are estimates, labelled as such\nShape cue: circle' },
+  { id: 'ch-dispatcher', gl: 'd', name: 'Dispatcher', kind: 'ai', tip: 'Dispatcher, AI agent\nDecides when the community battery charges and discharges\nAims to soak up noon solar and flatten the 7 pm peak\nProposes only; the safety layer and you come next\nShape cue: square' },
+  { id: 'ch-safety', gl: 's', name: 'Safety layer', kind: 'code', tip: 'Safety layer, plain code\nKeeps grid frequency between 49.8 and 50.2 Hz\nKeeps the battery between 10% and 95% charge and under 200 kW\nTrims unsafe steps, never plans on its own\nShape cue: hexagon' },
+  { id: 'ch-operator', gl: 'y', name: 'Grid operator', kind: 'you', tip: 'Grid operator, that’s you\nReads the before and after peak\nApproves the evening plan or holds it\nNothing reaches the battery without you\nShape cue: diamond' },
+];
+$('castList').innerHTML = CAST.map((c, i) => `<div class="who"><svg class="sprite bob" style="animation-delay:${-i * .6}s" viewBox="0 0 16 16" role="img" aria-label="${c.name}"><use href="#${c.id}"/></svg><div>${c.name}<small><span class="kind ${c.kind}">${c.kind === 'you' ? 'You' : c.kind.toUpperCase()}</span></small></div><button class="i" type="button" aria-label="About the ${c.name}" data-tip="${esc(c.tip)}">i</button></div>`).join('');
+
+// ---------- scene: roofs, battery, grid, homes and the wires between them ----------
+const NS = 'http://www.w3.org/2000/svg';
+const ROOFS = [40, 140, 240], HOMES = [60, 170, 280, 390, 500];
+function house(x, y, solar) {
+  return `<g class="${solar ? 'roof' : 'home'}">
+    <rect x="${x}" y="${y + 20}" width="70" height="50" fill="#1a202b" stroke="#3a4558" stroke-width="2"/>
+    <polygon points="${x - 6},${y + 22} ${x + 35},${y} ${x + 76},${y + 22}" fill="#232b39" stroke="#3a4558" stroke-width="2"/>
+    ${solar ? `<g class="pv">${[0, 1, 2].map(k => `<rect x="${x + 14 + k * 15}" y="${y + 8 - (k === 1 ? 3 : 0)}" width="13" height="9" fill="#ffc23d"/>`).join('')}</g>` : ''}
+    <rect class="win" x="${x + 12}" y="${y + 32}" width="14" height="12"/><rect class="win" x="${x + 44}" y="${y + 32}" width="14" height="12"/>
+    <rect x="${x + 29}" y="${y + 48}" width="12" height="22" fill="#0f141c"/></g>`;
+}
+$('sceneArt').innerHTML = `
+  <rect x="0" y="384" width="640" height="16" fill="#10151d"/>
+  ${ROOFS.map(x => house(x, 60, true)).join('')}
+  ${HOMES.map(x => house(x, 300, false)).join('')}
+  <g transform="translate(560 12)"><rect x="22" y="0" width="6" height="96" fill="#5b6577"/><rect x="2" y="12" width="46" height="5" fill="#5b6577"/><rect x="8" y="34" width="34" height="5" fill="#5b6577"/>
+    <rect x="12" y="60" width="26" height="4" fill="#5b6577"/><rect x="0" y="17" width="4" height="6" fill="#3ee6ff"/><rect x="46" y="17" width="4" height="6" fill="#3ee6ff"/></g>
+  <g transform="translate(470 175)"><rect width="120" height="60" fill="#1a202b" stroke="#a6ff4d" stroke-width="2"/>
+    <rect x="120" y="20" width="6" height="20" fill="#a6ff4d"/>
+    <rect id="socFill" x="8" y="10" width="0" height="40" fill="#a6ff4d"/>
+    ${[1, 2, 3].map(k => `<rect x="${8 + k * 26}" y="10" width="2" height="40" fill="#1a202b"/>`).join('')}</g>
+  <rect x="318" y="193" width="24" height="24" fill="#0b0e13" stroke="#3ee6ff" stroke-width="2"/>
+  <rect x="326" y="201" width="8" height="8" fill="#3ee6ff" class="px-blink"/>`;
+const WIRES = [
+  ...ROOFS.map((x, i) => ({ id: 's' + i, d: `M${x + 35} 130 V165 H330 V193`, src: 'sun' })),
+  { id: 'g', d: 'M585 108 V140 H330 V193', src: 'grid' },
+  { id: 'b', d: 'M342 205 H470', src: 'bat' },
+  ...HOMES.map((x, i) => ({ id: 'h' + i, d: `M330 217 V265 H${x + 35} V300`, src: 'homes' })),
+];
+const COLORS = { sun: '#ffc23d', bat: '#a6ff4d', grid: '#3ee6ff' };
+const wiresG = $('wires'), packG = $('packets');
+for (const w of WIRES) {
+  const p = document.createElementNS(NS, 'path'); p.setAttribute('d', w.d); p.setAttribute('class', 'wire'); wiresG.appendChild(p);
+  w.path = p; w.len = p.getTotalLength(); w.packs = [];
+  const n = Math.ceil(w.len / 26);
+  for (let k = 0; k < n; k++) {
+    const r = document.createElementNS(NS, 'rect'); r.setAttribute('width', 6); r.setAttribute('height', 6); r.setAttribute('opacity', 0);
+    packG.appendChild(r); w.packs.push({ el: r, gate: (k * 0.618034) % 1 });
+  }
+}
+// cast on the map
+$('sceneCast').innerHTML = `
+  <use href="#ch-forecaster" x="150" y="4" width="40" height="40"><title>Forecaster (AI)</title></use>
+  <use href="#ch-safety" x="276" y="183" width="36" height="36"><title>Safety layer (Code)</title></use>
+  <use href="#ch-dispatcher" x="508" y="243" width="40" height="40"><title>Dispatcher (AI)</title></use>
+  <use href="#ch-operator" x="8" y="236" width="40" height="40"><title>Grid operator (You)</title></use>`;
+
+let mode = 'after';
+document.querySelectorAll('input[name=mode]').forEach(r => r.addEventListener('change', () => { mode = r.value; if (reduced) drawScene(19); }));
+
+function flowsAt(t) {
+  const sun = lerp(SUN, t), use = lerp(USE, t), bat = mode === 'after' ? lerp(BAT, t) : 0;
+  return { sun, use, bat, grid: use - sun - bat, soc: mode === 'after' ? socAt(t) : SOC0 };
+}
+let clockT = 12, phase = 0;
+function drawScene(t) {
+  const f = flowsAt(t);
+  const homeSrc = f.bat > Math.max(f.sun, f.grid) ? 'bat' : f.sun >= Math.max(f.grid, 0) ? 'sun' : 'grid';
+  const power = { s: [f.sun / 3, 1], g: [Math.abs(f.grid), f.grid >= 0 ? 1 : -1], b: [Math.abs(f.bat), f.bat < 0 ? 1 : -1], h: [f.use / 5, 1] };
+  for (const w of WIRES) {
+    const [p, dir] = power[w.id[0]], frac = Math.min(1, p / (w.id[0] === 'h' || w.id[0] === 's' ? 110 : 330));
+    const color = COLORS[w.src === 'homes' ? homeSrc : w.src === 'bat' && f.bat < 0 ? 'sun' : w.src === 'grid' && f.grid < 0 ? 'sun' : w.src];
+    w.path.classList.toggle('hot', frac > .02);
+    w.packs.forEach((pk, k) => {
+      const on = frac > .02 && pk.gate < frac;
+      pk.el.setAttribute('opacity', on ? 1 : 0); if (!on) return;
+      let d = (phase + k * 26) % w.len; d = Math.floor(d / 4) * 4;          // 4px steps so packets move in frames
+      if (dir < 0) d = w.len - d;
+      const pt = w.path.getPointAtLength(d);
+      pk.el.setAttribute('x', (pt.x - 3).toFixed(0)); pk.el.setAttribute('y', (pt.y - 3).toFixed(0)); pk.el.setAttribute('fill', color);
+    });
+  }
+  document.querySelectorAll('#sceneArt .pv').forEach(g => g.style.opacity = .25 + .75 * Math.min(1, f.sun / 300));
+  document.querySelectorAll('#sceneArt .home').forEach((g, i) => g.classList.toggle('lit', t >= 18 + i * .2));
+  $('socFill').setAttribute('width', (104 * f.soc / CAP).toFixed(0));
+  $('clock').textContent = hh(t);
+  $('roSun').textContent = `${Math.round(f.sun)} kW`;
+  $('roHom').textContent = `${Math.round(f.use)} kW`;
+  $('roBat').textContent = Math.abs(f.bat) < 2 ? '– Idle' : f.bat > 0 ? `▼ Sends ${Math.round(f.bat)} kW` : `▲ Charges ${Math.round(-f.bat)} kW`;
+  $('roSoc').textContent = `charge ${Math.round(100 * f.soc / CAP)}%, sample`;
+  $('roGrd').textContent = f.grid < -2 ? `↑ Export ${Math.round(-f.grid)} kW` : `${Math.round(Math.max(0, f.grid))} kW`;
+  $('roPeak').textContent = mode === 'after' ? 'peak 260 kW, sample' : 'peak 410 kW, sample';
+}
+let sceneVisible = true, last = performance.now();
+function frame(now) {
+  const dt = Math.min(.1, (now - last) / 1000); last = now;
+  if (sceneVisible) { clockT += dt / 2.2; if (clockT >= 23.5) clockT = 12; phase += dt * 60; drawScene(clockT); }
+  requestAnimationFrame(frame);
+}
+if (reduced) drawScene(19); else requestAnimationFrame(frame);
+
+// ---------- charts: hand-built SVG sized to the container ----------
+function lineChart(el, { series, yMin = 0, yMax, unit, h = 220, band, ref, labels = true }) {
+  const W = el.clientWidth, padL = 40, padR = labels ? 78 : 14, padT = 12, padB = 26, pw = W - padL - padR, ph = h - padT - padB;
+  const x = i => padL + pw * i / (HOURS.length - 1), y = v => padT + ph * (1 - (v - yMin) / (yMax - yMin));
+  const ticks = [yMin, (yMin + yMax) / 2, yMax].map(Math.round);
+  let s = `<svg width="${W}" height="${h}" aria-hidden="true">`;
+  if (band) s += `<rect class="band" x="${x(band[0] - 12)}" y="${padT}" width="${x(band[1] - 12) - x(band[0] - 12)}" height="${ph}"/>`;
+  s += ticks.map(v => `<line class="grid" x1="${padL}" x2="${padL + pw}" y1="${y(v)}" y2="${y(v)}"/><text x="${padL - 6}" y="${y(v) + 4}" text-anchor="end">${v}</text>`).join('');
+  if (yMin < 0) s += `<line x1="${padL}" x2="${padL + pw}" y1="${y(0)}" y2="${y(0)}" stroke="#ffffff40"/><text x="${padL - 6}" y="${y(0) + 4}" text-anchor="end">0</text>`;
+  s += HOURS.map((hr, i) => (i % (W < 420 ? 3 : 2) === 0 ? `<text x="${x(i)}" y="${h - 6}" text-anchor="middle">${hr}:00</text>` : '')).join('');
+  if (ref) s += `<line x1="${padL}" x2="${padL + pw}" y1="${y(ref.v)}" y2="${y(ref.v)}" stroke="${ref.c}" stroke-dasharray="4 4"/><text x="${padL + 4}" y="${y(ref.v) - 5}" style="fill:var(--body)">${ref.label}</text>`;
+  s += series.map(se => `<path class="ln draw" pathLength="1" stroke="${se.c}" d="${se.v.map((v, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)} ${y(v).toFixed(1)}`).join('')}"/>`).join('');
+  if (labels) {  // direct labels at the line ends, nudged apart if they collide
+    const ends = series.map(se => ({ n: se.n, yy: y(se.v[se.v.length - 1]) })).sort((a, b) => a.yy - b.yy);
+    for (let i = 1; i < ends.length; i++) if (ends[i].yy - ends[i - 1].yy < 15) ends[i].yy = ends[i - 1].yy + 15;
+    s += ends.map(e => `<text class="dl" x="${padL + pw + 6}" y="${e.yy + 4}">${e.n}</text>`).join('');
+  }
+  s += `<line class="xh" x1="0" x2="0" y1="${padT}" y2="${padT + ph}"/>` + series.map(se => `<circle class="dot" r="5" fill="${se.c}"/>`).join('');
+  s += `<rect x="${padL}" y="${padT}" width="${pw}" height="${ph}" fill="transparent" class="hit"/></svg>`;
+  el.innerHTML = s;
+  const hit = el.querySelector('.hit'), xh = el.querySelector('.xh'), dots = el.querySelectorAll('.dot');
+  const move = ev => {
+    const r = hit.getBoundingClientRect(), i = Math.max(0, Math.min(HOURS.length - 1, Math.round((ev.clientX - r.left) / r.width * (HOURS.length - 1))));
+    el.classList.add('hov'); xh.setAttribute('x1', x(i)); xh.setAttribute('x2', x(i));
+    series.forEach((se, k) => { dots[k].setAttribute('cx', x(i)); dots[k].setAttribute('cy', y(se.v[i])); });
+    const sr = el.getBoundingClientRect();
+    showTip(`<b>${HOURS[i]}:00, sample</b>` + series.map(se => `<div class="row"><i style="background:${se.c}"></i>${se.n}<em>${se.v[i]} ${unit}</em></div>`).join(''),
+      { left: sr.left + x(i) - 1, width: 2, top: sr.top + padT, bottom: sr.top + padT + ph });
+  };
+  hit.addEventListener('pointermove', move); hit.addEventListener('pointerdown', move);
+  hit.addEventListener('pointerleave', () => { el.classList.remove('hov'); hideTip(); });
+}
+function drawCharts() {
+  lineChart($('chForecast'), { yMax: 450, unit: 'kW', series: [{ n: 'Homes', v: USE, c: '#b48cff' }, { n: 'Solar', v: SUN, c: '#ffc23d' }] });
+  lineChart($('chSoc'), { yMax: 100, h: 150, unit: '%', labels: false, ref: { v: 10, c: '#ff5a4e', label: 'BATT-01 floor 10%' },
+    series: [{ n: 'Charge', v: [SOC0, ...SOC_END.slice(0, -1)].map(s => Math.round(100 * s / CAP)), c: '#a6ff4d' }] });
+  lineChart($('chPeak'), { yMin: -150, yMax: 450, unit: 'kW', band: [17, 22], ref: { v: 260, c: '#3f8ee6', label: 'new peak 260 kW' },
+    series: [{ n: 'Before', v: NET_BEFORE, c: '#e04438' }, { n: 'After', v: NET_AFTER, c: '#3f8ee6' }] });
+}
+drawCharts();
+let rw = innerWidth; addEventListener('resize', () => { if (innerWidth !== rw) { rw = innerWidth; drawCharts(); } });
+
+// ---------- stage 2: plan cells and the crew log ----------
+function renderPlan(draft) {
+  $('plan').innerHTML = HOURS.map((hr, i) => {
+    const b = draft && hr === 22 ? DRAFT22 : BAT[i];
+    const cls = b < 0 ? 'chg' : b > 0 ? 'dis' : '', mark = b < 0 ? '▲' : b > 0 ? '▼' : '–', word = b < 0 ? 'Charge' : b > 0 ? 'Send' : 'Idle';
+    return `<div class="cell ${cls}${!draft && hr === 22 ? ' trim' : ''}" title="${hr}:00 ${word}${b ? ' ' + Math.abs(b) + ' kW' : ''}"><span class="h">${hr}:00</span><span class="m" aria-hidden="true">${mark}</span><span class="k">${b ? Math.abs(b) : '0'}</span><span class="h">${word}</span></div>`;
+  }).join('');
+}
+const LOG = [
+  ['12:00', 'f', 'Forecaster', 'Homes peak near <b class="mono">420 kW</b> at 19:00; solar is gone by 19:30. Estimate, sample data.'],
+  ['12:01', 'd', 'Dispatcher', 'Charge from spare solar until 16:00, then send <b class="mono">60–150 kW</b> from 18:00, with <b class="mono">80 kW</b> at 22:00.'],
+  ['12:01', 's', 'Safety layer', '<b>✕ BATT-01:</b> 80 kW at 22:00 leaves the battery at 3%. Trimmed to <b class="mono">40 kW</b>.'],
+  ['12:02', 's', 'Safety layer', '<b>✓ All 6 rules pass.</b> Plan sent to the grid operator.'],
+];
+$('log').innerHTML = `<div class="lab" style="margin-bottom:4px">Crew log, sample run</div>` + LOG.map(([t, g, n, m]) => `<div class="cl"><span class="t">${t}</span><span class="gl ${g}" aria-hidden="true">${g.toUpperCase()}</span><span><b>${n}</b> ${m}</span></div>`).join('');
+renderPlan(false);
+
+// ---------- stage 3: rules ----------
+const RULES = [
+  ['FREQ-01', 'Keep grid frequency between 49.8 and 50.2 Hz.', 'Sample run stayed 49.93–50.06 Hz'],
+  ['FREQ-02', 'Change battery power by at most 100 kW per hour step, so frequency doesn’t jump.', 'Biggest step 90 kW at 19:00'],
+  ['BATT-01', 'Never let the battery drop below 10% charge.', 'Draft hit 3% at 23:00; 22:00 trimmed to 40 kW'],
+  ['BATT-02', 'Never charge the battery above 95%.', 'Fullest 86% at 16:00'],
+  ['BATT-03', 'Stay within the inverter’s 200 kW, charging or sending.', 'Highest 150 kW at 19:00'],
+  ['BATT-04', 'Halve battery power if the cells pass 45 °C.', 'Hottest 38 °C in the heatwave, sample'],
+];
+function renderRules(state) {   // state: array of 'wait' | 'pass' | 'hit' | 'trim'
+  $('rules').innerHTML = RULES.map(([id, txt, note], i) => {
+    const s = state[i], pill = { wait: '<span class="pill q">… Checking</span>', pass: '<span class="pill ok">✓ Pass</span>', hit: '<span class="pill bad">✕ Blocks 22:00</span>', trim: '<span class="pill amb">✓ Pass after trim</span>' }[s];
+    return `<div class="rule ${s === 'hit' ? 'hit' : s === 'wait' ? '' : 'pass'}" id="r${i}"><span class="mono">${id}</span><span>${txt}<small>${s === 'wait' ? 'Waiting for the plan' : note}</small></span>${pill}</div>`;
+  }).join('');
+}
+renderRules(['pass', 'pass', 'trim', 'pass', 'pass', 'pass']);
+
+// ---------- stage 4: approve with a native dialog ----------
+const dlg = $('dlg'), approveBtn = $('approveBtn');
+approveBtn.addEventListener('click', () => dlg.showModal());
+dlg.addEventListener('click', e => { if (e.target === dlg || e.target.closest('[data-close]')) dlg.close(); });
+dlg.addEventListener('close', () => (approveBtn.disabled ? $('stamp') : approveBtn).focus());
+$('confirmBtn').addEventListener('click', () => {
+  dlg.close(); approveBtn.disabled = true; approveBtn.firstChild.textContent = '✓ Plan approved';
+  const st = $('stamp'); st.hidden = false; st.classList.remove('in'); void st.offsetWidth; st.classList.add('in');
+  $('decideNote').textContent = 'Battery runs the plan from 16:00, sample';
+  $('heroStatus').textContent = 'Sample heatwave evening, 36 °C. Plan approved by you.';
+});
+
+// ---------- Play the evening: a scripted story with cancellable sleeps ----------
+let timers = [], runId = 0;
+const sleep = ms => new Promise(r => timers.push(setTimeout(r, reduced ? Math.min(ms, 120) : ms)));
+const go = id => $(id).scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' });
+function setTalk(who) { ['mF', 'mD', 'mS'].forEach(m => { const on = m === who; $(m).classList.toggle('on', on); $(m).querySelector('.sprite').classList.toggle('talking', on); $(m).querySelector('.sprite').classList.toggle('quiet', !!who && !on); }); }
+function fly(from, to, label, color) {
+  const pk = $('packet'), cr = $('crew').getBoundingClientRect(), a = $(from).getBoundingClientRect(), b = $(to).getBoundingClientRect();
+  pk.textContent = label; pk.style.background = color;
+  const sx = a.left - cr.left + a.width / 2 - 40, sy = a.top - cr.top + 4, ex = b.left - cr.left + b.width / 2 - 40, ey = b.top - cr.top + 4, mx = (sx + ex) / 2, my = Math.min(sy, ey) - 40;
+  if (reduced) return;
+  pk.animate([
+    { transform: `translate(${sx}px,${sy}px) scale(.6)`, opacity: 0, easing: 'steps(3)' },
+    { transform: `translate(${sx}px,${sy}px) scale(1)`, opacity: 1, offset: .12, easing: 'steps(8)' },
+    { transform: `translate(${mx}px,${my}px) scale(1.1) rotate(6deg)`, opacity: 1, offset: .55, easing: 'steps(8)' },
+    { transform: `translate(${ex}px,${ey}px) scale(1)`, opacity: 1, offset: .92 },
+    { transform: `translate(${ex}px,${ey}px) scale(.8)`, opacity: 0 }], { duration: 900, fill: 'both' });
+  $(to).animate([{ transform: 'scale(1)' }, { transform: 'scale(1.06) rotate(-1deg)' }, { transform: 'scale(1)' }], { duration: 260, delay: 760, easing: 'steps(4)' });
+}
+async function play() {
+  timers.forEach(clearTimeout); timers = []; const id = ++runId;
+  const lines = [...document.querySelectorAll('#log .cl')];
+  // reset to the start of the story
+  lines.forEach(l => l.classList.add('hide')); renderPlan(true); document.querySelectorAll('#plan .cell').forEach(c => c.classList.add('hide'));
+  renderRules(RULES.map(() => 'wait')); setTalk(null);
+  go('st1'); await sleep(700); if (id !== runId) return;
+  document.querySelectorAll('#chForecast .ln').forEach(p => { p.classList.remove('draw'); void p.getBoundingClientRect(); p.classList.add('draw'); });
+  await sleep(1800); if (id !== runId) return;
+  go('st2'); await sleep(800); if (id !== runId) return;
+  setTalk('mF'); lines[0].classList.remove('hide'); await sleep(700); if (id !== runId) return;
+  fly('mF', 'mD', 'forecast', '#ffc23d'); await sleep(1000); if (id !== runId) return;
+  setTalk('mD'); lines[1].classList.remove('hide');
+  for (const c of document.querySelectorAll('#plan .cell')) { c.classList.remove('hide'); await sleep(110); if (id !== runId) return; }
+  await sleep(500); fly('mD', 'mS', 'draft plan', '#a6ff4d'); await sleep(1000); if (id !== runId) return;
+  setTalk('mS'); go('st3'); await sleep(800); if (id !== runId) return;
+  const st = RULES.map(() => 'wait');
+  for (let i = 0; i < RULES.length; i++) {
+    st[i] = i === 2 ? 'hit' : 'pass'; renderRules(st); if (i === 2 && !reduced) $('r2').classList.add('shake');
+    await sleep(i === 2 ? 1300 : 450); if (id !== runId) return;
+  }
+  lines[2].classList.remove('hide'); st[2] = 'trim'; renderRules(st); renderPlan(false); await sleep(600); if (id !== runId) return;
+  lines[3].classList.remove('hide'); await sleep(900); if (id !== runId) return;
+  setTalk(null); go('st4'); await sleep(700); if (id !== runId) return;
+  document.querySelectorAll('#chPeak .ln').forEach(p => { p.classList.remove('draw'); void p.getBoundingClientRect(); p.classList.add('draw'); });
+}
+document.querySelectorAll('[data-play]').forEach(b => b.addEventListener('click', play));
+
+// ---------- How it works: a token walks the route and stops at each card ----------
+const route = $('route'), items = [...route.querySelectorAll('li')], track = $('trackPath'), token = $('token');
+let stops = [], routeLen = 0, routeD = 0, hold = 0, at = -1, routePaused = false, routeVisible = false;
+function layRoute() {
+  const r0 = route.getBoundingClientRect();
+  stops = items.map(li => { const r = li.getBoundingClientRect(); return r.top - r0.top + r.height / 2; });
+  track.setAttribute('d', `M20 ${stops[0]} V${stops[stops.length - 1]}`);
+  routeLen = track.getTotalLength(); stops = stops.map(s => s - stops[0]);
+  placeToken();
+}
+function placeToken() { const p = track.getPointAtLength(Math.min(routeD, routeLen)); token.setAttribute('transform', `translate(20 ${Math.round(p.y / 4) * 4})`); }
+new ResizeObserver(layRoute).observe(route);
+let rLast = performance.now();
+function routeFrame(now) {
+  const dt = Math.min(.1, (now - rLast) / 1000); rLast = now;
+  if (routeVisible && !routePaused && !reduced) {
+    if (hold > 0) hold -= dt;
+    else {
+      routeD += 160 * dt;
+      const next = stops.findIndex((s, i) => i > at && routeD >= s);
+      if (next >= 0) { at = next; routeD = stops[next]; hold = 1.5; items.forEach((li, i) => { li.classList.toggle('on', i === at); li.classList.toggle('done', i < at); }); }
+      if (routeD > routeLen + 1 || (at === items.length - 1 && hold <= 0 && routeD >= routeLen)) { routeD = 0; at = -1; items.forEach(li => li.classList.remove('on', 'done')); }
+    }
+    placeToken();
+  }
+  requestAnimationFrame(routeFrame);
+}
+if (reduced) { items[0].classList.add('on'); ['routePause', 'routeReset'].forEach(b => { $(b).disabled = true; $(b).title = 'Animation is off because your system asks for reduced motion'; }); }
+else requestAnimationFrame(routeFrame);
+$('routePause').addEventListener('click', e => { routePaused = !routePaused; e.currentTarget.textContent = routePaused ? 'Play' : 'Pause'; });
+$('routeReset').addEventListener('click', () => { routeD = 0; at = -1; hold = 0; items.forEach(li => li.classList.remove('on', 'done')); placeToken(); });
+if (reduced) document.querySelectorAll('[data-play]').forEach(b => { b.title = 'Runs as quick steps because your system asks for reduced motion'; });
+
+// ---------- pause everything off screen ----------
+const io = new IntersectionObserver(es => es.forEach(e => {
+  e.target.classList.toggle('is-off', !e.isIntersecting);
+  if (e.target.id === 'hero') sceneVisible = e.isIntersecting;
+  if (e.target.id === 'route') routeVisible = e.isIntersecting;
+}), { rootMargin: '100px 0px' });
+document.querySelectorAll('#hero, .stage, #route, .arch, .feed').forEach(el => io.observe(el));
+</script>
+</body>
+</html>
