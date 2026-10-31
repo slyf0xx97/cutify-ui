@@ -52,10 +52,10 @@ These are what make a UI read as cutify-ui. Tokens can change, these shouldn't.
 ## Layout skeleton
 
 ```
-[pinned nav: brand · How it works · primary action]
+[pinned nav: brand | How it works | primary action]
 [HERO  text column: big title (2nd word in accent) / tagline / ✓ 3 benefits / live badge / split primary button
        art column: scene with the cast placed on it + labelled with kind chips + tiny legend]
-[STAGE 1  number · title · (i)   explain strip   → content panel(s)]
+[STAGE 1  number | title | (i)   explain strip   → content panel(s)]
    connector (dashed, animated) feeding the next stage
 [STAGE 2  ...]
 [STAGE 3  decision / result: KPI tiles + small charts + approve action]

@@ -5,3 +5,5 @@ Thumbs.db
 .playwright-mcp/
 evals/results/
 *.log
+dist/
+__pycache__/

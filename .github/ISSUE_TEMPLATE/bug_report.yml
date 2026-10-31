@@ -1,0 +1,31 @@
+name: Bug report
+description: Something in the skill, its assets or an example doesn't work or looks wrong.
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you saw, and what you expected instead. Screenshots help a lot for anything visual.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: The prompt you gave Claude, or the file and browser size where it shows up.
+      placeholder: "1. Asked Claude for ...\n2. Opened the page at 375px wide\n3. ..."
+    validations:
+      required: true
+  - type: dropdown
+    id: where
+    attributes:
+      label: Where
+      options: [SKILL.md or references, CSS theme, pixel-sprites.js, React components, Streamlit helpers, An example, The gallery site]
+    validations:
+      required: true
+  - type: input
+    id: env
+    attributes:
+      label: Claude surface and browser
+      placeholder: "Claude Code 2.x, Chrome 141"

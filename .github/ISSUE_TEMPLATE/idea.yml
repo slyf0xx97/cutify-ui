@@ -1,0 +1,16 @@
+name: Idea or new theme
+description: Suggest a theme, component, animation engine or change to the grammar.
+labels: [enhancement]
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: The idea
+      description: What it is and what kind of product it suits. Links to references are welcome (describe them; don't paste their code).
+    validations:
+      required: true
+  - type: textarea
+    id: grammar
+    attributes:
+      label: How it fits the grammar
+      description: Characters, numbered stages, tooltips, sticker depth, motion that explains, honest labels. Which of these does it use or change?

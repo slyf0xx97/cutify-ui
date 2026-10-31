@@ -1,0 +1,19 @@
+name: New gallery example
+description: Propose an example page for the gallery.
+labels: [example]
+body:
+  - type: textarea
+    id: brief
+    attributes:
+      label: Brief
+      description: The short brief you'd give Claude, including the cast (who the characters are) and the theme.
+    validations:
+      required: true
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: Original work only, no third-party logos or copied art
+        - label: Every made-up value is labelled as sample data
+        - label: Checked at 1280px and 375px with no overlaps or sideways scroll
