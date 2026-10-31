@@ -1,0 +1,841 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Penpal Post, letters with the Translator and the Postie</title>
+<meta name="description" content="A cutify-ui example with a new Strawberry Milk theme: write a letter to your penpal Aiko, see it side by side in Japanese, add stickers and send it when you are ready.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+1+Code:wght@400;600&family=Mochiy+Pop+One&family=Zen+Maru+Gothic:wght@500;700&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' shape-rendering='crispEdges'%3E%3Cpath fill='%2316171a' d='M1 3h14v1H1zM1 12h14v1H1zM1 4h1v8H1zM14 4h1v8h-1zM2 4h1v1H2zM13 4h1v1h-1zM3 5h1v1H3zM12 5h1v1h-1zM4 6h1v1H4zM11 6h1v1h-1zM5 7h2v1H5zM9 7h2v1H9zM7 8h2v1H7z'/%3E%3Cpath fill='%23FFD6E0' d='M2 5h1v7H2zM3 6h1v6H3zM4 7h1v5H4zM5 8h2v4H5zM7 9h2v3H7zM9 8h2v4H9zM11 7h1v5h-1zM12 6h1v6h-1zM13 5h1v7h-1zM3 4h10v1H3zM4 5h8v1H4zM5 6h6v1H5zM7 7h2v1H7z'/%3E%3Cpath fill='%23D6336C' d='M7 9h2v2H7z'/%3E%3C/svg%3E">
+<style>
+/* ---- tokens: a new cutify-ui theme, Strawberry Milk palette + Kawaii JP fonts ---- */
+:root {
+  --milk: #FFF1F3; --surface: #FFFFFF; --blush: #FFD6E0; --strawberry: #FF8FAB;
+  --berry: #D6336C; --berry-deep: #B0245A; --cocoa: #4A2030; --leaf: #7BC67E;
+  --sky: #FFE3EA; --sea: #BFE6FF;                 /* backdrop and scene only, never text */
+  --ink: var(--cocoa); --ink-muted: #6E3A4C;      /* 8.5:1 on white */
+  --accent: var(--berry-deep);                    /* white text 6.5:1 */
+  --accent-2: var(--strawberry);                  /* cocoa text 6.3:1 */
+  /* cast: one tint and one shape each */
+  --c-tr: var(--leaf); --c-po: var(--strawberry); --c-you: var(--blush); --c-aiko: var(--surface);
+  --hard: 0 3px 0 rgb(74 32 48 / 30%);
+  --hard-lg: 0 5px 0 rgb(74 32 48 / 30%);
+  --sticker: 4px 5px 0 rgb(74 32 48 / 16%);
+  --spring: cubic-bezier(.34, 1.56, .64, 1);
+  --display: 'Mochiy Pop One', 'Zen Maru Gothic', sans-serif;    /* 20px and up only */
+  --body: 'Zen Maru Gothic', 'Hiragino Maru Gothic ProN', ui-rounded, system-ui, sans-serif;
+  --mono: 'M PLUS 1 Code', ui-monospace, monospace;
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { background: var(--sky); scroll-padding-top: 5.5rem; scroll-behavior: smooth; overflow-x: clip; }
+body { margin: 0; color: var(--ink); font: 500 1.0625rem/1.7 var(--body); overflow-x: clip; }
+h1, h2 { font-family: var(--display); font-weight: 400; line-height: 1.25; letter-spacing: .01em; }
+h3, h4 { font-weight: 700; line-height: 1.3; }
+a { color: var(--accent); } a:hover { color: var(--cocoa); }
+:focus-visible { outline: 3px solid var(--berry-deep); outline-offset: 3px; border-radius: 8px; }
+.mono { font-family: var(--mono); }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+[lang="ja"] { font-feature-settings: "palt" 0; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { animation: none !important; transition: none !important; } }
+.is-off, .is-off *, .is-off *::before, .is-off *::after { animation-play-state: paused !important; }
+
+/* cloud wallpaper backdrop (backgrounds.md), tinted strawberry milk, on a fixed layer */
+body::before { content: ""; position: fixed; inset: 0; height: 100lvh; z-index: -1; pointer-events: none; transform: translateZ(0);
+  --cloud: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='120'%3E%3Cpath d='M40 90a22 22 0 0 1 4-43 30 30 0 0 1 56-8 24 24 0 0 1 40 18 18 18 0 0 1 0 33z' fill='%23fff' fill-opacity='.85'/%3E%3C/svg%3E");
+  background: var(--cloud) 0 0 / 200px 120px, var(--cloud) 100px 60px / 200px 120px, linear-gradient(var(--sky), var(--milk)); }
+
+/* surfaces: white letter-card with a cocoa outline and a soft sticker offset */
+.card { background: var(--surface); border: 2px solid var(--ink); border-radius: 24px; box-shadow: var(--sticker); }
+.soft { background: var(--milk); border: 2px dashed rgb(74 32 48 / 28%); border-radius: 18px; padding: 1rem; }
+.wrap { width: min(1180px, 100% - 2rem); margin-inline: auto; }
+
+/* highlighter, chips, tags */
+mark { background: linear-gradient(transparent 58%, var(--strawberry) 58%, var(--strawberry) 92%, transparent 92%); color: inherit; padding: 0 .08em; }
+.tag { display: inline-block; padding: .2rem .8rem; border-radius: 999px; background: var(--blush); border: 2px solid var(--ink); color: var(--ink);
+  font: 700 .82rem var(--body); letter-spacing: .04em; box-shadow: var(--hard); }
+.kind { display: inline-block; padding: .02rem .5rem; border: 1.5px solid var(--ink); border-radius: 999px; font: 600 .7rem var(--mono);
+  letter-spacing: .1em; text-transform: uppercase; line-height: 1.6; vertical-align: .12em; white-space: nowrap; }
+.kind.ai { background: var(--blush); color: var(--ink); } .kind.you { background: var(--accent); color: #fff; border-color: var(--accent); }
+.sample { display: inline-flex; align-items: center; gap: .3rem; padding: .05rem .6rem; border-radius: 999px; background: #fff; border: 1.5px dashed var(--berry-deep);
+  font: 600 .72rem var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--berry-deep); white-space: nowrap; }
+.pill { display: inline-block; padding: .1rem .7rem; border-radius: 999px; font: 700 .88rem var(--body); white-space: nowrap; border: 1.5px solid var(--ink); }
+.pill.done { background: #DDF2DE; } .pill.wait { background: var(--blush); } .pill.q { background: #fff; border-style: dashed; }
+.glyph { display: inline-grid; place-items: center; width: 1.35rem; height: 1.35rem; font: 600 .7rem var(--mono); color: var(--ink); border: 1.5px solid var(--ink); flex: none; }
+.glyph.tr { background: var(--c-tr); border-radius: 50%; }
+.glyph.po { background: var(--c-po); border: 0; clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%); box-shadow: inset 0 0 0 2px var(--ink); }
+.glyph.you { background: var(--c-you); border-radius: 3px; }
+.glyph.aiko { background: var(--c-aiko); transform: rotate(45deg) scale(.82); border-radius: 2px; }
+.glyph.aiko > * { transform: rotate(-45deg); }
+
+/* tooltip trigger + one shared speech-bubble tip (one sharp corner points at the trigger) */
+.i { display: inline-grid; place-items: center; width: 1.5rem; height: 1.5rem; padding: 0; border-radius: 50%; border: 2px solid var(--ink); background: #fff;
+  font: 700 .82rem var(--mono); color: var(--ink); cursor: help; flex: none; vertical-align: middle; }
+.i:hover, .i:focus-visible { background: var(--strawberry); }
+#tip { position: fixed; z-index: 1000; width: min(320px, calc(100vw - 16px)); background: #fff; color: var(--ink); border: 2px solid var(--ink);
+  border-radius: 24px 24px 24px 4px; box-shadow: 3px 4px 0 rgb(74 32 48 / 22%), 0 14px 30px rgb(176 36 90 / 18%); pointer-events: none; padding: .7rem .95rem .8rem; }
+#tip.below { border-radius: 4px 24px 24px 24px; } #tip.flip { border-radius: 24px 24px 4px 24px; } #tip.below.flip { border-radius: 24px 4px 24px 24px; }
+#tip[hidden] { display: none; }
+#tip b { display: block; font: 700 1.02rem var(--body); margin-bottom: .2rem; }
+#tip ul { margin: 0; padding: 0; list-style: none; font-size: .94rem; line-height: 1.5; }
+#tip li { position: relative; padding-left: 1rem; margin: .15rem 0; }
+#tip li::before { content: ""; position: absolute; left: 0; top: .6em; width: 6px; height: 6px; background: var(--berry); }
+@media (prefers-reduced-motion: no-preference) { #tip:not([hidden]) { animation: tip-in .15s ease-out; } }
+@keyframes tip-in { from { opacity: 0; transform: translateY(4px); } }
+
+/* pill buttons with a hard ledge that lifts and sinks */
+button { font: inherit; cursor: pointer; color: var(--ink); }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; min-height: 2.75rem; padding: .5rem 1.2rem; border: 2px solid var(--ink);
+  border-radius: 999px; background: #fff; color: var(--ink); font: 700 1rem var(--body); text-decoration: none; box-shadow: var(--hard); }
+.btn.primary { background: var(--accent); color: #fff; }
+.btn.soft-btn { background: var(--blush); }
+.btn.small { min-height: 2.25rem; padding: .3rem .9rem; font-size: .92rem; }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+:where(button, .btn) { transition: transform .14s ease, box-shadow .14s ease, filter .14s ease, background-color .14s ease; }
+@media (prefers-reduced-motion: no-preference) {
+  :where(.btn):not(:disabled):hover { transform: translateY(-2px); box-shadow: var(--hard-lg); filter: brightness(1.05); }
+  :where(.btn):not(:disabled):active { transform: translateY(2px); box-shadow: 0 1px 0 rgb(74 32 48 / 30%); filter: brightness(.97); } }
+.btn.big { min-height: 3.4rem; padding: .55rem 1.6rem .55rem 1.3rem; text-align: left; font-size: 1.12rem; }
+.btn.big small { display: block; font: 500 .84rem var(--body); opacity: .95; }
+
+/* pixel sprites */
+.sprite { image-rendering: pixelated; display: block; width: 100%; height: auto; overflow: visible; }
+.bob { animation: bob 1.4s steps(1) infinite; }
+.bob.d1 { animation-delay: -.35s; } .bob.d2 { animation-delay: -.7s; } .bob.d3 { animation-delay: -1.05s; }
+@keyframes bob { 50% { transform: translateY(-3px); } }
+.talking .sprite { animation: hop .4s steps(2) infinite alternate; }
+@keyframes hop { to { transform: translateY(-6px); } }
+.quiet { opacity: .5; transition: opacity .3s; }
+.px-blink { animation: px-blink 1.2s steps(1) infinite; } @keyframes px-blink { 50% { opacity: .15; } }
+.px-wl { animation: px-wave .5s steps(1) infinite; } @keyframes px-wave { 50% { transform: translateY(-1px); } }
+
+/* nav */
+.nav { position: sticky; top: .6rem; z-index: 40; margin: .6rem auto 0; display: flex; align-items: center; gap: .75rem; padding: .45rem .55rem .45rem 1rem; border-radius: 999px; }
+.brand { display: flex; align-items: center; gap: .5rem; font: 400 1.3rem var(--display); color: var(--ink); text-decoration: none; white-space: nowrap; }
+.brand svg { width: 30px; height: 30px; flex: none; }
+.brand small { font: 700 .8rem var(--body); color: var(--ink-muted); }
+.nav nav { display: flex; gap: .2rem; margin-left: .4rem; }
+.nav nav a { padding: .35rem .8rem; border-radius: 999px; font-weight: 700; color: var(--ink); text-decoration: none; }
+.nav nav a:hover { background: var(--blush); }
+.nav .btn { margin-left: auto; min-height: 2.5rem; padding: .35rem 1rem; white-space: nowrap; flex: none; }
+
+/* hero */
+.hero { display: grid; grid-template-columns: 1fr 1.1fr; gap: 1.25rem; margin-top: 1.5rem; align-items: stretch; }
+.hero-text { padding: 1.7rem 1.8rem; display: flex; flex-direction: column; gap: .9rem; }
+.hero h1 { margin: 0; font-size: clamp(2.2rem, 4.4vw, 3.4rem); line-height: 1.15; }
+.hero h1 .jp { display: block; font-size: clamp(1.4rem, 2.4vw, 1.75rem); color: var(--berry-deep); margin-top: .35rem; letter-spacing: .06em; }
+.hero .lede { margin: 0; font-size: 1.15rem; max-width: 36rem; }
+.benefits { margin: 0; padding: 0; list-style: none; display: grid; gap: .45rem; }
+.benefits li { display: flex; gap: .6rem; align-items: center; font-weight: 700; font-size: 1.06rem; }
+.benefits li > span { display: grid; place-items: center; width: 1.65rem; height: 1.65rem; border-radius: 50%; background: var(--blush); border: 2px solid var(--ink); font-size: .85rem; flex: none; }
+.live { display: inline-flex; align-items: center; gap: .5rem; font: 600 .78rem var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-muted); }
+.live::before { content: ""; width: .6rem; height: .6rem; border-radius: 50%; background: var(--berry); animation: live 1.6s infinite; }
+@keyframes live { from { box-shadow: 0 0 0 0 rgb(214 51 108 / 55%); } to { box-shadow: 0 0 0 10px rgb(214 51 108 / 0%); } }
+.hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: .9rem; margin-top: auto; }
+
+.hero-art { padding: .75rem; display: flex; flex-direction: column; justify-content: center; gap: .6rem; }
+.scene { position: relative; border-radius: 18px; overflow: hidden; aspect-ratio: 600 / 420; border: 2px solid var(--ink); container-type: inline-size; }
+.scene > svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.who { position: absolute; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: .15rem; }
+.who .spr { width: clamp(40px, 12cqw, 74px); }
+.who .lab { display: flex; align-items: center; gap: .3rem; padding: .1rem .5rem; background: #fff; border: 1.5px solid var(--ink); border-radius: 999px;
+  font: 700 clamp(.7rem, 2.3cqw, .9rem) var(--body); white-space: nowrap; box-shadow: var(--hard); }
+.who .lab .kind { font-size: clamp(.58rem, 1.8cqw, .7rem); }
+.scene .sample { position: absolute; left: 50%; bottom: 3.5%; transform: translateX(-50%); }
+.legend { display: flex; flex-wrap: wrap; gap: .35rem 1rem; align-items: center; font-size: .92rem; padding: 0 .35rem; }
+.legend span { display: inline-flex; align-items: center; gap: .4rem; }
+
+/* stages */
+.journey { margin-top: 2.5rem; display: grid; gap: 0; }
+.stage { position: relative; isolation: isolate; scroll-margin-top: 5.5rem; padding: 1.2rem 1.35rem 1.4rem; }
+.stage-top { display: flex; align-items: center; gap: .75rem; flex-wrap: wrap; }
+.num { display: inline-grid; place-items: center; width: 2.4rem; height: 2.4rem; background: var(--strawberry); border: 2px solid var(--ink); border-radius: 10px;
+  box-shadow: 2px 2px 0 var(--ink); font: 700 1.25rem var(--mono); flex: none; }
+.stage-title { margin: 0; font-size: clamp(1.35rem, 2.4vw, 1.7rem); }
+.explain { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem; margin: .75rem 0 1rem; padding: 0; list-style: none; }
+.explain li { display: inline-flex; align-items: center; gap: .4rem; padding: .25rem .75rem; border-radius: 999px; background: var(--milk); border: 1.5px solid rgb(74 32 48 / 22%); font-size: .95rem; }
+.explain .arr { padding: 0; background: none; border: 0; font-weight: 700; color: var(--berry-deep); }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 1.1rem; align-items: start; }
+.feed { position: relative; height: 64px; margin-left: 2.6rem; }
+.feed i { position: absolute; left: 0; top: 0; bottom: 14px; width: 4px; background-image: linear-gradient(var(--berry) 50%, transparent 50%); background-size: 4px 12px; animation: flowd .7s linear infinite; }
+.feed::after { content: ""; position: absolute; left: -6px; bottom: 2px; border: 8px solid transparent; border-top: 12px solid var(--berry); border-bottom: 0; }
+.feed span { position: absolute; left: 1.1rem; top: 50%; transform: translateY(-60%); font: 600 .74rem var(--mono); letter-spacing: .1em; text-transform: uppercase;
+  background: #fff; padding: .1rem .6rem; border-radius: 999px; border: 1.5px solid rgb(74 32 48 / 25%); white-space: nowrap; }
+@keyframes flowd { to { background-position: 0 12px; } }
+
+/* speaker bubble */
+.speaker { display: grid; grid-template-columns: 4rem 1fr; gap: .8rem; align-items: start; }
+.speaker .spr { width: 4rem; }
+.who-name { display: flex; align-items: center; gap: .4rem; flex-wrap: wrap; font-weight: 700; font-size: 1.08rem; }
+.bubble { position: relative; margin-top: .4rem; padding: .8rem 1rem; background: #fff; border: 2px solid var(--ink); border-radius: 4px 24px 24px 24px; box-shadow: var(--hard); }
+.bubble p { margin: 0 0 .5rem; } .bubble p:last-child { margin-bottom: 0; }
+.typing { display: inline-flex; gap: 4px; vertical-align: middle; }
+.typing i { width: 7px; height: 7px; background: var(--ink); animation: px-blink .9s steps(1) infinite; }
+.typing i:nth-child(2) { animation-delay: .3s; } .typing i:nth-child(3) { animation-delay: .6s; }
+
+/* letter paper: pink notebook lines and a perforated stamp */
+.paper { position: relative; padding: 1.1rem 1.3rem 1.3rem 3.2rem; border: 2px solid var(--ink); border-radius: 6px 6px 24px 6px; box-shadow: var(--sticker);
+  background: linear-gradient(90deg, transparent 2.2rem, rgb(214 51 108 / 35%) 2.2rem calc(2.2rem + 2px), transparent calc(2.2rem + 2px)),
+    repeating-linear-gradient(transparent 0 calc(1.8rem - 1px), rgb(255 143 171 / 45%) calc(1.8rem - 1px) 1.8rem), #fff; line-height: 1.8rem; }
+.paper p { margin: 0 0 1.8rem; } .paper p:last-child { margin-bottom: 0; }
+.paper .from { display: flex; align-items: center; gap: .6rem; margin-bottom: 1.8rem; height: 3.6rem; }
+.paper .from .spr { width: 3.4rem; }
+.stamp { position: absolute; right: 1rem; top: 1rem; width: 4.2rem; height: 5rem; padding: .35rem; background: var(--blush);
+  --perf: radial-gradient(circle at 50% 50%, transparent 3px, #000 3.5px) -5px -5px / 10px 10px;
+  -webkit-mask: var(--perf); mask: var(--perf); display: grid; place-items: center; transform: rotate(4deg); }
+.stamp > div { width: 100%; height: 100%; background: #fff; border: 1.5px solid var(--ink); display: grid; place-items: center; align-content: center; gap: 0; }
+.stamp svg { width: 2.4rem; }
+.stamp small { font: 600 .6rem var(--mono); letter-spacing: .08em; line-height: 1.2; }
+.jp-word { border-bottom: 2px dotted var(--berry); cursor: help; }
+
+/* stage 2: write */
+.write label { display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; font-weight: 700; margin-bottom: .4rem; }
+textarea { width: 100%; min-height: 15rem; resize: vertical; padding: .9rem 1rem; border: 2px solid var(--ink); border-radius: 18px; background: #fff;
+  font: 500 1.0625rem/1.7 var(--body); color: var(--ink); box-shadow: inset 0 3px 0 rgb(74 32 48 / 8%); }
+textarea:focus-visible { outline: 3px solid var(--berry-deep); outline-offset: 2px; }
+.meta { display: flex; justify-content: space-between; gap: .5rem; flex-wrap: wrap; margin-top: .45rem; font: 400 .85rem var(--mono); color: var(--ink-muted); }
+.prompt-card { margin-top: .7rem; padding: .7rem .9rem; background: var(--milk); border: 2px dashed var(--berry-deep); border-radius: 18px; }
+.prompt-card b { font-size: .8rem; font-family: var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--berry-deep); display: block; }
+
+/* stage 3: side by side */
+.sbs { display: grid; gap: .5rem; }
+.sbs-head, .row { display: grid; grid-template-columns: 1fr 1fr; gap: .8rem; }
+.sbs-head { font: 600 .74rem var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-muted); padding: 0 .9rem; }
+.row { padding: .6rem .9rem; background: #fff; border: 1.5px solid rgb(74 32 48 / 22%); border-radius: 16px; }
+.row .ja { font-size: 1.06rem; }
+.row .note { grid-column: 1 / -1; font-size: .9rem; color: var(--ink-muted); padding-top: .3rem; border-top: 1.5px dashed rgb(74 32 48 / 20%); }
+.row.miss .ja { color: var(--ink-muted); font-size: .95rem; }
+@media (prefers-reduced-motion: no-preference) { .row { animation: fade-up .45s cubic-bezier(.2, .8, .2, 1) both; animation-delay: calc(var(--i, 0) * 70ms); } }
+@keyframes fade-up { from { opacity: 0; transform: translateY(12px); } }
+
+/* stage 4: stickers, wobble on hover and focus */
+.stickers { display: grid; grid-template-columns: repeat(auto-fill, minmax(6.2rem, 1fr)); gap: .7rem; margin: .4rem 0 0; padding: 0; list-style: none; }
+.stk { position: relative; width: 100%; display: grid; justify-items: center; gap: .15rem; padding: .6rem .4rem .5rem; background: #fff; border: 2px solid var(--ink);
+  border-radius: 22px; box-shadow: var(--hard); text-align: center; }
+.stk svg { width: 3.2rem; filter: drop-shadow(2px 2px 0 #fff) drop-shadow(-2px -2px 0 #fff) drop-shadow(0 2px 0 rgb(74 32 48 / 25%)); }
+.stk .ja { font-weight: 700; font-size: 1rem; line-height: 1.3; }
+.stk .en { font-size: .8rem; color: var(--ink-muted); line-height: 1.2; }
+.stk[aria-pressed="true"] { background: var(--blush); box-shadow: 0 0 0 3px var(--berry-deep), var(--hard); }
+.stk .pick { position: absolute; top: -.6rem; left: 50%; transform: translateX(-50%); padding: 0 .5rem; border-radius: 999px; background: var(--accent); color: #fff;
+  font: 600 .64rem/1.6 var(--mono); letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; }
+.stk .on { position: absolute; top: .3rem; right: .45rem; font: 700 .8rem var(--mono); }
+@media (prefers-reduced-motion: no-preference) { .stk:hover, .stk:focus-visible { animation: wobble .5s ease; } }
+@keyframes wobble { 30% { transform: rotate(-4deg); } 65% { transform: rotate(3deg); } 100% { transform: rotate(-1deg); } }
+@media (prefers-reduced-motion: reduce) { .stk:hover, .stk:focus-visible { transform: rotate(-2deg); box-shadow: 0 0 0 3px var(--ink), var(--hard); } }
+
+/* desk: the letter folds into an envelope and flies to Aiko */
+.desk { position: relative; min-height: 26rem; display: grid; place-items: center; padding: 1rem .5rem; }
+.desk .sheet { width: min(100%, 26rem); transform-origin: 50% 50%; z-index: 2; }
+.sheet .text { white-space: pre-line; overflow-wrap: anywhere; }
+.sheet .stuck { position: absolute; width: 3.4rem; z-index: 3; pointer-events: none; }
+.sheet .stuck:nth-of-type(1) { right: -1rem; bottom: -1.1rem; transform: rotate(10deg); }
+.sheet .stuck:nth-of-type(2) { left: -1.1rem; bottom: 2rem; transform: rotate(-12deg); }
+.sheet .stuck:nth-of-type(3) { right: 4.6rem; top: -1.2rem; transform: rotate(6deg); }
+.crease { position: absolute; left: 0; right: 0; height: 2px; background: rgb(74 32 48 / 25%); opacity: 0; pointer-events: none; }
+.crease.a { top: 33.3%; } .crease.b { top: 66.6%; }
+.env { position: absolute; left: calc(50% - 7.5rem); top: calc(50% - 4.9rem); width: 15rem; }
+.env > svg:first-child { position: relative; z-index: 1; }
+.env svg { width: 100%; overflow: visible; display: block; }
+.env .flap { transform-box: view-box; transform-origin: 130px 6px; transform: scaleY(-1); }
+.env.closed .flap { transform: none; }
+.env .seal { transform-box: fill-box; transform-origin: center; opacity: 0; }
+.env.closed .seal { opacity: 1; }
+.env-front { position: absolute; inset: 0; z-index: 3; }
+.sent[hidden] { display: none; }
+.sent { display: grid; justify-items: center; gap: .6rem; text-align: center; }
+.sent .done-stamp { padding: .3rem 1.1rem; border: 3px solid var(--berry-deep); color: var(--berry-deep); border-radius: 999px; font: 400 1.35rem var(--display); transform: rotate(-4deg); background: #fff; }
+@media (prefers-reduced-motion: no-preference) { .sent .done-stamp { animation: stamp .3s cubic-bezier(.5, 1.8, .6, 1) both; } }
+@keyframes stamp { from { transform: scale(2.2) rotate(-4deg); opacity: 0; } }
+.send-row { display: flex; flex-wrap: wrap; align-items: center; gap: .8rem; margin-top: 1rem; }
+.penpal { display: flex; align-items: center; gap: .7rem; margin-top: 1rem; padding: .7rem .9rem; }
+.penpal .spr { width: 3.6rem; flex: none; }
+
+/* how it works */
+#how { margin-top: 2.5rem; padding: 1.4rem 1.4rem 1.6rem; scroll-margin-top: 5.5rem; }
+#how h2 { margin: 0; font-size: clamp(1.4rem, 2.5vw, 1.8rem); }
+.how-grid { display: grid; grid-template-columns: 1.1fr .9fr; gap: 1.4rem; margin-top: 1rem; }
+.route { list-style: none; margin: 0; padding: 0 0 0 3.4rem; position: relative; display: grid; gap: .7rem; }
+.route::before { content: ""; position: absolute; left: 1.2rem; top: 1rem; bottom: 1rem; width: 4px; background-image: linear-gradient(var(--berry) 50%, transparent 50%); background-size: 4px 12px; }
+.route li { position: relative; padding: .7rem .95rem; background: #fff; border: 2px solid rgb(74 32 48 / 25%); border-radius: 20px; transition: border-color .3s, background-color .3s; }
+.route li .num { position: absolute; left: -3.4rem; top: .6rem; width: 2.2rem; height: 2.2rem; font-size: 1.05rem; background: #fff; }
+.route li.on { border-color: var(--ink); background: var(--blush); box-shadow: var(--hard); }
+.route li.on .num, .route li.done .num { background: var(--strawberry); }
+.route h3 { margin: 0; font-size: 1.05rem; display: flex; gap: .4rem; align-items: center; flex-wrap: wrap; }
+.route p { margin: .15rem 0 0; font-size: .95rem; }
+.token { position: absolute; left: .45rem; top: 0; width: 1.9rem; z-index: 2; transition: transform .7s cubic-bezier(.5, 0, .3, 1); }
+.how-ctrl { display: flex; gap: .6rem; margin-top: .9rem; padding-left: 3.4rem; flex-wrap: wrap; }
+.arch { display: grid; grid-template-columns: 1fr 1fr; gap: .6rem; align-content: start; }
+.arch .cap { grid-column: 1 / -1; font: 600 .74rem var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-muted); }
+.box { padding: .6rem .8rem; background: #fff; border: 2px solid var(--ink); border-radius: 18px; box-shadow: var(--hard); }
+.box b { display: flex; align-items: center; gap: .4rem; flex-wrap: wrap; }
+.box span { display: block; font-size: .92rem; }
+.box.full, .arch .full { grid-column: 1 / -1; }
+.box.tr { background: #E8F6E8; } .box.po { background: #FFE8EE; } .box.you { background: var(--milk); }
+.down { text-align: center; font-weight: 700; color: var(--berry-deep); line-height: 1; }
+
+/* footer */
+footer { margin: 2.5rem auto 1.5rem; padding: 1.3rem 1.5rem 1rem; border-top: 6px solid var(--strawberry) !important; }
+.foot { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 1.2rem; }
+.foot p { margin: .3rem 0 0; font-size: .95rem; }
+.foot h5 { margin: 0 0 .3rem; font: 600 .74rem var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-muted); }
+.foot ul { margin: 0; padding: 0; list-style: none; font-size: .95rem; }
+.copy { margin-top: 1rem; padding-top: .7rem; border-top: 1.5px dashed rgb(74 32 48 / 25%); font: 400 .82rem var(--mono); color: var(--ink-muted); }
+
+/* dialog */
+.pop { width: min(30rem, calc(100vw - 1.5rem)); padding: 0; border: 2px solid var(--ink); border-radius: 24px; background: #fff; color: var(--ink); box-shadow: 0 20px 50px rgb(74 32 48 / 35%); }
+.pop::backdrop { background: rgb(74 32 48 / 40%); }
+@media (prefers-reduced-motion: no-preference) { .pop[open] { animation: pop-in .18s ease-out; } }
+@keyframes pop-in { from { opacity: 0; transform: translateY(10px) scale(.98); } }
+.pop-head { display: flex; align-items: center; gap: .7rem; padding: .7rem .9rem; background: var(--blush); border-bottom: 2px solid var(--ink); }
+.pop-head .spr { width: 2.6rem; flex: none; }
+.pop-title { margin: 0; font-size: 1.25rem; flex: 1; }
+.pop-close { border: 2px solid var(--ink); background: #fff; border-radius: 999px; padding: .15rem .7rem; font-weight: 700; }
+.pop-body { padding: 1rem 1.1rem 1.1rem; }
+.pop-body ul { margin: .7rem 0; padding: 0; list-style: none; display: grid; gap: .3rem; }
+.pop-actions { display: flex; flex-wrap: wrap; gap: .6rem; justify-content: flex-end; margin-top: 1rem; }
+
+/* narrow screens */
+@media (max-width: 960px) { .hero, .how-grid { grid-template-columns: 1fr; } .foot { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 820px) { .cols { grid-template-columns: 1fr; } }
+@media (max-width: 640px) {
+  .nav nav, .brand small, .nav .long { display: none; }
+  .hero-text { padding: 1.3rem 1.2rem; } .stage { padding: 1rem 1rem 1.2rem; } #how { padding: 1.1rem 1rem 1.3rem; }
+  .sbs-head { display: none; } .row { grid-template-columns: 1fr; gap: .2rem; } .row .ja::before { content: "日本語  "; font: 600 .7rem var(--mono); letter-spacing: .1em; color: var(--ink-muted); }
+  .paper { padding-left: 2.6rem; background-size: auto; } .paper { background: linear-gradient(90deg, transparent 1.7rem, rgb(214 51 108 / 35%) 1.7rem calc(1.7rem + 2px), transparent calc(1.7rem + 2px)), repeating-linear-gradient(transparent 0 calc(1.8rem - 1px), rgb(255 143 171 / 45%) calc(1.8rem - 1px) 1.8rem), #fff; }
+  .stamp { width: 3.6rem; height: 4.3rem; } .stamp svg { width: 2rem; }
+  .arch { grid-template-columns: 1fr; } .arch .half { display: none; }
+  .foot { grid-template-columns: 1fr; }
+  .route { padding-left: 2.9rem; } .route li .num { left: -2.9rem; } .route::before { left: .95rem; } .token { left: .2rem; } .how-ctrl { padding-left: 0; }
+}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs id="pixdefs"></defs></svg>
+
+<header class="nav card wrap">
+  <a class="brand" href="#top" aria-label="Penpal Post, back to top">
+    <svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><use href="#ic-env"/></svg>
+    Penpal Post <small lang="ja">ペンパル</small></a>
+  <nav aria-label="Page"><a href="#st1">Stages</a><a href="#how">How it works</a></nav>
+  <a class="btn primary" href="#st2" aria-label="Write to Aiko"><span>✎ Write<span class="long"> to Aiko</span></span></a>
+</header>
+
+<main id="top" class="wrap">
+  <section class="hero">
+    <div class="hero-text card">
+      <span class="tag" style="align-self:flex-start">Letters for language learners</span>
+      <h1>Dear <mark>friend</mark>, <span class="jp" lang="ja">ともだちへ</span></h1>
+      <p class="lede">Penpal Post pairs language learners in Japan with English speakers. You write the letter. The Translator shows it side by side in Japanese, the Postie suggests stickers and a reply idea, and you choose when to send.</p>
+      <ul class="benefits">
+        <li><span aria-hidden="true">✓</span>Every word is yours</li>
+        <li><span aria-hidden="true">✓</span><em style="font-style:normal">See your letter in <span lang="ja">日本語</span>, line by line</em></li>
+        <li><span aria-hidden="true">✓</span>Nothing is sent until you press Send</li>
+      </ul>
+      <span class="live">Sample penpal, made-up letters</span>
+      <div class="hero-actions">
+        <a class="btn primary big" href="#st1"><span>✉ Read Aiko’s letter<small>A sample letter is waiting</small></span></a>
+        <button class="i" type="button" aria-label="About the sample" data-tip="All of this is a sample|Aiko and her letters are made up|The translations are written in advance, no AI runs on this page|Nothing you type leaves this page|Why a sample: you can try every step without signing up">i</button>
+      </div>
+    </div>
+
+    <div class="hero-art card">
+      <div class="scene" id="scene">
+        <svg viewBox="0 0 600 420" role="img" aria-label="A pink sky over the sea. You stand on an island on the left, Aiko on an island on the right. A letter flies along a dotted arc between you. The Translator and the Postie sit on clouds above.">
+          <defs>
+            <linearGradient id="hsky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFD6E0"/><stop offset="1" stop-color="#FFF1F3"/></linearGradient>
+            <path id="cl" d="M40 90a22 22 0 0 1 4-43 30 30 0 0 1 56-8 24 24 0 0 1 40 18 18 18 0 0 1 0 33z"/>
+          </defs>
+          <rect width="600" height="420" fill="url(#hsky)"/>
+          <circle cx="520" cy="70" r="26" fill="#fff" opacity=".9"/><circle cx="520" cy="70" r="18" fill="#FFE8EE"/>
+          <g fill="#fff" opacity=".85"><use href="#cl" x="-30" y="-50"/><use href="#cl" x="330" y="20" transform="scale(.8)"/></g>
+          <g fill="#fff" stroke="#4A2030" stroke-width="3" stroke-linejoin="round">
+            <use href="#cl" x="125" y="40"/><use href="#cl" x="320" y="40"/>
+          </g>
+          <path d="M0 318 H600 V420 H0z" fill="#BFE6FF"/>
+          <g fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".9">
+            <path d="M20 345 q15 -10 30 0 t30 0 M250 360 q15 -10 30 0 t30 0 M430 395 q15 -10 30 0 t30 0 M150 400 q15 -10 30 0 t30 0"/>
+          </g>
+          <path d="M-10 330 C20 270 170 262 210 330 Z" fill="#7BC67E" stroke="#4A2030" stroke-width="3"/>
+          <path d="M390 330 C430 262 590 270 615 330 Z" fill="#7BC67E" stroke="#4A2030" stroke-width="3"/>
+          <g transform="translate(160 262)" stroke="#4A2030" stroke-width="3"><rect x="0" y="0" width="22" height="30" rx="8" fill="#D6336C"/><rect x="6" y="9" width="10" height="3" fill="#fff" stroke="none"/><path d="M11 30v14" /></g>
+          <g transform="translate(420 268)" stroke="#4A2030" stroke-width="3" stroke-linejoin="round"><path d="M0 22 L20 4 L40 22 Z" fill="#FF8FAB"/><rect x="5" y="22" width="30" height="22" fill="#fff"/><rect x="16" y="30" width="8" height="14" fill="#FFD6E0"/></g>
+          <path id="arc" d="M120 250 C200 150 400 150 480 250" fill="none" stroke="#B0245A" stroke-width="3" stroke-dasharray="2 10" stroke-linecap="round"/>
+          <g id="flyEnv">
+            <g transform="translate(-16 -11)" stroke="#4A2030" stroke-width="2.5" stroke-linejoin="round"><rect width="32" height="22" rx="3" fill="#fff"/><path d="M1 2 L16 13 L31 2" fill="none"/><path d="M13 12 h6 v5 h-6z" fill="#D6336C" stroke="none"/></g>
+          </g>
+          <text x="98" y="378" font-family="M PLUS 1 Code, monospace" font-size="16" font-weight="600" fill="#4A2030" text-anchor="middle" letter-spacing="2">EN</text>
+          <text x="505" y="378" font-family="Zen Maru Gothic, sans-serif" font-size="18" font-weight="700" fill="#4A2030" text-anchor="middle" lang="ja">日本</text>
+        </svg>
+        <div class="who" style="left:30%;top:4%"><div class="spr bob d1" data-sprite="sp-tr" data-label="The Translator"></div><span class="lab"><span class="kind ai">AI</span>Translator</span></div>
+        <div class="who" style="left:68%;top:4%"><div class="spr bob d2" data-sprite="sp-po" data-label="The Postie"></div><span class="lab"><span class="kind ai">AI</span>Postie</span></div>
+        <div class="who" style="left:13%;top:42%"><div class="spr bob" data-sprite="sp-you" data-label="You"></div><span class="lab"><span class="kind you">You</span>You</span></div>
+        <div class="who" style="left:85%;top:42%"><div class="spr bob d3" data-sprite="sp-aiko" data-label="Aiko, your penpal"></div><span class="lab">Aiko <span lang="ja">アイコ</span></span></div>
+        <span class="sample">Sample</span>
+      </div>
+      <div class="legend" aria-label="Legend">
+        <span><i class="glyph tr" aria-hidden="true">T</i>Translator shows it in Japanese</span>
+        <span><i class="glyph po" aria-hidden="true">P</i>Postie suggests stickers and a prompt</span>
+        <span><i class="glyph you" aria-hidden="true">Y</i>You write and send</span>
+        <span><i class="glyph aiko" aria-hidden="true"><span>A</span></i>Aiko, your penpal</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="journey">
+    <!-- STAGE 1 -->
+    <section class="stage card" id="st1" aria-labelledby="st1t">
+      <div class="stage-top">
+        <span class="num">1</span>
+        <h2 class="stage-title" id="st1t">Read Aiko’s letter</h2>
+        <button class="i" type="button" aria-label="About stage 1" data-tip="A letter from your penpal|Aiko is learning English, so she writes in English|She adds a little Japanese where she wants to|Dotted words have a note: hover, focus or tap them|Why read first: a good reply answers what she asked">i</button>
+      </div>
+      <ul class="explain"><li>Aiko writes in English</li><li class="arr" aria-hidden="true">→</li><li>Her letter arrives</li><li class="arr" aria-hidden="true">→</li><li><span class="kind you">You</span>You read it</li></ul>
+      <div class="cols">
+        <article class="paper" aria-label="Sample letter from Aiko">
+          <div class="from"><div class="spr" data-sprite="sp-aiko" data-label="Aiko"></div><div><b>From Aiko <span lang="ja">アイコより</span></b><br><span class="sample">Sample letter</span></div></div>
+          <div class="stamp" aria-hidden="true"><div><svg viewBox="0 0 16 16"><use href="#st-momiji"/></svg><small>JP</small></div></div>
+          <p>Dear friend,</p>
+          <p>Thank you for your first letter. My English is still a little, so please be patient. Yesterday it rained, so I stayed home with my cat, Mochi (<span class="jp-word" lang="ja" tabindex="0" data-tip="もち, mochi|A soft rice cake|Also a very popular name for a round, fluffy cat|Aiko wrote it in kana so you can practise reading it">もち</span>). She sleeps on my desk when I write.</p>
+          <p>In autumn I like to eat sweet potato. <span class="jp-word" lang="ja" tabindex="0" data-tip="焼きいも, yaki-imo|Roast sweet potato|Sold warm from small carts and shops in autumn|焼き means roasted, いも means potato">焼きいも</span> is so good. Please tell me about your town.</p>
+          <p>From Aiko<br><span lang="ja">アイコより</span></p>
+        </article>
+        <div class="soft">
+          <div class="speaker">
+            <div class="spr" data-sprite="sp-aiko" data-label="Aiko"></div>
+            <div>
+              <div class="who-name"><i class="glyph aiko" aria-hidden="true"><span>A</span></i>Aiko <span lang="ja">アイコ</span> <span class="sample">Sample penpal</span></div>
+              <div class="bubble"><p>Your penpal. She’s learning English and lives in Japan. She asked two things:</p>
+                <p>✓ About your town<br>✓ What you like to eat in autumn (she hinted)</p></div>
+            </div>
+          </div>
+          <p style="margin:.9rem 0 0;font-size:.95rem">Keep her questions in mind. In the next stage the Postie turns them into a reply idea.</p>
+        </div>
+      </div>
+    </section>
+    <div class="feed" aria-hidden="true"><i></i><span>her questions feed your reply</span></div>
+
+    <!-- STAGE 2 -->
+    <section class="stage card" id="st2" aria-labelledby="st2t">
+      <div class="stage-top">
+        <span class="num">2</span>
+        <h2 class="stage-title" id="st2t">Write your reply</h2>
+        <button class="i" type="button" aria-label="About stage 2" data-tip="You write every word|The box starts with a sample draft you can change|The Postie offers one reply idea at a time|It never writes the letter for you|Why: a penpal wants to hear you, not a helper">i</button>
+      </div>
+      <ul class="explain"><li><span class="kind you">You</span>You write</li><li class="arr" aria-hidden="true">→</li><li><span class="kind ai">AI</span>Postie offers a reply idea</li><li class="arr" aria-hidden="true">→</li><li>You decide if you use it</li></ul>
+      <div class="cols">
+        <div class="write">
+          <label for="letter"><span class="kind you">You</span>Your letter to Aiko <span class="sample">Sample draft</span></label>
+          <textarea id="letter" spellcheck="true"></textarea>
+          <div class="meta"><span id="count">0 lines</span><span>Stays on this page</span></div>
+        </div>
+        <div class="soft" id="postieBox">
+          <div class="speaker">
+            <div class="spr" data-sprite="sp-po" data-label="The Postie"></div>
+            <div>
+              <div class="who-name"><i class="glyph po" aria-hidden="true">P</i>The Postie <span class="kind ai">AI</span></div>
+              <div class="bubble" aria-live="polite">
+                <p>I read Aiko’s letter. Here’s one idea for your reply:</p>
+                <div class="prompt-card"><b>Reply idea <span id="promptN">1 of 3</span></b><span id="prompt"></span></div>
+              </div>
+              <div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-top:.8rem">
+                <button class="btn small" type="button" id="nextPrompt">↻ Another idea</button>
+                <button class="i" type="button" aria-label="About reply ideas" data-tip="Reply ideas|Picked from what Aiko asked or mentioned|Only a nudge: you choose what to write|Three sample ideas on this page|Why: a blank page is the hardest part of a letter">i</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <div class="feed" aria-hidden="true"><i></i><span>your words go to the Translator</span></div>
+
+    <!-- STAGE 3 -->
+    <section class="stage card" id="st3" aria-labelledby="st3t">
+      <div class="stage-top">
+        <span class="num">3</span>
+        <h2 class="stage-title" id="st3t">See it side by side</h2>
+        <button class="i" type="button" aria-label="About stage 3" data-tip="A gentle translation|Each line of your letter, with Japanese next to it|Gentle notes explain a word or a polite form|It never changes your English|On this page the Japanese is written in advance for the sample lines|Why side by side: you learn from your own sentences">i</button>
+      </div>
+      <ul class="explain"><li>Your letter</li><li class="arr" aria-hidden="true">→</li><li><span class="kind ai">AI</span>Translator lines it up in <span lang="ja">日本語</span></li><li class="arr" aria-hidden="true">→</li><li>You read both</li></ul>
+      <div class="speaker" style="margin-bottom:1rem" id="trSpeaker">
+        <div class="spr" data-sprite="sp-tr" data-label="The Translator"></div>
+        <div>
+          <div class="who-name"><i class="glyph tr" aria-hidden="true">T</i>The Translator <span class="kind ai">AI</span><span id="trState" class="pill done">✓ Up to date</span></div>
+          <div class="bubble" aria-live="polite"><p id="trSay">Here’s your letter with Japanese beside it. I left your words as you wrote them.</p></div>
+        </div>
+      </div>
+      <div class="sbs" id="sbs" aria-label="Your letter side by side with Japanese"></div>
+    </section>
+    <div class="feed" aria-hidden="true"><i></i><span>the letter goes to the desk</span></div>
+
+    <!-- STAGE 4 -->
+    <section class="stage card" id="st4" aria-labelledby="st4t">
+      <div class="stage-top">
+        <span class="num">4</span>
+        <h2 class="stage-title" id="st4t">Add stickers, then send</h2>
+        <button class="i" type="button" aria-label="About stage 4" data-tip="Stickers and sending|The Postie marks two stickers that fit Aiko’s letter|Pick up to three, or none|Send asks you to confirm first|Then the letter folds into an envelope and flies to Aiko|Why confirm: a letter can’t be taken back">i</button>
+      </div>
+      <ul class="explain"><li><span class="kind ai">AI</span>Postie picks two stickers</li><li class="arr" aria-hidden="true">→</li><li><span class="kind you">You</span>You choose</li><li class="arr" aria-hidden="true">→</li><li><span class="kind you">You</span>You send when ready</li></ul>
+      <div class="cols">
+        <div>
+          <div class="speaker">
+            <div class="spr" data-sprite="sp-po" data-label="The Postie"></div>
+            <div>
+              <div class="who-name"><i class="glyph po" aria-hidden="true">P</i>The Postie <span class="kind ai">AI</span></div>
+              <div class="bubble"><p>Aiko wrote about Mochi and autumn, so I’d try <b lang="ja">ねこ</b> and <b lang="ja">もみじ</b>. Your choice, of course.</p></div>
+            </div>
+          </div>
+          <ul class="stickers" id="stickers" aria-label="Stickers, pick up to three"></ul>
+          <p class="meta" style="margin-top:.6rem"><span id="stkCount">0 of 3 stickers</span><span>Sample stickers</span></p>
+          <div class="send-row">
+            <button class="btn primary big" type="button" id="sendBtn"><span>✉ Send to Aiko<small>You’ll confirm first</small></span></button>
+            <button class="i" type="button" aria-label="About sending" data-tip="When you press Send|A short check opens first|Confirm, and the letter folds and flies off|Under reduced motion it simply shows as sent|Sample only: nothing leaves this page">i</button>
+          </div>
+          <div class="penpal soft" id="penpal">
+            <div class="spr" data-sprite="sp-aiko" data-label="Aiko"></div>
+            <div><b>Aiko <span lang="ja">アイコ</span></b><br><span id="penpalState" class="pill q">… Waiting for your letter</span></div>
+          </div>
+        </div>
+        <div class="desk" id="desk">
+          <article class="paper sheet" id="sheet" aria-label="Your letter, ready to send">
+            <span class="crease a"></span><span class="crease b"></span>
+            <div class="stamp" aria-hidden="true"><div><svg viewBox="0 0 16 16"><use href="#st-ichigo"/></svg><small>EN</small></div></div>
+            <p style="margin-bottom:.9rem"><span class="kind you">You</span> <b>To Aiko</b> <span lang="ja">アイコさんへ</span></p>
+            <div class="text" id="sheetText"></div>
+            <span id="stuck"></span>
+          </article>
+          <div class="env" id="env" hidden>
+            <svg viewBox="0 0 260 170" aria-hidden="true"><rect x="4" y="6" width="252" height="160" rx="10" fill="#FFD6E0" stroke="#4A2030" stroke-width="4"/></svg>
+            <svg class="env-front" viewBox="0 0 260 170" role="img" aria-label="A sealed envelope">
+              <path d="M6 164 L130 84 L254 164 Z M6 10 L112 96 L6 164 Z M254 10 L148 96 L254 164 Z" fill="#FFC2D1" stroke="#4A2030" stroke-width="4" stroke-linejoin="round"/>
+              <path class="flap" d="M4 6 L130 104 L256 6 Z" fill="#FF8FAB" stroke="#4A2030" stroke-width="4" stroke-linejoin="round"/>
+              <path class="seal" d="M130 122 C110 106 112 88 124 88 C128 88 130 92 130 94 C130 92 132 88 136 88 C148 88 150 106 130 122 Z" fill="#D6336C" stroke="#4A2030" stroke-width="3"/>
+            </svg>
+          </div>
+          <div class="sent" id="sent" hidden>
+            <svg viewBox="0 0 16 16" class="sprite" style="width:4.5rem" role="img" aria-label="A sealed envelope"><use href="#ic-env"/></svg>
+            <span class="done-stamp" tabindex="-1" id="doneStamp">✓ Sent to Aiko</span>
+            <p style="margin:0">Your letter is on its way. <span class="sample">Sample</span></p>
+            <button class="btn" type="button" id="againBtn">✎ Write another</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- HOW IT WORKS -->
+  <section class="card" id="how" aria-labelledby="howt">
+    <div class="stage-top"><h2 id="howt">How it works</h2>
+      <button class="i" type="button" aria-label="About how it works" data-tip="Two helpers and you|The Translator only lines your letter up with Japanese|The Postie only suggests stickers and reply ideas|You write every word and choose when to send|Every letter on this page is a sample">i</button>
+    </div>
+    <div class="how-grid">
+      <div>
+        <div style="position:relative">
+          <div class="token" id="token" aria-hidden="true"><svg viewBox="0 0 16 16" class="sprite"><use href="#ic-env"/></svg></div>
+          <ol class="route" id="route">
+            <li><span class="num">1</span><h3>Read Aiko’s letter <span class="kind you">You</span></h3><p>She writes in English and adds a little Japanese.</p></li>
+            <li><span class="num">2</span><h3>Write your reply <span class="kind you">You</span></h3><p>Your words, with one reply idea from the Postie if you want it.</p></li>
+            <li><span class="num">3</span><h3>See it side by side <span class="kind ai">AI</span></h3><p>The Translator puts Japanese next to each line, with gentle notes.</p></li>
+            <li><span class="num">4</span><h3>Pick stickers <span class="kind ai">AI</span> <span class="kind you">You</span></h3><p>The Postie marks two that fit; you choose.</p></li>
+            <li><span class="num">5</span><h3>Send when ready <span class="kind you">You</span></h3><p>Confirm, and the letter folds up and flies to Aiko.</p></li>
+          </ol>
+        </div>
+        <div class="how-ctrl"><button class="btn small" type="button" id="howPause">❚❚ Pause</button><button class="btn small" type="button" id="howReset">↺ Reset</button></div>
+      </div>
+      <div class="arch" aria-label="Who does what">
+        <div class="cap">Who does what</div>
+        <div class="box you full"><b><i class="glyph you" aria-hidden="true">Y</i>Your letter <span class="kind you">You</span></b><span>Written by you, in English</span></div>
+        <div class="down" aria-hidden="true">↓</div><div class="down half" aria-hidden="true">↓</div>
+        <div class="box tr"><b><i class="glyph tr" aria-hidden="true">T</i>Translator <span class="kind ai">AI</span></b><span>Japanese beside each line, plus gentle notes</span></div>
+        <div class="box po"><b><i class="glyph po" aria-hidden="true">P</i>Postie <span class="kind ai">AI</span></b><span>Two sticker picks and a reply idea</span></div>
+        <div class="down full" aria-hidden="true">↘ ↙</div>
+        <div class="box you full"><b><i class="glyph you" aria-hidden="true">Y</i>Send <span class="kind you">You</span></b><span>Only when you confirm</span></div>
+        <div class="down full" aria-hidden="true">↓</div>
+        <div class="box full"><b><i class="glyph aiko" aria-hidden="true"><span>A</span></i>Aiko <span lang="ja">アイコ</span></b><span>Your penpal reads it and writes back (sample)</span></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="card wrap">
+  <div class="foot">
+    <div><a class="brand" href="#top">Penpal Post</a><p>Letters between language learners in Japan and English speakers. The Translator lines it up, the Postie suggests, and you write and send.</p></div>
+    <div><h5>Data</h5><ul><li>Sample penpal and letters</li><li>Japanese written in advance</li><li>Nothing leaves this page</li></ul></div>
+    <div><h5>Built with</h5><ul><li>Plain HTML, CSS and SVG</li><li>cutify-ui, a new Strawberry Milk theme</li><li>Mochiy Pop One, Zen Maru Gothic, M PLUS 1 Code</li></ul></div>
+    <div><h5>Project</h5><ul><li>Example page for cutify-ui</li><li>Not a real product</li></ul></div>
+  </div>
+  <div class="copy">© 2026 cutify-ui example. Every letter on this page is a sample.</div>
+</footer>
+
+<dialog class="pop" id="dlg" aria-labelledby="dlgT">
+  <div class="pop-head"><div class="spr" data-sprite="sp-you" data-label="You"></div><h2 class="pop-title" id="dlgT">Send this letter to Aiko?</h2><button class="pop-close" type="button" data-close>Close ✕</button></div>
+  <div class="pop-body">
+    <p style="margin:0">Once it’s sent you can’t take it back.</p>
+    <ul id="dlgList"></ul>
+    <div class="pop-actions"><button class="btn" type="button" data-close>Not yet</button><button class="btn primary" type="button" id="confirmBtn">✉ Fold and send</button></div>
+  </div>
+</dialog>
+
+<div id="tip" role="tooltip" hidden></div>
+
+<script>
+const $ = s => document.querySelector(s);
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// cutify-ui pixel sprites (assets/pixel-sprites.js): string grids to crisp SVG symbols
+function pixelSprites({ palette, sprites, animate = {} }) {
+  const defs = document.getElementById('pixdefs');
+  for (const [id, rows] of Object.entries(sprites)) {
+    console.assert(rows.length === 16 && rows.every(r => r.length === 16), `sprite ${id} is not 16 x 16`);
+    let out = `<symbol id="${id}" viewBox="0 0 16 16" shape-rendering="crispEdges">`;
+    rows.forEach((row, y) => [...row].forEach((ch, x) => {
+      if (ch === '.' || !palette[ch]) return;
+      const cls = animate[ch] ? ` class="${animate[ch]}"` : '';
+      out += `<rect x="${x}" y="${y}" width="1.02" height="1.02" fill="${palette[ch]}"${cls}/>`;
+    }));
+    defs.insertAdjacentHTML('beforeend', out + '</symbol>');
+  }
+}
+pixelSprites({
+  palette: { k: '#16171a', s: '#F6CBB0', p: '#FF8FAB', P: '#D6336C', W: '#FFFFFF', H: '#8A5A3C', h: '#2E2226', m: '#7BC67E', M: '#4E9A52',
+    u: '#FFD6E0', N: '#3B4A7A', y: '#FFE08A', x: '#D6336C', n: '#B0245A', R: '#E8506E', G: '#4E9A52', O: '#E8743B', g: '#2F4A3A', d: '#FFE8EE' },
+  animate: { x: 'px-blink', n: 'px-wl' },
+  sprites: {
+    'sp-tr': ['...........kkkkk', '...........kWxWk', '...kkkkkkk.kkWkk', '..kmmmmmmmk..k..', '.kmmmmmmmmMk....', '..kkkkkkkkkkk...',
+      '..kssssssssssk..', '..kskkkssskkksk.', '..kskWkkkkkWksk.', '..kskkkssskkksk.', '..kspssPPssspsk.', '...kssssssssssk.',
+      '....kkkkkkkkkk..', '...kmmmmWWmmmmk.', '...kmmmmWWmmmmk.', '...kkkkkkkkkkkk.'],
+    'sp-po': ['................', '....kkkkkkkk....', '...kppppppppk...', '..kppppWWppppk..', '..kkkkkkkkkkkkkk', '..kssssssssssk..',
+      '..kssksssskssk..', '..kspssssssspk..', '...ksssPPsssk...', '....kkkkkkkk....', '...kppkkppppk...', '..kppppkkppppk..',
+      '..kpppppkkpppk..', '..kppppppkyyyyk.', '..kppppppkykkyk.', '..kkkkkkkkkkkkk.'],
+    'sp-you': ['....kkkkkkkk....', '...kHHHHHHHHk...', '..kHHHHHHHHHHk..', '..kHHssssssHHk..', '..kssssssssssk..', '..kssksssskssk..',
+      '..kspssssssspk..', '..kssssPPssssk..', '...kssssssssk...', '....kkkkkkkk..n.', '...kuuuuuuuuk.n.', '..kuuuuuuuuuuksk',
+      '..kuuuuuuuuuuk..', '..kuuuuuuuuuuk..', '..kuuuuuuuuuuk..', '..kkkkkkkkkkkk..'],
+    'sp-aiko': ['....kkkkkkkk....', '...khhhhhhhhk...', '..khhhhhhhhPPk..', '..khhhhhhhhhPk..', '..khhsssssshhk..', '..khsksssskshk..',
+      '..khpssssssphk..', '..khsssPPssshk..', '..khsssssssshk..', '..kkhkkkkkkhkk..', '...kWWWWWWWWk...', '..kWWWPPPPWWWk..',
+      '..kNNNNPPNNNNk..', '..kNNNNNNNNNNk..', '..kNNNNNNNNNNk..', '..kkkkkkkkkkkk..'],
+    'st-ichigo': ['................', '......kkkk......', '....kkGGGGkk....', '...kGGkGGkGGk...', '..kkRRkkkkRRkk..', '..kRRRRRRRRRRk..',
+      '.kRRyRRRRRRyRRk.', '.kRRRRRRRRRRRRk.', '.kRRRRyRRRRyRRk.', '..kRRRRRRRRRRk..', '..kRRyRRRRyRRk..', '...kRRRRRRRRk...',
+      '....kRRRyRRk....', '.....kRRRRk.....', '......kkkk......', '................'],
+    'st-onigiri': ['................', '.......kk.......', '......kWWk......', '.....kWWWWk.....', '....kWWWWWWk....', '....kWWWWWWk....',
+      '...kWWkWWkWWk...', '...kWWWWWWWWk...', '..kWpWWWWWWpWk..', '..kWWWkkkkWWWk..', '.kWWWkggggkWWWk.', '.kWWWkggggkWWWk.',
+      'kWWWWkggggkWWWWk', 'kkkkkkkkkkkkkkkk', '................', '................'],
+    'st-momiji': ['................', '.......kk.......', '......kOOk......', '..k...kOOk...k..', '..kk.kOOOOk.kk..', '..kOkkOOOOkkOk..',
+      '.kOOOOOOOOOOOOk.', '..kOOOOOOOOOOk..', '...kOOOOOOOOk...', '..kOOOOOOOOOOk..', '.kOOOkOOOOkOOOk.', '.kkk..kOOk..kkk.',
+      '.......kk.......', '.......kk.......', '................', '................'],
+    'st-neko': ['................', '................', '..kk........kk..', '..kyk......kyk..', '..kyykkkkkkyyk..', '..kWWWWWWWWWWk..',
+      '.kWWkWWWWWWkWWk.', '.kWWWWWkkWWWWWk.', '.kWpWWkWWkWWpWk.', '..kWWWWWWWWWWk..', '...kkkkkkkkkk...', '................',
+      '................', '................', '................', '................'],
+    'st-sakura': ['................', '.......kk.......', '......kppk......', '..kk..kppk..kk..', '.kppk.kppk.kppk.', '.kpppkkppkkpppk.',
+      '..kpppkyykpppk..', '...kkkyyyykkk...', '...kpppkkpppk...', '..kppppk.kppppk.', '..kpppk...kpppk.', '...kkk.....kkk..',
+      '................', '................', '................', '................'],
+    'ic-env': ['................', '................', '................', '.kkkkkkkkkkkkkk.', '.kWddddddddddWk.', '.kdWddddddddWdk.',
+      '.kddWddddddWddk.', '.kdddWWddWWdddk.', '.kddddkPPkddddk.', '.kddddkPPkddddk.', '.kddddddddddddk.', '.kddddddddddddk.',
+      '.kkkkkkkkkkkkkk.', '................', '................', '................'],
+  },
+});
+document.querySelectorAll('[data-sprite]').forEach(el => {
+  el.innerHTML = `<svg class="sprite" viewBox="0 0 16 16" role="img" aria-label="${el.dataset.label}"><use href="#${el.dataset.sprite}"/></svg>`;
+});
+
+// hero: the letter flies along the drawn arc (SMIL clock, scaled by the viewBox); not mounted under reduced motion
+const flyEnv = $('#flyEnv');
+if (reduced) flyEnv.setAttribute('transform', 'translate(300 175)');
+else flyEnv.insertAdjacentHTML('beforeend', '<animateMotion dur="5s" repeatCount="indefinite" rotate="auto" calcMode="spline" keyTimes="0;1" keySplines=".5 0 .3 1"><mpath href="#arc"/></animateMotion>');
+
+// stage 2: the letter and the Postie's reply ideas
+const SAMPLE = `Dear Aiko,
+
+Thank you for telling me about Mochi! It is getting cold here, and I drink hot cocoa every evening.
+
+I am learning hiragana, and now I can write さくら.
+
+What do you like to do on weekends?
+
+Your friend`;
+const PROMPTS = [
+  'Aiko asked about your town. Tell her one thing you like about where you live.',
+  'Ask what Mochi likes to play with, or what she does while Aiko is at school.',
+  'She loves <span lang="ja">焼きいも</span>. Tell her a food you like in autumn and ask where she buys hers.',
+];
+let pi = 0;
+function showPrompt() { $('#prompt').innerHTML = PROMPTS[pi]; $('#promptN').textContent = `${pi + 1} of ${PROMPTS.length}`; }
+$('#nextPrompt').addEventListener('click', () => { pi = (pi + 1) % PROMPTS.length; showPrompt(); });
+const letter = $('#letter');
+letter.value = SAMPLE;
+
+// stage 3: sample translations, written in advance (no AI runs on this page)
+const TR = {
+  'dear aiko,': ['アイコさんへ', 'さん after a name is warm and polite. Friends use it in letters all the time.'],
+  'thank you for telling me about mochi!': ['もちのこと、教えてくれてありがとう！'],
+  'it is getting cold here, and i drink hot cocoa every evening.': ['こちらはだんだん寒くなってきて、毎晩ホットココアを飲んでいます。'],
+  'i am learning hiragana, and now i can write さくら.': ['いま、ひらがなを勉強しています。「さくら」が書けるようになりました。', 'You wrote さくら yourself, so it stays just as you wrote it.'],
+  'what do you like to do on weekends?': ['週末は何をするのが好きですか？', 'This is the polite です/ます form, a friendly choice for a new penpal.'],
+  'your friend': ['あなたの友だちより', 'より at the end of a letter means “from”.'],
+  'your friend,': ['あなたの友だちより', 'より at the end of a letter means “from”.'],
+};
+const norm = s => s.toLowerCase().replace(/[‘’]/g, "'").replace(/\s+/g, ' ').trim();
+const esc = s => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+function sentences(text) {
+  return text.split(/\n+/).flatMap(l => l.split(/(?<=[.!?？。！])\s+/)).map(s => s.trim()).filter(Boolean);
+}
+function renderSbs() {
+  const lines = sentences(letter.value);
+  $('#sbs').innerHTML = `<div class="sbs-head" aria-hidden="true"><span>Your English</span><span lang="ja">日本語</span></div>` + lines.map((l, i) => {
+    const t = TR[norm(l)];
+    return t
+      ? `<div class="row" style="--i:${i}"><span>${esc(l)}</span><span class="ja" lang="ja">${t[0]}</span>${t[1] ? `<span class="note">✎ Gentle note: ${t[1]}</span>` : ''}</div>`
+      : `<div class="row miss" style="--i:${i}"><span>${esc(l)}</span><span class="ja">? Not in the sample. On this page the Translator only knows the sample lines.</span></div>`;
+  }).join('') || '<p>Write something in stage 2 and it shows up here.</p>';
+  const miss = lines.filter(l => !TR[norm(l)]).length;
+  $('#trSay').textContent = miss
+    ? `Here’s your letter with Japanese beside it. ${miss} new ${miss === 1 ? 'line isn’t' : 'lines aren’t'} in the sample, so I marked ${miss === 1 ? 'it' : 'them'} with ?.`
+    : 'Here’s your letter with Japanese beside it. I left your words as you wrote them.';
+  $('#count').textContent = `${lines.length} ${lines.length === 1 ? 'line' : 'lines'}`;
+  $('#sheetText').textContent = letter.value.trim() || '(Your letter is empty.)';
+}
+let trTimer;
+letter.addEventListener('input', () => {
+  const sp = $('#trSpeaker'); sp.classList.add('talking');
+  $('#trState').className = 'pill wait'; $('#trState').innerHTML = 'Reading <span class="typing" aria-hidden="true"><i></i><i></i><i></i></span>';
+  clearTimeout(trTimer);
+  trTimer = setTimeout(() => { renderSbs(); sp.classList.remove('talking'); $('#trState').className = 'pill done'; $('#trState').textContent = '✓ Up to date'; }, reduced ? 120 : 650);
+});
+
+// stage 4: stickers, the Postie marks two
+const STICKERS = [
+  { id: 'st-neko', ja: 'ねこ', en: 'cat', pick: true },
+  { id: 'st-momiji', ja: 'もみじ', en: 'maple leaf', pick: true },
+  { id: 'st-ichigo', ja: 'いちご', en: 'strawberry' },
+  { id: 'st-onigiri', ja: 'おにぎり', en: 'rice ball' },
+  { id: 'st-sakura', ja: 'さくら', en: 'cherry blossom' },
+];
+const chosen = [];
+$('#stickers').innerHTML = STICKERS.map(s => `<li><button class="stk" type="button" aria-pressed="false" data-id="${s.id}" aria-label="${s.en} sticker${s.pick ? ', the Postie’s pick' : ''}">
+  ${s.pick ? '<span class="pick">★ Postie’s pick</span>' : ''}<span class="on" aria-hidden="true"></span>
+  <svg viewBox="0 0 16 16" class="sprite" aria-hidden="true"><use href="#${s.id}"/></svg><span class="ja" lang="ja">${s.ja}</span><span class="en">${s.en}</span></button></li>`).join('');
+function renderStickers() {
+  document.querySelectorAll('.stk').forEach(b => {
+    const on = chosen.includes(b.dataset.id);
+    b.setAttribute('aria-pressed', on); b.querySelector('.on').textContent = on ? '✓' : '';
+  });
+  $('#stkCount').textContent = `${chosen.length} of 3 stickers`;
+  $('#stuck').innerHTML = chosen.map(id => `<svg viewBox="0 0 16 16" class="sprite stuck" aria-hidden="true"><use href="#${id}"/></svg>`).join('');
+}
+$('#stickers').addEventListener('click', e => {
+  const b = e.target.closest('.stk'); if (!b) return;
+  const id = b.dataset.id, at = chosen.indexOf(id);
+  if (at >= 0) chosen.splice(at, 1); else { if (chosen.length === 3) chosen.shift(); chosen.push(id); }
+  renderStickers();
+});
+
+// send: confirm in a native dialog, then fold into an envelope and fly off
+const dlg = $('#dlg');
+$('#sendBtn').addEventListener('click', () => {
+  const n = sentences(letter.value).length;
+  $('#dlgList').innerHTML = `<li>✓ Your letter, ${n} ${n === 1 ? 'line' : 'lines'}, all your own words</li>
+    <li>${chosen.length ? '✓' : '✕'} ${chosen.length ? chosen.length + ' sticker' + (chosen.length > 1 ? 's' : '') : 'No stickers'}</li>
+    <li>✓ To Aiko <span lang="ja">アイコ</span> <span class="sample">Sample, nothing really leaves this page</span></li>`;
+  dlg.showModal();
+});
+dlg.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', () => dlg.close()));
+dlg.addEventListener('click', e => { if (e.target === dlg) dlg.close(); });
+$('#confirmBtn').addEventListener('click', () => { dlg.close(); foldAndFly(); });
+
+const sheet = $('#sheet'), env = $('#env'), sent = $('#sent');
+const ease = 'cubic-bezier(.2, .8, .2, 1)';
+async function foldAndFly() {
+  $('#sendBtn').disabled = true; letter.disabled = true;
+  if (reduced) {     // reduced motion: no fold, no flight, just the sealed state
+    sheet.hidden = true; setTimeout(finish, 120); return;
+  }
+  const r = sheet.getBoundingClientRect();
+  env.hidden = false; env.classList.remove('closed');
+  const e = env.getBoundingClientRect();
+  const s = (e.width * .82) / r.width, dy = (e.top + e.height * .55) - (r.top + r.height / 2);
+  // 1. creases show and the sheet folds into thirds
+  sheet.querySelectorAll('.crease').forEach(c => c.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 260, fill: 'forwards' }));
+  env.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 300, easing: ease });
+  await sheet.animate([{ transform: 'none' }, { transform: 'perspective(900px) rotateX(18deg) scaleY(.66)', offset: .45 }, { transform: `scale(${s}, ${s * .34})` }],
+    { duration: 800, easing: ease, fill: 'forwards' }).finished;
+  // 2. it slips into the envelope
+  await sheet.animate([{ transform: `scale(${s}, ${s * .34})`, opacity: 1 }, { transform: `translateY(${dy}px) scale(${s}, ${s * .3})`, opacity: 1, offset: .7 },
+    { transform: `translateY(${dy + 10}px) scale(${s}, ${s * .3})`, opacity: 0 }], { duration: 520, easing: ease, fill: 'forwards' }).finished;
+  sheet.hidden = true;
+  // 3. the flap closes and the heart seal stamps on
+  await env.querySelector('.flap').animate([{ transform: 'scaleY(-1)' }, { transform: 'none' }], { duration: 360, easing: 'cubic-bezier(.5, 0, .3, 1)', fill: 'forwards' }).finished;
+  env.classList.add('closed');
+  await env.querySelector('.seal').animate([{ transform: 'scale(2.2)', opacity: 0 }, { transform: 'none', opacity: 1 }], { duration: 240, easing: 'cubic-bezier(.5, 1.8, .6, 1)' }).finished;
+  await new Promise(res => setTimeout(res, 250));
+  // 4. it flies off the top-right of the screen, towards Aiko
+  const b = env.getBoundingClientRect(), fx = innerWidth - b.left + 40, fy = -b.bottom - 60;
+  await env.animate([{ transform: 'none' }, { transform: 'translate(-8px, 10px) rotate(4deg) scale(1.03)', offset: .14 },
+    { transform: `translate(${fx * .45}px, ${fy * .35}px) rotate(-14deg) scale(.75)`, offset: .55 },
+    { transform: `translate(${fx}px, ${fy}px) rotate(-24deg) scale(.4)`, opacity: .9 }], { duration: 1300, easing: 'cubic-bezier(.5, 0, .3, 1)', fill: 'forwards' }).finished;
+  env.hidden = true; env.getAnimations({ subtree: true }).forEach(a => a.cancel());
+  finish();
+}
+function finish() {
+  sent.hidden = false; $('#doneStamp').focus({ preventScroll: true });
+  const st = $('#penpalState'); st.className = 'pill done'; st.textContent = '✓ Letter on its way (sample)';
+  $('#penpal').classList.add('talking');
+}
+$('#againBtn').addEventListener('click', () => {
+  sheet.getAnimations({ subtree: true }).forEach(a => a.cancel()); env.getAnimations({ subtree: true }).forEach(a => a.cancel());
+  sheet.hidden = false; env.hidden = true; env.classList.remove('closed'); sent.hidden = true;
+  $('#sendBtn').disabled = false; letter.disabled = false;
+  const st = $('#penpalState'); st.className = 'pill q'; st.textContent = '… Waiting for your letter'; $('#penpal').classList.remove('talking');
+  chosen.length = 0; renderStickers(); letter.value = SAMPLE; renderSbs();
+  $('#st2').scrollIntoView({ behavior: reduced ? 'auto' : 'smooth' }); letter.focus({ preventScroll: true });
+});
+
+// shared speech-bubble tooltip: hover, focus and tap; the sharp corner points at the trigger
+const tip = $('#tip');
+let tipFor = null;
+function showTip(el) {
+  const [title, ...lines] = el.dataset.tip.split('|');
+  tip.innerHTML = `<b>${title}</b><ul>${lines.map(l => `<li>${l}</li>`).join('')}</ul>`;
+  tip.hidden = false; tipFor = el; el.setAttribute('aria-describedby', 'tip');
+  const r = el.getBoundingClientRect(), w = tip.offsetWidth, h = tip.offsetHeight, vw = document.documentElement.clientWidth;
+  const below = r.top - h - 10 < 64;                    // keep clear of the pinned nav
+  const flip = r.left + r.width / 2 + w - 8 > vw;        // not enough room to the right: open leftwards
+  let left = flip ? r.left + r.width / 2 - w + 8 : r.left + r.width / 2 - 8;
+  left = Math.min(Math.max(8, left), vw - w - 8);
+  tip.classList.toggle('below', below); tip.classList.toggle('flip', flip);
+  tip.style.left = left + 'px';
+  tip.style.top = (below ? r.bottom + 10 : r.top - h - 10) + 'px';
+}
+function hideTip() { if (tipFor) tipFor.removeAttribute('aria-describedby'); tip.hidden = true; tipFor = null; }
+document.querySelectorAll('[data-tip]').forEach(el => {
+  el.addEventListener('mouseenter', () => showTip(el)); el.addEventListener('mouseleave', () => document.activeElement !== el && hideTip());
+  el.addEventListener('focus', () => showTip(el)); el.addEventListener('blur', hideTip);
+  el.addEventListener('click', e => { e.preventDefault(); tipFor === el ? hideTip() : showTip(el); });
+});
+addEventListener('keydown', e => { if (e.key === 'Escape') hideTip(); });
+addEventListener('scroll', () => tipFor && showTip(tipFor), { passive: true });
+
+// how it works: an envelope walks the route and stops at each card
+const cards = [...document.querySelectorAll('#route li')], token = $('#token');
+let step = 0, howTimer = null, howPaused = false, howVisible = false;
+function placeToken() {
+  cards.forEach((c, i) => { c.classList.toggle('on', i === step); c.classList.toggle('done', i < step); });
+  token.style.transform = `translateY(${cards[step].offsetTop + 12}px)`;
+}
+function howRun() { clearInterval(howTimer); if (!howPaused && howVisible && !reduced) howTimer = setInterval(() => { step = (step + 1) % cards.length; placeToken(); }, 2200); }
+$('#howPause').addEventListener('click', e => { howPaused = !howPaused; e.currentTarget.textContent = howPaused ? '▶ Play' : '❚❚ Pause'; howRun(); });
+$('#howReset').addEventListener('click', () => { step = 0; placeToken(); howRun(); });
+if (reduced) { step = cards.length - 1; ['#howPause', '#howReset'].forEach(s => { $(s).disabled = true; $(s).title = 'Animation is off because your device asks for reduced motion'; }); }
+placeToken(); new ResizeObserver(placeToken).observe($('#route'));
+
+// pause loops off screen (CSS loops, the hero's SMIL clock and the route timer)
+const sceneSvg = $('#scene > svg');
+const io = new IntersectionObserver(es => es.forEach(e => {
+  e.target.classList.toggle('is-off', !e.isIntersecting);
+  if (e.target.id === 'how') { howVisible = e.isIntersecting; howRun(); }
+  if (e.target.classList.contains('hero')) e.isIntersecting ? sceneSvg.unpauseAnimations() : sceneSvg.pauseAnimations();
+}), { rootMargin: '100% 0px' });
+document.querySelectorAll('.hero, .stage, #how').forEach(el => io.observe(el));
+
+showPrompt(); renderSbs(); renderStickers();
+</script>
+</body>
+</html>

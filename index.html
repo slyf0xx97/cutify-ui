@@ -12,10 +12,11 @@
 :root { --paper: #fbf7ee; --rule: #e6dcc8; --ink: #1f2430; --soft: #4a5260; --pink: #ffb3c7; --butter: #ffe28a; --mint: #b8ecd3; --sky: #bfe3ff; --lilac: #d9c8ff; }
 *, *::before, *::after { box-sizing: border-box; }
 html { background: var(--paper); }
-/* grid paper: two repeating gradients, plus a red margin line */
+/* grid paper: two repeating gradients, plus a red margin line kept in the gutter left of .wrap */
+body { --margin-x: calc(max(1.25rem, (100% - 1180px) / 2) - 12px); }
 body { margin: 0; color: var(--ink); font: 400 17px/1.6 'Atkinson Hyperlegible', system-ui, sans-serif;
   background:
-    linear-gradient(90deg, transparent 63px, #f4a7a7 63px, #f4a7a7 65px, transparent 65px),
+    linear-gradient(90deg, transparent var(--margin-x), #f4a7a7 var(--margin-x), #f4a7a7 calc(var(--margin-x) + 2px), transparent calc(var(--margin-x) + 2px)),
     repeating-linear-gradient(0deg, transparent 0 27px, var(--rule) 27px 28px),
     repeating-linear-gradient(90deg, transparent 0 27px, var(--rule) 27px 28px), var(--paper); }
 :focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; border-radius: 6px; }
@@ -48,7 +49,7 @@ h1 span { background: linear-gradient(transparent 58%, var(--pink) 58%, var(--pi
 section.about { padding: 0 0 4rem; }
 .about .panel { background: #fff; border: 2px solid var(--ink); border-radius: 16px; box-shadow: 6px 7px 0 var(--ink); padding: 1.4rem 1.6rem; }
 .about h3 { font: 600 1.6rem 'Pixelify Sans', sans-serif; margin: 0 0 .5rem; }
-pre { background: var(--ink); color: #fbf7ee; padding: .9rem 1rem; border-radius: 10px; overflow-x: auto; font: 500 .9rem 'Spline Sans Mono', monospace; }
+pre { background: var(--ink); color: #fbf7ee; padding: .9rem 1rem; border-radius: 10px; overflow-x: auto; font: 500 .9rem 'Spline Sans Mono', monospace; white-space: pre-wrap; overflow-wrap: anywhere; }
 footer { padding: 2rem 0 3rem; font: 500 .85rem 'Spline Sans Mono', monospace; color: var(--soft); }
 footer a, .about a { color: var(--ink); }
 </style>
@@ -57,7 +58,7 @@ footer a, .about a { color: var(--ink); }
 <header class="wrap">
   <span class="tape">A Claude skill, MIT</span>
   <h1>cutify<span>-ui</span></h1>
-  <p class="lede">Playful, game-like interfaces with pixel-art characters, numbered story stages, sticker shadows and motion that shows what the product does. Every page below was built by Claude with the skill from a short brief.</p>
+  <p class="lede">Playful, game-like interfaces with pixel-art characters, numbered story stages and motion that shows what the product does, in six themes from frosted glass to riso print. Every page below was built by Claude with the skill from a short brief.</p>
   <div class="btns"><a class="btn main" href="https://github.com/slyf0xx97/cutify-ui">Get the skill on GitHub</a><a class="btn" href="#gallery">See the examples ↓</a></div>
 </header>
 
@@ -68,7 +69,13 @@ footer a, .about a { color: var(--ink); }
     <li><a class="card" style="--tilt:-.6deg" href="examples/sprout/"><span class="pin" style="--c:var(--pink)"></span><img src="docs/gallery/sprout.png" alt="Sprout: a droopy plant on a window sill with Dr. Leaf and Drip" loading="lazy"><div class="meta"><h2>Sprout</h2><p>Dr. Leaf diagnoses your plant, Drip plans the watering, the plant perks up.</p><div class="chips"><span class="chip" style="--c:var(--sky)">Glass</span><span class="chip">HTML</span></div></div></a></li>
     <li><a class="card" style="--tilt:1.4deg" href="examples/gridline/"><span class="pin" style="--c:var(--lilac)"></span><img src="docs/gallery/gridline.png" alt="Gridline: power packets flowing between solar roofs, a battery and homes" loading="lazy"><div class="meta"><h2>Gridline</h2><p>A microgrid control room on a heatwave evening, with power flowing along the wires.</p><div class="chips"><span class="chip" style="--c:var(--butter)">Apron</span><span class="chip">HTML</span></div></div></a></li>
     <li><a class="card" style="--tilt:-1deg" href="examples/pantry-pals/"><span class="pin" style="--c:var(--butter)"></span><img src="docs/gallery/pantry-pals.png" alt="Pantry Pals: a pixel chef and shopper beside a fridge" loading="lazy"><div class="meta"><h2>Pantry Pals</h2><p>A Chef and a Shopper plan your week from what's in the fridge. Next.js source included.</p><div class="chips"><span class="chip" style="--c:var(--sky)">Glass</span><span class="chip" style="--c:var(--mint)">React</span></div></div></a></li>
-    <li><a class="card" style="--tilt:.8deg" href="examples/portfolio/"><span class="pin" style="--c:var(--mint)"></span><img src="docs/gallery/portfolio.png" alt="A sample portfolio: a pixel avatar on a trail of six flags" loading="lazy"><div class="meta"><h2>Mika Tan, portfolio</h2><p>A sample designer portfolio where the avatar walks the trail as you scroll.</p><div class="chips"><span class="chip" style="--c:var(--sky)">Glass</span><span class="chip">HTML</span><span class="chip" style="--c:var(--pink)">No AI</span></div></div></a></li>
+    <li><a class="card" style="--tilt:.8deg" href="examples/portfolio/"><span class="pin" style="--c:var(--mint)"></span><img src="docs/gallery/portfolio.png" alt="A sample portfolio: a pixel avatar on a trail of six flags" loading="lazy"><div class="meta"><h2>Sam Sample, portfolio</h2><p>A sample designer portfolio where the avatar walks the trail as you scroll.</p><div class="chips"><span class="chip" style="--c:var(--sky)">Glass</span><span class="chip">HTML</span><span class="chip" style="--c:var(--pink)">No AI</span></div></div></a></li>
+    <li><a class="card" style="--tilt:-1.4deg" href="examples/sunday-spread/"><span class="pin" style="--c:var(--pink)"></span><img src="docs/gallery/sunday-spread.png" alt="Sunday Spread: a gingham picnic blanket with plates and pixel guests" loading="lazy"><div class="meta"><h2>Sunday Spread</h2><p>A Host and a Baker plan a potluck so nothing doubles up. You confirm the menu.</p><div class="chips"><span class="chip" style="--c:var(--pink)">Picnic</span><span class="chip">HTML</span></div></div></a></li>
+    <li><a class="card" style="--tilt:.9deg" href="examples/zine-night/"><span class="pin" style="--c:var(--sky)"></span><img src="docs/gallery/zine-night.png" alt="Zine Night: a riso poster with overprinted pink and blue circles" loading="lazy"><div class="meta"><h2>Zine Night</h2><p>The Curator draws a route through a 40-table zine fair. You star tables and print the map.</p><div class="chips"><span class="chip" style="--c:var(--lilac)">Riso Club</span><span class="chip">HTML</span></div></div></a></li>
+    <li><a class="card" style="--tilt:-.7deg" href="examples/moonlit-market/"><span class="pin" style="--c:var(--butter)"></span><img src="docs/gallery/moonlit-market.png" alt="Moonlit Market: a pixel night-market street under lanterns" loading="lazy"><div class="meta"><h2>Moonlit Market</h2><p>A Scout and a Queue Guesser plan a night-market food crawl under swaying lanterns.</p><div class="chips"><span class="chip" style="--c:var(--butter)">Lantern Night</span><span class="chip">HTML</span></div></div></a></li>
+    <li><a class="card" style="--tilt:1.2deg" href="examples/beep-and-build/"><span class="pin" style="--c:var(--sky)"></span><img src="docs/gallery/beep-and-build.png" alt="Beep and Build: a pixel robot on a grid of tiles heading for a battery" loading="lazy"><div class="meta"><h2>Beep &amp; Build</h2><p>Kids snap code blocks to guide Bolt the robot. Every solved level adds a brick to the tower.</p><div class="chips"><span class="chip" style="--c:var(--sky)">Toy Box</span><span class="chip">HTML</span><span class="chip" style="--c:var(--mint)">Playable</span></div></div></a></li>
+    <li><a class="card" style="--tilt:-1deg" href="examples/snooze-log/"><span class="pin" style="--c:var(--lilac)"></span><img src="docs/gallery/snooze-log.png" alt="Snooze Log: a pixel cat and owl by a moonlit window" loading="lazy"><div class="meta"><h2>Snooze Log</h2><p>A sleep journal with a cat that dozes when you don't. The Night Owl suggests one small change.</p><div class="chips"><span class="chip" style="--c:var(--lilac)">Sleepy Dusk</span><span class="chip">HTML</span></div></div></a></li>
+    <li><a class="card" style="--tilt:.7deg" href="examples/penpal-post/"><span class="pin" style="--c:var(--pink)"></span><img src="docs/gallery/penpal-post.png" alt="Penpal Post: a letter flying between two islands over a cloud wallpaper" loading="lazy"><div class="meta"><h2>Penpal Post</h2><p>Write to a penpal in Japan. A Translator and a Postie help; the letter folds and flies off.</p><div class="chips"><span class="chip" style="--c:var(--pink)">Strawberry Milk</span><span class="chip">HTML</span><span class="chip" style="--c:var(--butter)">日本語</span></div></div></a></li>
   </ul>
 
   <section class="about">
@@ -81,6 +88,6 @@ footer a, .about a { color: var(--ink); }
   </section>
 </main>
 
-<footer class="wrap">Made by <a href="https://github.com/slyf0xx97">Ghernie</a>. Examples use made-up data. © 2026, MIT License.</footer>
+<footer class="wrap">Made by <a href="https://github.com/slyf0xx97">Ghernie Encinas</a>. Examples use made-up data and made-up product names. © 2026 Ghernie Encinas, MIT License. An independent project, not affiliated with or endorsed by Anthropic; Claude is a trademark of Anthropic.</footer>
 </body>
 </html>

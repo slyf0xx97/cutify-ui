@@ -1,10 +1,27 @@
 # Themes
 
-Two shipped themes share one grammar. Copy the matching file from `assets/` (`glass.css` or `apron.css`) and build on its variables. To make a new theme, keep the variable *roles* and swap the values.
+Six themes share one grammar. Glass and Apron come from shipped projects; Picnic, Riso Club, Lantern Night and Toy Box were designed from the reference survey in `docs/INSPIRATION.md`. Copy the matching file from `assets/` and build on its variables. To make a new theme, keep the variable *roles* and swap the values.
+
+| Theme | Light/dark | Backdrop | Shadow language | Display voice | Suits |
+|---|---|---|---|---|---|
+| Glass | light | painted scene | frosted blur + soft sticker | Pixelify Sans | consumer apps, careers, learning, outdoors |
+| Apron | dark | dot grid | hard sticker | Anybody, wide | operations, control rooms, data |
+| Picnic | light | gingham + grain | soft offset, cocoa 25% | Fredoka | food, weekends, booking, family |
+| Riso Club | light | newsprint + halftone | slipped pink/blue double offset | Bricolage Grotesque | events, zines, portfolios, launches |
+| Lantern Night | dark | dusk sky, stars, dither skyline | warm glow, stepped pixel border | Jersey 10 | night, sleep, games, markets |
+| Toy Box | light | graph paper + isometric floor | bottom ledge that presses | Dela Gothic One | kids, learning, building, progress |
+
+Pick by the product's mood, then pick a backdrop from `references/backgrounds.md` that belongs to the product (a theme's default backdrop is a starting point, not a rule).
 
 ## Contents
 - Glass (light)
 - Apron (dark)
+- Picnic (light)
+- Riso Club (light)
+- Lantern Night (dark)
+- Toy Box (light)
+- Palettes
+- Fonts and privacy
 - Making a new theme
 
 ---
@@ -111,6 +128,115 @@ Checked for colour-blind separation against `#232428`: before `#e04438`, after `
 - Aviation micro-copy only when the product is about aviation. Otherwise borrow the *signage* feel (wide caps, mono codes) and keep the words plain.
 
 ---
+
+## Picnic (light)
+
+A cosy picnic: gingham under cream napkin cards, rounded Fredoka, jam-jar-lid numbers. File: `assets/picnic.css`.
+
+- **Backdrop:** translucent red gingham over napkin cream, with riso grain at half strength.
+- **Surfaces:** cream cards with 14px radius and a 2px cocoa border; an optional scalloped top edge.
+- **Shadow:** a soft offset, `3px 4px 0 rgb(58 46 42 / .25)`. Softer than a sticker: a blanket, not a decal.
+- **Signature:** stage numbers on round butter-yellow "jar lid" badges; tooltips as paper tags tied with a dotted string.
+- **Type:** Fredoka 600 display, Nunito body, DM Mono for data.
+
+| Variable | Value | Role |
+|---|---|---|
+| `--bg` | `#FFFDF8` | napkin |
+| `--surface` / `--surface-2` | `#FFF4E0` / `#FFFFFF` | bread / cup |
+| `--ink` / `--ink-muted` | `#3A2E2A` / `#6B5A52` | cocoa text (6.44:1 muted) |
+| `--accent` | `#C2272D` | jam red, white text 5.80:1 |
+| `--accent-2` | `#FFD86E` | butter, ink text 9.54:1 |
+| `--ok` / `--bad` | `#3E7D48` / `#C2272D` | clover / jam |
+
+Gingham red `#E5484D` is decoration only (3.85:1 on napkin).
+
+## Riso Club (light)
+
+A riso-printed zine: newsprint, flat white cards with sharp corners, and shadows that look like a slipped print plate. File: `assets/riso.css`.
+
+- **Backdrop:** newsprint `#F6F1E7` with grain, and a pink halftone fading from the hero corner.
+- **Surfaces:** flat white, 2px radius, 2px ink border.
+- **Shadow:** misregistered double offset, `-3px -2px 0 #FF48B0, 4px 3px 0 #0078BF`. No blur.
+- **Signature:** headings with a 2px blue ghost (`text-shadow: 2px 1px 0 rgb(0 120 191 / .55)`); big outlined stage numbers; pink over blue overlaps with `mix-blend-mode: multiply` turn purple.
+- **Type:** Bricolage Grotesque 700 display, Rethink Sans body, Space Mono tags.
+
+| Variable | Value | Role |
+|---|---|---|
+| `--bg` | `#F6F1E7` | newsprint |
+| `--surface` / `--surface-2` | `#FFFFFF` / `#FFE800` | paper / riso yellow |
+| `--ink` / `--ink-muted` | `#1D1D3B` / `#3D2E8C` | ink / overprint purple (9.48:1) |
+| `--accent` | `#0078BF` | riso blue fill, white text 4.73:1 |
+| `--accent-2` | `#FF48B0` | fluoro pink fill, ink text 5.27:1 |
+| `--link` | `#3D2E8C` | riso blue is large-text only on newsprint (4.20:1) |
+
+## Lantern Night (dark)
+
+A night market in pixels: a dusk sky with stars, a dithered skyline, glowing lantern borders. File: `assets/lantern.css`.
+
+- **Backdrop:** a dusk-to-night gradient with scattered stars, and a 1-bit dither band rising from the bottom like a skyline.
+- **Surfaces:** awning-purple panels with no rounding and a 2px stepped pixel border; a string of lantern dots along the top.
+- **Shadow:** a lantern glow, `0 0 0 2px #FF9F43, 0 0 24px rgb(255 159 67 / .25)`. This is the one theme where the light source replaces the hard offset.
+- **Signature:** pixel lanterns above stage numbers that sway gently; the active stage's lantern lights up. Motion uses `steps()`.
+- **Type:** Jersey 10 headings, Silkscreen tags, Lexend body, Sometype Mono data.
+
+| Variable | Value | Role |
+|---|---|---|
+| `--bg` | `#14132B` | night |
+| `--surface` / `--surface-2` | `#221F45` / `#2C2858` | awning / panel |
+| `--ink` / `--ink-muted` | `#F7EBD9` / `#C9BBD9` | rice-paper text (8.59:1 muted on surface) |
+| `--accent` | `#FF9F43` | lantern, night text 8.89:1 |
+| `--accent-2` | `#2EC4A0` | jade, night text 8.22:1 |
+| `--bad` | `#FF7A82` | readable red on surfaces (6.19:1) |
+
+## Toy Box (light)
+
+Plastic toys on graph paper: white cards, primary bricks, buttons with a ledge that presses down. File: `assets/toybox.css`.
+
+- **Backdrop:** graph paper on a play-mat colour; an isometric floor under the hero character only.
+- **Surfaces:** white cards, 18px radius, no border; brick chips with two small "studs" on top.
+- **Shadow:** a ledge, `0 5px 0` in a darker shade of the surface, which collapses when pressed (`translateY(5px)`, ledge gone). It replaces the sticker offset.
+- **Signature:** stage numbers as stacked bricks; each finished stage adds a brick to a little tower in the corner.
+- **Type:** Dela Gothic One display, Outfit body, JetBrains Mono data.
+
+| Variable | Value | Role |
+|---|---|---|
+| `--bg` | `#FAF7F0` | play mat |
+| `--surface` | `#FFFFFF` | plastic |
+| `--ink` / `--ink-muted` | `#1A1A1A` / `#4A4A4A` | text (8.28:1 muted) |
+| `--accent` / ledge | `#2B59C3` / `#1C3D8C` | blue brick, white text 6.33:1 |
+| `--accent-2` / ledge | `#FFC93C` / `#C99412` | yellow brick, ink text 11.33:1 |
+| `--ok` / `--bad` | `#1F7A47` / `#C1121F` | dark green / dark red |
+
+Red brick `#E63946` fails 4.5:1 with both white and black text; use it for big bold labels only, or use `#C1121F`.
+
+---
+
+## Palettes
+
+Spare palettes for reskinning any theme. Ratios are WCAG 2.x contrast, calculated from the hex values.
+
+| Palette | Colours | Text that passes 4.5:1 |
+|---|---|---|
+| Strawberry Milk | `#FFF1F3` `#FFFFFF` `#FFD6E0` `#FF8FAB` `#D6336C` `#B0245A` `#4A2030` `#7BC67E` | cocoa `#4A2030` and berry `#B0245A` on milk; cocoa on strawberry fills. Leaf and strawberry are decoration only |
+| Matcha Latte | `#F3F1E4` `#FFFDF5` `#E6EBD0` `#8DB360` `#5E7F3A` `#3F5A2A` `#8B5E3C` `#2B2A22` | ink, deep tea and bean on foam; ink on matcha fills |
+| Bubblegum Arcade (dark) | `#1E1B3A` `#2C2858` `#FF5FA2` `#3DE0FF` `#FFE45E` `#FFF6FB` | everything on the cabinet colour; cabinet colour as text on pink, cyan and yellow fills |
+| Night Market (dark) | `#14132B` `#221F45` `#FF9F43` `#E8505B` `#FF7A82` `#2EC4A0` `#F7EBD9` | all on night; use `#FF7A82` for small red text on awning |
+| Riso Blue / Pink | `#F6F1E7` `#FFFFFF` `#FFE800` `#FF48B0` `#D9258F` `#0078BF` `#3D2E8C` `#1D1D3B` | ink and purple on newsprint; riso blue only on white |
+| Toy Primaries | `#FAF7F0` `#FFC93C` `#E63946` `#2B59C3` `#2A9D5C` `#C1121F` `#1F7A47` `#1A1A1A` | ink, blue, dark red, dark green on the mat; white on blue |
+| Picnic Gingham | `#FFFDF8` `#FFF4E0` `#FFD86E` `#E5484D` `#C2272D` `#5DAA68` `#3E7D48` `#3A2E2A` | ink, jam red, clover on napkin; ink on butter |
+| Sleepy Dusk (dark) | `#2B2545` `#3A3260` `#B8A6FF` `#FFB8A0` `#FFF3B0` `#F4F0FF` | every listed text colour on dusk and cloud; dusk as text on lavender and peach |
+
+Common traps: riso blue (4.20:1), toy red (3.90:1) and gingham red (3.85:1) on their light backgrounds; white text on pink, cyan or yellow fills.
+
+---
+
+## Fonts and privacy
+
+Both theme files load their fonts from Google Fonts with an `@import`, which is the quickest way to start. It also means every visitor's browser contacts Google's servers and shares its IP address. For sites with users in the EU, or anywhere you'd rather not involve a third party, self-host the fonts:
+
+- **Next.js**: `next/font/google` downloads the fonts at build time and serves them from your own domain, so no request goes to Google at runtime.
+- **Plain HTML**: download the `.woff2` files (for example from the google/fonts repository or a font helper tool), put them next to your CSS, declare them with `@font-face`, and delete the `@import` line.
+- Every font used here is under the SIL Open Font License 1.1. When you bundle the files, keep each family's `OFL.txt` alongside them.
 
 ## Making a new theme
 

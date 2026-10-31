@@ -1,0 +1,787 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Moonlit Market, a night-market food crawl planner</title>
+<meta name="description" content="A cutify-ui Lantern Night example: the Scout finds stalls for your cravings and budget, the Queue Guesser estimates the waits, and you approve the crawl route.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jersey+10&family=Silkscreen:wght@400;700&family=Lexend:wght@400;600&family=Sometype+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' shape-rendering='crispEdges'%3E%3Cpath fill='%2316171a' d='M7 0h2v2H7zM4 2h8v2H4zM2 4h12v9H2zM4 13h8v1H4zM7 14h2v2H7z'/%3E%3Cpath fill='%23FF9F43' d='M3 5h10v7H3z'/%3E%3Cpath fill='%23FFE45E' d='M6 6h4v4H6z'/%3E%3Cpath fill='%23c2410c' d='M5 5h1v7H5zM10 5h1v7h-1z'/%3E%3C/svg%3E">
+<style>
+/* ---- tokens: cutify-ui Lantern Night (assets/lantern.css) ---- */
+:root {
+  --bg: #14132B; --surface: #221F45; --surface-2: #2C2858; --border: #FF9F43;
+  --ink: #F7EBD9; --ink-muted: #C9BBD9;
+  --lantern: #FF9F43; --lantern-ink: #14132B;
+  --jade: #2EC4A0; --jade-ink: #14132B;
+  --ok: #2EC4A0; --bad: #FF7A82; --warn: #FFE45E;
+  /* cast colours: Scout jade (circle), Queue Guesser lilac (hexagon), You rice paper (square) */
+  --c-scout: #2EC4A0; --c-queue: #B9A2FF; --c-you: #F7EBD9;
+  --glow: 0 0 0 2px var(--lantern), 0 0 24px rgb(255 159 67 / .25);
+  --pixel-border: 0 -2px var(--lantern), 0 2px var(--lantern), -2px 0 var(--lantern), 2px 0 var(--lantern);
+  --soft-border: 0 -2px #ffffff26, 0 2px #ffffff26, -2px 0 #ffffff26, 2px 0 #ffffff26;
+  --display: 'Jersey 10', system-ui, sans-serif; --label: 'Silkscreen', monospace;
+  --body: 'Lexend', system-ui, sans-serif; --mono: 'Sometype Mono', ui-monospace, monospace;
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { background: var(--bg); overflow-x: clip; scroll-behavior: smooth; scroll-padding-top: 5rem; }
+body { margin: 0; color: var(--ink); font: 400 1rem/1.6 var(--body); position: relative; min-height: 100vh; overflow-x: clip;
+  background:
+    radial-gradient(1.5px 1.5px at 20% 30%, #FFF3B0, transparent), radial-gradient(1px 1px at 70% 20%, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 40% 60%, #fff, transparent), radial-gradient(1px 1px at 85% 45%, #FFF3B0, transparent),
+    linear-gradient(#14132B 0%, #221F45 60%, #3A2350 100%);
+  background-size: 300px 300px, 260px 260px, 340px 340px, 280px 280px, 100% 100%; background-attachment: fixed; }
+/* a dithered skyline rising from the bottom of the viewport */
+body::after { content: ""; position: fixed; left: 0; right: 0; bottom: 0; height: 22vh; z-index: -1; pointer-events: none;
+  background: conic-gradient(#0B0A1A 25%, transparent 0 50%, #0B0A1A 0 75%, transparent 0) 0 0 / 4px 4px;
+  mask-image: linear-gradient(transparent, #000 85%); image-rendering: pixelated; }
+h1, h2, h3 { font-family: var(--display); font-weight: 400; line-height: .95; letter-spacing: .01em; }
+a { color: var(--lantern); }
+:focus-visible { outline: 3px solid var(--lantern); outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { animation: none !important; transition: none !important; } }
+.is-off, .is-off *, .is-off *::before, .is-off *::after { animation-play-state: paused !important; }
+.mono { font-family: var(--mono); }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.wrap { width: min(1180px, 100%); margin: 0 auto; padding: 0 16px; }
+@media (min-width: 700px) { .wrap { padding: 0 24px; } }
+
+/* panels: square, stepped pixel border, a string of lantern dots on top */
+.panel { position: relative; background: var(--surface); box-shadow: var(--pixel-border), 0 0 24px rgb(255 159 67 / .18); padding: 1.3rem 1.25rem 1.1rem; margin: 2px; }
+.panel::before { content: ""; position: absolute; left: 10px; right: 10px; top: -9px; height: 8px; pointer-events: none;
+  background: radial-gradient(circle 3px, var(--lantern) 98%, transparent) 0 0 / 22px 8px repeat-x; filter: drop-shadow(0 0 4px var(--lantern)); }
+.card { background: var(--surface-2); box-shadow: var(--soft-border); padding: .9rem 1rem; margin: 2px; }
+.lab { font: 400 .7rem var(--label); letter-spacing: .06em; text-transform: uppercase; color: var(--ink-muted); }
+.hl { color: var(--lantern); text-shadow: 0 0 10px rgb(255 159 67 / .5); }
+
+/* buttons */
+button { font: inherit; cursor: pointer; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; min-height: 2.75rem; padding: .5rem 1.1rem; margin: 2px; border: 0; background: var(--surface-2); color: var(--ink);
+  font: 400 .85rem var(--label); text-transform: uppercase; text-decoration: none; box-shadow: var(--pixel-border); }
+.btn.primary { background: var(--lantern); color: var(--lantern-ink); box-shadow: var(--glow); }
+.btn.jade { background: var(--jade); color: var(--jade-ink); box-shadow: 0 0 0 2px var(--jade), 0 0 20px rgb(46 196 160 / .3); }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+@media (prefers-reduced-motion: no-preference) {
+  :where(.btn, button) { transition: transform .12s steps(2, end), filter .12s; }
+  :where(.btn, button):not(:disabled):hover { transform: translateY(-2px); filter: brightness(1.1); }
+  :where(.btn, button):not(:disabled):active { transform: translateY(2px); } }
+
+.kind { display: inline-block; padding: .05rem .4rem; font: 400 .65rem/1.5 var(--label); text-transform: uppercase; color: var(--bg); white-space: nowrap; vertical-align: middle; }
+.kind.ai { background: var(--jade); } .kind.you { background: var(--ink); }
+
+/* tooltip: focusable i, text in data-tip; JS nudges it inside the viewport (--dx) and flips it up near the bottom */
+.i { display: inline-grid; place-items: center; flex: none; width: 1.25rem; height: 1.25rem; font: 400 .7rem var(--label); color: var(--lantern); box-shadow: 0 -2px currentColor, 0 2px currentColor, -2px 0 currentColor, 2px 0 currentColor;
+  cursor: help; position: relative; margin-left: .45rem; vertical-align: middle; }
+.i[data-tip]:hover::after, .i[data-tip]:focus-visible::after { content: attr(data-tip); position: absolute; left: 50%; top: calc(100% + 10px); transform: translateX(calc(-50% + var(--dx, 0px)));
+  width: min(290px, calc(100vw - 32px)); padding: .7rem .85rem; background: var(--surface-2); color: var(--ink); box-shadow: var(--glow); font: 400 .92rem/1.5 var(--body);
+  text-align: left; text-transform: none; letter-spacing: 0; white-space: pre-line; z-index: 200; pointer-events: none; }
+.i.up[data-tip]:hover::after, .i.up[data-tip]:focus-visible::after { top: auto; bottom: calc(100% + 10px); }
+:has(> .i:hover), :has(> .i:focus-visible) { z-index: 60; }
+
+.pill { display: inline-block; padding: .1rem .5rem; font: 400 .7rem/1.6 var(--label); text-transform: uppercase; color: var(--bg); white-space: nowrap; }
+.pill.ok { background: var(--ok); } .pill.bad { background: var(--bad); } .pill.amb { background: var(--warn); }
+.pill.q { background: #ffffff1a; color: var(--ink); }
+.kpi { padding: .8rem 1rem; background: var(--surface-2); box-shadow: var(--pixel-border); margin: 2px; display: flex; flex-direction: column; }
+.kpi small { display: block; font: 400 .65rem var(--label); text-transform: uppercase; color: var(--ink-muted); }
+.kpi b { font: 400 2.2rem/1.1 var(--display); color: var(--lantern); }
+.kpi span { font-size: .8rem; color: var(--ink-muted); }
+
+/* typing dots for "thinking" */
+.typing { display: inline-flex; align-items: center; gap: 2px; height: 1em; }
+.typing span { display: inline-block; width: 6px; height: 6px; background: currentColor; }
+@media (prefers-reduced-motion: no-preference) { .typing span { animation: dot 1s steps(2, end) infinite; } .typing span:nth-child(2) { animation-delay: .15s; } .typing span:nth-child(3) { animation-delay: .3s; } }
+@keyframes dot { 50% { transform: translateY(-4px); } }
+
+/* pixel sprites */
+.sprite { display: block; image-rendering: pixelated; }
+.px-blink { animation: px-blink 1.2s steps(1) infinite; } @keyframes px-blink { 50% { opacity: .35; } }
+@media (prefers-reduced-motion: no-preference) {
+  .bob { animation: px-bob 1.6s steps(2, end) infinite; }
+  .talking { animation: hop .4s steps(2) infinite alternate; } }
+@keyframes px-bob { 50% { transform: translateY(-2px); } }
+@keyframes hop { to { transform: translateY(-6px); } }
+.glyph { display: inline-grid; place-items: center; width: 1.3rem; height: 1.3rem; flex: none; font: 600 .7rem var(--mono); color: var(--bg); }
+.glyph.scout { background: var(--c-scout); border-radius: 50%; }
+.glyph.queue { background: var(--c-queue); clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%); }
+.glyph.you { background: var(--c-you); }
+
+/* ---- nav ---- */
+.nav { position: sticky; top: 0; z-index: 50; background: rgb(20 19 43 / .92); backdrop-filter: blur(6px); box-shadow: 0 2px 0 #ffffff1a; }
+.nav .wrap { display: flex; align-items: center; gap: 1rem; min-height: 4rem; }
+.brand { display: inline-flex; align-items: center; gap: .55rem; color: var(--ink); text-decoration: none; font: 400 1.8rem/1 var(--display); }
+.brand svg { width: 28px; height: 28px; }
+.nav .links { margin-left: auto; display: flex; align-items: center; gap: .6rem; }
+.nav .links a:not(.btn) { color: var(--ink); font: 400 .75rem var(--label); text-transform: uppercase; text-decoration: none; padding: .6rem .4rem; }
+.nav .links a:not(.btn):hover { color: var(--lantern); }
+.nav .btn { white-space: nowrap; }
+@media (max-width: 520px) { .nav .links a:not(.btn) { display: none; } .nav .btn { padding: .4rem .8rem; } .brand { font-size: 1.45rem; white-space: nowrap; } }
+
+/* ---- hero ---- */
+.hero { display: grid; gap: 2.2rem; align-items: center; padding-block: 2.6rem 1.5rem; }
+@media (min-width: 980px) { .hero { grid-template-columns: .95fr 1.15fr; padding-block-start: 3.4rem; } }
+.hero h1 { font-size: clamp(3.6rem, 9vw, 6.4rem); margin: 0 0 .9rem; }
+.hero .tag { font-size: 1.12rem; margin: 0 0 1.1rem; max-width: 34rem; }
+.benefits { list-style: none; margin: 0 0 1.3rem; padding: 0; display: grid; gap: .45rem; }
+.benefits li { display: flex; gap: .6rem; align-items: baseline; }
+.benefits li::before { content: "✓"; font: 600 .95rem var(--mono); color: var(--jade); }
+.live { display: inline-flex; align-items: center; gap: .5rem; margin: 0 0 1.2rem; padding: .25rem .6rem; background: #ffffff12; font: 400 .7rem var(--label); text-transform: uppercase; color: var(--ink); }
+.live i { width: 8px; height: 8px; background: var(--warn); }
+@media (prefers-reduced-motion: no-preference) { .live i { animation: px-blink 1.6s steps(1) infinite; } }
+.cta { display: flex; flex-wrap: wrap; gap: .8rem; align-items: center; }
+.cta .btn.primary { flex-direction: column; align-items: flex-start; gap: .1rem; padding: .7rem 1.3rem; font-size: 1rem; }
+.cta .btn.primary small { font: 400 .78rem var(--body); text-transform: none; }
+
+.scene { padding: .6rem; }
+.scene .stage-svg { position: relative; }
+.street { display: block; width: 100%; height: auto; image-rendering: pixelated; background: #1b1838; }
+.alab { position: absolute; display: none; align-items: center; gap: .4rem; padding: .2rem .5rem; background: rgb(20 19 43 / .9); box-shadow: var(--soft-border); font: 400 .72rem var(--label); text-transform: uppercase; white-space: nowrap; z-index: 3; }
+@media (min-width: 700px) { .alab { display: inline-flex; } }
+.legend { display: flex; flex-wrap: wrap; gap: .4rem 1rem; margin-top: .7rem; font-size: .85rem; }
+.legend span { display: inline-flex; align-items: center; gap: .4rem; }
+.legend .lit-key { width: 10px; height: 12px; background: var(--lantern); box-shadow: 0 0 8px var(--lantern); }
+
+/* street art: swaying lanterns, lit stalls, walker legs */
+.street .sw { transform-box: fill-box; transform-origin: 50% 0; }
+@media (prefers-reduced-motion: no-preference) { .street .sw { animation: sway 2.8s steps(4, end) infinite alternate; } .street .lan:nth-child(even) .sw { animation-delay: -1.4s; } }
+@keyframes sway { from { transform: rotate(-6deg); } to { transform: rotate(6deg); } }
+.street .lan .body { fill: #5A2F45; } .street .lan .rib { fill: #3B1F33; }
+.street .lan.lit .body { fill: var(--lantern); } .street .lan.lit .rib { fill: #C2410C; }
+.street .lan.lit .sw { filter: drop-shadow(0 0 4px #FF9F43); }
+.street .stall .glow { opacity: 0; transition: opacity .3s steps(3); }
+.street .stall.lit .glow { opacity: .55; }
+.street .stall.here .glow { opacity: .85; }
+.street .stop { display: none; } .street .stop.on { display: inline; } #heroStreet .street .stop.on { display: none; }
+.street .route { fill: none; stroke: var(--lantern); stroke-width: 3; stroke-dasharray: 6 6; opacity: .85; }
+@media (prefers-reduced-motion: no-preference) { .street .route { animation: march 1.2s steps(4) infinite; } }
+@keyframes march { to { stroke-dashoffset: -24; } }
+.street .walker .fb { opacity: 0; }
+@media (prefers-reduced-motion: no-preference) {
+  .street .walker.walking .fa { animation: legs .36s steps(1) infinite; }
+  .street .walker.walking .fb { animation: legs .36s steps(1) infinite reverse; } }
+@keyframes legs { 0% { opacity: 1; } 50% { opacity: 0; } }
+
+/* ---- stages ---- */
+.stage { padding-top: .5rem; }
+.step { display: flex; align-items: center; gap: .9rem; margin: 3.4rem 0 .8rem; scroll-margin-top: 5rem; }
+.step h2 { min-width: 0; }
+/* the stage number is a paper lantern hanging on a string; the active one is lit */
+.step .n { position: relative; display: grid; place-items: center; width: 2.8rem; height: 3rem; background: var(--surface-2); color: var(--ink);
+  font: 400 1.8rem var(--display); box-shadow: var(--soft-border); flex: none; margin-top: 1rem; }
+.step .n::before { content: ""; position: absolute; left: 50%; top: -1.4rem; width: 2px; height: 1.1rem; margin-left: -1px; background: #ffffff55; box-shadow: -6px 16px 0 0 transparent; }
+.step .n::after { content: ""; position: absolute; left: 50%; bottom: -10px; width: 4px; height: 8px; margin-left: -2px; background: #ffffff55; }
+.step .n b { position: absolute; left: 6px; right: 6px; top: -6px; height: 4px; background: #ffffff55; }
+.step.on .n { background: var(--lantern); color: var(--lantern-ink); box-shadow: var(--glow), 0 0 40px rgb(255 159 67 / .45); }
+.step.on .n::after, .step.on .n b { background: #C2410C; }
+.step.done:not(.on) .n { box-shadow: 0 0 0 2px var(--jade); }
+@media (prefers-reduced-motion: no-preference) { .step .n { animation: sway 3s steps(4, end) infinite alternate; transform-origin: 50% -1.4rem; } }
+.step h2 { margin: 0; font-size: clamp(2.1rem, 4.4vw, 2.9rem); }
+.step .state { margin-left: auto; font: 400 .7rem var(--label); text-transform: uppercase; color: var(--ink-muted); }
+.explain { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; margin: 0 0 1.1rem; }
+.explain > span { padding: .3rem .6rem; background: #ffffff10; font-size: .9rem; display: inline-flex; gap: .4rem; align-items: center; }
+.explain i { font-style: normal; color: var(--lantern); font-weight: 600; }
+
+/* stage 1 */
+.pick { display: grid; gap: 1.4rem; }
+@media (min-width: 900px) { .pick { grid-template-columns: 1.3fr 1fr; } }
+.pick h3 { font-size: 1.6rem; margin: 0 0 .7rem; display: flex; align-items: center; }
+.craves { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: .6rem; }
+.crave { display: flex; align-items: center; gap: .55rem; min-height: 3rem; padding: .45rem .7rem; border: 0; margin: 2px; background: var(--surface-2); color: var(--ink);
+  box-shadow: var(--soft-border); font: 400 .78rem var(--label); text-transform: uppercase; text-align: left; }
+.crave svg { width: 24px; height: 24px; flex: none; }
+.crave::after { content: "+"; margin-left: auto; font: 600 1rem var(--mono); }
+.crave[aria-pressed="true"] { background: var(--jade); color: var(--jade-ink); box-shadow: 0 0 0 2px var(--jade), 0 0 16px rgb(46 196 160 / .35); }
+.crave[aria-pressed="true"]::after { content: "✓"; }
+.field { margin-bottom: 1.2rem; }
+.budget-row { display: flex; align-items: center; gap: .8rem; }
+.budget-row input { flex: 1; accent-color: var(--lantern); min-width: 0; height: 2rem; }
+.budget-row output { font: 600 1.3rem var(--mono); color: var(--lantern); min-width: 3.4rem; text-align: right; }
+.times { display: flex; flex-wrap: wrap; gap: .5rem; border: 0; margin: 0; padding: 0; }
+.times label { position: relative; display: inline-flex; align-items: center; gap: .3rem; padding: .4rem .7rem; margin: 2px; background: var(--surface-2); box-shadow: var(--soft-border); font: 600 .95rem var(--mono); cursor: pointer; }
+.times input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.times label:has(input:checked) { background: var(--lantern); color: var(--lantern-ink); box-shadow: var(--glow); }
+.times label:has(input:checked)::before { content: "✓"; }
+.times label:has(input:focus-visible) { outline: 3px solid var(--lantern); outline-offset: 3px; }
+.hint { font-size: .9rem; color: var(--ink-muted); margin: .5rem 0 0; }
+
+/* agent rows (stages 2 and 3) */
+.agent { display: grid; grid-template-columns: 72px 1fr; gap: 1rem; align-items: start; margin-bottom: 1.2rem; }
+.agent .who { display: grid; justify-items: center; gap: .35rem; }
+.agent .who svg { width: 64px; height: 64px; }
+.bubble { position: relative; padding: .8rem 1rem; background: var(--surface-2); box-shadow: 0 -2px var(--c), 0 2px var(--c), -2px 0 var(--c), 2px 0 var(--c); min-height: 3.4rem; }
+.bubble::before { content: ""; position: absolute; left: -12px; top: 18px; width: 10px; height: 10px; background: var(--c); clip-path: polygon(100% 0, 0 50%, 100% 100%); }
+.bubble .head { display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; margin-bottom: .25rem; font: 400 .75rem var(--label); text-transform: uppercase; }
+.bubble p { margin: 0; }
+.bubble .sample { display: block; margin-top: .35rem; font-size: .8rem; color: var(--ink-muted); }
+.scout-c { --c: var(--c-scout); } .queue-c { --c: var(--c-queue); }
+
+.stalls { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr)); gap: .9rem; }
+.stall-card { display: grid; grid-template-columns: 40px 1fr; gap: .2rem .8rem; align-content: start; }
+.stall-card svg { width: 40px; height: 40px; grid-row: span 2; }
+.stall-card h4 { margin: 0; font: 600 1rem/1.3 var(--body); }
+.stall-card .meta { font-size: .88rem; color: var(--ink-muted); }
+.stall-card .foot { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; gap: .5rem; flex-wrap: wrap; margin-top: .5rem; }
+.stall-card .price { font: 600 1rem var(--mono); }
+.stall-card.picked { box-shadow: 0 0 0 2px var(--jade), 0 0 18px rgb(46 196 160 / .2); }
+.stall-card .why { grid-column: 1 / -1; font-size: .88rem; margin: .3rem 0 0; }
+
+/* stage 3 waits */
+.waits { list-style: none; margin: 0; padding: 0; display: grid; gap: .7rem; }
+.wait { display: grid; grid-template-columns: 2.2rem 1fr; gap: .2rem .9rem; align-items: start; }
+.wait .num { display: grid; place-items: center; width: 2.2rem; height: 2.2rem; background: var(--lantern); color: var(--lantern-ink); font: 400 1.4rem var(--display); }
+.wait h4 { margin: 0; font: 600 1rem/1.3 var(--body); }
+.wait .row { display: flex; flex-wrap: wrap; align-items: flex-end; gap: .5rem 1.4rem; margin-top: .35rem; }
+.wait .row > div { display: grid; gap: .1rem; }
+.wait .big { font: 600 1.15rem var(--mono); }
+.bars { display: flex; align-items: flex-end; gap: 3px; height: 30px; }
+.bars i { width: 9px; background: #ffffff40; }
+.bars i.at { background: var(--lantern); box-shadow: 0 0 0 2px var(--ink); }
+.bars-cap { font: 400 .72rem var(--mono); color: var(--ink-muted); display: flex; justify-content: space-between; width: 69px; }
+
+/* stage 4 */
+.route-grid { display: grid; gap: 1.2rem; }
+@media (min-width: 980px) { .route-grid { grid-template-columns: 1.5fr 1fr; align-items: start; } }
+.kpis { display: grid; grid-template-columns: repeat(2, 1fr); gap: .7rem; margin-bottom: 1rem; }
+.stops { list-style: none; margin: 0 0 1rem; padding: 0; display: grid; gap: .45rem; }
+.stops li { display: grid; grid-template-columns: 1.8rem 1fr auto; gap: .6rem; align-items: center; padding: .4rem .55rem; background: #ffffff0d; }
+.stops li b { display: grid; place-items: center; width: 1.8rem; height: 1.8rem; background: var(--lantern); color: var(--lantern-ink); font: 400 1.2rem var(--display); }
+.stops li .t { font: 600 .9rem var(--mono); }
+.stops li.here { box-shadow: 0 0 0 2px var(--lantern); }
+.decide { display: flex; flex-wrap: wrap; align-items: center; gap: .8rem; }
+.status { font-size: .95rem; margin: .7rem 0 0; min-height: 1.6em; }
+.empty { padding: 1rem; background: #ffffff0d; color: var(--ink); }
+
+/* ---- how it works ---- */
+.how { display: grid; gap: 2rem; }
+@media (min-width: 980px) { .how { grid-template-columns: 1.1fr 1fr; } }
+.how-route { position: relative; margin: 0; padding: 0 0 0 3.4rem; list-style: none; display: grid; gap: .9rem; }
+.how-route::before { content: ""; position: absolute; left: 1.2rem; top: .8rem; bottom: .8rem; width: 4px; background-image: linear-gradient(var(--lantern) 50%, transparent 50%); background-size: 4px 12px; opacity: .7; }
+.how-route li { position: relative; padding: .75rem .9rem; background: var(--surface); box-shadow: var(--soft-border); margin: 2px; }
+.how-route li.on { box-shadow: var(--glow); }
+.how-route li .num { position: absolute; left: -3.4rem; top: .6rem; display: grid; place-items: center; width: 2.2rem; height: 2.2rem; background: var(--surface-2); box-shadow: var(--soft-border); font: 400 1.4rem var(--display); }
+.how-route li.on .num { background: var(--lantern); color: var(--lantern-ink); box-shadow: var(--glow); }
+.how-route h3 { margin: 0 0 .2rem; font: 600 1.02rem/1.3 var(--body); display: flex; gap: .45rem; align-items: center; flex-wrap: wrap; }
+.how-route p { margin: 0; font-size: .95rem; color: var(--ink-muted); }
+.how-ctrl { display: flex; gap: .5rem; margin-top: 1rem; }
+.arch { display: grid; grid-template-columns: 1fr 1fr; gap: .55rem .8rem; align-content: start; }
+.arch .cap { grid-column: 1 / -1; }
+.arch .box { padding: .65rem .8rem; background: var(--surface); box-shadow: var(--soft-border); margin: 2px; display: flex; flex-direction: column; gap: .2rem; }
+.arch .box b { display: flex; align-items: center; gap: .45rem; flex-wrap: wrap; font-weight: 600; }
+.arch .box > span { font-size: .9rem; color: var(--ink-muted); }
+.arch .box.scout { box-shadow: 0 0 0 2px var(--c-scout); } .arch .box.queue { box-shadow: 0 0 0 2px var(--c-queue); } .arch .box.you { box-shadow: 0 0 0 2px var(--c-you); }
+.arch .full { grid-column: 1 / -1; }
+.arch .down { text-align: center; font: 600 1.2rem/1 var(--mono); color: var(--lantern); }
+@media (max-width: 560px) { .arch { grid-template-columns: 1fr; } .arch .down.half { display: none; } }
+
+/* ---- footer ---- */
+footer { margin: 4rem auto 1.5rem; }
+.foot-grid { display: grid; gap: 1.4rem; }
+@media (min-width: 700px) { .foot-grid { grid-template-columns: 1fr 1fr; } }
+@media (min-width: 1100px) { .foot-grid { grid-template-columns: 1.4fr 1fr 1fr 1fr; } }
+.foot-grid h5 { margin: 0 0 .4rem; font: 400 .72rem var(--label); text-transform: uppercase; color: var(--ink-muted); }
+.foot-grid p, .foot-grid ul { margin: 0; font-size: .95rem; } .foot-grid ul { padding: 0; list-style: none; display: grid; gap: .2rem; }
+.copy { margin-top: 1.1rem; padding-top: .8rem; border-top: 2px dashed #ffffff26; font: 400 .82rem var(--mono); color: var(--ink-muted); }
+
+/* ---- dialog ---- */
+dialog.pop { width: min(520px, calc(100vw - 1.5rem)); max-height: 94dvh; padding: 0; border: 0; color: var(--ink); background: var(--surface); box-shadow: var(--glow), 0 20px 60px #000a; overflow: auto; }
+dialog.pop::backdrop { background: rgb(8 7 20 / .72); }
+@media (prefers-reduced-motion: no-preference) { dialog.pop[open] { animation: pop-in .18s steps(3, end); } }
+@keyframes pop-in { from { opacity: 0; transform: translateY(10px) scale(.98); } }
+.pop-head { display: flex; align-items: center; gap: .7rem; padding: .9rem 1rem; background: var(--surface-2); }
+.pop-head svg { width: 40px; height: 40px; flex: none; }
+.pop-head h2 { margin: 0; font-size: 2rem; flex: 1; }
+.pop-close { border: 0; background: #ffffff14; color: var(--ink); font: 400 .7rem var(--label); text-transform: uppercase; padding: .5rem .6rem; min-height: 2.4rem; }
+.pop-body { padding: 1rem 1.1rem 1.2rem; }
+.pop-body .stops { margin-bottom: .8rem; }
+.pop-body .sum { font-size: .95rem; margin: 0 0 1rem; }
+.pop-actions { display: flex; flex-wrap: wrap; gap: .6rem; justify-content: flex-end; }
+</style>
+</head>
+<body id="top">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs id="pixdefs"></defs></svg>
+
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="Moonlit Market, back to top"><svg class="sprite" viewBox="0 0 16 16" aria-hidden="true"><use href="#ic-lantern"/></svg>Moonlit Market</a>
+    <nav class="links" aria-label="Page">
+      <a href="#how">How it works</a>
+      <a class="btn primary" href="#st1">Plan a crawl</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="wrap hero" id="hero" aria-labelledby="heroT">
+    <div>
+      <h1 id="heroT">Moonlit <span class="hl">Market</span></h1>
+      <p class="tag">Plan a night-market food crawl. Pick your cravings, the Scout finds stalls that fit your budget, the Queue Guesser estimates the waits, and you approve the route.</p>
+      <ul class="benefits">
+        <li>Stalls that match what you’re craving</li>
+        <li>Wait estimates before you join a queue</li>
+        <li>One route, walked in order, approved by you</li>
+      </ul>
+      <p class="live"><i aria-hidden="true"></i>Sample night, made-up stalls and crowds</p>
+      <div class="cta">
+        <button class="btn primary" type="button" id="playBtn"><span>▶ Plan a sample crawl</span><small>Watch the Scout and the Queue Guesser work</small></button>
+      </div>
+    </div>
+    <div class="panel scene" aria-labelledby="sceneCap">
+      <p class="sr-only" id="sceneCap">A pixel night-market street with six stalls. A visitor walks the sample route and each stall on it lights up.</p>
+      <div class="stage-svg" id="heroStreet">
+        <span class="alab" style="left:12%;top:86%"><i class="glyph scout" aria-hidden="true">S</i>Scout <span class="kind ai">AI</span></span>
+        <span class="alab" style="right:12%;top:86%"><span class="kind ai">AI</span>Queue Guesser <i class="glyph queue" aria-hidden="true">Q</i></span>
+      </div>
+      <div class="legend">
+        <span><i class="glyph scout" aria-hidden="true">S</i>Scout <span class="kind ai">AI</span></span>
+        <span><i class="glyph queue" aria-hidden="true">Q</i>Queue Guesser <span class="kind ai">AI</span></span>
+        <span><i class="glyph you" aria-hidden="true">Y</i>You <span class="kind you">You</span></span>
+        <span><i class="lit-key" aria-hidden="true"></i>Lit lantern: on the route</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- STAGE 1 -->
+  <section class="wrap stage" id="s1" aria-labelledby="st1h">
+    <div class="step on" id="st1"><span class="n"><b></b>1</span><h2 id="st1h">Pick your cravings</h2>
+      <span class="i" tabindex="0" data-tip="Pick your cravings&#10;• Tap as many as you like&#10;• The budget is per person, in sample prices&#10;• Start time is when you reach the first stall&#10;Why you: only you know what you’re hungry for.">i</span>
+      <span class="kind you">You</span></div>
+    <div class="explain"><span>You pick cravings <span class="kind you">You</span></span><i>→</i><span>Set a budget and a start time</span><i>→</i><span>Send them to the Scout</span></div>
+    <div class="panel pick">
+      <div>
+        <h3>What are you hungry for?</h3>
+        <div class="craves" id="craves" role="group" aria-label="Cravings"></div>
+      </div>
+      <div>
+        <div class="field">
+          <label class="lab" for="budget">Budget per person, sample prices</label>
+          <div class="budget-row"><input type="range" id="budget" min="8" max="40" step="1" value="20"><output id="budgetOut" for="budget" class="mono">$20</output></div>
+        </div>
+        <fieldset class="field times">
+          <legend class="lab" style="margin-bottom:.4rem">Start time</legend>
+          <label><input type="radio" name="start" value="0">19:00</label>
+          <label><input type="radio" name="start" value="30" checked>19:30</label>
+          <label><input type="radio" name="start" value="60">20:00</label>
+          <label><input type="radio" name="start" value="90">20:30</label>
+        </fieldset>
+        <button class="btn primary" type="button" id="sendBtn">Send to the Scout →</button>
+        <p class="hint" id="sendHint" aria-live="polite"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- STAGE 2 -->
+  <section class="wrap stage" id="s2" aria-labelledby="st2h">
+    <div class="step" id="st2"><span class="n"><b></b>2</span><h2 id="st2h">The Scout finds stalls</h2>
+      <span class="i" tabindex="0" data-tip="The Scout&#10;• Reads your cravings and budget&#10;• Matches them to each stall’s menu&#10;• Most matches first, then cheapest&#10;• Stops before the total goes over budget&#10;• Lines the stops up along the street&#10;Why an AI: cravings are loose words, like “something spicy”.">i</span>
+      <span class="kind ai">AI</span></div>
+    <div class="explain"><span>Cravings in</span><i>→</i><span><i class="glyph scout" aria-hidden="true">S</i>Scout matches menus <span class="kind ai">AI</span></span><i>→</i><span>Stalls that fit the budget</span></div>
+    <div class="agent">
+      <div class="who"><svg class="sprite" id="scoutSprite" viewBox="0 0 16 16" role="img" aria-label="The Scout"><use href="#sp-scout"/></svg><span class="kind ai">AI</span></div>
+      <div class="bubble scout-c"><div class="head"><i class="glyph scout" aria-hidden="true">S</i>Scout</div><p id="scoutSay" aria-live="polite"></p><span class="sample">Sample reply, scripted for this demo</span></div>
+    </div>
+    <div class="stalls" id="stalls"></div>
+  </section>
+
+  <!-- STAGE 3 -->
+  <section class="wrap stage" id="s3" aria-labelledby="st3h">
+    <div class="step" id="st3"><span class="n"><b></b>3</span><h2 id="st3h">The Queue Guesser checks the waits</h2>
+      <span class="i" tabindex="0" data-tip="The Queue Guesser&#10;• Reads sample crowd counts, every 30 min&#10;• Works out when you reach each stall&#10;• Divides the queue by how fast the stall serves&#10;• Adds up the time you’ll spend queueing&#10;Waits are estimates from made-up data.">i</span>
+      <span class="kind ai">AI</span></div>
+    <div class="explain"><span>Your stops in order</span><i>→</i><span><i class="glyph queue" aria-hidden="true">Q</i>Queue Guesser reads the crowds <span class="kind ai">AI</span></span><i>→</i><span>A wait estimate per stall</span></div>
+    <div class="agent">
+      <div class="who"><svg class="sprite" id="queueSprite" viewBox="0 0 16 16" role="img" aria-label="The Queue Guesser"><use href="#sp-queue"/></svg><span class="kind ai">AI</span></div>
+      <div class="bubble queue-c"><div class="head"><i class="glyph queue" aria-hidden="true">Q</i>Queue Guesser</div><p id="queueSay" aria-live="polite"></p><span class="sample">Sample reply from sample crowd counts</span></div>
+    </div>
+    <div class="panel"><ol class="waits" id="waits"></ol></div>
+  </section>
+
+  <!-- STAGE 4 -->
+  <section class="wrap stage" id="s4" aria-labelledby="st4h">
+    <div class="step" id="st4"><span class="n"><b></b>4</span><h2 id="st4h">Approve your crawl route</h2>
+      <span class="i" tabindex="0" data-tip="Approve the route&#10;• Lit lanterns mark your stops&#10;• Numbers show the order you walk them&#10;• Times and waits are estimates&#10;• Want changes? Go back to step 1&#10;Nothing happens until you approve.">i</span>
+      <span class="kind you">You</span></div>
+    <div class="explain"><span>Route on the street</span><i>→</i><span>Check spend and waits</span><i>→</i><span>You approve <span class="kind you">You</span></span></div>
+    <div class="route-grid">
+      <div class="panel scene"><div class="stage-svg" id="routeStreet"></div>
+        <p class="hint" style="margin-top:.6rem">Stalls and crowds are made up. The visitor walks your route once you approve it.</p></div>
+      <div class="panel">
+        <div class="kpis">
+          <div class="kpi"><small>Stops</small><b id="kStops">0</b><span>stalls on the route</span></div>
+          <div class="kpi"><small>Spend</small><b id="kSpend">$0</b><span>sample prices</span></div>
+          <div class="kpi"><small>Queueing</small><b id="kWait">0 min</b><span>estimate</span></div>
+          <div class="kpi"><small>Done by</small><b id="kDone">--:--</b><span>estimate</span></div>
+        </div>
+        <ol class="stops" id="stopList"></ol>
+        <div class="decide"><button class="btn jade" type="button" id="approveBtn">✓ Approve route</button><span id="approvedPill"></span></div>
+        <p class="status" id="walkStatus" aria-live="polite"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="wrap stage" id="how" aria-labelledby="howT">
+    <div class="step"><h2 id="howT">How it works</h2></div>
+    <div class="how">
+      <div>
+        <div style="position:relative">
+          <ol class="how-route" id="howRoute">
+            <li class="on"><span class="num">1</span><h3>You pick cravings <span class="kind you">You</span></h3><p>Cravings, a budget per person and a start time.</p></li>
+            <li><span class="num">2</span><h3><i class="glyph scout" aria-hidden="true">S</i>The Scout finds stalls <span class="kind ai">AI</span></h3><p>Menus that match, kept under budget, lined up along the street.</p></li>
+            <li><span class="num">3</span><h3><i class="glyph queue" aria-hidden="true">Q</i>The Queue Guesser checks waits <span class="kind ai">AI</span></h3><p>When you’ll reach each stall and how long its queue should be then.</p></li>
+            <li><span class="num">4</span><h3>You approve the route <span class="kind you">You</span></h3><p>Nothing is final until you say yes.</p></li>
+          </ol>
+        </div>
+        <div class="how-ctrl"><button class="btn" type="button" id="howPause">❚❚ Pause</button><button class="btn" type="button" id="howReset">↺ Reset</button></div>
+      </div>
+      <div class="arch" aria-label="Who does what">
+        <div class="cap lab">Who does what</div>
+        <div class="box you"><b><i class="glyph you" aria-hidden="true">Y</i>Cravings <span class="kind you">You</span></b><span>Noodles, sweet, spicy…</span></div>
+        <div class="box you"><b><i class="glyph you" aria-hidden="true">Y</i>Budget and start <span class="kind you">You</span></b><span>Per person, sample prices</span></div>
+        <div class="down" aria-hidden="true">↓</div><div class="down half" aria-hidden="true">↓</div>
+        <div class="box scout full"><b><i class="glyph scout" aria-hidden="true">S</i>Scout <span class="kind ai">AI</span></b><span>Matching stalls, under budget, in street order</span></div>
+        <div class="down full" aria-hidden="true">↓</div>
+        <div class="box queue full"><b><i class="glyph queue" aria-hidden="true">Q</i>Queue Guesser <span class="kind ai">AI</span></b><span>Arrival time and wait estimate per stall, from sample crowds</span></div>
+        <div class="down full" aria-hidden="true">↓</div>
+        <div class="box you full"><b><i class="glyph you" aria-hidden="true">Y</i>Approve the route <span class="kind you">You</span></b><span>Then walk it, stall by stall</span></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="wrap">
+  <div class="panel">
+    <div class="foot-grid">
+      <div><a class="brand" href="#top" style="font-size:1.5rem"><svg class="sprite" viewBox="0 0 16 16" aria-hidden="true"><use href="#ic-lantern"/></svg>Moonlit Market</a><p style="margin-top:.5rem">A night-market food crawl planner. The Scout finds stalls, the Queue Guesser estimates waits, and you approve the route.</p></div>
+      <div><h5>Data</h5><ul><li>Six made-up stalls</li><li>Sample prices and crowd counts</li><li>Waits and times are estimates</li></ul></div>
+      <div><h5>Built with</h5><ul><li>Plain HTML, CSS and SVG</li><li>cutify-ui, Lantern Night theme</li><li>Jersey 10, Silkscreen, Lexend, Sometype Mono</li></ul></div>
+      <div><h5>Project</h5><ul><li>Example page for cutify-ui</li><li>Not a real product</li></ul></div>
+    </div>
+    <div class="copy">© 2026 cutify-ui example. Every stall, price and crowd on this page is a sample.</div>
+  </div>
+</footer>
+
+<dialog class="pop" id="dlg" aria-labelledby="dlgT">
+  <div class="pop-head"><svg class="sprite" viewBox="0 0 16 16" role="img" aria-label="You"><use href="#sp-you-a"/></svg><h2 id="dlgT">Approve this crawl?</h2><button class="pop-close" type="button" data-close>Close ✕</button></div>
+  <div class="pop-body">
+    <ol class="stops" id="dlgStops"></ol>
+    <p class="sum" id="dlgSum"></p>
+    <div class="pop-actions"><button class="btn" type="button" data-close>Not yet</button><button class="btn jade" type="button" id="confirmBtn">✓ Approve and walk it</button></div>
+  </div>
+</dialog>
+
+<script>
+/* ---------- pixel sprites (from assets/pixel-sprites.js, extended to any grid size) ---------- */
+function pixelSprites({ palette, sprites, animate = {} }) {
+  const defs = document.getElementById('pixdefs');
+  for (const [id, rows] of Object.entries(sprites)) {
+    console.assert(rows.every(r => r.length === rows[0].length), 'ragged sprite ' + id);
+    let out = `<symbol id="${id}" viewBox="0 0 ${rows[0].length} ${rows.length}" shape-rendering="crispEdges">`;
+    rows.forEach((row, y) => [...row].forEach((ch, x) => {
+      if (ch === '.' || !palette[ch]) return;
+      const a = animate[ch];
+      out += `<rect x="${x}" y="${y}" width="1.02" height="1.02" fill="${palette[ch]}"${a ? ` class="${a}"` : ''}/>`;
+    }));
+    defs.insertAdjacentHTML('beforeend', out + '</symbol>');
+  }
+}
+const PAL = { k: '#16171a', j: '#2EC4A0', J: '#1E8C72', s: '#F1C7A3', m: '#B4533F', o: '#FF9F43', y: '#FFE45E', w: '#F7EBD9',
+  p: '#B9A2FF', P: '#7E68C9', b: '#5B3A2A', c: '#F7EBD9', d: '#3D3A6B', r: '#FF7A82', n: '#E9C46A', t: '#A8673F', i: '#FF8FB1', l: '#9EE6FF' };
+pixelSprites({ palette: PAL, animate: { o: 'px-blink' }, sprites: {
+  'sp-scout': [
+    '.....kkkkkk.....', '....kjjjjjjk....', '...kjjjjjjjjk...', '...kjssssssjk...', '...kjskssksjk...', '...kjssssssjk...',
+    '....kjsmmsjk....', '.....kkkkkk..kk.', '....kjjJJjjk.kk.', '...kjjjJJjjjkook', '..kjjjjJJjjjkook', '..kjjjjJJjjjkkk.',
+    '..kjjjjJJjjjk...', '..kjjjjjjjjjk...', '...kddk..kddk...', '...kkkk..kkkk...'],
+  'sp-queue': [
+    '................', '....kkkkkkkk....', '...kppppppppk...', '..kkkkkkkkkkkk..', '...kssssssssk...', '...kskksskksk...',
+    '...kssssssssk...', '...ksssmmsssk...', '....kkkkkkkk....', '...kppppppppk...', '..kppkkkkkpppk..', '..kppkyyykpppk..',
+    '..kpppkykppppk..', '..kppkwywkpppk..', '..kppkkkkkpppk..', '...kkk....kkk...'],
+  'sp-you-a': [
+    '.....kkkkkk.....', '....kbbbbbbk....', '...kbbbbbbbbk...', '...kbssssssbk...', '...kskssssksk...', '...kssssssssk...',
+    '....kssmmssk....', '.....kkkkkk.....', '....krrrrrrk....', '...kcccccccck...', '..kckccccccckk..', '..kskccccccksk..',
+    '...kccccccccck..', '...kddddddddk...', '...kddk..kddk...', '...kkk....kkk...'],
+  'sp-you-b': [
+    '.....kkkkkk.....', '....kbbbbbbk....', '...kbbbbbbbbk...', '...kbssssssbk...', '...kskssssksk...', '...kssssssssk...',
+    '....kssmmssk....', '.....kkkkkk.....', '....krrrrrrk....', '...kcccccccck...', '..kckccccccckk..', '..kskccccccksk..',
+    '...kccccccccck..', '...kddddddddk...', '....kddkkddk....', '....kkk..kkk....'],
+  'ic-lantern': [
+    '.......kk.......', '....kkkkkkkk....', '...kooooooook...', '..kooyooooyook..', '..koyooooooyok..', '..koyooooooyok..',
+    '..koyooooooyok..', '..koyooooooyok..', '..kooyooooyook..', '...kooooooook...', '....kkkkkkkk....', '.......kk.......',
+    '......kyyk......', '......kyyk......', '.......yy.......', '................'],
+  'ic-noodles': ['..k.k...', '..k.k...', '.wkwkw..', 'kkkkkkkk', 'knnnnnnk', '.kwwwwk.', '..kkkk..', '........'],
+  'ic-skewers': ['......kk', '.....koo', '....kook', '...kook.', '..kook..', '.kook...', 'kk......', 'k.......'],
+  'ic-dumplings': ['........', '..kkkk..', '.kwkwwk.', 'kwwkwwwk', 'kwwwwwwk', '.kkkkkkk', '........', '........'],
+  'ic-sweet': ['...ii...', '..iiii..', '.iwiiwi.', '.iiiiii.', 'kkkkkkkk', '.kwwwwk.', '..kwwk..', '...kk...'],
+  'ic-drinks': ['.....k..', '....k...', '.kkkkkk.', '.kllllk.', '.kttttk.', '.ktkttk.', '.ktttkk.', '..kkkk..'],
+  'ic-spicy': ['....kk..', '...k....', '..krrk..', '.krrrrk.', '.krrrrk.', '.krrrk..', '..krk...', '...k....'],
+}});
+
+/* ---------- sample data (all made up) ---------- */
+const CRAVINGS = [['noodles', 'Noodles'], ['skewers', 'Skewers'], ['dumplings', 'Dumplings'], ['sweet', 'Sweet'], ['drinks', 'Drinks'], ['spicy', 'Spicy']];
+// q: queue length in people at 19:00, 19:30 … 21:30; rate: people served per minute
+const STALLS = [
+  { id: 'S1', name: 'Lucky Noodle Cart', dish: 'Chili-oil hand-pulled noodles', tags: ['noodles', 'spicy'], price: 7, icon: 'noodles', awn: '#FF7A82', q: [6, 10, 14, 12, 8, 5], rate: 1.0 },
+  { id: 'S2', name: 'Ember Skewers', dish: 'Cumin lamb skewers, three sticks', tags: ['skewers', 'spicy'], price: 6, icon: 'skewers', awn: '#FF9F43', q: [4, 8, 12, 16, 12, 6], rate: 1.5 },
+  { id: 'S3', name: 'Moon Dumpling House', dish: 'Pan-fried pork dumplings, six', tags: ['dumplings'], price: 5, icon: 'dumplings', awn: '#B9A2FF', q: [10, 14, 18, 15, 9, 4], rate: 1.2 },
+  { id: 'S4', name: 'Paper Lantern Tea', dish: 'Brown sugar milk tea', tags: ['drinks', 'sweet'], price: 4, icon: 'drinks', awn: '#2EC4A0', q: [5, 7, 9, 11, 10, 8], rate: 2.0 },
+  { id: 'S5', name: 'Night Owl Grill', dish: 'Grilled squid and fried noodles', tags: ['skewers', 'noodles'], price: 9, icon: 'skewers', awn: '#FFE45E', q: [3, 6, 9, 13, 15, 9], rate: 1.0 },
+  { id: 'S6', name: 'Sugar Star Sweets', dish: 'Mango shaved ice', tags: ['sweet'], price: 5, icon: 'sweet', awn: '#FF8FB1', q: [2, 4, 8, 12, 14, 11], rate: 1.4 },
+];
+const SLOTS = ['19:00', '19:30', '20:00', '20:30', '21:00', '21:30'];
+const EAT = 8, MAX_STOPS = 4;
+const clock = m => `${String(19 + Math.floor(m / 60)).padStart(2, '0')}:${String(Math.round(m) % 60).padStart(2, '0')}`;
+
+/* the Scout: most matches first, then cheapest, while the total stays under budget; then street order */
+function scout(cravings, budget) {
+  const scored = STALLS.map((s, i) => ({ ...s, i, hits: s.tags.filter(t => cravings.includes(t)) }));
+  const cands = scored.filter(s => s.hits.length).sort((a, b) => b.hits.length - a.hits.length || a.price - b.price);
+  let spend = 0; const picked = [];
+  for (const s of cands) if (picked.length < MAX_STOPS && spend + s.price <= budget) { picked.push(s); spend += s.price; }
+  for (const s of scored) s.status = picked.includes(s) ? 'picked' : s.hits.length ? 'over' : 'none';
+  return { all: scored, route: picked.sort((a, b) => a.i - b.i), spend };
+}
+/* the Queue Guesser: queue at arrival (linear between 30-min samples) divided by serving rate */
+function guess(route, start) {
+  let t = start, prev = null, total = 0;
+  const stops = route.map(s => {
+    t += prev === null ? 1 : Math.abs(s.i - prev) + 1;  // about a minute per stall walked
+    const k = Math.min(t / 30, SLOTS.length - 1), lo = Math.floor(k), hi = Math.min(lo + 1, SLOTS.length - 1);
+    const queue = s.q[lo] + (s.q[hi] - s.q[lo]) * (k - lo), wait = Math.round(queue / s.rate);
+    const stop = { s, arrive: t, wait, slot: Math.round(k) };
+    total += wait; t += wait + EAT; prev = s.i; return stop;
+  });
+  return { stops, total, done: t };
+}
+// self-check: the default sample crawl
+(() => { const r = scout(['noodles', 'sweet', 'spicy'], 20); console.assert(r.route.map(s => s.id).join() === 'S1,S4,S6' && r.spend === 16, 'scout sample');
+  const g = guess(r.route, 30); console.assert(g.stops[0].arrive === 31 && g.done > g.stops[2].arrive, 'guess sample'); })();
+
+/* ---------- the street (inline SVG, pixel art) ---------- */
+const VW = 640, VH = 360, SW = 104, X0 = 8, WALK_Y = 290, COUNTER_Y = 252, IN_X = 10, OUT_X = 630;
+const stringY = x => Math.round(34 + 30 * (1 - ((x - 320) / 320) ** 2));
+function streetSVG(p, withCast) {
+  let s = `<svg class="street" viewBox="0 0 ${VW} ${VH}" shape-rendering="crispEdges" aria-hidden="true">
+  <defs><pattern id="${p}-dith" width="4" height="4" patternUnits="userSpaceOnUse"><rect width="2" height="2" fill="#0B0A1A"/><rect x="2" y="2" width="2" height="2" fill="#0B0A1A"/></pattern>
+  <pattern id="${p}-cob" width="16" height="10" patternUnits="userSpaceOnUse"><rect width="16" height="10" fill="#26214A"/><rect width="15" height="1" y="9" fill="#1C1838"/><rect x="7" width="1" height="5" fill="#1C1838"/><rect x="15" y="4" width="1" height="5" fill="#1C1838"/><rect y="4" width="16" height="1" fill="#1C1838"/></pattern>
+  <linearGradient id="${p}-sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#14132B"/><stop offset="1" stop-color="#3A2350"/></linearGradient></defs>
+  <rect width="${VW}" height="230" fill="url(#${p}-sky)"/>`;
+  // stars
+  [[40, 18], [118, 40], [210, 12], [300, 28], [388, 10], [470, 34], [520, 14], [612, 52], [150, 70], [440, 64]].forEach(([x, y]) => s += `<rect x="${x}" y="${y}" width="2" height="2" fill="#FFF3B0"/>`);
+  // pixel moon
+  for (let dy = -8; dy <= 8; dy += 2) { const w = Math.round(Math.sqrt(64 - dy * dy)) * 2; s += `<rect x="${590 - w / 2}" y="${24 + dy}" width="${w}" height="2" fill="#FFF3B0"/>`; }
+  s += `<rect x="584" y="18" width="4" height="4" fill="#E9DFA0"/><rect x="594" y="28" width="6" height="4" fill="#E9DFA0"/>`;
+  // dithered skyline behind the stalls
+  [[0, 70, 60], [56, 52, 40], [92, 78, 70], [160, 60, 50], [206, 84, 90], [292, 56, 44], [332, 74, 76], [404, 48, 38], [438, 80, 80], [514, 62, 54], [564, 76, 76]].forEach(([x, y, w]) => {
+    s += `<rect x="${x}" y="${y}" width="${w}" height="${120 - y + 10}" fill="#1E1A3D"/><rect x="${x}" y="${y}" width="${w}" height="${120 - y + 10}" fill="url(#${p}-dith)"/>`;
+    for (let wx = x + 6; wx < x + w - 6; wx += 12) if ((wx * 7 + y) % 3 === 0) s += `<rect x="${wx}" y="${y + 8}" width="3" height="4" fill="#FFE45E" opacity=".7"/>`;
+  });
+  // ground
+  s += `<rect y="222" width="${VW}" height="${VH - 222}" fill="url(#${p}-cob)"/><rect y="222" width="${VW}" height="4" fill="#0B0A1A"/>`;
+  // stalls
+  STALLS.forEach((st, i) => {
+    const x = X0 + i * SW;
+    s += `<g class="stall" id="${p}-stall-${i}">
+      <rect x="${x + 8}" y="128" width="80" height="64" fill="#1A1733"/>
+      <rect class="glow" x="${x + 8}" y="128" width="80" height="64" fill="#FFB86B"/>
+      <rect x="${x + 4}" y="116" width="4" height="106" fill="#4A3020"/><rect x="${x + 88}" y="116" width="4" height="106" fill="#4A3020"/>
+      <rect x="${x - 2}" y="94" width="100" height="6" fill="#0B0A1A"/>`;
+    for (let k = 0; k < 8; k++) { const c = k % 2 ? '#F7EBD9' : st.awn, sx = x + k * 12;
+      s += `<rect x="${sx}" y="100" width="12" height="24" fill="${c}"/><rect x="${sx + 2}" y="124" width="8" height="4" fill="${c}"/><rect x="${sx + 4}" y="128" width="4" height="2" fill="${c}"/>`; }
+    s += `<rect x="${x + 16}" y="138" width="64" height="28" fill="#0B0A1A"/><rect x="${x + 18}" y="140" width="60" height="24" fill="#14132B"/>
+      <text x="${x + 30}" y="159" font-family="Jersey 10, monospace" font-size="20" fill="#F7EBD9" text-anchor="middle">${i + 1}</text>
+      <use href="#ic-${st.icon}" x="${x + 48}" y="142" width="20" height="20"/>
+      <rect x="${x + 22}" y="182" width="10" height="8" fill="#5B3A2A"/><rect x="${x + 64}" y="180" width="12" height="10" fill="#3D3A6B"/><rect x="${x + 44}" y="184" width="8" height="6" fill="${st.awn}"/>
+      <rect x="${x}" y="190" width="96" height="4" fill="#A8673F"/><rect x="${x + 2}" y="194" width="92" height="28" fill="#7A4A2E"/>
+      <rect x="${x + 24}" y="194" width="2" height="28" fill="#5B3A2A"/><rect x="${x + 48}" y="194" width="2" height="28" fill="#5B3A2A"/><rect x="${x + 72}" y="194" width="2" height="28" fill="#5B3A2A"/>
+      <g class="stop" id="${p}-stop-${i}"><rect x="${x + 37}" y="300" width="22" height="22" fill="#FF9F43"/><text class="stop-n" x="${x + 48}" y="318" font-family="Jersey 10, monospace" font-size="20" fill="#14132B" text-anchor="middle"></text></g>
+    </g>`;
+  });
+  // the lantern string, one lantern per stall
+  let pts = ''; for (let x = 0; x <= VW; x += 16) pts += `${x},${stringY(x)} `;
+  s += `<polyline points="${pts}" fill="none" stroke="#6B5A7A" stroke-width="2"/><g>`;
+  STALLS.forEach((st, i) => { const cx = X0 + i * SW + 48, y = stringY(cx);
+    s += `<g class="lan" id="${p}-lan-${i}" transform="translate(${cx - 6} ${y})"><g class="sw"><rect x="5" y="0" width="2" height="5" fill="#6B5A7A"/><rect x="2" y="4" width="8" height="2" fill="#16171a"/>
+      <rect class="body" x="0" y="6" width="12" height="12"/><rect class="rib" x="3" y="6" width="2" height="12"/><rect class="rib" x="7" y="6" width="2" height="12"/>
+      <rect x="2" y="18" width="8" height="2" fill="#16171a"/><rect x="5" y="20" width="2" height="4" fill="#FFE45E"/></g></g>`; });
+  s += `</g><path class="route" id="${p}-route" d=""/>`;
+  if (withCast) s += `<g class="bob"><use href="#sp-scout" x="24" y="324" width="32" height="32"/></g><g class="bob" style="animation-delay:-.8s"><use href="#sp-queue" x="584" y="324" width="32" height="32"/></g>`;
+  s += `<g class="walker" id="${p}-walker" style="transform:translate(${IN_X - 16}px,${WALK_Y - 32}px)"><use class="fa" href="#sp-you-a" width="32" height="32"/><use class="fb" href="#sp-you-b" width="32" height="32"/></g></svg>`;
+  return s;
+}
+document.getElementById('heroStreet').insertAdjacentHTML('afterbegin', streetSVG('h', true));
+document.getElementById('routeStreet').insertAdjacentHTML('afterbegin', streetSVG('r', false));
+
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const $ = id => document.getElementById(id);
+const cx = i => X0 + i * SW + 48;
+function waypoints(idx) { // [x, y, stopIndex|null]
+  const pts = [[IN_X, WALK_Y, null]];
+  idx.forEach(i => pts.push([cx(i), WALK_Y, null], [cx(i), COUNTER_Y, i], [cx(i), WALK_Y, null]));
+  pts.push([OUT_X, WALK_Y, null]); return pts;
+}
+function drawRoute(p, idx) {
+  const pts = waypoints(idx);
+  $(`${p}-route`).setAttribute('d', idx.length ? 'M' + pts.map(([x, y]) => `${x} ${y}`).join(' L') : '');
+  STALLS.forEach((_, i) => { const n = idx.indexOf(i);
+    $(`${p}-lan-${i}`).classList.toggle('lit', n >= 0); $(`${p}-stall-${i}`).classList.remove('lit', 'here');
+    $(`${p}-stop-${i}`).classList.toggle('on', n >= 0); $(`${p}-stop-${i}`).querySelector('text').textContent = n + 1; });
+}
+const place = (w, x, y) => w.style.transform = `translate(${x - 16}px,${y - 32}px)`;
+/* walk the waypoints with steps() easing: one Web Animation per straight leg, a pause at each counter */
+async function walk(p, idx, alive, onStop) {
+  const w = $(`${p}-walker`), pts = waypoints(idx);
+  STALLS.forEach((_, i) => $(`${p}-stall-${i}`).classList.remove('lit', 'here'));
+  if (reduced) { idx.forEach(i => $(`${p}-stall-${i}`).classList.add('lit')); place(w, ...(idx.length ? [cx(idx.at(-1)), COUNTER_Y] : [IN_X, WALK_Y])); onStop?.(idx.length - 1, true); return; }
+  place(w, pts[0][0], pts[0][1]);
+  for (let k = 1; k < pts.length; k++) {
+    const [ax, ay] = pts[k - 1], [bx, by, stop] = pts[k], dist = Math.hypot(bx - ax, by - ay);
+    if (!dist) continue;
+    w.classList.add('walking');
+    const a = w.animate([{ transform: `translate(${ax - 16}px,${ay - 32}px)` }, { transform: `translate(${bx - 16}px,${by - 32}px)` }],
+      { duration: dist / 0.075, easing: `steps(${Math.max(2, Math.round(dist / 6))}, end)`, fill: 'forwards' });
+    p === 'h' ? heroAnims.add(a) : null;
+    try { await a.finished; } catch { return; }
+    heroAnims.delete(a);
+    place(w, bx, by); a.cancel(); w.classList.remove('walking');
+    if (!alive()) return;
+    if (stop !== null) {
+      const el = $(`${p}-stall-${stop}`); el.classList.add('lit', 'here'); onStop?.(idx.indexOf(stop));
+      await pause(p === 'h' ? 700 : 1100); el.classList.remove('here'); if (!alive()) return;
+    }
+  }
+  onStop?.(-1);
+}
+const heroAnims = new Set();
+let heroVisible = true;
+const pause = ms => new Promise(r => setTimeout(r, ms));
+
+/* hero loop: the sample route, paused while the hero is off screen */
+const HERO_ROUTE = [0, 3, 5];
+drawRoute('h', HERO_ROUTE);
+(async function heroLoop() {
+  if (reduced) return walk('h', HERO_ROUTE, () => true);
+  for (;;) {
+    while (!heroVisible) await pause(400);
+    await walk('h', HERO_ROUTE, () => true);
+    await pause(900);
+  }
+})();
+
+/* ---------- stage 1 controls ---------- */
+const picked = new Set(['noodles', 'sweet', 'spicy']);
+$('craves').innerHTML = CRAVINGS.map(([k, label]) =>
+  `<button type="button" class="crave" data-k="${k}" aria-pressed="${picked.has(k)}"><svg class="sprite" viewBox="0 0 8 8" aria-hidden="true"><use href="#ic-${k}"/></svg>${label}</button>`).join('');
+$('craves').addEventListener('click', e => { const b = e.target.closest('.crave'); if (!b) return;
+  picked.has(b.dataset.k) ? picked.delete(b.dataset.k) : picked.add(b.dataset.k); b.setAttribute('aria-pressed', picked.has(b.dataset.k)); syncSend(); });
+const budget = $('budget');
+budget.addEventListener('input', () => { $('budgetOut').textContent = '$' + budget.value; });
+function syncSend() { $('sendBtn').disabled = !picked.size; $('sendHint').textContent = picked.size ? '' : 'Pick at least one craving first.'; }
+
+/* ---------- rendering the stages ---------- */
+const names = list => list.length < 2 ? list.join('') : list.slice(0, -1).join(', ') + ' and ' + list.at(-1);
+const label = k => CRAVINGS.find(c => c[0] === k)[1].toLowerCase();
+let plan = null, approved = false;
+function renderScout(r, cravings, b) {
+  const over = r.all.filter(s => s.status === 'over');
+  $('scoutSay').textContent = r.route.length
+    ? `Found ${r.route.length} stall${r.route.length > 1 ? 's' : ''} for ${names(cravings.map(label))} within $${b}: ${names(r.route.map(s => s.name))}. Most matches first, cheapest next, then I lined them up along the street so you never walk back.` + (over.length ? ` ${names(over.map(s => s.name))} ${over.length > 1 ? 'match' : 'matches'} too, but would go over budget.` : '')
+    : `Nothing fits $${b} for ${names(cravings.map(label))}. Raise the budget or add a craving.`;
+  $('stalls').innerHTML = r.all.map(s => `<article class="card stall-card ${s.status}">
+    <svg class="sprite" viewBox="0 0 8 8" aria-hidden="true"><use href="#ic-${s.icon}"/></svg>
+    <h4>${s.name}</h4><div class="meta"><span class="mono">${s.id}</span>, ${s.dish}</div>
+    <p class="why">${s.hits.length ? 'Matches ' + names(s.hits.map(label)) : 'Not on your craving list'}</p>
+    <div class="foot"><span class="price">$${s.price}<span class="lab"> sample</span></span>${
+      s.status === 'picked' ? '<span class="pill ok">✓ Picked</span>' : s.status === 'over' ? '<span class="pill amb">! Over budget</span>' : '<span class="pill q">– Not a craving</span>'}</div></article>`).join('');
+}
+function bars(s, slot) { const max = 18; return `<span class="bars" role="img" aria-label="Sample crowd: ${s.q.map((q, i) => SLOTS[i] + ' ' + q).join(', ')}">${s.q.map((q, i) => `<i class="${i === slot ? 'at' : ''}" style="height:${Math.max(3, Math.round(q / max * 30))}px"></i>`).join('')}</span>`; }
+function renderQueue(g) {
+  if (!g.stops.length) { $('queueSay').textContent = 'No stops to check yet. Pick cravings the Scout can match.'; $('waits').innerHTML = '<li class="empty">No route yet.</li>'; return; }
+  const worst = g.stops.reduce((a, b) => b.wait > a.wait ? b : a);
+  $('queueSay').textContent = `From tonight’s sample crowd counts, the longest wait is at ${worst.s.name}: about ${worst.wait} min when you arrive at ${clock(worst.arrive)}. About ${g.total} min of queueing in all. These are estimates.`;
+  $('waits').innerHTML = g.stops.map((st, n) => `<li class="wait"><span class="num">${n + 1}</span><div><h4>${st.s.name} <span class="mono lab">${st.s.id}</span></h4>
+    <div class="row"><div><span class="lab">Arrive</span><span class="big">${clock(st.arrive)}</span></div>
+    <div><span class="lab">Crowd, 19:00 to 21:30</span>${bars(st.s, st.slot)}</div>
+    <div><span class="lab">Wait, estimate</span><span class="big">~${st.wait} min</span></div></div></div></li>`).join('');
+}
+function stopsHTML(g) { return g.stops.map((st, n) => `<li data-n="${n}"><b>${n + 1}</b><span>${st.s.name}</span><span class="t">${clock(st.arrive)}, ~${st.wait}m</span></li>`).join(''); }
+function renderRoute(r, g) {
+  drawRoute('r', r.route.map(s => s.i)); place($('r-walker'), IN_X, WALK_Y);
+  $('kStops').textContent = r.route.length; $('kSpend').textContent = '$' + r.spend;
+  $('kWait').textContent = g.total + ' min'; $('kDone').textContent = r.route.length ? clock(g.done) : '--:--';
+  $('stopList').innerHTML = r.route.length ? stopsHTML(g) : '<li class="empty" style="display:block">No stops yet. Go back to step 1.</li>';
+  $('approveBtn').disabled = !r.route.length; $('approvedPill').innerHTML = ''; $('walkStatus').textContent = '';
+}
+function setStage(n) { [1, 2, 3, 4].forEach(k => { $('st' + k).classList.toggle('on', k === n); $('st' + k).classList.toggle('done', k < n); }); }
+function thinking(id, who) { $(id).innerHTML = `<span class="typing" aria-hidden="true"><span></span><span></span><span></span></span><span class="sr-only">${who} is thinking</span>`; }
+
+/* ---------- scripted run (cancellable) ---------- */
+let runId = 0, walkId = 0;
+const sleep = ms => pause(reduced ? Math.min(ms, 120) : ms);
+async function run(instant) {
+  const id = ++runId; walkId++; approved = false;
+  const cravings = CRAVINGS.map(c => c[0]).filter(k => picked.has(k)), b = +budget.value;
+  const start = +document.querySelector('input[name=start]:checked').value;
+  const r = scout(cravings, b), g = guess(r.route, start); plan = { r, g };
+  if (instant) { renderScout(r, cravings, b); renderQueue(g); renderRoute(r, g); return; }
+  const go = el => $(el).scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' });
+  setStage(2); go('st2'); thinking('scoutSay', 'The Scout'); $('scoutSprite').classList.add('talking'); $('stalls').style.opacity = .35;
+  await sleep(1500); if (id !== runId) return;
+  $('scoutSprite').classList.remove('talking'); $('stalls').style.opacity = ''; renderScout(r, cravings, b);
+  await sleep(1600); if (id !== runId) return;
+  setStage(3); go('st3'); thinking('queueSay', 'The Queue Guesser'); $('queueSprite').classList.add('talking'); $('waits').style.opacity = .35;
+  await sleep(1500); if (id !== runId) return;
+  $('queueSprite').classList.remove('talking'); $('waits').style.opacity = ''; renderQueue(g);
+  await sleep(1600); if (id !== runId) return;
+  setStage(4); go('st4'); renderRoute(r, g);
+}
+$('sendBtn').addEventListener('click', () => run(false));
+$('playBtn').addEventListener('click', async () => { const id = ++runId; setStage(1); $('st1').scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' }); await sleep(900); if (id === runId) run(false); });
+
+/* ---------- approve ---------- */
+const dlg = $('dlg');
+$('approveBtn').addEventListener('click', () => {
+  if (!plan?.r.route.length) return;
+  $('dlgStops').innerHTML = stopsHTML(plan.g);
+  $('dlgSum').textContent = `${plan.r.route.length} stops, $${plan.r.spend} at sample prices, about ${plan.g.total} min of queueing, done around ${clock(plan.g.done)}. Times and waits are estimates.`;
+  dlg.showModal();
+});
+dlg.addEventListener('click', e => { if (e.target === dlg || e.target.closest('[data-close]')) dlg.close(); });
+$('confirmBtn').addEventListener('click', () => {
+  dlg.close(); approved = true; setStage(4); $('st4').classList.add('done');
+  $('approvedPill').innerHTML = `<span class="pill ok">✓ Approved, start ${clock(plan.g.stops[0].arrive - 1)}</span>`;
+  const id = ++walkId, list = $('stopList');
+  walk('r', plan.r.route.map(s => s.i), () => id === walkId, (n, end) => {
+    list.querySelectorAll('li').forEach(li => li.classList.toggle('here', +li.dataset.n === n));
+    $('walkStatus').textContent = n < 0 || end ? 'Route walked. Enjoy the market.' : `Stop ${n + 1}: ${plan.r.route[n].name}, ~${plan.g.stops[n].wait} min wait (estimate).`;
+  });
+});
+
+/* ---------- how it works: the lit lantern number steps down the route ---------- */
+const howItems = [...$('howRoute').children]; let howAt = 0, howTimer = null;
+function howShow(k) { howAt = k; howItems.forEach((li, j) => li.classList.toggle('on', j === k)); }
+function howPlay() { clearInterval(howTimer); howTimer = setInterval(() => howShow((howAt + 1) % howItems.length), 2000); $('howPause').textContent = '❚❚ Pause'; }
+$('howPause').addEventListener('click', () => { if (howTimer) { clearInterval(howTimer); howTimer = null; $('howPause').textContent = '▶ Play'; } else howPlay(); });
+$('howReset').addEventListener('click', () => { howShow(0); if (howTimer) howPlay(); });
+howShow(0);
+if (reduced) { ['howPause', 'howReset'].forEach(b => { $(b).disabled = true; $(b).title = 'Motion is reduced on this device'; }); }
+
+/* ---------- tooltips stay on screen ---------- */
+function fitTip(el) {
+  const r = el.getBoundingClientRect(), w = Math.min(290, innerWidth - 32), mid = r.left + r.width / 2;
+  const dx = Math.min(0, innerWidth - 16 - (mid + w / 2)) + Math.max(0, 16 - (mid - w / 2));
+  el.style.setProperty('--dx', dx + 'px'); el.classList.toggle('up', r.bottom + 240 > innerHeight && r.top > 260);
+}
+document.querySelectorAll('.i[data-tip]').forEach(el => { el.setAttribute('role', 'button'); el.setAttribute('aria-label', el.dataset.tip.split('\n')[0] + ', more info');
+  ['mouseenter', 'focus'].forEach(ev => el.addEventListener(ev, () => fitTip(el))); });
+
+/* ---------- pause off screen ---------- */
+const io = new IntersectionObserver(es => es.forEach(e => {
+  e.target.classList.toggle('is-off', !e.isIntersecting);
+  if (e.target.id === 'hero') { heroVisible = e.isIntersecting; heroAnims.forEach(a => e.isIntersecting ? a.play() : a.pause()); }
+  if (e.target.id === 'how' && !reduced) { if (e.isIntersecting && !howTimer && $('howPause').textContent.includes('Pause')) howPlay(); else if (!e.isIntersecting) { clearInterval(howTimer); howTimer = null; } }
+}), { rootMargin: '50% 0px' });
+document.querySelectorAll('#hero, .stage').forEach(el => io.observe(el));
+
+syncSend(); run(true);
+</script>
+</body>
+</html>

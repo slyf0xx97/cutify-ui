@@ -1,16 +1,19 @@
 {
   "name": "cutify-ui-tools",
   "private": true,
+  "license": "MIT",
   "description": "Checks and packaging for the cutify-ui skill. Not part of the skill itself.",
   "type": "module",
   "scripts": {
     "check": "node check.mjs",
-    "package": "python package_skill.py"
+    "package": "python package_skill.py",
+    "qa": "node qa.mjs"
   },
   "devDependencies": {
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",
     "react": "19.2.6",
-    "typescript": "5.9.3"
+    "typescript": "5.9.3",
+    "playwright": "1.64.1"
   }
 }

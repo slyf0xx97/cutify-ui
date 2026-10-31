@@ -24,7 +24,7 @@ For Apron use `Anybody` (with `axes: ["wdth"]`) and `Spline_Sans_Mono` the same 
 - **Icons**: `lucide-react` for small UI glyphs (`size={16|18|20}`, `aria-hidden`), `PixelIcon` for story icons.
 - **State**: React hooks only. `useSyncExternalStore` over `localStorage` (with an in-memory fallback when storage throws) for saved progress.
 - **Layout**: container queries over media queries for anything inside a panel (`container-type: inline-size; container-name: stage` then `@container stage (min-width: 700px)`), and `subgrid` so rows line up across sibling cards (`grid-row: span 3; grid-template-rows: subgrid`).
-- **Assets**: save logos and images locally, never hotlink; long cache headers for `/assets/*`.
+- **Assets**: save images you have the rights to (including logos the user supplies) locally, never hotlink; long cache headers for `/assets/*`.
 
 ## Ready components in `assets/react/`
 

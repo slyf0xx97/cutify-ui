@@ -272,6 +272,7 @@ dialog::backdrop { background: #05070acc; }
 .arch svg { width: 100%; height: auto; display: block; max-width: 460px; margin: 0 auto; }
 .arch text { font: 700 13px var(--display); fill: var(--chalk); text-transform: uppercase; }
 .arch .sm { font: 500 11px var(--mono); fill: var(--dim); text-transform: none; }
+@media (max-width: 600px) { .arch text { font-size: 17px; } .arch .sm { font-size: 14px; } }
 .arch .box { fill: var(--panel-2); stroke: #ffffff30; stroke-width: 1.5; }
 .arch .ar { fill: none; stroke: var(--line); stroke-width: 2.5; stroke-dasharray: 6 7; }
 @media (prefers-reduced-motion: no-preference) { .arch .ar { animation: march 1.6s linear infinite; } }
@@ -332,7 +333,7 @@ dialog::backdrop { background: #05070acc; }
   </div>
 </nav>
 
-<main id="top">
+<main id="top" style="scroll-margin-top:100px">
 <div class="wrap">
   <header class="hero">
     <div>
@@ -590,7 +591,8 @@ document.addEventListener('pointerout', e => { const el = e.target.closest('[dat
 document.addEventListener('focusin', e => { const el = e.target.closest('[data-tip]'); if (el) showTip(tipHtml(el.dataset.tip), el.getBoundingClientRect()); });
 document.addEventListener('focusout', e => { if (e.target.closest('[data-tip]')) hideTip(); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') hideTip(); });
-addEventListener('scroll', hideTip, { passive: true });
+// keyboard focus scrolls the trigger into view: keep its tip and move it along instead of hiding it
+addEventListener('scroll', () => { const a = document.activeElement?.closest?.('[data-tip]'); a ? showTip(tipHtml(a.dataset.tip), a.getBoundingClientRect()) : hideTip(); }, { passive: true });
 
 // ---------- cast list under the scene ----------
 const CAST = [
@@ -694,6 +696,7 @@ if (reduced) drawScene(19); else requestAnimationFrame(frame);
 
 // ---------- charts: hand-built SVG sized to the container ----------
 function lineChart(el, { series, yMin = 0, yMax, unit, h = 220, band, ref, labels = true }) {
+  el.textContent = ''; // drop the old chart first so its fixed width can't hold the box open on a shrink
   const W = el.clientWidth, padL = 40, padR = labels ? 78 : 14, padT = 12, padB = 26, pw = W - padL - padR, ph = h - padT - padB;
   const x = i => padL + pw * i / (HOURS.length - 1), y = v => padT + ph * (1 - (v - yMin) / (yMax - yMin));
   const ticks = [yMin, (yMin + yMax) / 2, yMax].map(Math.round);
@@ -732,7 +735,8 @@ function drawCharts() {
     series: [{ n: 'Before', v: NET_BEFORE, c: '#e04438' }, { n: 'After', v: NET_AFTER, c: '#3f8ee6' }] });
 }
 drawCharts();
-let rw = innerWidth; addEventListener('resize', () => { if (innerWidth !== rw) { rw = innerWidth; drawCharts(); } });
+// charts are sized from their box: redraw once the width settles (ignores height-only resizes from mobile toolbars)
+let rw = innerWidth, rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { if (innerWidth !== rw) { rw = innerWidth; drawCharts(); } }, 150); });
 
 // ---------- stage 2: plan cells and the crew log ----------
 function renderPlan(draft) {

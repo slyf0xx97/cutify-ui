@@ -1,0 +1,78 @@
+/* cutify-ui: Riso Club theme (light, misregistered print). Tokens + base components. MIT. */
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Rethink+Sans:wght@400;600;700&family=Space+Mono:wght@400;700&display=swap');
+
+:root {
+  --bg: #F6F1E7; --surface: #FFFFFF; --surface-2: #FFE800; --border: #1D1D3B;
+  --ink: #1D1D3B; --ink-muted: #3D2E8C; --link: #3D2E8C;
+  --blue: #0078BF; --blue-ink: #FFFFFF;              /* white on blue 4.73:1 */
+  --pink: #FF48B0; --pink-ink: #1D1D3B;              /* ink on pink 5.27:1 */
+  --ok: #1F7A47; --bad: #C1121F; --warn: #8A5A00;
+  --radius: 2px; --shadow: -3px -2px 0 var(--pink), 4px 3px 0 var(--blue); --shadow-hover: -5px -3px 0 var(--pink), 6px 5px 0 var(--blue);
+  --ghost: 2px 1px 0 rgb(0 120 191 / .55);
+  --display: 'Bricolage Grotesque', system-ui, sans-serif; --body: 'Rethink Sans', system-ui, sans-serif; --mono: 'Space Mono', ui-monospace, monospace;
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { background: var(--bg); }
+/* newsprint + grain */
+body { margin: 0; color: var(--ink); font: 400 1.05rem/1.6 var(--body);
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .16 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"), var(--bg); }
+h1, h2, h3 { font-family: var(--display); font-weight: 800; line-height: 1; letter-spacing: -.02em; text-shadow: var(--ghost); }
+a { color: var(--link); text-decoration-thickness: 2px; text-underline-offset: 3px; }
+:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { animation: none !important; transition: none !important; } }
+.is-off, .is-off *, .is-off *::before, .is-off *::after { animation-play-state: paused !important; }
+
+/* a pink halftone fading out of the hero corner */
+.halftone { position: relative; isolation: isolate; }
+.halftone::before { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background: radial-gradient(circle, var(--pink) 1.6px, transparent 2px) 0 0 / 10px 10px;
+  mask-image: linear-gradient(160deg, #000 0%, transparent 65%); opacity: .55; }
+
+.panel { background: var(--surface); border: 2px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); padding: 1.1rem 1.25rem; }
+.card { background: var(--surface); border: 2px solid var(--border); padding: .9rem 1rem; }
+.lab { font: 700 .75rem var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-muted); }
+/* overprint: pink and blue blocks that overlap turn purple */
+.overprint { mix-blend-mode: multiply; }
+.hl { background: linear-gradient(transparent 50%, var(--surface-2) 50%, var(--surface-2) 90%, transparent 90%); }
+
+/* steps: big outlined numbers */
+.step { display: flex; align-items: baseline; gap: .8rem; margin: 2.4rem 0 .8rem; scroll-margin-top: 5rem; }
+.step .n { font: 800 3.4rem/.8 var(--display); color: transparent; -webkit-text-stroke: 2px var(--ink); text-shadow: 4px 3px 0 var(--pink); }
+.step h3 { margin: 0; font-size: clamp(1.5rem, 3vw, 2.2rem); }
+
+/* buttons */
+button { font: inherit; cursor: pointer; }
+.btn { display: inline-flex; align-items: center; gap: .5rem; min-height: 2.75rem; padding: .55rem 1.1rem; border: 2px solid var(--border); border-radius: var(--radius);
+  background: var(--surface); color: var(--ink); font: 700 .95rem var(--mono); text-transform: uppercase; letter-spacing: .04em; text-decoration: none; box-shadow: var(--shadow); }
+.btn.primary { background: var(--blue); color: var(--blue-ink); }
+.btn.pink { background: var(--pink); color: var(--pink-ink); }
+:where(.btn, button) { transition: transform .12s ease, box-shadow .12s ease; }
+@media (prefers-reduced-motion: no-preference) {
+  :where(.btn, button):not(:disabled):hover { transform: translate(-1px, -2px); box-shadow: var(--shadow-hover); }
+  :where(.btn, button):not(:disabled):active { transform: translate(2px, 2px); box-shadow: -1px -1px 0 var(--pink), 1px 1px 0 var(--blue); } }
+
+/* kind chips */
+.kind { display: inline-block; padding: .05rem .45rem; border: 2px solid var(--border); font: 700 .7rem var(--mono); letter-spacing: .08em; text-transform: uppercase; }
+.kind.ai { background: var(--pink); color: var(--pink-ink); } .kind.code { background: var(--surface-2); color: var(--ink); } .kind.you { background: var(--blue); color: var(--blue-ink); }
+
+/* tooltip: a printed slip */
+.i { display: inline-grid; place-items: center; width: 1.3rem; height: 1.3rem; border: 2px solid currentColor; font: 700 .75rem var(--mono); color: var(--ink-muted); cursor: help; position: relative; margin-left: .35rem; vertical-align: middle; }
+.i[data-tip]:hover::after, .i[data-tip]:focus-visible::after { content: attr(data-tip); position: absolute; left: 50%; top: calc(100% + 10px); transform: translateX(-50%);
+  width: 290px; padding: .7rem .85rem; background: var(--surface-2); color: var(--ink); border: 2px solid var(--border); box-shadow: var(--shadow);
+  font: 400 .95rem/1.45 var(--body); text-align: left; text-transform: none; white-space: pre-line; z-index: 200; pointer-events: none; }
+:has(> .i:hover), :has(> .i:focus-visible) { z-index: 60; }
+
+.pill { display: inline-block; padding: .1rem .55rem; border: 2px solid var(--border); font: 700 .78rem var(--mono); text-transform: uppercase; }
+.pill.ok { background: #CFEFDB; } .pill.bad { background: #FFD3E9; } .pill.amb { background: var(--surface-2); }
+.kpi { padding: .8rem 1rem; background: var(--surface); border: 2px solid var(--border); box-shadow: var(--shadow); }
+.kpi small { display: block; font: 700 .7rem var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-muted); }
+.kpi b { font: 800 2rem var(--display); }
+
+/* a marquee strip as a section divider */
+.marquee { overflow: hidden; border-block: 2px solid var(--border); background: var(--surface-2); white-space: nowrap; font: 700 .9rem var(--mono); text-transform: uppercase; }
+.marquee > span { display: inline-block; padding: .4rem 0; }
+@media (prefers-reduced-motion: no-preference) { .marquee > span { animation: marquee 30s linear infinite; } }
+@keyframes marquee { to { transform: translateX(-50%); } }
+
+.sprite { image-rendering: pixelated; display: block; }
+.px-blink { animation: px-blink 1.2s steps(1) infinite; } @keyframes px-blink { 50% { opacity: .2; } }

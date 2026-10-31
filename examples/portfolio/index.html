@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Mika Tan, sample portfolio</title>
-<meta name="description" content="A sample interaction design portfolio built with the cutify-ui Glass theme. Mika Tan and every project on this page are made up.">
+<title>Sam Sample, portfolio</title>
+<meta name="description" content="A sample interaction design portfolio built with the cutify-ui Glass theme. Sam Sample and every project on this page are made up.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' shape-rendering='crispEdges'%3E%3Crect x='3' y='1' width='10' height='8' fill='%233a2e46'/%3E%3Crect x='4' y='4' width='8' height='4' fill='%23f1c7a3'/%3E%3Crect x='5' y='5' width='2' height='1' fill='%2316171a'/%3E%3Crect x='9' y='5' width='2' height='1' fill='%2316171a'/%3E%3Crect x='3' y='9' width='10' height='5' fill='%235cc3cf'/%3E%3Crect x='4' y='14' width='8' height='2' fill='%232d2a4a'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -124,8 +124,9 @@ main { width: min(1120px, calc(100% - 1.5rem)); margin: 0 auto; }
 .actions { display: flex; flex-wrap: wrap; gap: .75rem; align-items: center; }
 
 .art { position: relative; }
-.art-scene { position: relative; border-radius: 16px; border: 2px solid var(--ink); box-shadow: var(--hard); overflow: hidden; background: var(--sky-soft); }
-.art-scene > svg { display: block; width: 100%; height: auto; }
+/* the svg carries the rounded clip, not the box, so the Sam tooltip can open past the scene edge */
+.art-scene { position: relative; border-radius: 16px; border: 2px solid var(--ink); box-shadow: var(--hard); background: var(--sky-soft); }
+.art-scene > svg { display: block; width: 100%; height: auto; border-radius: 14px; }
 .cloud { animation: drift 26s ease-in-out infinite alternate; }
 .cloud.b { animation-duration: 34s; animation-direction: alternate-reverse; }
 @keyframes drift { to { transform: translateX(-60px); } }
@@ -293,9 +294,9 @@ dialog.pop::backdrop { background: rgb(14 43 36 / 62%); }
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs id="pixdefs"></defs></svg>
 
 <header class="nav glass">
-  <a class="brand" href="#top" aria-label="Mika Tan, back to top">
+  <a class="brand" href="#top" aria-label="Sam Sample, back to top">
     <svg class="sprite" viewBox="0 0 16 16" aria-hidden="true"><use href="#mika"/></svg>
-    <span>Mika Tan</span>
+    <span>Sam Sample</span>
   </a>
   <span class="tag made brand-tag" title="Made-up person and projects">Sample</span>
   <ul>
@@ -307,12 +308,12 @@ dialog.pop::backdrop { background: rgb(14 43 36 / 62%); }
 </header>
 
 <main id="top">
-  <p class="notice"><span class="tag made">Sample site</span> This is a sample portfolio. Mika Tan and every project, number and quote on this page are made up to show the cutify-ui Glass theme.</p>
+  <p class="notice"><span class="tag made">Sample site</span> This is a sample portfolio. Sam Sample and every project, number and quote on this page are made up to show the cutify-ui Glass theme.</p>
 
   <section class="hero glass" id="hero" aria-labelledby="heroTitle">
     <div>
       <div class="eyebrow"><span class="tag">Portfolio</span><span class="mono">Interaction design, year 3</span></div>
-      <h1 id="heroTitle">Mika <span class="hl">Tan</span></h1>
+      <h1 id="heroTitle">Sam <span class="hl">Sample</span></h1>
       <p class="tagline">I design small, friendly screens for everyday errands: catching a bus, watering the plants, finding a library book.</p>
       <ul class="benefits">
         <li>I test with real people early</li>
@@ -342,11 +343,11 @@ dialog.pop::backdrop { background: rgb(14 43 36 / 62%); }
           <g id="heroFlags"></g>
         </svg>
         <div class="hero-mika"><div class="bob"><div class="hop">
-          <svg class="sprite" viewBox="0 0 16 16" role="img" aria-label="Mika's pixel avatar, waving"><use href="#mika"/></svg>
+          <svg class="sprite" viewBox="0 0 16 16" role="img" aria-label="Sam's pixel avatar, waving"><use href="#mika"/></svg>
         </div></div></div>
         <p class="bubble">Hi! Scroll down and I'll walk you through my work.</p>
-        <span class="label mika"><span class="tag soft">Avatar</span>Mika
-          <span class="i" tabindex="0" data-tip="Pixel Mika, your guide&#10;• A 16 × 16 pixel drawing of me&#10;• Walks the trail at the bottom of the screen as you scroll&#10;• Each flag is one stop on my journey&#10;Why a guide: a person is easier to follow than a progress bar.">i</span></span>
+        <span class="label mika"><span class="tag soft">Avatar</span>Sam
+          <span class="i" tabindex="0" data-tip="Pixel Sam, your guide&#10;• A 16 × 16 pixel drawing of me&#10;• Walks the trail at the bottom of the screen as you scroll&#10;• Each flag is one stop on my journey&#10;Why a guide: a person is easier to follow than a progress bar.">i</span></span>
       </div>
       <div class="legend" aria-hidden="true">
         <span><svg class="sprite" viewBox="0 0 16 16" style="color:#fff"><use href="#flag"/></svg>A stop on the trail</span>
@@ -363,7 +364,7 @@ dialog.pop::backdrop { background: rgb(14 43 36 / 62%); }
 
   <!-- 1 About -->
   <section class="stage glass" id="st1" aria-labelledby="t1" data-short="About">
-    <div class="stage-head"><span class="num">1</span><span class="stage-pill">About</span><h2 class="stage-title" id="t1">Meet Mika</h2>
+    <div class="stage-head"><span class="num">1</span><span class="stage-pill">About</span><h2 class="stage-title" id="t1">Meet Sam</h2>
       <span class="i" tabindex="0" data-tip="Who made this work&#10;• What I study and where&#10;• What I care about in a design&#10;Why it comes first: knowing who made the work helps you read it.">i</span></div>
     <div class="explain"><span>Student</span><i>→</i><span>Notices small frustrations</span><i>→</i><span>Designs a kinder screen</span></div>
     <div class="about">
@@ -409,7 +410,7 @@ dialog.pop::backdrop { background: rgb(14 43 36 / 62%); }
         </div>
         <p class="status" id="copyStatus" role="status"></p>
       </div>
-      <div class="wave"><svg class="sprite" viewBox="0 0 16 16" role="img" aria-label="Mika's avatar at the end of the trail"><use href="#mika"/></svg></div>
+      <div class="wave"><svg class="sprite" viewBox="0 0 16 16" role="img" aria-label="Sam's avatar at the end of the trail"><use href="#mika"/></svg></div>
     </div>
   </section>
 
@@ -428,16 +429,16 @@ dialog.pop::backdrop { background: rgb(14 43 36 / 62%); }
 <footer class="glass">
   <div class="foot">
     <div>
-      <a class="brand" href="#top"><svg class="sprite" viewBox="0 0 16 16" aria-hidden="true"><use href="#mika"/></svg><span>Mika Tan</span></a>
-      <p>A sample interaction design portfolio. Mika, the projects, the numbers and the email address are all made up.</p>
+      <a class="brand" href="#top"><svg class="sprite" viewBox="0 0 16 16" aria-hidden="true"><use href="#mika"/></svg><span>Sam Sample</span></a>
+      <p>A sample interaction design portfolio. Sam, the projects, the numbers and the email address are all made up.</p>
     </div>
     <div><h4>Built with</h4><ul><li>cutify-ui Glass theme</li><li>Pixelify Sans, Atkinson Hyperlegible, Spline Sans Mono</li><li>Plain HTML, CSS and JS in one file</li></ul></div>
-    <div><h4>On this page</h4><ul><li><a href="#st1">Meet Mika</a></li><li><a href="#st2">Case studies</a></li><li><a href="#st5">Skills</a></li><li><a href="#st6">Contact</a></li></ul></div>
+    <div><h4>On this page</h4><ul><li><a href="#st1">Meet Sam</a></li><li><a href="#st2">Case studies</a></li><li><a href="#st5">Skills</a></li><li><a href="#st6">Contact</a></li></ul></div>
   </div>
-  <p class="copy">© 2026 Mika Tan, a made-up person. Sample site for the cutify-ui skill.</p>
+  <p class="copy">© 2026 Sam Sample, a made-up person. Sample site for the cutify-ui skill.</p>
 </footer>
 
-<!-- scroll-linked trail: Mika walks it as you scroll -->
+<!-- scroll-linked trail: Sam walks it as you scroll -->
 <nav class="trail glass" id="trail" aria-label="Journey progress">
   <svg class="trail-hills" viewBox="0 0 1200 80" preserveAspectRatio="none" aria-hidden="true">
     <path d="M0 50 C150 20 260 40 400 30 C560 18 680 44 820 28 C960 14 1080 30 1200 22 V80 H0Z" fill="#a8dc8a" opacity=".55"/>
@@ -599,6 +600,8 @@ function placeTip(el) {
   el.classList.toggle('up', r.bottom + 240 > floor && r.top > 300);
 }
 ['pointerover', 'focusin'].forEach(t => document.addEventListener(t, e => { const i = e.target.closest?.('.i'); if (i) placeTip(i); }));
+// focusing a trigger scrolls it into view after focusin: re-place the open tip once it has moved
+addEventListener('scroll', () => { const a = document.activeElement; if (a?.classList.contains('i')) placeTip(a); }, { passive: true });
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && document.activeElement?.classList.contains('i')) document.activeElement.blur(); });
 
 // ---------- hero flags along the drawn path ----------
@@ -647,7 +650,7 @@ function at(t) { const f = Math.max(0, Math.min(1, t)) * N, i = Math.min(N - 1, 
   return [lut[i][0] + (lut[i + 1][0] - lut[i][0]) * r, lut[i][1] + (lut[i + 1][1] - lut[i][1]) * r]; }
 function lenAt(t) { const f = Math.max(0, Math.min(1, t)) * N, i = Math.min(N - 1, Math.floor(f)); return cum[i] + (cum[i + 1] - cum[i]) * (f - i); }
 function targetT() {
-  const s = scrollY + innerHeight * .5;                       // Mika reaches flag k as stage k's top crosses mid-screen
+  const s = scrollY + innerHeight * .5;                       // Sam reaches flag k as stage k's top crosses mid-screen
   if (s <= anchors[0]) return tStops[0];
   for (let k = 0; k < anchors.length - 1; k++)
     if (s < anchors[k + 1]) return tStops[k] + (tStops[k + 1] - tStops[k]) * (s - anchors[k]) / (anchors[k + 1] - anchors[k]);

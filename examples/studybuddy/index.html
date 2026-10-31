@@ -61,7 +61,8 @@ button { font: inherit; cursor: pointer; }
 .i[data-tip]:hover::after, .i[data-tip]:focus-visible::after { content: attr(data-tip); position: absolute; left: 50%; top: calc(100% + 10px); transform: translateX(calc(-50% + var(--tip-shift, 0px)));
   width: var(--tip-w); padding: .7rem .85rem; background: #fff; color: var(--ink); border: 2px solid var(--ink); border-radius: 14px; font: 400 .95rem/1.45 var(--body); text-align: left;
   box-shadow: 3px 3px 0 rgb(31 36 48 / 20%), 0 12px 28px rgb(16 70 100 / 26%); white-space: pre-line; z-index: 200; pointer-events: none; }
-/* --tip-shift is set from JS so a tip never leaves the screen */
+/* --tip-shift is set from JS so a tip never leaves the screen; .up flips it above the trigger near the bottom */
+.i.up[data-tip]:hover::after, .i.up[data-tip]:focus-visible::after { top: auto; bottom: calc(100% + 10px); }
 :root { --tip-w: min(300px, calc(100vw - 2rem)); }
 :has(> .i:hover), :has(> .i:focus-visible) { z-index: 60; }
 .pill { display: inline-block; padding: .15rem .6rem; border-radius: 999px; font: 700 .85rem var(--body); white-space: nowrap; }
@@ -211,7 +212,7 @@ body { overflow-x: clip; }
 .day { background: rgb(255 255 255 / 80%); border: 1.5px solid rgb(31 36 48 / 16%); border-radius: 12px; padding: .5rem; min-height: 8.5rem; display: flex; flex-direction: column; gap: .4rem; }
 .day h4 { margin: 0; font: 700 .78rem var(--body); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-soft); }
 .slot { padding: .45rem .5rem; border-radius: 9px; border: 2px solid var(--ink); background: var(--teal-soft); box-shadow: 0 2px 0 rgb(31 36 48 / 25%); font-size: .86rem; line-height: 1.25; }
-.slot b { display: block; font-weight: 800; overflow-wrap: anywhere; hyphens: auto; }
+.slot b { display: block; font-weight: 800; overflow-wrap: break-word; hyphens: auto; }
 .slot .mono { font-size: .76rem; }
 .slot .qn { display: inline-flex; gap: .25rem; align-items: center; margin-top: .25rem; font-size: .74rem; font-weight: 700; }
 .slot .qn .g { width: .95rem; height: .95rem; font-size: .5rem; border-width: 1.5px; }
@@ -288,6 +289,14 @@ footer ul { padding: 0; list-style: none; display: grid; gap: .2rem; }
 footer .copy { grid-column: 1 / -1; border-top: 1.5px dashed rgb(31 36 48 / 18%); padding-top: .8rem; font-size: .88rem; color: var(--ink-soft); display: flex; justify-content: space-between; gap: .5rem; flex-wrap: wrap; }
 
 /* responsive */
+/* seven day columns get too narrow below ~1100px: stack the days */
+@media (max-width: 1100px) {
+  .week { grid-template-columns: 1fr; }
+  .day { min-height: 0; flex-direction: row; flex-wrap: wrap; align-items: center; }
+  .day h4 { width: 2.6rem; }
+  .day .slot { flex: 1; }
+  .free { margin: 0; text-align: left; }
+}
 @media (max-width: 1000px) {
   .hero, .how { grid-template-columns: 1fr; }
   footer .glass { grid-template-columns: 1fr 1fr; }
@@ -296,11 +305,6 @@ footer .copy { grid-column: 1 / -1; border-top: 1.5px dashed rgb(31 36 48 / 18%)
   .stage-body { grid-template-columns: 1fr; }
   .stage-sprite { grid-auto-flow: column; justify-content: start; align-items: center; }
   .stage-sprite .sprite { width: 64px; height: 64px; }
-  .week { grid-template-columns: 1fr; }
-  .day { min-height: 0; flex-direction: row; flex-wrap: wrap; align-items: center; }
-  .day h4 { width: 2.6rem; }
-  .day .slot { flex: 1; }
-  .free { margin: 0; text-align: left; }
   .kpis { grid-template-columns: 1fr 1fr; }
   .moods { grid-template-columns: 1fr 1fr; }
   .stage-top .who { margin-left: 0; }
@@ -644,10 +648,10 @@ pixelSprites({
 // ---- made-up sample data ----
 const SESSIONS = [
   { day: 'Mon', from: '18:00', to: '19:30', subject: 'Calculus', qs: 4 },
-  { day: 'Tue', from: '17:00', to: '18:00', subject: 'Microeconomics', qs: 3 },
+  { day: 'Tue', from: '17:00', to: '18:00', subject: 'Micro­economics', qs: 3 },
   { day: 'Wed', from: '19:00', to: '20:30', subject: 'Organic chemistry', qs: 4 },
   { day: 'Thu', from: '18:00', to: '19:00', subject: 'Calculus', qs: 3 },
-  { day: 'Sat', from: '10:00', to: '12:00', subject: 'Microeconomics', qs: 5 },
+  { day: 'Sat', from: '10:00', to: '12:00', subject: 'Micro­economics', qs: 5 },
   { day: 'Sun', from: '14:00', to: '15:30', subject: 'Organic chemistry', qs: 4 },
 ];
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
@@ -847,8 +851,11 @@ function fitTip(e) {
   const r = el.getBoundingClientRect(), w = parseFloat(getComputedStyle(el, '::after').width) || Math.min(300, innerWidth - 32);
   const want = r.left + r.width / 2 - w / 2, fit = Math.max(12, Math.min(want, document.documentElement.clientWidth - w - 12));
   el.style.setProperty('--tip-shift', (fit - want) + 'px');
+  el.classList.toggle('up', r.bottom + 260 > innerHeight && r.top > 260);
 }
 ['mouseover', 'focusin'].forEach(t => document.addEventListener(t, fitTip));
+// focusing a trigger scrolls it into view after focusin: re-fit the open tip once it has moved
+addEventListener('scroll', () => fitTip({ target: document.activeElement }), { passive: true });
 
 // ---- pause loops off screen ----
 const io = new IntersectionObserver(es => es.forEach(e => e.target.classList.toggle('is-off', !e.isIntersecting)), { rootMargin: '100% 0px' });

@@ -7,3 +7,4 @@ evals/results/
 *.log
 dist/
 __pycache__/
+tools/qa-output/

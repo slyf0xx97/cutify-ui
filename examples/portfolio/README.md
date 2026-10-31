@@ -1,6 +1,6 @@
-# Mika Tan, portfolio
+# Sam Sample, portfolio
 
-![Mika Tan, portfolio](../../docs/gallery/portfolio.png)
+![Sam Sample, portfolio](../../docs/gallery/portfolio.png)
 
 **[Open it live](https://slyf0xx97.github.io/cutify-ui/examples/portfolio/)**
 
@@ -14,7 +14,9 @@
 
 Claude was given this brief with the cutify-ui skill installed:
 
-> A personal portfolio site for "Mika Tan" (a made-up interaction design student). No AI in this product: the cast is Mika's pixel-art avatar as a mascot, and the numbered stages are Mika's journey (About, three case studies, Skills, Contact). The avatar walks a trail as you scroll. Glass (light) theme. Each case study card opens a native <dialog> with details. Clearly mark it as a sample portfolio with made-up projects.
+> A personal portfolio site for "Sam Sample" (a made-up interaction design student). No AI in this product: the cast is Sam's pixel-art avatar as a mascot, and the numbered stages are Sam's journey (About, three case studies, Skills, Contact). The avatar walks a trail as you scroll. Glass (light) theme. Each case study card opens a native <dialog> with details. Clearly mark it as a sample portfolio with made-up projects.
+
+The character was renamed to Sam Sample after the build, to use an obviously made-up name.
 
 ## What's on the page
 

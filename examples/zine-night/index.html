@@ -1,0 +1,862 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zine Night, a route through 40 zine tables</title>
+<meta name="description" content="A cutify-ui Riso Club example: the Curator plans a walking route through a made-up zine fair from the topics you like, you star tables and approve, then print the map.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Rethink+Sans:wght@400;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' shape-rendering='crispEdges'%3E%3Crect x='1' y='1' width='13' height='13' fill='%23FF48B0'/%3E%3Crect x='2' y='2' width='13' height='13' fill='%230078BF' style='mix-blend-mode:multiply'/%3E%3Cpath fill='%23FFFFFF' d='M4 4h8v2H4zM8 6h2v2H8zM6 8h2v2H6zM4 10h8v2H4z'/%3E%3C/svg%3E">
+<style>
+/* ---- tokens: cutify-ui Riso Club (assets/riso.css) ---- */
+:root {
+  --bg: #F6F1E7; --surface: #FFFFFF; --surface-2: #FFE800; --border: #1D1D3B;
+  --ink: #1D1D3B; --ink-muted: #3D2E8C; --link: #3D2E8C;
+  --blue: #0078BF; --blue-ink: #FFFFFF; --pink: #FF48B0; --pink-ink: #1D1D3B; --pink-deep: #D9258F;
+  --ok: #1F7A47; --bad: #C1121F;
+  --radius: 2px; --shadow: -3px -2px 0 var(--pink), 4px 3px 0 var(--blue); --shadow-hover: -5px -3px 0 var(--pink), 6px 5px 0 var(--blue);
+  --ghost: 2px 1px 0 rgb(0 120 191 / .55);
+  --display: 'Bricolage Grotesque', system-ui, sans-serif; --body: 'Rethink Sans', system-ui, sans-serif; --mono: 'Space Mono', ui-monospace, monospace;
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { background: var(--bg); scroll-padding-top: 5rem; scroll-behavior: smooth; overflow-x: clip; }
+body { margin: 0; color: var(--ink); font: 400 1.05rem/1.6 var(--body); overflow-x: clip;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .16 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"), var(--bg); }
+h1, h2, h3 { font-family: var(--display); font-weight: 800; line-height: 1; letter-spacing: -.02em; text-shadow: var(--ghost); }
+a { color: var(--link); text-decoration-thickness: 2px; text-underline-offset: 3px; }
+:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { animation: none !important; transition: none !important; } }
+.is-off, .is-off *, .is-off *::before, .is-off *::after { animation-play-state: paused !important; }
+.mono { font-family: var(--mono); }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.wrap { width: min(1180px, 100%); margin: 0 auto; padding: 0 1rem; }
+@media (min-width: 700px) { .wrap { padding: 0 1.5rem; } }
+
+.panel { background: var(--surface); border: 2px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); padding: 1.1rem 1.25rem; }
+.lab { font: 700 .75rem var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-muted); }
+.overprint { mix-blend-mode: multiply; }
+.hl { background: linear-gradient(transparent 50%, var(--surface-2) 50%, var(--surface-2) 90%, transparent 90%); }
+
+/* buttons: a slipped print plate that lifts and sinks */
+button { font: inherit; cursor: pointer; color: inherit; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; min-height: 2.75rem; padding: .55rem 1.1rem; border: 2px solid var(--border); border-radius: var(--radius);
+  background: var(--surface); color: var(--ink); font: 700 .9rem var(--mono); text-transform: uppercase; letter-spacing: .04em; text-decoration: none; box-shadow: var(--shadow); }
+.btn.primary { background: var(--blue); color: var(--blue-ink); }
+.btn.pink { background: var(--pink); color: var(--pink-ink); }
+.btn:disabled { opacity: .45; cursor: not-allowed; box-shadow: none; }
+:where(.btn, button) { transition: transform .12s ease, box-shadow .12s ease; }
+@media (prefers-reduced-motion: no-preference) {
+  :where(.btn, .play > button, .chip-t span):not(:disabled):hover { transform: translate(-1px, -2px); box-shadow: var(--shadow-hover); }
+  :where(.btn, .play > button):not(:disabled):active { transform: translate(2px, 2px); box-shadow: -1px -1px 0 var(--pink), 1px 1px 0 var(--blue); } }
+
+.kind { display: inline-block; padding: .05rem .45rem; border: 2px solid var(--border); font: 700 .7rem/1.5 var(--mono); letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; }
+.kind.ai { background: var(--pink); color: var(--pink-ink); } .kind.you { background: var(--blue); color: var(--blue-ink); }
+.kind.sample { background: var(--surface-2); color: var(--ink); }
+
+/* glyphs: shape, not just colour, says who */
+.gly { display: inline-grid; place-items: center; width: 1.35rem; height: 1.35rem; border: 2px solid var(--border); font: 700 .7rem var(--mono); flex: none; }
+.gly.cur { background: var(--pink); border-radius: 50%; }
+.gly.you { background: var(--blue); color: #fff; }
+.gly.own { background: var(--surface-2); border: 0; clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%); }
+
+/* tooltip trigger + one shared tip, placed by JS so it stays on screen */
+.i { display: inline-grid; place-items: center; width: 1.45rem; height: 1.45rem; padding: 0; border: 2px solid currentColor; background: var(--surface); font: 700 .85rem var(--body); color: var(--ink-muted); cursor: help; margin-left: .35rem; vertical-align: middle; flex: none; }
+.i:hover, .i:focus-visible { background: var(--surface-2); color: var(--ink); }
+#tip { position: fixed; z-index: 1000; width: min(300px, calc(100vw - 16px)); background: var(--surface-2); color: var(--ink); border: 2px solid var(--border); box-shadow: var(--shadow); pointer-events: none; }
+#tip[hidden] { display: none; }
+#tip b { display: block; padding: .4rem .75rem; border-bottom: 2px solid var(--border); background: var(--surface); font: 800 1.02rem var(--display); }
+#tip ul { margin: 0; padding: .45rem .75rem .6rem; list-style: none; font-size: .93rem; line-height: 1.4; }
+#tip li { position: relative; padding-left: .95rem; margin: .18rem 0; }
+#tip li::before { content: ""; position: absolute; left: 0; top: .5em; width: 6px; height: 6px; background: var(--pink-deep); }
+@media (prefers-reduced-motion: no-preference) { #tip:not([hidden]) { animation: tip-in .15s ease-out; } }
+@keyframes tip-in { from { opacity: 0; transform: translateY(4px); } }
+
+/* sprites */
+.sprite { image-rendering: pixelated; display: block; }
+@keyframes px-bob { 50% { transform: translateY(-3px); } }
+@keyframes hop { to { transform: translateY(-6px); } }
+.px-blink { animation: px-blink 1.2s steps(1) infinite; } @keyframes px-blink { 50% { opacity: .2; } }
+
+/* ---- nav ---- */
+.nav { position: sticky; top: 0; z-index: 50; background: rgb(246 241 231 / .94); border-bottom: 2px solid var(--border); backdrop-filter: blur(4px); }
+.nav .wrap { display: flex; align-items: center; gap: 1rem; min-height: 3.9rem; }
+.brand { display: inline-flex; align-items: center; gap: .55rem; font: 800 1.35rem var(--display); color: var(--ink); text-decoration: none; letter-spacing: -.02em; }
+.brand svg { width: 28px; height: 28px; }
+.nav .links { margin-left: auto; display: flex; align-items: center; gap: 1.1rem; }
+.nav .links a:not(.btn) { font: 700 .82rem var(--mono); text-transform: uppercase; letter-spacing: .06em; color: var(--ink); text-decoration: none; }
+.nav .links a:not(.btn):hover { text-decoration: underline; }
+.nav .btn { min-height: 2.4rem; padding: .35rem .8rem; font-size: .8rem; }
+@media (max-width: 560px) { .nav .links .hide-s { display: none; } }
+
+/* ---- hero ---- */
+.hero { position: relative; isolation: isolate; padding: 3rem 0 3.2rem; }
+.hero::before { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background: radial-gradient(circle, var(--pink) 1.6px, transparent 2px) 0 0 / 10px 10px;
+  mask-image: linear-gradient(160deg, #000 0%, transparent 62%); -webkit-mask-image: linear-gradient(160deg, #000 0%, transparent 62%); opacity: .55; }
+.hero .wrap { display: grid; grid-template-columns: 1.05fr 1fr; gap: 3rem; align-items: center; }
+@media (max-width: 920px) { .hero .wrap { grid-template-columns: 1fr; gap: 2.2rem; } .hero .wrap > div:last-child { width: min(100%, 560px); } }
+.eyebrow { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; margin-bottom: 1.1rem; }
+.hero h1 { font-size: clamp(3.4rem, 9vw, 6.6rem); margin: 0 0 1.1rem; letter-spacing: -.045em; text-shadow: 3px 2px 0 rgb(0 120 191 / .55); }
+.hero h1 .w2 { position: relative; display: inline-block; padding: 0 .12em .06em; }
+.hero h1 .w2::before { content: ""; position: absolute; inset: .14em -.02em 0 0; background: var(--pink); z-index: -1; transform: rotate(-2deg); mix-blend-mode: multiply; }
+.tag { font-size: clamp(1.1rem, 1.9vw, 1.28rem); max-width: 34rem; margin: 0 0 1.3rem; }
+.ticks { list-style: none; padding: 0; margin: 0 0 1.6rem; display: grid; gap: .45rem; }
+.ticks li { display: flex; gap: .6rem; align-items: center; font-weight: 600; }
+.ticks li::before { content: "✓"; display: inline-grid; place-items: center; width: 1.5rem; height: 1.5rem; flex: none; background: var(--surface-2); border: 2px solid var(--border); font: 700 .85rem var(--mono); }
+.live { display: inline-flex; align-items: center; gap: .5rem; padding: .2rem .6rem; border: 2px solid var(--border); background: var(--surface); font: 700 .72rem var(--mono); text-transform: uppercase; letter-spacing: .08em; }
+.live i { width: 9px; height: 9px; border-radius: 50%; background: var(--pink-deep); }
+@media (prefers-reduced-motion: no-preference) { .live i { animation: live 1.6s infinite; } }
+@keyframes live { 0% { box-shadow: 0 0 0 0 rgb(217 37 143 / .6); } 100% { box-shadow: 0 0 0 9px transparent; } }
+
+/* split primary button with a menu that opens upward */
+.play { display: inline-flex; position: relative; max-width: 100%; }
+.play > button { border: 2px solid var(--border); background: var(--blue); color: var(--blue-ink); box-shadow: var(--shadow); text-align: left; }
+.play .go { padding: .7rem 1.2rem; border-radius: var(--radius) 0 0 var(--radius); }
+.play .go span { display: block; font: 800 1.35rem/1.1 var(--display); letter-spacing: -.01em; }
+.play .go small { display: block; font: 700 .72rem var(--mono); text-transform: uppercase; letter-spacing: .06em; margin-top: .25rem; }
+.play .caret { border-left: 0; padding: 0 .95rem; font-size: 1.1rem; border-radius: 0 var(--radius) var(--radius) 0; }
+.menu { position: absolute; bottom: calc(100% + 12px); left: 0; width: min(330px, calc(100vw - 2rem)); background: var(--surface); border: 2px solid var(--border);
+  box-shadow: 0 14px 30px rgb(29 29 59 / .22); padding: .4rem; z-index: 80; display: none; }
+.menu.open { display: block; }
+.menu p { margin: .2rem .5rem .4rem; }
+.menu button { display: block; width: 100%; text-align: left; border: 2px solid transparent; background: none; padding: .45rem .6rem; font-weight: 600; }
+.menu button:hover, .menu button:focus-visible { background: var(--surface-2); border-color: var(--border); }
+.menu button small { display: block; font: 400 .85rem var(--body); color: var(--ink-muted); }
+
+/* hero poster */
+.poster { position: relative; aspect-ratio: 400 / 340; padding: 0; overflow: hidden; background: var(--surface); }
+.poster > svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.poster .ch { position: absolute; display: inline-flex; align-items: center; gap: .3rem; padding: .2rem .45rem .2rem .25rem; background: var(--surface); border: 2px solid var(--border); font: 800 .95rem var(--display); white-space: nowrap; z-index: 2; }
+.legend { display: flex; flex-wrap: wrap; gap: .5rem 1.1rem; margin-top: .9rem; font-size: .92rem; }
+.legend span { display: inline-flex; align-items: center; gap: .4rem; }
+@media (prefers-reduced-motion: no-preference) {
+  .bob { animation: px-bob 2.4s steps(2) infinite; } .bob.b2 { animation-delay: -.8s; } .bob.b3 { animation-delay: -1.6s; }
+  .march { animation: march 1.6s linear infinite; }
+  .dots circle { animation: dot 1.2s steps(2) infinite; } .dots circle:nth-child(2) { animation-delay: .2s; } .dots circle:nth-child(3) { animation-delay: .4s; } }
+@keyframes march { to { stroke-dashoffset: -26; } }
+@keyframes dot { 50% { transform: translateY(-3px); } }
+
+/* marquee divider */
+.marquee { overflow: hidden; border-block: 2px solid var(--border); background: var(--surface-2); white-space: nowrap; font: 700 .9rem var(--mono); text-transform: uppercase; letter-spacing: .04em; }
+.marquee > span { display: inline-block; padding: .5rem 0; }
+.marquee b { color: var(--pink-deep); margin: 0 1rem; }
+@media (prefers-reduced-motion: no-preference) { .marquee > span { animation: marquee 38s linear infinite; } }
+@keyframes marquee { to { transform: translateX(-50%); } }
+
+/* ---- stages ---- */
+main { padding-bottom: 2rem; }
+.step { display: flex; align-items: center; flex-wrap: wrap; gap: .4rem .9rem; margin: 3.2rem 0 .7rem; scroll-margin-top: 5rem; }
+.step .n { font: 800 4rem/.8 var(--display); color: transparent; -webkit-text-stroke: 2px var(--ink); text-shadow: 4px 3px 0 var(--pink); letter-spacing: 0; }
+.step h2 { margin: 0; font-size: clamp(1.6rem, 3.4vw, 2.4rem); }
+.step .kind { margin-top: .2rem; }
+.explain { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem .5rem; margin: 0 0 1.1rem; }
+.explain span { padding: .2rem .55rem; background: var(--surface); border: 2px dashed var(--border); font-size: .92rem; }
+.explain i { font-style: normal; font-weight: 800; color: var(--pink-deep); }
+
+/* stage 1: topic chips on native checkboxes */
+.topics { display: flex; flex-wrap: wrap; gap: .7rem; margin: .4rem 0 1.2rem; padding: 0; border: 0; }
+.topics legend { padding: 0; margin-bottom: .6rem; }
+.chip-t { position: relative; }
+.chip-t input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.chip-t span { display: inline-flex; align-items: center; gap: .45rem; padding: .45rem .75rem; min-height: 2.75rem; border: 2px solid var(--border); background: var(--surface); font-weight: 700; box-shadow: 2px 2px 0 var(--border); transition: transform .12s ease, box-shadow .12s ease; }
+.chip-t span::before { content: "+"; display: inline-grid; place-items: center; width: 1.1rem; font: 700 .95rem var(--mono); }
+.chip-t small { font: 700 .72rem var(--mono); color: var(--ink-muted); }
+.chip-t input:checked + span { background: var(--pink); box-shadow: var(--shadow); }
+.chip-t input:checked + span::before { content: "✓"; }
+.chip-t input:checked + span small { color: var(--ink); }
+.chip-t input:focus-visible + span { outline: 3px solid var(--blue); outline-offset: 3px; }
+.row-act { display: flex; flex-wrap: wrap; align-items: center; gap: .8rem 1.2rem; }
+.hint { color: var(--ink-muted); font-size: .95rem; margin: 0; }
+
+/* stage 2: map + curator */
+.s2 { display: grid; grid-template-columns: minmax(0, 1.75fr) minmax(0, 1fr); gap: 1.6rem; align-items: start; }
+@media (max-width: 980px) { .s2 { grid-template-columns: minmax(0, 1fr); } }
+.maphead { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .5rem; margin-bottom: .7rem; }
+.maphead .lab { display: flex; align-items: center; }
+.mapscroll { overflow-x: auto; overscroll-behavior-x: contain; margin: 0 -.3rem; padding: 0 .3rem; }
+.mapscroll svg { display: block; width: 100%; min-width: 600px; height: auto; }
+.swipe { display: none; font: 700 .72rem var(--mono); text-transform: uppercase; color: var(--ink-muted); margin: .4rem 0 0; }
+@media (max-width: 660px) { .swipe { display: block; } }
+.tb { cursor: pointer; outline: none; }
+.tb rect { fill: var(--surface); stroke: var(--ink); stroke-width: 2.5; }
+.tb text { font: 700 17px var(--mono); fill: var(--ink); text-anchor: middle; pointer-events: none; }
+.tb.on rect { fill: var(--pink); }
+.tb.star rect { fill: var(--surface-2); }
+.tb:hover rect, .tb:focus-visible rect { stroke: var(--blue); stroke-width: 4; }
+.tb:focus-visible rect { stroke-dasharray: 6 3; }
+.hall { fill: #FFFCF4; stroke: var(--ink); stroke-width: 3; }
+.rt { fill: none; stroke-width: 7; stroke-linejoin: miter; stroke-linecap: square; }
+.rt.ghost { stroke: var(--pink); mix-blend-mode: multiply; }
+.rt.main { stroke: var(--blue); mix-blend-mode: multiply; }
+.badge circle { fill: var(--blue); stroke: var(--ink); stroke-width: 2; }
+.badge text { font: 700 12px var(--mono); fill: #fff; text-anchor: middle; }
+.badge { transform-box: fill-box; transform-origin: center; opacity: .35; }
+.badge.hit { opacity: 1; }
+@media (prefers-reduced-motion: no-preference) { .badge.hit { animation: stamp .22s cubic-bezier(.5, 1.8, .6, 1); } .owner.hop { animation: hop .3s steps(2) 4 alternate; } }
+@keyframes stamp { from { transform: scale(2.2); } }
+.owner { transform-box: fill-box; opacity: .55; } .owner.met { opacity: 1; }
+.doorlab { font: 700 14px var(--mono); fill: var(--ink); }
+.maplegend { display: flex; flex-wrap: wrap; gap: .4rem 1rem; margin-top: .8rem; font-size: .88rem; }
+.maplegend span { display: inline-flex; align-items: center; gap: .4rem; }
+.sw { display: inline-block; width: 1.2rem; height: .85rem; border: 2px solid var(--border); }
+
+.cur-card { display: grid; gap: .9rem; }
+.say { display: grid; grid-template-columns: 64px 1fr; gap: .8rem; align-items: start; }
+.say .bubble { position: relative; background: #FFE3F2; border: 2px solid var(--border); padding: .6rem .8rem; font-size: .98rem; min-height: 3.2rem; }
+.say .bubble::before { content: ""; position: absolute; left: -10px; top: 14px; width: 14px; height: 14px; background: #FFE3F2; border-left: 2px solid var(--border); border-bottom: 2px solid var(--border); transform: rotate(45deg); }
+.typing { display: inline-flex; gap: 5px; padding: .5rem 0; }
+.typing i { width: 8px; height: 8px; background: var(--ink); }
+@media (prefers-reduced-motion: no-preference) { .typing i { animation: dot .8s steps(2) infinite; } .typing i:nth-child(2) { animation-delay: .15s; } .typing i:nth-child(3) { animation-delay: .3s; } }
+.stops { list-style: none; margin: 0; padding: 0; display: grid; gap: .45rem; counter-reset: s; }
+.stops li { display: grid; grid-template-columns: 2rem 1fr auto; gap: .55rem; align-items: center; padding: .4rem .5rem; border: 2px solid var(--border); background: var(--surface); }
+.stops li.hit { background: #EAF4FB; }
+.stops .no { display: grid; place-items: center; width: 1.8rem; height: 1.8rem; background: var(--blue); color: #fff; font: 700 .8rem var(--mono); border: 2px solid var(--border); }
+.stops .nm { font-weight: 700; line-height: 1.25; }
+.stops .why { display: block; font-size: .85rem; color: var(--ink-muted); font-weight: 400; }
+.star-b { min-width: 2.75rem; min-height: 2.75rem; border: 2px solid var(--border); background: var(--surface); font-size: 1.15rem; line-height: 1; padding: 0; }
+.star-b[aria-pressed="true"] { background: var(--surface-2); }
+.stops .tid { font-family: var(--mono); font-size: .8rem; color: var(--ink-muted); }
+.ctl { display: flex; flex-wrap: wrap; gap: .6rem; }
+
+/* stage 3 */
+.kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .9rem; margin-bottom: 1.2rem; }
+@media (max-width: 700px) { .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.kpi { padding: .7rem .9rem; background: var(--surface); border: 2px solid var(--border); box-shadow: var(--shadow); min-width: 0; }
+.kpi small { display: block; font: 700 .7rem var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-muted); }
+.kpi b { display: block; font: 800 2rem/1.1 var(--display); }
+.kpi span { font-size: .82rem; color: var(--ink-muted); }
+.s3 { display: grid; grid-template-columns: 1.2fr 1fr; gap: 1.6rem; align-items: start; }
+@media (max-width: 860px) { .s3 { grid-template-columns: minmax(0, 1fr); } }
+.starlist { display: flex; flex-wrap: wrap; gap: .5rem; margin: .6rem 0 0; padding: 0; list-style: none; }
+.starlist li { display: inline-flex; align-items: center; gap: .4rem; padding: .2rem .5rem; background: var(--surface-2); border: 2px solid var(--border); font-weight: 600; font-size: .92rem; }
+.decide { display: grid; gap: .9rem; }
+.decide .who { display: flex; gap: .8rem; align-items: center; }
+.state { display: inline-flex; align-items: center; gap: .4rem; padding: .15rem .55rem; border: 2px solid var(--border); font: 700 .78rem var(--mono); text-transform: uppercase; }
+.state.wait { background: var(--surface); } .state.ok { background: #CFEFDB; }
+
+/* stage 4: the print sheet */
+.sheet { position: relative; background: var(--surface); border: 2px solid var(--border); box-shadow: var(--shadow); padding: 1.2rem; }
+.sheet.locked > :not(.lock) { filter: grayscale(1); opacity: .6; }
+.sheet .lock { position: absolute; inset: 0; display: grid; place-items: center; z-index: 3; }
+.sheet .lock p { margin: 0; padding: .6rem 1rem; background: var(--surface); border: 2px solid var(--border); font: 700 .9rem var(--mono); text-transform: uppercase; box-shadow: var(--shadow); max-width: calc(100% - 2rem); text-align: center; }
+.sheet:not(.locked) .lock { display: none; }
+.sheet-top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: .5rem; border-bottom: 3px solid var(--ink); padding-bottom: .5rem; margin-bottom: .9rem; }
+.sheet-top h3 { margin: 0; font-size: clamp(1.8rem, 4vw, 2.6rem); }
+.sheet-grid { display: grid; grid-template-columns: 1.7fr 1fr; gap: 1.2rem; }
+@media (max-width: 800px) { .sheet-grid { grid-template-columns: 1fr; } }
+.sheet svg { width: 100%; height: auto; display: block; }
+.sheet ol { margin: 0; padding-left: 1.6rem; font-size: .95rem; }
+.sheet ol li { margin: .2rem 0; }
+.stamp { display: inline-block; padding: .1rem .5rem; border: 3px solid var(--pink-deep); color: var(--pink-deep); font: 700 .8rem var(--mono); text-transform: uppercase; transform: rotate(-4deg); }
+.sheet-act { display: flex; flex-wrap: wrap; gap: .8rem; align-items: center; margin-top: 1.2rem; }
+
+/* ---- how it works ---- */
+#how { scroll-margin-top: 4.5rem; }
+.how { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start; }
+@media (max-width: 900px) { .how { grid-template-columns: 1fr; } }
+.route { position: relative; list-style: none; margin: 0; padding: 0 0 0 3.4rem; display: grid; gap: .9rem; }
+.route::before { content: ""; position: absolute; left: 1.15rem; top: .5rem; bottom: .5rem; width: 4px; background-image: linear-gradient(var(--ink) 50%, transparent 50%); background-size: 4px 12px; }
+.route li { padding: .7rem .9rem; background: var(--surface); border: 2px solid var(--border); transition: box-shadow .2s, transform .2s; }
+.route li.on { box-shadow: var(--shadow); transform: translateX(4px); }
+.route li h3 { margin: 0 0 .25rem; font-size: 1.2rem; display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; text-shadow: none; }
+.route li h3 .n { font: 700 .8rem var(--mono); background: var(--surface-2); border: 2px solid var(--border); padding: 0 .35rem; }
+.route li p { margin: 0; font-size: .95rem; }
+.token { position: absolute; left: 0; top: 0; width: 2.4rem; height: 2.4rem; transition: transform .7s steps(6); }
+.diag { display: grid; gap: 0; }
+.box { display: grid; grid-template-columns: auto 1fr; gap: .2rem .7rem; align-items: center; padding: .7rem .9rem; background: var(--surface); border: 2px solid var(--border); }
+.box.ai { background: #FFE3F2; box-shadow: var(--shadow); }
+.box .sprite { grid-row: span 2; width: 44px; height: 44px; }
+.box b { font: 800 1.1rem var(--display); display: flex; gap: .45rem; align-items: center; flex-wrap: wrap; }
+.box span { font-size: .92rem; }
+.wire { height: 46px; position: relative; display: flex; align-items: center; padding-left: 2.6rem; font: 700 .72rem var(--mono); text-transform: uppercase; color: var(--ink-muted); letter-spacing: .05em; }
+.wire svg { position: absolute; left: 1.2rem; top: 0; height: 100%; width: 16px; overflow: visible; }
+.wire path { fill: none; stroke: var(--ink); stroke-width: 3; stroke-dasharray: 1 1; }
+@media (prefers-reduced-motion: no-preference) { .in .wire path { animation: draw 1.2s ease-out both; } .in .wire:nth-of-type(4) path { animation-delay: .5s; } .in .wire:nth-of-type(6) path { animation-delay: 1s; } }
+@keyframes draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+.note { margin: 1rem 0 0; padding: .6rem .8rem; border-left: 5px solid var(--pink); background: var(--surface); font-size: .95rem; }
+
+/* ---- footer ---- */
+footer { margin-top: 4rem; border-top: 2px solid var(--border); background: var(--surface); }
+.foot { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 1.6rem; padding: 2.2rem 0 1.4rem; }
+@media (max-width: 1100px) { .foot { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 560px) { .foot { grid-template-columns: 1fr; } }
+.foot h4 { margin: 0 0 .5rem; font: 700 .75rem var(--mono); text-transform: uppercase; letter-spacing: .1em; color: var(--ink-muted); text-shadow: none; }
+.foot ul { list-style: none; margin: 0; padding: 0; font-size: .95rem; } .foot li { margin: .2rem 0; }
+.foot p { margin: .4rem 0 0; font-size: .95rem; }
+.copy { border-top: 2px dashed var(--border); padding: .9rem 0 1.4rem; font: 400 .8rem var(--mono); }
+
+/* ---- dialog ---- */
+dialog.pop { width: min(520px, calc(100vw - 1.5rem)); max-height: 92dvh; padding: 0; border: 2px solid var(--border); border-radius: var(--radius); background: var(--surface); color: var(--ink); box-shadow: var(--shadow), 0 20px 50px rgb(29 29 59 / .3); overflow: auto; }
+dialog.pop::backdrop { background: rgb(29 29 59 / .45); }
+@media (prefers-reduced-motion: no-preference) { dialog.pop[open] { animation: pop-in .18s ease-out; } }
+@keyframes pop-in { from { opacity: 0; transform: translateY(10px) scale(.98); } }
+.pop-head { display: flex; align-items: center; gap: .7rem; padding: .7rem .9rem; border-bottom: 2px solid var(--border); background: var(--surface-2); }
+.pop-head .sprite { width: 40px; height: 40px; flex: none; }
+.pop-head h2 { margin: 0; font-size: 1.45rem; flex: 1; text-shadow: none; }
+.pop-close { border: 2px solid var(--border); background: var(--surface); font: 700 .78rem var(--mono); text-transform: uppercase; padding: .3rem .55rem; min-height: 2.5rem; }
+.pop-body { padding: 1rem 1.1rem 1.2rem; }
+.pop-body ol { margin: .7rem 0 1rem; padding-left: 1.5rem; max-height: 38vh; overflow: auto; }
+.pop-actions { display: flex; flex-wrap: wrap; gap: .7rem; justify-content: flex-end; }
+
+/* print: only the sheet */
+@media print {
+  @page { margin: 12mm; }
+  body { background: #fff; }
+  body * { visibility: hidden; }
+  #sheet, #sheet * { visibility: visible; }
+  #sheet { position: absolute; left: 0; top: 0; width: 100%; box-shadow: none; filter: none; opacity: 1; }
+  #sheet .sheet-act, #sheet .lock { display: none; }
+  .sheet-grid { grid-template-columns: 1fr; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+</style>
+</head>
+<body id="top">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs id="pixdefs"></defs></svg>
+
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="Zine Night, back to top">
+      <svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><rect x="1" y="1" width="13" height="13" fill="#FF48B0"/><rect x="2" y="2" width="13" height="13" fill="#0078BF" style="mix-blend-mode:multiply"/><path fill="#fff" d="M4 4h8v2H4zM8 6h2v2H8zM6 8h2v2H6zM4 10h8v2H4z"/></svg>
+      Zine Night
+    </a>
+    <nav class="links" aria-label="Page">
+      <a class="hide-s" href="#how">How it works</a>
+      <a class="hide-s" href="#st4">Your map</a>
+      <a class="btn primary" href="#st1">Plan my route</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero" aria-labelledby="h1">
+  <div class="wrap">
+    <div>
+      <div class="eyebrow"><span class="live"><i></i>Sample fair, made up</span><span class="kind sample">40 tables</span></div>
+      <h1 id="h1">Zine <span class="w2">Night</span></h1>
+      <p class="tag">Forty tables of small-press zines in one hall. Tell the Curator what you like to read and it walks you a route through the tables that match.</p>
+      <ul class="ticks">
+        <li>A route built from your topics</li>
+        <li>Star any table to add it</li>
+        <li>Print the map and go</li>
+      </ul>
+      <div class="play">
+        <button class="go" type="button" id="goBtn"><span>▶ Plan my route</span><small>Pick topics, watch the walk</small></button>
+        <button class="caret" type="button" id="caret" aria-label="Choose a sample visitor" aria-expanded="false" aria-controls="menu">▾</button>
+        <div class="menu" id="menu">
+          <p class="lab">Try a sample visitor</p>
+          <button type="button" data-preset="comics riso">Comics and riso how-to<small>Ink, panels and two-colour printing</small></button>
+          <button type="button" data-preset="poetry nature">Poetry and nature<small>Slow reads, ferns and birds</small></button>
+          <button type="button" data-preset="food history">Food and local history<small>Recipes, markets and old streets</small></button>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="panel poster" role="img" aria-label="The cast: the Curator, an AI helper in a pink beret holding zines; you, in a blue cap with a tote bag; and three table owners behind their tables, linked by a dashed walking route.">
+        <svg viewBox="0 0 400 340" aria-hidden="true">
+          <circle class="overprint" cx="150" cy="120" r="104" fill="#FF48B0" opacity=".9"/>
+          <circle class="overprint" cx="272" cy="150" r="92" fill="#0078BF" opacity=".85"/>
+          <g fill="none" stroke="#1D1D3B" stroke-width="2" opacity=".35"><path d="M0 222h400"/></g>
+          <rect x="0" y="222" width="400" height="118" fill="#F6F1E7"/>
+          <path d="M0 222h400" stroke="#1D1D3B" stroke-width="2.5"/>
+          <!-- table owners behind their tables -->
+          <g class="bob"><use href="#sp-own-a" x="52" y="176" width="52" height="52"/></g>
+          <g class="bob b2"><use href="#sp-own-b" x="174" y="176" width="52" height="52"/></g>
+          <g class="bob b3"><use href="#sp-own-c" x="296" y="176" width="52" height="52"/></g>
+          <g stroke="#1D1D3B" stroke-width="2.5">
+            <rect x="34" y="214" width="88" height="24" fill="#fff"/><rect x="156" y="214" width="88" height="24" fill="#fff"/><rect x="278" y="214" width="88" height="24" fill="#fff"/>
+          </g>
+          <g stroke="#1D1D3B" stroke-width="1.5">
+            <rect x="44" y="207" width="16" height="11" fill="#FF48B0"/><rect x="64" y="208" width="14" height="10" fill="#FFE800"/><rect x="96" y="207" width="16" height="11" fill="#0078BF"/>
+            <rect x="166" y="208" width="14" height="10" fill="#0078BF"/><rect x="214" y="207" width="18" height="11" fill="#FF48B0"/>
+            <rect x="288" y="207" width="16" height="11" fill="#FFE800"/><rect x="308" y="208" width="14" height="10" fill="#FF48B0"/><rect x="342" y="207" width="16" height="11" fill="#0078BF"/>
+          </g>
+          <g font-family="Space Mono, monospace" font-weight="700" font-size="12" fill="#1D1D3B" text-anchor="middle"><text x="78" y="231">T08</text><text x="200" y="231">T19</text><text x="322" y="231">T25</text></g>
+          <!-- the walking route along the aisle -->
+          <path class="march" d="M352 290 H48" fill="none" stroke="#0078BF" stroke-width="5" stroke-dasharray="14 12"/>
+          <g fill="#0078BF" stroke="#1D1D3B" stroke-width="2"><circle cx="78" cy="290" r="7"/><circle cx="200" cy="290" r="7"/><circle cx="322" cy="290" r="7"/></g>
+          <!-- the Curator, with a speech bubble -->
+          <g class="bob"><use href="#sp-cur" x="18" y="50" width="100" height="100"/></g>
+          <g transform="translate(104 52)"><rect width="58" height="30" fill="#fff" stroke="#1D1D3B" stroke-width="2.5"/><path d="M6 30 L0 40 L16 30" fill="#fff" stroke="#1D1D3B" stroke-width="2.5" stroke-linejoin="bevel"/><rect x="2" y="28" width="16" height="3" fill="#fff"/>
+            <g class="dots" fill="#1D1D3B"><circle cx="17" cy="15" r="3.5"/><circle cx="29" cy="15" r="3.5"/><circle cx="41" cy="15" r="3.5"/></g></g>
+          <!-- you, walking up -->
+          <g class="bob b2"><use href="#sp-you" x="292" y="72" width="92" height="92"/></g>
+        </svg>
+        <span class="ch" style="left:3%;top:4%"><span class="kind ai">AI</span>Curator</span>
+        <span class="ch" style="right:3%;top:4%"><span class="kind you">You</span>Visitor</span>
+        <span class="ch" style="left:50%;bottom:3%;transform:translateX(-50%)"><span class="gly own" aria-hidden="true"></span>Table owners <span class="kind sample">Sample</span></span>
+      </div>
+      <div class="legend" aria-label="Legend">
+        <span><span class="gly cur" aria-hidden="true">C</span>Curator, AI helper</span>
+        <span><span class="gly you" aria-hidden="true">Y</span>You</span>
+        <span><span class="gly own" aria-hidden="true"></span>Table owners</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="marquee" aria-hidden="true"><span id="mq"></span></div>
+
+<main class="wrap">
+  <!-- STAGE 1 -->
+  <section class="stage" id="st1" aria-labelledby="st1h">
+    <div class="step"><span class="n" aria-hidden="true">1</span><h2 id="st1h">Pick your topics</h2><span class="kind you">You</span>
+      <button class="i" type="button" aria-label="About stage 1" data-tip="Tell the Curator what you like|Pick one topic or several|Every table lists one or two topics|The number on each chip is how many tables match|Nothing is planned until you press Ask the Curator|Why topics: they’re the quickest way to say what you’re in the mood for">i</button></div>
+    <div class="explain"><span>You pick topics</span><i>→</i><span>The Curator finds tables</span><i>→</i><span>A route appears on the map</span></div>
+    <div class="panel">
+      <fieldset class="topics" id="topics"><legend class="lab">Topics at the fair (sample)</legend></fieldset>
+      <div class="row-act">
+        <button class="btn primary" type="button" id="askBtn">Ask the Curator →</button>
+        <p class="hint" id="topicHint" aria-live="polite"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- STAGE 2 -->
+  <section class="stage" id="st2" aria-labelledby="st2h">
+    <div class="step"><span class="n" aria-hidden="true">2</span><h2 id="st2h">Walk the Curator’s route</h2><span class="kind ai">AI</span>
+      <button class="i" type="button" aria-label="About stage 2" data-tip="The Curator plans the walk|Picks up to 8 tables that match your topics best|Always keeps the tables you star|Orders them nearest first, starting at the door|Walks the aisles, never through tables|Why an AI helper: taste is fuzzy and a list of 40 is a lot to read">i</button></div>
+    <div class="explain"><span>Route draws itself</span><i>→</i><span>You walk it, stop by stop</span><i>→</i><span>Tap a table to star it</span></div>
+    <div class="s2">
+      <div class="panel">
+        <div class="maphead">
+          <span class="lab">Fair floor, 40 tables <button class="i" type="button" aria-label="About the map" data-tip="Reading the map|Pink tables are on your route|Yellow tables with ★ are starred by you|Blue numbers are the stop order|The blue line is the walk; you start and end at the door|Hover or focus a table to see what it sells">i</button></span>
+          <span class="kind sample">Sample layout</span>
+        </div>
+        <div class="mapscroll" id="mapscroll"><svg id="map" viewBox="0 0 810 525" role="group" aria-label="Fair floor map. Tables are buttons: press one to star it."></svg></div>
+        <p class="swipe">← Swipe the map →</p>
+        <div class="maplegend">
+          <span><span class="sw" style="background:var(--pink)"></span>On your route</span>
+          <span><span class="sw" style="background:var(--surface-2)"></span>★ Starred</span>
+          <span><span class="sw" style="background:var(--blue);height:.4rem"></span>Walk</span>
+          <span><span class="gly you" aria-hidden="true">Y</span>You</span>
+        </div>
+      </div>
+      <div class="panel cur-card">
+        <div class="say">
+          <svg class="sprite" viewBox="0 0 16 16" width="64" height="64" role="img" aria-label="The Curator"><use href="#sp-cur"/></svg>
+          <div class="bubble" id="bubble" aria-live="polite"></div>
+        </div>
+        <ol class="stops" id="stops" aria-label="Stops in walking order"></ol>
+        <div class="ctl">
+          <button class="btn" type="button" id="replay">↻ Replay walk</button>
+          <button class="btn" type="button" id="pauseWalk" aria-pressed="false">❚❚ Pause</button>
+        </div>
+        <p class="hint" style="font-size:.85rem">Sample: the Curator’s picks are scripted in this page. No live AI is called.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- STAGE 3 -->
+  <section class="stage" id="st3" aria-labelledby="st3h">
+    <div class="step"><span class="n" aria-hidden="true">3</span><h2 id="st3h">Star tables and approve</h2><span class="kind you">You</span>
+      <button class="i" type="button" aria-label="About stage 3" data-tip="You have the last word|Star any table on the map or in the stop list|Starred tables always stay on the route|The Curator re-plans each time you star or unstar|Distance and time are estimates|Nothing is final until you approve">i</button></div>
+    <div class="explain"><span>Star what catches your eye</span><i>→</i><span>Check the numbers</span><i>→</i><span>Approve the route</span></div>
+    <div class="kpis">
+      <div class="kpi"><small>Stops</small><b class="mono" id="kStops">0</b><span>tables on the route</span></div>
+      <div class="kpi"><small>Walk</small><b class="mono" id="kWalk">0 m</b><span>estimate, door to door</span></div>
+      <div class="kpi"><small>Time</small><b class="mono" id="kTime">0 min</b><span>estimate, 4 min a table</span></div>
+      <div class="kpi"><small>Starred</small><b class="mono" id="kStar">0</b><span>always on the route</span></div>
+    </div>
+    <div class="s3">
+      <div class="panel">
+        <span class="lab">Your stars</span>
+        <ul class="starlist" id="starlist"></ul>
+        <p class="hint" id="starHint" style="margin-top:.6rem">No stars yet. Press any table on the map, or ☆ in the stop list.</p>
+      </div>
+      <div class="panel decide">
+        <div class="who"><svg class="sprite" viewBox="0 0 16 16" width="52" height="52" role="img" aria-label="You"><use href="#sp-you"/></svg>
+          <div><span class="lab">Your decision</span><br><span class="state wait" id="state">… Waiting for you</span></div></div>
+        <p style="margin:0">Approve the route and it becomes a printable map. You can still star tables later and approve again.</p>
+        <div><button class="btn pink" type="button" id="approveBtn">✓ Approve my route</button></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STAGE 4 -->
+  <section class="stage" id="st4" aria-labelledby="st4h">
+    <div class="step"><span class="n" aria-hidden="true">4</span><h2 id="st4h">Print your map</h2><span class="kind you">You</span>
+      <button class="i" type="button" aria-label="About stage 4" data-tip="A map for your pocket|Opens after you approve|Shows the floor, the walk and each stop in order|Prints on one page; the rest of this site is left out|Why paper: halls are loud and phones run flat">i</button></div>
+    <div class="explain"><span>Approved route</span><i>→</i><span>One-page map</span><i>→</i><span>Print or save as PDF</span></div>
+    <div class="sheet locked" id="sheet">
+      <div class="lock"><p>🔒 Approve your route in stage 3 first</p></div>
+      <div class="sheet-top"><div><span class="lab">Zine Night, your route</span><h3>Walk sheet</h3></div><span class="stamp">Sample fair</span></div>
+      <div class="sheet-grid">
+        <svg id="sheetMap" viewBox="0 0 810 525" role="img" aria-label="Your approved route on the fair floor"></svg>
+        <div><span class="lab">Stops in order</span><ol id="sheetList"></ol><p class="hint" id="sheetSum" style="margin-top:.6rem;font-size:.9rem"></p></div>
+      </div>
+      <div class="sheet-act"><button class="btn primary" type="button" id="printBtn" disabled>⎙ Print map</button><span class="hint">Prints only this sheet.</span></div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section id="how" aria-labelledby="howh">
+    <div class="step"><span class="n" aria-hidden="true">?</span><h2 id="howh">How it works</h2>
+      <button class="i" type="button" aria-label="About how it works" data-tip="One helper, and you|The Curator only picks and orders tables|You choose topics, stars and the final route|Table owners are sample characters|Every table, name and number here is made up">i</button></div>
+    <div class="how">
+      <div style="position:relative">
+        <svg class="sprite token" id="token" viewBox="0 0 16 16" aria-hidden="true"><use href="#sp-you"/></svg>
+        <ol class="route" id="route">
+          <li><h3><span class="n">01</span>You pick topics <span class="kind you">You</span></h3><p>Comics, poetry, food and five more. One is enough.</p></li>
+          <li><h3><span class="n">02</span>The Curator plans <span class="kind ai">AI</span></h3><p>It picks the tables that fit best and orders them so the walk stays short.</p></li>
+          <li><h3><span class="n">03</span>You star and approve <span class="kind you">You</span></h3><p>Add tables you spot on the map. The route re-plans around them.</p></li>
+          <li><h3><span class="n">04</span>You print the map <span class="kind you">You</span></h3><p>One sheet with the floor, the walk and every stop.</p></li>
+        </ol>
+      </div>
+      <div class="panel" id="diagPanel">
+        <span class="lab">Who does what</span>
+        <div class="diag" style="margin-top:.7rem">
+          <div class="box"><svg class="sprite" viewBox="0 0 16 16" aria-hidden="true"><use href="#sp-you"/></svg><b>Your topics and stars <span class="kind you">You</span></b><span>What you like, plus tables you insist on</span></div>
+          <div class="wire"><svg viewBox="0 0 16 46" preserveAspectRatio="none" aria-hidden="true"><path pathLength="1" d="M8 0V40M2 34L8 42L14 34"/></svg>sent to the Curator</div>
+          <div class="box ai"><svg class="sprite" viewBox="0 0 16 16" aria-hidden="true"><use href="#sp-cur"/></svg><b>The Curator <span class="kind ai">AI</span></b><span>Picks up to 8 tables, orders them nearest first</span></div>
+          <div class="wire"><svg viewBox="0 0 16 46" preserveAspectRatio="none" aria-hidden="true"><path pathLength="1" d="M8 0V40M2 34L8 42L14 34"/></svg>a route on the floor map</div>
+          <div class="box"><svg class="sprite" viewBox="0 0 16 16" aria-hidden="true"><use href="#sp-you"/></svg><b>Your approval <span class="kind you">You</span></b><span>Nothing is printed until you say so</span></div>
+          <div class="wire"><svg viewBox="0 0 16 46" preserveAspectRatio="none" aria-hidden="true"><path pathLength="1" d="M8 0V40M2 34L8 42L14 34"/></svg>becomes</div>
+          <div class="box"><svg class="sprite" viewBox="0 0 16 16" aria-hidden="true"><use href="#sp-own-a"/></svg><b>Your walk sheet</b><span>Meet the table owners, stop by stop</span></div>
+        </div>
+        <p class="note">Star a table and the Curator plans again. Your stars always win.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot">
+      <div><a class="brand" href="#top">Zine Night</a><p>A made-up zine fair. The Curator plans a walk through 40 tables from the topics you like, and you approve it.</p></div>
+      <div><h4>Data</h4><ul><li>Sample fair and tables</li><li>Made-up zine names</li><li>Distances and times are estimates</li></ul></div>
+      <div><h4>Built with</h4><ul><li>Plain HTML, CSS and SVG</li><li>cutify-ui, Riso Club theme</li><li>Bricolage Grotesque, Rethink Sans, Space Mono</li></ul></div>
+      <div><h4>Project</h4><ul><li>Example page for cutify-ui</li><li>Not a real event</li></ul></div>
+    </div>
+    <div class="copy">© 2026 cutify-ui example. Every table, name and number on this page is a sample.</div>
+  </div>
+</footer>
+
+<dialog class="pop" id="dlg" aria-labelledby="dlgT">
+  <div class="pop-head"><svg class="sprite" viewBox="0 0 16 16" aria-hidden="true"><use href="#sp-you"/></svg><h2 id="dlgT">Approve this route?</h2><button class="pop-close" type="button" data-close>Close ✕</button></div>
+  <div class="pop-body">
+    <p style="margin:0" id="dlgSum"></p>
+    <ol id="dlgList"></ol>
+    <div class="pop-actions"><button class="btn" type="button" data-close>Not yet</button><button class="btn pink" type="button" id="confirmBtn">✓ Approve route</button></div>
+  </div>
+</dialog>
+
+<div id="tip" role="tooltip" hidden></div>
+
+<script>
+// cutify-ui pixel sprites (assets/pixel-sprites.js): string grids to crisp SVG symbols
+function pixelSprites({ palette, sprites }) {
+  const defs = document.getElementById('pixdefs');
+  for (const [id, rows] of Object.entries(sprites)) {
+    let out = `<symbol id="${id}" viewBox="0 0 16 16" shape-rendering="crispEdges">`;
+    rows.forEach((row, y) => [...row].forEach((ch, x) => {
+      if (ch === '.' || !palette[ch]) return;
+      out += `<rect x="${x}" y="${y}" width="1.02" height="1.02" fill="${palette[ch]}"/>`;   // 1.02 hides seams
+    }));
+    defs.insertAdjacentHTML('beforeend', out + '</symbol>');
+  }
+}
+const youTop = ['................', '....kkkkkkkk....', '...kbbbbbbbbk...', '...kbbbbbbbbkkk.', '...kssssssssk...', '...kskksskksk...',
+  '...kssssssssk...', '....kssSSssk....', '.....kkkkkk.....', '...kwwwwwwwwk...', '..kswwwwwwwwsk..', '..kswwwwwwwkyyk.', '...kbbbbbbbkyyk.', '...kbbbkkbbbkk..'];
+const owner = ['................', '................', '.....kkkkkk.....', '....khhhhhhk....', '...khhhhhhhhk...', '...khsssssshk...', '...kskksskksk...',
+  '...kssssssssk...', '....ksspsssk....', '.....kkkkkk.....', '...kyyyyyyyyk...', '..kyyyyyyyyyyk..', '..kyyyyyyyyyyk..', '..kyyyyyyyyyyk..', '................', '................'];
+pixelSprites({
+  palette: { k: '#1D1D3B', p: '#FF48B0', b: '#0078BF', y: '#FFE800', s: '#F2C9A0', S: '#C98E62', w: '#FFFFFF', h: '#6B3A2A', P: '#3D2E8C', g: '#2E9E6A', o: '#FF8A3D' },
+  sprites: {
+    // the Curator: pink beret, round glasses, a fan of zines
+    'sp-cur': ['.....kkkkkk.....', '....kppppppk....', '...kpppppppkk...', '...kkkkkkkkkk...', '....kssssssk....', '...kkwkkkwkk....',
+      '....kssssssk....', '....kssSSssk....', '.....kkkkkk.....', '...kppppppppk...', '..kppyyyywppk...', '..kppywwywppk...', '..kppyyyywppk...',
+      '...kppppppppk...', '...kPPPkkPPPk...', '...kkkk..kkkk...'],
+    // you: blue cap, tote bag; two leg frames for walking
+    'sp-you': [...youTop, '...kbbk..kbbk...', '...kkk....kkk...'],
+    'sp-you-b': [...youTop, '..kbbk....kbbk..', '..kkk......kkk..'],
+    // table owners, seen over the table edge
+    'sp-own-a': owner,
+    'sp-own-b': owner.map(r => r.replace(/h/g, 'P').replace(/y/g, 'g')),
+    'sp-own-c': owner.map(r => r.replace(/h/g, 'k').replace(/y/g, 'o')),
+  }
+});
+
+const $ = s => document.querySelector(s);
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const SVGNS = 'http://www.w3.org/2000/svg';
+
+// ---- sample data: 40 made-up tables ----
+const TOPICS = { comics: 'Comics', poetry: 'Poetry', photo: 'Photo', food: 'Food', nature: 'Nature', scifi: 'Sci-fi', riso: 'Riso how-to', history: 'Local history' };
+const RAW = [['Paper Moths', 'comics riso'], ['Soft Static', 'scifi comics'], ['Kettle Verse', 'poetry food'], ['Tin Can Telescope', 'scifi'],
+  ['Weed Almanac', 'nature history'], ['Overprint Weekly', 'riso'], ['Night Bus Notes', 'poetry photo'], ['Small Fry Comics', 'comics'],
+  ['Ferment Club', 'food'], ['Grain and Ghost', 'photo riso'], ['Moss Index', 'nature'], ['Lost Shopfronts', 'history photo'],
+  ['Robot Lunchbox', 'scifi food'], ['Slow Ink', 'poetry riso'], ['Pigeon Post', 'history comics'], ['Bramble Rag', 'nature poetry'],
+  ['Second Sun', 'scifi'], ['Crumbs', 'food comics'], ['Halftone Hearts', 'riso comics'], ['Tide Tables', 'nature photo'],
+  ['Old Tram Lines', 'history'], ['Spoonful', 'food poetry'], ['Static Bloom', 'photo nature'], ['Moon Unit Comics', 'comics scifi'],
+  ['Two-Colour Club', 'riso'], ['Market Hours', 'food history'], ['Paper Planets', 'scifi riso'], ['Small Hours Poems', 'poetry'],
+  ['Lantern Alley', 'history photo'], ['Fern Diaries', 'nature'], ['Ink Blot Gang', 'comics'], ['Pickle Press', 'food riso'],
+  ['Far Orbit', 'scifi poetry'], ['Street Light Photo', 'photo'], ['Bird Notes', 'nature poetry'], ['Ward Stories', 'history'],
+  ['Gutter Gallery', 'comics photo'], ['Soup Season', 'food'], ['Stencil Kids', 'riso comics'], ['Weather Report', 'nature scifi']];
+const COLX = [125, 203, 281, 359, 481, 559, 637, 715];          // two blocks of four, a cross aisle at x 420
+const T = RAW.map(([name, t], i) => {
+  const r = Math.floor(i / 8), c = i % 8, x = COLX[c], y = 70 + 90 * r;
+  return { id: i + 1, name, topics: t.split(' '), x, y, ax: x, ay: y + 45, own: ['sp-own-a', 'sp-own-b', 'sp-own-c'][i % 3] };
+});
+const DOOR = { x: 40, ay: 475, ax: 40 };
+const VAISLES = [60, 420, 765];
+const MAX = 8, M_PER_UNIT = .05, MIN_PER_TABLE = 4, WALK_M_PER_MIN = 60;
+const tid = n => 'T' + String(n).padStart(2, '0');
+
+// walk between two aisle points: same aisle goes straight, otherwise via the best vertical aisle
+function leg(a, b) {
+  if (a.ay === b.ay) return { pts: [[b.ax, b.ay]], len: Math.abs(a.ax - b.ax) };
+  let v = VAISLES[0], best = Infinity;
+  for (const x of VAISLES) { const d = Math.abs(a.ax - x) + Math.abs(b.ax - x); if (d < best) { best = d; v = x; } }
+  return { pts: [[v, a.ay], [v, b.ay], [b.ax, b.ay]], len: best + Math.abs(a.ay - b.ay) };
+}
+console.assert(leg({ ax: 125, ay: 115 }, { ax: 203, ay: 115 }).len === 78 && leg(DOOR, { ax: 125, ay: 115 }).len === 20 + 360 + 65, 'leg lengths');
+
+// the Curator (scripted for this sample): best topic matches plus every star, nearest first from the door
+const chosen = new Set(['comics', 'riso']), stars = new Set();
+let plan = null;
+function makePlan() {
+  const starred = [...stars].map(id => T[id - 1]);
+  const scored = T.filter(t => !stars.has(t.id)).map(t => ({ t, hit: t.topics.filter(x => chosen.has(x)) })).filter(m => m.hit.length)
+    .sort((a, b) => b.hit.length - a.hit.length || a.t.id - b.t.id);
+  const picks = [...starred, ...scored.slice(0, Math.max(0, MAX - starred.length)).map(m => m.t)];
+  const order = [], left = [...picks]; let cur = DOOR;
+  while (left.length) { left.sort((a, b) => leg(cur, a).len - leg(cur, b).len); cur = left.shift(); order.push(cur); }
+  let d = `M${DOOR.ax} ${DOOR.ay}`, len = 0; const at = []; cur = DOOR;
+  for (const p of [...order, DOOR]) { const l = leg(cur, p); l.pts.forEach(([x, y]) => d += ` L${x} ${y}`); len += l.len; at.push(len); cur = p; }
+  return { order, d, len, at, matched: scored.length, why: t => stars.has(t.id) ? '★ You starred it' : 'Matches ' + t.topics.filter(x => chosen.has(x)).map(x => TOPICS[x]).join(' and ') };
+}
+
+// ---- map drawing (used for the live map and the print sheet) ----
+function el(tag, attrs, parent) { const e = document.createElementNS(SVGNS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); parent && parent.append(e); return e; }
+function drawMap(svg, p, live) {
+  svg.innerHTML = '';
+  el('rect', { class: 'hall', x: 20, y: 20, width: 770, height: 475 }, svg);
+  el('rect', { x: 26, y: 488, width: 42, height: 14, fill: '#FF48B0', stroke: '#1D1D3B', 'stroke-width': 2 }, svg);
+  el('text', { class: 'doorlab', x: 76, y: 516 }, svg).textContent = 'DOOR, in and out';
+  const onRoute = new Map(p.order.map((t, i) => [t.id, i + 1]));
+  const owners = el('g', {}, svg);
+  p.order.forEach((t, i) => { const g = el('g', { class: 'owner' + (live ? '' : ' met'), 'data-stop': i }, owners); el('use', { href: '#' + t.own, x: t.x - 13, y: t.y - 37, width: 26, height: 26 }, g); });
+  const tables = el('g', {}, svg);
+  for (const t of T) {
+    const s = onRoute.get(t.id), g = el('g', { class: 'tb' + (s ? ' on' : '') + (stars.has(t.id) ? ' star' : ''), 'data-id': t.id }, tables);
+    if (live) { g.setAttribute('tabindex', '0'); g.setAttribute('role', 'button'); g.setAttribute('aria-pressed', stars.has(t.id));
+      g.setAttribute('aria-label', `${tid(t.id)} ${t.name}, ${t.topics.map(x => TOPICS[x]).join(' and ')}${s ? ', stop ' + s : ''}. Press to ${stars.has(t.id) ? 'unstar' : 'star'}.`); }
+    el('rect', { x: t.x - 35, y: t.y - 17, width: 70, height: 34 }, g);
+    el('text', { x: t.x, y: t.y + 6 }, g).textContent = (stars.has(t.id) ? '★' : '') + String(t.id).padStart(2, '0');
+  }
+  const ghost = el('path', { class: 'rt ghost', d: p.d, transform: 'translate(-3 -2)' }, svg);
+  const main = el('path', { class: 'rt main', d: p.d }, svg);
+  const badges = el('g', {}, svg);
+  p.order.forEach((t, i) => { const g = el('g', { class: 'badge' + (live ? '' : ' hit'), 'data-stop': i }, badges);
+    el('circle', { cx: t.x + 27, cy: t.y - 17, r: 10 }, g); el('text', { x: t.x + 27, y: t.y - 13 }, g).textContent = i + 1; });
+  return { ghost, main, badges, owners };
+}
+
+// ---- live map: route draws itself while the visitor walks it ----
+const map = $('#map');
+let parts, vis, visUse, walk = { d: 0, pause: 0, next: 0, step: 0, done: false }, raf = 0, last = 0, mapVisible = false, userPaused = false;
+const SPEED = 300, STOP_MS = 650;
+function renderLive(restart = true) {
+  plan = makePlan();
+  parts = drawMap(map, plan, true);
+  vis = el('g', { id: 'vis' }, map);
+  visUse = el('use', { href: '#sp-you', x: -16, y: -30, width: 32, height: 32 }, vis);
+  for (const p of [parts.ghost, parts.main]) { p.style.strokeDasharray = plan.len; p.style.strokeDashoffset = plan.len; }
+  walk = { d: 0, pause: 0, next: 0, step: 0, done: false };
+  if (reduced || !restart) finishWalk(); else placeVisitor();
+  renderList(); renderKpis();
+  if (!reduced) kick();
+}
+function placeVisitor() {
+  const pt = parts.main.getPointAtLength(walk.d), ahead = parts.main.getPointAtLength(Math.min(plan.len, walk.d + 2));
+  const flip = ahead.x < pt.x - .5 ? -1 : 1;
+  vis.setAttribute('transform', `translate(${pt.x.toFixed(1)} ${pt.y.toFixed(1)}) scale(${flip} 1)`);
+  for (const p of [parts.ghost, parts.main]) p.style.strokeDashoffset = plan.len - walk.d;
+  const ms = $('#mapscroll');   // narrow screens: keep the walker in view while the walk plays
+  if (!walk.done && walk.d > 0 && ms.scrollWidth > ms.clientWidth + 1) ms.scrollLeft = pt.x / 810 * ms.scrollWidth - ms.clientWidth / 2;
+}
+function reach(i) {
+  parts.badges.querySelector(`[data-stop="${i}"]`)?.classList.add('hit');
+  const o = parts.owners.querySelector(`[data-stop="${i}"]`); if (o) { o.classList.add('met', 'hop'); }
+  document.querySelector(`#stops li[data-stop="${i}"]`)?.classList.add('hit');
+}
+function finishWalk() {
+  walk.d = plan.len; walk.done = true; plan.order.forEach((_, i) => reach(i));
+  parts.owners.querySelectorAll('.hop').forEach(o => o.classList.remove('hop'));
+  placeVisitor(); visUse.setAttribute('href', '#sp-you');
+}
+function frame(now) {
+  raf = 0;
+  if (!mapVisible || userPaused || walk.done) return;
+  const dt = Math.min(.05, (now - last) / 1000); last = now;
+  if (walk.pause > 0) walk.pause -= dt * 1000;
+  else {
+    walk.d = Math.min(plan.len, walk.d + SPEED * dt);
+    const stopAt = plan.at[walk.next];
+    if (walk.next < plan.order.length && walk.d >= stopAt) { walk.d = stopAt; reach(walk.next); walk.next++; walk.pause = STOP_MS; }
+    walk.step += dt; visUse.setAttribute('href', Math.floor(walk.step / .16) % 2 ? '#sp-you-b' : '#sp-you');   // two-frame walk
+    placeVisitor();
+    if (walk.d >= plan.len) { finishWalk(); return; }
+  }
+  raf = requestAnimationFrame(frame);
+}
+function kick() { if (!raf && mapVisible && !userPaused && !walk.done) { last = performance.now(); raf = requestAnimationFrame(frame); } }
+
+// ---- stop list, KPIs, stars ----
+function renderList() {
+  const ol = $('#stops'); ol.innerHTML = '';
+  plan.order.forEach((t, i) => {
+    const li = document.createElement('li'); li.dataset.stop = i;
+    if (walk.done) li.classList.add('hit');
+    const on = stars.has(t.id);
+    li.innerHTML = `<span class="no">${i + 1}</span><span class="nm">${t.name} <span class="tid">${tid(t.id)}</span><span class="why">${plan.why(t)}</span></span>
+      <button class="star-b" type="button" aria-pressed="${on}" aria-label="${on ? 'Unstar' : 'Star'} ${t.name}" data-star="${t.id}">${on ? '★' : '☆'}</button>`;
+    ol.append(li);
+  });
+  const names = [...chosen].map(x => TOPICS[x]);
+  const b = $('#bubble');
+  if (!plan.order.length) { b.textContent = 'Pick a topic or star a table and I’ll plan a walk.'; return; }
+  const msg = (names.length ? `I found ${plan.matched} tables for ${names.join(', ').replace(/, ([^,]*)$/, ' and $1')}. ` : '') +
+    `Here are ${plan.order.length} stops${stars.size ? `, with your ${stars.size} starred` : ''}, nearest first from the door.`;
+  b.innerHTML = '<span class="typing" aria-hidden="true"><i></i><i></i><i></i></span>';
+  setTimeout(() => b.textContent = msg, reduced ? 0 : 650);
+}
+function renderKpis() {
+  const m = Math.round(plan.len * M_PER_UNIT / 5) * 5, mins = Math.round(m / WALK_M_PER_MIN + plan.order.length * MIN_PER_TABLE);
+  $('#kStops').textContent = plan.order.length; $('#kWalk').textContent = m + ' m'; $('#kTime').textContent = mins + ' min'; $('#kStar').textContent = stars.size;
+  const sl = $('#starlist'); sl.innerHTML = '';
+  [...stars].sort((a, b) => a - b).forEach(id => { const li = document.createElement('li'); li.innerHTML = `★ ${T[id - 1].name} <span class="tid mono">${tid(id)}</span>`; sl.append(li); });
+  $('#starHint').hidden = stars.size > 0;
+  $('#approveBtn').disabled = !plan.order.length;
+  if (approved) setState(false);
+}
+let approved = false;
+function setState(ok) {
+  approved = ok; const s = $('#state');
+  s.className = 'state ' + (ok ? 'ok' : 'wait'); s.textContent = ok ? '✓ Approved' : (plan && plan.order.length ? '… Waiting for you' : '✕ No route yet');
+  $('#sheet').classList.toggle('locked', !ok); $('#printBtn').disabled = !ok;
+}
+function toggleStar(id) {
+  stars.has(id) ? stars.delete(id) : stars.add(id);
+  renderLive(false);   // re-plan; show the finished walk so starring doesn't restart the animation
+}
+map.addEventListener('click', e => { const tb = e.target.closest('.tb'); if (tb) { toggleStar(+tb.dataset.id); showTableTip(map.querySelector(`.tb[data-id="${tb.dataset.id}"]`)); } });
+map.addEventListener('keydown', e => { const tb = e.target.closest('.tb'); if (tb && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); const id = +tb.dataset.id; toggleStar(id); const n = map.querySelector(`.tb[data-id="${id}"]`); n.focus(); showTableTip(n); } });
+$('#stops').addEventListener('click', e => { const b = e.target.closest('[data-star]'); if (!b) return; const id = +b.dataset.star; toggleStar(id); $(`[data-star="${id}"]`)?.focus(); });
+
+// ---- stage 1 topics ----
+const fs = $('#topics');
+for (const [k, label] of Object.entries(TOPICS)) {
+  const n = T.filter(t => t.topics.includes(k)).length;
+  fs.insertAdjacentHTML('beforeend', `<label class="chip-t"><input type="checkbox" value="${k}"${chosen.has(k) ? ' checked' : ''}><span>${label} <small>${n}</small></span></label>`);
+}
+function topicHint() { const n = T.filter(t => t.topics.some(x => chosen.has(x))).length; $('#topicHint').textContent = chosen.size ? `${chosen.size} picked, ${n} tables match (sample)` : 'Pick at least one topic.'; $('#askBtn').disabled = !chosen.size && !stars.size; }
+fs.addEventListener('change', e => { e.target.checked ? chosen.add(e.target.value) : chosen.delete(e.target.value); topicHint(); });
+function ask() { renderLive(true); setState(false); $('#st2').scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' }); }
+$('#askBtn').addEventListener('click', ask);
+function setTopics(list) { chosen.clear(); list.forEach(x => chosen.add(x)); fs.querySelectorAll('input').forEach(i => i.checked = chosen.has(i.value)); topicHint(); }
+
+// ---- hero split button ----
+const menu = $('#menu'), caret = $('#caret');
+function closeMenu() { menu.classList.remove('open'); caret.setAttribute('aria-expanded', 'false'); }
+caret.addEventListener('click', e => { e.stopPropagation(); const o = menu.classList.toggle('open'); caret.setAttribute('aria-expanded', o); if (o) menu.querySelector('button').focus(); });
+document.addEventListener('click', e => { if (!menu.contains(e.target)) closeMenu(); });
+menu.addEventListener('click', e => { const b = e.target.closest('[data-preset]'); if (!b) return; closeMenu(); stars.clear(); setTopics(b.dataset.preset.split(' ')); ask(); });
+$('#goBtn').addEventListener('click', () => $('#st1').scrollIntoView({ behavior: reduced ? 'auto' : 'smooth' }));
+
+// ---- walk controls ----
+$('#replay').addEventListener('click', () => { userPaused = false; $('#pauseWalk').setAttribute('aria-pressed', 'false'); $('#pauseWalk').textContent = '❚❚ Pause'; renderLive(true); });
+$('#pauseWalk').addEventListener('click', e => { userPaused = !userPaused; e.currentTarget.setAttribute('aria-pressed', userPaused); e.currentTarget.textContent = userPaused ? '▶ Resume' : '❚❚ Pause'; kick(); });
+if (reduced) for (const id of ['#replay', '#pauseWalk']) { $(id).disabled = true; $(id).title = 'Animation is off because your device asks for reduced motion'; }
+
+// ---- approve dialog, then the print sheet ----
+const dlg = $('#dlg'); let opener = null;
+$('#approveBtn').addEventListener('click', e => {
+  opener = e.currentTarget;
+  $('#dlgSum').textContent = `${plan.order.length} stops, about ${$('#kWalk').textContent} and ${$('#kTime').textContent} (estimates).`;
+  $('#dlgList').innerHTML = plan.order.map(t => `<li>${t.name} <span class="mono" style="font-size:.85em">${tid(t.id)}</span>${stars.has(t.id) ? ' ★' : ''}</li>`).join('');
+  dlg.showModal();
+});
+dlg.addEventListener('click', e => { if (e.target === dlg || e.target.closest('[data-close]')) dlg.close(); });
+dlg.addEventListener('close', () => opener?.focus());
+$('#confirmBtn').addEventListener('click', () => {
+  dlg.close(); setState(true);
+  drawMap($('#sheetMap'), plan, false);
+  $('#sheetList').innerHTML = plan.order.map(t => `<li><b>${t.name}</b> <span class="mono" style="font-size:.85em">${tid(t.id)}</span><br><span style="color:var(--ink-muted);font-size:.88em">${plan.why(t)}</span></li>`).join('');
+  $('#sheetSum').textContent = `Start and end at the door. About ${$('#kWalk').textContent}, ${$('#kTime').textContent} with browsing. Estimates for a sample fair.`;
+  confetti($('#approveBtn'));
+  setTimeout(() => $('#st4').scrollIntoView({ behavior: reduced ? 'auto' : 'smooth' }), reduced ? 0 : 500);
+});
+$('#printBtn').addEventListener('click', () => print());
+function confetti(from, n = 26) {
+  if (reduced) return;
+  const r = from.getBoundingClientRect(), cols = ['#FF48B0', '#0078BF', '#FFE800'];
+  for (let i = 0; i < n; i++) {
+    const p = document.createElement('i');
+    p.style.cssText = `position:fixed;width:8px;height:8px;pointer-events:none;z-index:999;left:${r.left + r.width / 2}px;top:${r.top}px;background:${cols[i % 3]};mix-blend-mode:multiply`;
+    document.body.append(p);
+    p.animate([{ transform: 'translate(0,0)' }, { transform: `translate(${(Math.random() - .5) * 260}px,${-70 - Math.random() * 130}px) rotate(${Math.random() * 360}deg)`, opacity: 0 }],
+      { duration: 900, easing: 'steps(9)' }).onfinish = () => p.remove();
+  }
+}
+
+// ---- shared tooltip: hover, focus and tap; kept on screen ----
+const tip = $('#tip'); let tipFor = null;
+function placeTip(el, title, lines) {
+  tip.innerHTML = `<b>${title}</b><ul>${lines.map(l => `<li>${l}</li>`).join('')}</ul>`;
+  tip.hidden = false; tipFor = el; el.setAttribute('aria-describedby', 'tip');
+  const r = el.getBoundingClientRect(), w = tip.offsetWidth, h = tip.offsetHeight;
+  let top = r.bottom + 10; if (top + h > innerHeight - 8) top = Math.max(8, r.top - h - 10);
+  tip.style.left = Math.min(Math.max(8, r.left + r.width / 2 - w / 2), document.documentElement.clientWidth - w - 8) + 'px';
+  tip.style.top = top + 'px';
+}
+function showTip(el) { if (el.classList.contains('tb')) return showTableTip(el); const [t, ...l] = el.dataset.tip.split('|'); placeTip(el, t, l); }
+function showTableTip(el) {
+  const t = T[el.dataset.id - 1], s = plan.order.indexOf(t);
+  placeTip(el, `${tid(t.id)} ${t.name}`, [t.topics.map(x => TOPICS[x]).join(', ') + ' (sample)', s >= 0 ? `Stop ${s + 1} on your route` : 'Not on your route',
+    stars.has(t.id) ? '★ Starred: press again to unstar' : 'Press to star it and add it to the route']);
+}
+function hideTip() { if (tipFor) tipFor.removeAttribute('aria-describedby'); tip.hidden = true; tipFor = null; }
+document.querySelectorAll('.i[data-tip]').forEach(el => {
+  el.addEventListener('mouseenter', () => showTip(el)); el.addEventListener('mouseleave', () => document.activeElement !== el && hideTip());
+  el.addEventListener('focus', () => showTip(el)); el.addEventListener('blur', hideTip);
+  el.addEventListener('click', e => { e.preventDefault(); tipFor === el ? hideTip() : showTip(el); });
+});
+map.addEventListener('mouseover', e => { const tb = e.target.closest('.tb'); if (tb && tb !== tipFor) showTableTip(tb); });
+map.addEventListener('mouseleave', () => { if (!map.contains(document.activeElement)) hideTip(); });
+map.addEventListener('focusin', e => { const tb = e.target.closest('.tb'); if (tb) showTableTip(tb); });
+map.addEventListener('focusout', e => { if (!map.contains(e.relatedTarget)) hideTip(); });
+addEventListener('keydown', e => { if (e.key === 'Escape') { hideTip(); closeMenu(); } });
+addEventListener('scroll', () => tipFor && (tipFor.isConnected ? showTip(tipFor) : hideTip()), { passive: true });
+$('#mapscroll').addEventListener('scroll', () => tipFor && tipFor.isConnected && showTip(tipFor), { passive: true });
+
+// ---- how it works: you walk down the four cards ----
+const cards = [...document.querySelectorAll('#route li')], token = $('#token');
+let howStep = 0, howTimer = null;
+function howGo() {
+  cards.forEach((c, i) => c.classList.toggle('on', i === howStep));
+  const c = cards[howStep]; token.style.transform = `translate(0, ${c.offsetTop + c.offsetHeight / 2 - 19}px)`;
+}
+function howTick() { howStep = (howStep + 1) % cards.length; howGo(); }
+
+// ---- marquee ----
+const mq = Object.values(TOPICS).map(x => x + ' <b>✶</b>').join(' ') + ' 40 tables <b>✶</b> one Curator <b>✶</b> sample fair <b>✶</b> ';
+$('#mq').innerHTML = (mq + mq).repeat(2);
+
+// ---- off-screen pause ----
+const io = new IntersectionObserver(es => es.forEach(e => {
+  e.target.classList.toggle('is-off', !e.isIntersecting);
+  if (e.target.id === 'mapscroll') { mapVisible = e.isIntersecting; kick(); }
+  if (e.target.id === 'how') { clearInterval(howTimer); if (e.isIntersecting && !reduced) howTimer = setInterval(howTick, 1900); }
+  if (e.target.id === 'diagPanel' && e.isIntersecting) e.target.classList.add('in');
+}), { rootMargin: '0px' });
+['.hero', '.marquee', '#mapscroll', '#how', '#diagPanel'].forEach(s => io.observe($(s)));
+addEventListener('resize', howGo);
+
+topicHint(); renderLive(true); setState(false); howGo();
+</script>
+</body>
+</html>

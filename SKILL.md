@@ -7,24 +7,30 @@ description: Build playful, game-like web interfaces in the cutify-ui style - pi
 
 cutify-ui turns a product into a small game world the visitor walks through. Every screen has characters (the AI agents or roles in the product) drawn as pixel sprites, a numbered path of stages, honest labels saying who did what, and motion that explains rather than decorates.
 
-It comes from two shipped projects that share one grammar and differ in theme:
-- **Glass** (light): frosted glass panels over painted flat-vector scenery, Pixelify Sans headings, lime highlighter marks, game buttons. From itsa10but, a résumé checker.
-- **Apron** (dark): airfield signage on a dark dot grid, wide Anybody headings, taxiway-yellow accents, mono labels. From SkyQueue, a multi-agent airport queue planner.
+It comes from two shipped projects (itsa10but, a résumé checker, and SkyQueue, a multi-agent airport queue planner) and has six themes that share one grammar:
+- **Glass** (light): frosted glass over painted scenery, Pixelify Sans, lime highlighter.
+- **Apron** (dark): airfield signage on a dot grid, wide Anybody, taxiway yellow.
+- **Picnic** (light): gingham and napkin cards, rounded Fredoka, jam-jar-lid numbers.
+- **Riso Club** (light): newsprint, flat cards, a slipped pink/blue print shadow, Bricolage Grotesque.
+- **Lantern Night** (dark): dusk sky, dithered skyline, glowing pixel borders, Jersey 10.
+- **Toy Box** (light): graph paper, plastic cards, bricks and buttons with a ledge that presses, Dela Gothic One.
 
 ## How to work
 
-1. **Pick the theme.** Ask only if the brief gives no hint. Light, friendly, consumer, education, careers, wellbeing → Glass. Dark, technical, operations, data-heavy, "control room", night → Apron. A user can also invent a third theme by swapping tokens (see `references/themes.md`), as long as the grammar below stays.
+1. **Pick the theme, the backdrop and the fonts for this product.** Ask only if the brief gives no hint. Match the mood: careers or outdoors, Glass; operations or data, Apron; food, weekends or family, Picnic; events, zines or portfolios, Riso Club; night, sleep or games, Lantern Night; kids, learning or building, Toy Box. Then choose a backdrop from `references/backgrounds.md` and a font pairing from `references/fonts.md` that belong to this product. Don't reuse the same backdrop or display face for every page: two different products should look like two different products. A new theme made by swapping tokens is welcome as long as the grammar below stays.
 2. **Name the cast from the brief, and only from the brief.** List the actors the user described (their AI helpers, the user themself) and give each a pixel sprite, one colour and one shape cue. Don't add actors, mechanics or story beats the product doesn't have: no invented rule checkers, negotiation rounds, backup plans or "code" characters. Those came from SkyQueue, where they were real. If the product has no agents at all, the cast is a mascot plus the steps of the user's journey.
 3. **Lay out the journey.** Hero (what it is in one line plus three short benefits plus one primary action), then numbered stages in the order the user meets them, then a "How it works" section, then the footer.
 4. **Read only the references you need, then build.** A single landing page usually needs `themes.md`, `pixel-art.md` and the first half of `components.md`. Read `motion.md` when the page animates the product at work, and `react.md` or `streamlit.md` only for those stacks.
-   - Tokens, fonts, surfaces, shadows for both themes: `references/themes.md`
+   - Tokens, surfaces, shadows and palettes for all six themes: `references/themes.md`
+   - Backdrops (16 pure-CSS recipes) and how to choose one: `references/backgrounds.md`
+   - Font pairings and readability rules (all SIL OFL): `references/fonts.md`
    - Pixel sprites and pixel icons: `references/pixel-art.md`
    - Motion rules, keyframes and the animation engines: `references/motion.md`
    - Component recipes (tooltips, buttons, pills, stage headers, KPI tiles, charts, dialogs, split buttons, meters, loading screens): `references/components.md`
    - React / Next.js patterns and ready components: `references/react.md`
    - Plain HTML pages and Streamlit hosting (iframes, bridges, restyling): `references/streamlit.md`
    - Copy and labels: `references/voice.md`
-5. **Start from the assets.** `assets/glass.css` and `assets/apron.css` hold the tokens and base components for each theme. `assets/pixel-sprites.js` turns string-grid sprites into SVG symbols. `assets/react/` has typed components. `assets/streamlit/` has the bridge helpers. Copy what you need into the project rather than rewriting it.
+5. **Start from the assets.** `assets/glass.css`, `assets/apron.css`, `assets/picnic.css`, `assets/riso.css`, `assets/lantern.css` and `assets/toybox.css` hold each theme's tokens and base components, with the same class names (`.panel`, `.btn`, `.step`, `.kind`, `.i`, `.pill`, `.kpi`). `assets/pixel-sprites.js` turns string-grid sprites into SVG symbols. `assets/react/` has typed components. `assets/streamlit/` has the bridge helpers. Copy what you need into the project rather than rewriting it.
 6. **Check against the list at the end of this file** before you call it done, and look at the result in a browser if you can.
 
 ## The grammar (keep these in every theme)
@@ -41,9 +47,9 @@ These are what make a UI read as cutify-ui. Tokens can change, these shouldn't.
 
 **Tooltips on everything that could confuse.** A small circled `i` (or a dotted-underlined word) opens a tip on hover, focus and tap, with a short title and 3 to 8 point-form lines that say *why*, not just what. Tips are keyboard reachable and never covered by neighbours.
 
-**Sticker depth.** Interactive and floating bits get a hard offset shadow with no blur (`0 6px 0 #00000055` dark, `0 3px 0 rgb(16 70 100 / 30%)` light). Buttons lift 2px on hover and sink 1px on press, like game buttons. Only big floating layers (menus, dialogs) get soft shadows.
+**Physical depth.** Interactive pieces feel like objects you can press. Each theme has its own shadow language: a hard sticker offset (Glass, Apron), a soft blanket offset (Picnic), a slipped two-colour print plate (Riso Club), a lantern glow (Lantern Night) or a ledge that collapses when pressed (Toy Box). Buttons respond on hover and press. Only big floating layers (menus, dialogs) get soft blurred shadows.
 
-**Mono for data, wide or pixel for headings.** Headings use the theme's display face (Pixelify Sans in Glass, heavy wide Anybody in Apron). IDs, times, numbers, labels and chips use a mono face in small, letter-spaced uppercase. Body copy stays plain and readable at 16px or more.
+**A display face with character, a body face that reads easily.** Headings use the theme's display face; IDs, times, numbers and chips use a mono face in small, letter-spaced uppercase; body copy stays in a plain face at 16px or more. Never set paragraphs in a pixel, handwritten or single-weight display face.
 
 **Motion explains the system.** Animate the thing the product does: planes taxi along the real route, a note flies from the inbox to the reader, sprites walk the journey as you scroll. Each animation answers "what just happened?" Ambient loops stay slow and small. Everything respects `prefers-reduced-motion` and pauses off screen. See `references/motion.md`.
 

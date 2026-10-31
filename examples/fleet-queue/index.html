@@ -70,7 +70,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .i.left[data-tip]:hover::after, .i.left[data-tip]:focus-visible::after { left: auto; right: -10px; transform: none; }
 .i.right[data-tip]:hover::after, .i.right[data-tip]:focus-visible::after { left: -10px; transform: none; }
 :has(> .i:hover), :has(> .i:focus-visible) { z-index: 60; }
-@media (max-width: 640px) { /* phones: tips become a bottom sheet so they never clip */
+@media (max-width: 900px) { /* phones and tablets: tips become a bottom sheet so they never clip */
   .i[data-tip]:hover::after, .i[data-tip]:focus-visible::after { position: fixed; left: 16px !important; right: 16px !important; top: auto !important; bottom: 16px; width: auto; transform: none !important; } }
 
 .pill { display: inline-block; font: 700 11px var(--mono); padding: 3px 8px; border-radius: 3px; white-space: nowrap; }
@@ -290,6 +290,7 @@ dialog::backdrop { background: #000000b0; }
 .dn i::after { content: ""; position: absolute; left: -5px; bottom: -7px; border: 7px solid transparent; border-top-color: var(--line); border-bottom: 0; }
 .dn em { white-space: nowrap; position: absolute; left: calc(50% + 14px); top: 9px; font: 700 10px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--dim); font-style: normal; }
 .dn em.back { color: var(--bad); }
+@media (max-width: 480px) { .dn em { white-space: normal; width: calc(50% - 22px); line-height: 1.2; top: 4px; } .dn em.back { text-align: right; } }
 .ctrl { display: flex; gap: 8px; margin-top: 12px; }
 </style>
 </head>
@@ -304,7 +305,7 @@ dialog::backdrop { background: #000000b0; }
   </div>
 </header>
 
-<main id="top">
+<main id="top" style="scroll-margin-top:100px">
 <section class="wrap hero" aria-labelledby="h1">
   <div class="reveal">
     <div class="lab">Warehouse operations demo</div>

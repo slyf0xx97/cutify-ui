@@ -15,7 +15,7 @@ const walk = (dir) => readdirSync(dir).flatMap((f) => {
 const files = walk(root);
 
 console.log("SKILL.md");
-const skill = readFileSync(join(root, "SKILL.md"), "utf8");
+const skill = readFileSync(join(root, "SKILL.md"), "utf8").replace(/\r\n/g, "\n");   // Windows checkouts
 const fm = skill.match(/^---\n([\s\S]*?)\n---/);
 if (!fm) fail("SKILL.md has no frontmatter");
 else {

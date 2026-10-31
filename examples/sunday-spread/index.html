@@ -1,0 +1,805 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sunday Spread, a potluck planner for friends</title>
+<meta name="description" content="A cutify-ui Picnic example: the Host AI keeps the potluck balanced, the Baker AI sizes each recipe to the head count, and you confirm the menu.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;700;800&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' shape-rendering='crispEdges'%3E%3Crect x='1' y='1' width='14' height='14' fill='%23FFFDF8'/%3E%3Cpath fill='%23E5484D' d='M1 1h3v14H1zM7 1h3v14H7zM13 1h2v14h-2zM1 1h14v3H1zM1 7h14v3H1zM1 13h14v2H1z' opacity='.55'/%3E%3Cpath fill='%23C2272D' d='M1 1h3v3H1zM7 1h3v3H7zM13 1h2v3h-2zM1 7h3v3H1zM7 7h3v3H7zM13 7h2v3h-2zM1 13h3v2H1zM7 13h3v2H7zM13 13h2v2h-2z'/%3E%3Cpath fill='%233A2E2A' d='M0 0h16v1H0zM0 15h16v1H0zM0 1h1v14H0zM15 1h1v14h-1z'/%3E%3C/svg%3E">
+<style>
+/* ---- tokens: cutify-ui Picnic (assets/picnic.css) ---- */
+:root {
+  --bg: #FFFDF8; --gingham: rgb(229 72 77 / .2);
+  --surface: #FFF4E0; --surface-2: #FFFFFF; --border: #3A2E2A;
+  --ink: #3A2E2A; --ink-muted: #6B5A52;
+  --accent: #C2272D; --accent-ink: #FFFFFF; --accent-2: #FFD86E; --accent-2-ink: #3A2E2A;
+  --ok: #3E7D48; --bad: #C2272D; --warn: #B45309;
+  --c-host: #FF8FAB; --c-baker: #7BC67E; --c-you: #FFD86E; --c-guest: #9EC5FF;
+  --radius: 14px; --shadow: 3px 4px 0 rgb(58 46 42 / .25); --shadow-hover: 4px 7px 0 rgb(58 46 42 / .25);
+  --ease-pop: cubic-bezier(.34, 1.56, .64, 1);
+  --display: 'Fredoka', system-ui, sans-serif; --body: 'Nunito', system-ui, sans-serif; --mono: 'DM Mono', ui-monospace, monospace;
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { background: var(--bg); scroll-padding-top: 5rem; scroll-behavior: smooth; overflow-x: clip; }
+/* gingham + riso grain */
+body { margin: 0; color: var(--ink); font: 400 1.0625rem/1.6 var(--body); overflow-x: clip;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+    repeating-linear-gradient(0deg, var(--gingham) 0 16px, transparent 16px 32px),
+    repeating-linear-gradient(90deg, var(--gingham) 0 16px, transparent 16px 32px), var(--bg); }
+h1, h2, h3, h4 { font-family: var(--display); font-weight: 600; line-height: 1.1; }
+a { color: var(--accent); }
+:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; border-radius: 8px; }
+.mono { font-family: var(--mono); font-weight: 500; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { animation: none !important; transition: none !important; } }
+.is-off, .is-off *, .is-off *::before, .is-off *::after { animation-play-state: paused !important; }
+.wrap { width: min(1180px, 100% - 2rem); margin-inline: auto; }
+
+/* napkin cards with a stitched hem */
+.panel { background: var(--surface); border: 2px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); padding: 1.1rem 1.25rem; min-width: 0; }
+.stitch { outline: 2px dashed rgb(194 39 45 / .32); outline-offset: -9px; }
+.card { background: var(--surface-2); border: 2px solid var(--border); border-radius: 12px; padding: .9rem 1rem; }
+.lab { font: 500 .78rem var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-muted); }
+.hl { background: linear-gradient(transparent 55%, var(--accent-2) 55%, var(--accent-2) 92%, transparent 92%); padding: 0 .1em; }
+
+/* chips, glyphs, pills */
+.kind { display: inline-block; padding: .02rem .45rem; border: 1.5px solid var(--border); border-radius: 999px; font: 500 .7rem/1.5 var(--mono);
+  letter-spacing: .06em; text-transform: uppercase; vertical-align: .12em; white-space: nowrap; color: var(--ink); }
+.kind.ai { background: #FFD6E0; } .kind.you { background: var(--accent-2); } .kind.guest { background: #DCEBFF; }
+.sample { display: inline-flex; align-items: center; gap: .4rem; padding: .12rem .6rem; border-radius: 999px; background: var(--surface-2);
+  border: 1.5px dashed var(--accent); font: 500 .72rem var(--mono); letter-spacing: .06em; text-transform: uppercase; color: #8E1D22; white-space: nowrap; }
+.gl { display: inline-grid; place-items: center; width: 1.3rem; height: 1.3rem; font: 500 .7rem var(--mono); color: var(--ink); border: 1.5px solid var(--ink); flex: none; vertical-align: -.25em; }
+.gl.host { background: var(--c-host); border-radius: 50%; }
+.gl.baker { background: var(--c-baker); border: 0; clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%); box-shadow: inset 0 0 0 2px var(--ink); }
+.gl.you { background: var(--c-you); border-radius: 3px; }
+.gl.guest { background: var(--c-guest); border: 0; clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); box-shadow: inset 0 0 0 2px var(--ink); width: 1.5rem; height: 1.5rem; }
+.pill { display: inline-block; padding: .05rem .6rem; border-radius: 999px; border: 1.5px solid var(--border); font: 700 .85rem var(--body); white-space: nowrap; }
+.pill.ok { background: #DDF1DF; } .pill.working { background: #FFF1C2; } .pill.bad { background: #FDE0DE; } .pill.q { background: var(--surface-2); color: var(--ink-muted); }
+
+/* tooltip trigger + one shared paper tag, placed by JS so it never leaves the screen */
+.i { display: inline-grid; place-items: center; width: 1.45rem; height: 1.45rem; padding: 0; border-radius: 50%; border: 2px solid currentColor; background: var(--surface-2);
+  font: 700 .8rem var(--body); color: var(--accent); cursor: help; flex: none; vertical-align: middle; box-shadow: none; }
+.i:hover, .i:focus-visible { background: var(--accent-2); color: var(--ink); }
+#tip { position: fixed; z-index: 1000; width: min(300px, calc(100vw - 16px)); padding: .65rem .85rem .7rem 1.55rem; background: var(--surface-2); color: var(--ink);
+  border: 2px solid var(--border); border-radius: 4px 12px 12px 4px; box-shadow: var(--shadow), 0 12px 26px rgb(58 46 42 / .18); pointer-events: none;
+  background-image: radial-gradient(circle at .72rem 1rem, var(--bg) 0 4px, var(--border) 4px 5.5px, transparent 6px); transform: rotate(-1deg); }
+#tip[hidden] { display: none; }
+#tip::before { content: ""; position: absolute; left: var(--ax, 50%); top: -18px; height: 16px; border-left: 2px dotted var(--border); }
+#tip.up::before { top: auto; bottom: -18px; }
+#tip b { display: block; font: 600 1.02rem/1.25 var(--display); margin-bottom: .2rem; }
+#tip ul { margin: 0; padding: 0; list-style: none; font-size: .92rem; line-height: 1.4; }
+#tip li { position: relative; padding-left: .9rem; margin: .18rem 0; }
+#tip li::before { content: ""; position: absolute; left: 0; top: .52em; width: 5px; height: 5px; background: var(--accent); }
+@media (prefers-reduced-motion: no-preference) { #tip:not([hidden]) { animation: tip-in .15s ease-out; } }
+@keyframes tip-in { from { opacity: 0; translate: 0 4px; } }
+
+/* buttons: round, soft offset, squash on press */
+button { font: inherit; cursor: pointer; color: var(--ink); }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; min-height: 2.75rem; padding: .55rem 1.15rem; border: 2px solid var(--border);
+  border-radius: 999px; background: var(--surface-2); color: var(--ink); font: 700 1rem var(--body); text-decoration: none; box-shadow: var(--shadow); }
+.btn.primary { background: var(--accent); color: var(--accent-ink); }
+.btn.butter { background: var(--accent-2); color: var(--accent-2-ink); }
+.btn.sm { min-height: 2.25rem; padding: .3rem .85rem; font-size: .92rem; }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+.btn.big { padding: .6rem 1.4rem .6rem 1.2rem; text-align: left; }
+.btn.big b { display: block; font: 600 1.15rem var(--display); }
+.btn.big small { display: block; font: 400 .86rem var(--body); opacity: .95; }
+:where(.btn, button) { transition: transform .16s var(--ease-pop), box-shadow .16s ease; }
+@media (prefers-reduced-motion: no-preference) {
+  :where(.btn):not(:disabled):hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); }
+  :where(.btn):not(:disabled):active { animation: squash .28s cubic-bezier(.3, 1.6, .5, 1); } }
+@keyframes squash { 30% { transform: scale(1.08, .9); } 60% { transform: scale(.96, 1.04); } }
+
+/* nav */
+.nav { position: sticky; top: 0; z-index: 80; background: rgb(255 253 248 / .94); border-bottom: 2px solid var(--border); backdrop-filter: blur(6px); }
+.nav .wrap { display: flex; align-items: center; gap: 1rem; min-height: 4rem; }
+.brand { display: flex; align-items: center; gap: .55rem; font: 700 1.3rem var(--display); color: var(--ink); text-decoration: none; margin-right: auto; white-space: nowrap; }
+.brand svg { width: 2rem; height: 2rem; }
+.nav a.lnk { color: var(--ink); font-weight: 700; text-decoration: none; border-bottom: 2px dotted var(--accent); }
+@media (max-width: 520px) { .nav a.lnk { display: none; } .brand { font-size: 1.15rem; } }
+
+/* pixel sprites */
+.sprite { image-rendering: pixelated; display: block; width: 100%; height: auto; overflow: visible; }
+@media (prefers-reduced-motion: no-preference) {
+  .bob { animation: pxbob 2.4s steps(2, jump-none) infinite; }
+  .talking .sprite { animation: hop .4s steps(2) infinite alternate; } }
+@keyframes pxbob { 50% { transform: translateY(-4%); } }
+@keyframes hop { to { transform: translateY(-9%); } }
+.quiet { opacity: .5; transition: opacity .3s; }
+
+/* hero */
+.hero { padding: 2.2rem 0 1rem; }
+.hero .panel { display: grid; grid-template-columns: 1fr 1.05fr; gap: 1.6rem; padding: 1.8rem; align-items: center; }
+.hero h1 { font-size: clamp(2.5rem, 5.6vw, 4.2rem); margin: .4rem 0 .6rem; font-weight: 700; letter-spacing: -.01em; }
+.hero h1 span { color: var(--accent); }
+.hero .tag-line { font-size: 1.15rem; margin: 0 0 1rem; max-width: 34rem; }
+.ticks { list-style: none; padding: 0; margin: 0 0 1.3rem; display: grid; gap: .35rem; }
+.ticks li { display: flex; gap: .55rem; align-items: baseline; font-weight: 700; }
+.ticks li::before { content: "✓"; display: inline-grid; place-items: center; width: 1.35rem; height: 1.35rem; flex: none; border-radius: 50%; background: #DDF1DF;
+  border: 1.5px solid var(--border); color: var(--ok); font-size: .8rem; transform: translateY(.1rem); }
+.hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: .8rem 1rem; }
+@media (max-width: 860px) { .hero .panel { grid-template-columns: 1fr; padding: 1.3rem; } }
+
+/* the picnic scene: plates fill in as guests claim dishes */
+.scene { position: relative; aspect-ratio: 5 / 4; border: 2px solid var(--border); border-radius: 12px; overflow: hidden;
+  background: radial-gradient(circle, #F6C2CF 0 2px, transparent 2.5px) 0 0 / 46px 46px, radial-gradient(circle, #fff 0 1.5px, transparent 2px) 23px 23px / 46px 46px, #CFE8C4; }
+.blanket { position: absolute; left: 21%; right: 21%; top: 31%; bottom: 25%; border: 2px solid var(--border); border-radius: 6px; rotate: -2deg; padding: 4%;
+  background: repeating-linear-gradient(0deg, rgb(229 72 77 / .42) 0 12px, transparent 12px 24px), repeating-linear-gradient(90deg, rgb(229 72 77 / .42) 0 12px, transparent 12px 24px), #FFF8EE;
+  box-shadow: 3px 4px 0 rgb(58 46 42 / .2); display: grid; }
+.plates { display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(2, 1fr); gap: 6%; place-items: center; }
+.plate { width: min(100%, 3.4rem); aspect-ratio: 1; border-radius: 50%; background: var(--surface-2); border: 2px solid var(--border); display: grid; place-items: center; position: relative; }
+.plate svg { width: 56%; height: 56%; }
+.plate.empty { background: rgb(255 255 255 / .55); border-style: dashed; border-color: rgb(58 46 42 / .55); }
+.plate.dup { box-shadow: 0 0 0 3px var(--bad); }
+.plate.dup::after { content: "2×"; position: absolute; right: -14%; top: -14%; padding: 0 .2rem; background: var(--bad); color: #fff; font: 500 .6rem/1.3 var(--mono); border-radius: 4px; }
+@media (prefers-reduced-motion: no-preference) { .plate.new { animation: plop .45s var(--ease-pop); } }
+@keyframes plop { from { transform: scale(.3); } }
+.who { position: absolute; margin: 0; display: flex; flex-direction: column; gap: .2rem; }
+.who figcaption { font: 600 .95rem/1.2 var(--display); white-space: nowrap; background: rgb(255 253 248 / .92); border: 1.5px solid var(--border); border-radius: 999px; padding: .1rem .5rem .1rem .25rem; }
+.who.l { align-items: flex-start; } .who.r { align-items: flex-end; } .who.c { align-items: center; }
+.who .pics { display: flex; gap: 4%; width: 100%; }
+.who .pics svg { width: 48%; flex: none; }
+.legend { display: flex; flex-wrap: wrap; gap: .3rem 1rem; margin-top: .7rem; font-size: .9rem; color: var(--ink-muted); }
+.legend span { display: inline-flex; gap: .35rem; align-items: center; }
+@media (max-width: 520px) { .blanket { top: 37%; bottom: 31%; left: 24%; right: 24%; } .who figcaption { font-size: .8rem; } .who figcaption .kind { font-size: .6rem; padding: 0 .3rem; } }
+
+/* stages */
+section.stage { padding: .4rem 0 1.2rem; }
+.step { display: flex; align-items: center; gap: .8rem; margin: 2rem 0 .6rem; scroll-margin-top: 5rem; flex-wrap: wrap; }
+.step .n { display: grid; place-items: center; width: 2.8rem; height: 2.8rem; border-radius: 50%; background: var(--accent-2); color: var(--ink); flex: none;
+  border: 2px solid var(--border); box-shadow: inset 0 -4px 0 rgb(58 46 42 / .15), 0 3px 0 var(--border); font: 700 1.25rem var(--display);
+  background-image: repeating-conic-gradient(rgb(58 46 42 / .07) 0 6deg, transparent 6deg 12deg); }
+.step h2 { margin: 0; font-size: clamp(1.45rem, 2.8vw, 2rem); }
+.step .who-chips { display: flex; gap: .35rem; }
+.explain { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem; margin: 0 0 1rem; padding: 0; list-style: none; }
+.explain li { padding: .25rem .7rem; background: var(--surface-2); border: 1.5px solid var(--border); border-radius: 999px; font-size: .92rem; font-weight: 700; }
+.explain li.arr { border: 0; background: none; padding: 0; color: var(--accent); font-weight: 800; }
+.connector { width: 4px; height: 2.4rem; margin: .4rem 0 0 1.25rem; background: linear-gradient(var(--accent) 50%, transparent 50%) 0 0 / 4px 12px; }
+@media (prefers-reduced-motion: no-preference) { .connector { animation: flowd .8s linear infinite; } }
+@keyframes flowd { to { background-position: 0 12px; } }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 1.1rem; align-items: start; }
+@media (max-width: 860px) { .cols { grid-template-columns: 1fr; } }
+.panel h3 { margin: 0 0 .5rem; font-size: 1.25rem; display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; }
+
+/* stage 1: event + guests */
+.event { display: grid; grid-template-columns: repeat(3, auto) 1fr; gap: .6rem 1.4rem; align-items: start; margin-bottom: 1rem; }
+.event div b { display: block; font: 600 1.1rem var(--display); }
+.event .sample { justify-self: end; }
+@media (max-width: 700px) { .event { grid-template-columns: 1fr 1fr; } .event .sample { justify-self: start; grid-column: 1 / -1; } }
+.guests { display: grid; grid-template-columns: repeat(4, 1fr); gap: .7rem; }
+@media (max-width: 860px) { .guests { grid-template-columns: repeat(2, 1fr); } }
+.gcard { display: grid; grid-template-columns: 3rem 1fr; gap: .2rem .6rem; align-items: center; padding: .6rem .7rem; background: var(--surface-2);
+  border: 2px solid var(--border); border-radius: 12px; cursor: pointer; position: relative; box-shadow: 2px 3px 0 rgb(58 46 42 / .18); min-width: 0; }
+.gcard input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.gcard:has(input:focus-visible) { outline: 3px solid var(--ink); outline-offset: 3px; }
+.gcard .sp { grid-row: span 2; width: 3rem; }
+.gcard .nm { font: 600 1.05rem/1.1 var(--display); display: flex; flex-wrap: wrap; align-items: center; gap: .2rem .35rem; min-width: 0; }
+.gcard .nm::after { content: "✓ Coming"; font: 500 .62rem var(--mono); letter-spacing: .05em; text-transform: uppercase; background: #DDF1DF; border: 1.5px solid var(--border); border-radius: 999px; padding: 0 .35rem; white-space: nowrap; }
+.gcard:not(:has(input:checked)) { background: transparent; border-style: dashed; box-shadow: none; }
+.gcard:not(:has(input:checked)) .sp { opacity: .4; filter: grayscale(1); }
+.gcard:not(:has(input:checked)) .nm::after { content: "✕ Can't"; background: var(--surface-2); }
+.gcard .dish { font: 500 .78rem/1.3 var(--mono); color: var(--ink-muted); overflow-wrap: anywhere; }
+.count { display: flex; align-items: center; gap: .6rem; flex-wrap: wrap; margin-top: 1rem; font-weight: 700; }
+.count .big { font: 600 1.6rem var(--display); }
+
+/* stage 2: menu board + Host */
+.board { display: grid; gap: .55rem; }
+.course { display: grid; grid-template-columns: 6.2rem 1fr auto; gap: .6rem; align-items: start; padding: .55rem .7rem; background: var(--surface-2); border: 2px solid var(--border); border-radius: 12px; }
+.course > b { font: 600 1.02rem var(--display); display: flex; gap: .4rem; align-items: center; }
+.course > b svg { width: 1.15rem; height: 1.15rem; flex: none; }
+.course ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: .35rem; min-width: 0; }
+.course li { display: inline-flex; align-items: center; gap: .35rem; padding: .08rem .5rem .08rem .15rem; border: 1.5px solid var(--border); border-radius: 999px; background: var(--surface); font-size: .9rem; font-weight: 700; max-width: 100%; }
+.course li svg { width: 1.35rem; height: 1.35rem; flex: none; }
+.course li small { font: 500 .72rem var(--mono); color: var(--ink-muted); }
+.course li.dup { background: #FDE0DE; border-color: var(--bad); }
+.course li.open { background: none; border-style: dashed; color: var(--ink-muted); font-weight: 400; padding-left: .5rem; }
+.course .tally { font: 500 .8rem var(--mono); white-space: nowrap; padding-top: .15rem; }
+@media (prefers-reduced-motion: no-preference) { .course li.new { animation: plop .45s var(--ease-pop); } }
+@media (max-width: 520px) { .course { grid-template-columns: 1fr auto; } .course ul { grid-column: 1 / -1; grid-row: 2; } }
+.host-head { display: flex; gap: .9rem; align-items: flex-start; margin-bottom: .8rem; }
+.host-head .sp { width: 4.2rem; flex: none; }
+.bubble { position: relative; background: var(--surface-2); border: 2px solid var(--border); border-radius: 4px 14px 14px 14px; padding: .55rem .8rem; font-weight: 700; flex: 1; min-width: 0; }
+.bubble::before { content: ""; position: absolute; left: -10px; top: -2px; border: 8px solid transparent; border-top-color: var(--border); border-right-color: var(--border); }
+.dots { display: inline-flex; gap: 4px; vertical-align: middle; margin-left: .3rem; }
+.dots i { width: 6px; height: 6px; background: var(--ink); display: block; }
+@media (prefers-reduced-motion: no-preference) { .dots i { animation: dot .6s steps(2) infinite alternate; } .dots i:nth-child(2) { animation-delay: .2s; } .dots i:nth-child(3) { animation-delay: .4s; } }
+@keyframes dot { to { transform: translateY(-4px); } }
+.notes { list-style: none; margin: 0; padding: 0; display: grid; gap: .6rem; }
+.note { padding: .65rem .8rem; background: var(--surface-2); border: 2px solid var(--border); border-radius: 12px; border-left-width: 6px; }
+.note.double { border-left-color: var(--bad); } .note.gap { border-left-color: var(--warn); } .note.good { border-left-color: var(--ok); }
+.note p { margin: .2rem 0 .5rem; }
+.note .row { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; }
+.note .mark { font: 500 .78rem var(--mono); letter-spacing: .05em; text-transform: uppercase; }
+.note.double .mark { color: var(--bad); } .note.gap .mark { color: var(--warn); } .note.good .mark { color: var(--ok); }
+.fly { position: fixed; left: 0; top: 0; width: 2rem; height: 2rem; z-index: 900; pointer-events: none; background: var(--surface-2); border: 2px solid var(--border); border-radius: 50%; display: grid; place-items: center; }
+.fly svg { width: 60%; height: 60%; }
+
+/* stage 3: Baker */
+.baker { display: grid; grid-template-columns: 9rem 1fr; gap: 1.2rem; }
+.baker .side { text-align: center; }
+.baker .side .sp { width: 6.5rem; margin: 0 auto .4rem; }
+@media (max-width: 700px) { .baker { grid-template-columns: 1fr; } .baker .side { display: flex; gap: .8rem; align-items: center; text-align: left; } .baker .side .sp { width: 4.2rem; margin: 0; flex: none; } }
+.tabs { display: flex; flex-wrap: wrap; gap: .4rem; margin: 0 0 .9rem; padding: 0; border: 0; }
+.tabs label { position: relative; }
+.tabs input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.tabs span { display: inline-block; padding: .2rem .75rem; border: 2px solid var(--border); border-radius: 999px; background: var(--surface-2); font-weight: 700; font-size: .92rem; cursor: pointer; }
+.tabs input:checked + span { background: var(--c-baker); }
+.tabs input:checked + span::before { content: "✓ "; }
+.tabs input:focus-visible + span { outline: 3px solid var(--ink); outline-offset: 2px; }
+.scale { display: flex; flex-wrap: wrap; gap: .5rem 1rem; align-items: center; margin-bottom: .6rem; }
+.scale .x { font: 500 1rem var(--mono); background: var(--accent-2); border: 2px solid var(--border); border-radius: 8px; padding: .05rem .5rem; }
+table.ing { width: 100%; border-collapse: separate; border-spacing: 0; background: var(--surface-2); border: 2px solid var(--border); border-radius: 12px; overflow: hidden; }
+table.ing th, table.ing td { padding: .45rem .7rem; text-align: left; border-bottom: 1.5px dashed rgb(58 46 42 / .25); }
+table.ing tr:last-child td { border-bottom: 0; }
+table.ing th { font: 500 .72rem var(--mono); letter-spacing: .07em; text-transform: uppercase; color: var(--ink-muted); background: var(--surface); }
+table.ing td.n { font: 500 .95rem var(--mono); text-align: right; white-space: nowrap; }
+table.ing th.n { text-align: right; }
+table.ing td.n.new { color: var(--ok); }
+.btip { margin: .8rem 0 0; padding: .55rem .8rem; background: #E6F4E3; border: 2px solid var(--border); border-radius: 4px 14px 14px 14px; }
+
+/* stage 4: KPIs + confirm */
+.kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: .7rem; margin-bottom: 1rem; }
+@media (max-width: 760px) { .kpis { grid-template-columns: 1fr 1fr; } }
+.kpi { padding: .7rem .9rem; background: var(--surface-2); border: 2px solid var(--border); border-radius: 12px; border-top-width: 6px; }
+.kpi.good { border-top-color: var(--ok); } .kpi.bad { border-top-color: var(--bad); } .kpi.warn { border-top-color: var(--warn); }
+.kpi small { display: block; font: 500 .72rem var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-muted); }
+.kpi b { display: block; font: 600 1.8rem/1.2 var(--display); }
+.kpi span { font-size: .88rem; color: var(--ink-muted); }
+.decide { display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; }
+.stamp { display: inline-flex; align-items: center; gap: .4rem; padding: .3rem .9rem; border: 3px solid var(--ok); color: var(--ok); border-radius: 10px; font: 700 1.1rem var(--display); rotate: -4deg; background: var(--surface-2); }
+.stamp[hidden] { display: none; }
+@media (prefers-reduced-motion: no-preference) { .stamp.go { animation: stamp .24s cubic-bezier(.5, 1.8, .6, 1); } }
+@keyframes stamp { from { scale: 2.2; opacity: 0; } }
+.success-glow { box-shadow: 0 0 0 6px #DDF1DF, 0 0 0 8px var(--ok), var(--shadow) !important; }
+
+/* dialog */
+dialog { width: min(560px, calc(100vw - 1rem)); max-height: 92dvh; padding: 0; border: 2px solid var(--border); border-radius: 18px; background: var(--surface); color: var(--ink);
+  box-shadow: 0 20px 50px rgb(58 46 42 / .35); overflow: auto; }
+dialog::backdrop { background: rgb(58 46 42 / .45); }
+@media (prefers-reduced-motion: no-preference) { dialog[open] { animation: pop-in .18s ease-out; } }
+@keyframes pop-in { from { opacity: 0; transform: translateY(10px) scale(.98); } }
+.dlg-h { display: flex; align-items: center; gap: .7rem; padding: .8rem 1rem; background: var(--accent-2); border-bottom: 2px solid var(--border); position: sticky; top: 0; }
+.dlg-h svg { width: 2.4rem; flex: none; }
+.dlg-h h2 { margin: 0; font-size: 1.35rem; flex: 1; }
+.dlg-b { padding: 1rem 1.1rem; }
+.dlg-b dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: .35rem .9rem; }
+.dlg-b dt { font: 600 1rem var(--display); }
+.dlg-b dd { margin: 0; }
+.dlg-b dd small { font: 500 .78rem var(--mono); color: var(--ink-muted); }
+.warnbox { margin: .9rem 0 0; padding: .5rem .75rem; background: #FFF1C2; border: 2px solid var(--border); border-radius: 10px; font-weight: 700; }
+.dlg-f { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: .6rem; padding: .8rem 1rem 1rem; border-top: 2px dashed rgb(58 46 42 / .3); }
+
+/* how it works */
+#how { padding: 1rem 0 2rem; }
+.how { display: grid; grid-template-columns: 1.1fr 1fr; gap: 1.2rem; align-items: start; }
+@media (max-width: 860px) { .how { grid-template-columns: 1fr; } }
+.route { position: relative; list-style: none; margin: 0; padding: 0 0 0 3rem; display: grid; gap: .7rem; }
+.route::before { content: ""; position: absolute; left: 1.05rem; top: 1rem; bottom: 1rem; width: 4px; background: linear-gradient(var(--accent) 50%, transparent 50%) 0 0 / 4px 12px; }
+.route li { position: relative; padding: .6rem .8rem; background: var(--surface-2); border: 2px solid var(--border); border-radius: 12px; transition: background .25s; }
+.route li > i { position: absolute; left: -2.65rem; top: .55rem; display: grid; place-items: center; width: 1.9rem; height: 1.9rem; border-radius: 50%; font: 700 .95rem var(--display); font-style: normal;
+  background: var(--accent-2); border: 2px solid var(--border); }
+.route li b { font: 600 1.05rem var(--display); }
+.route li p { margin: .1rem 0 0; font-size: .95rem; }
+.route li.on { background: #FFF1C2; } .route li.done > i { background: #DDF1DF; }
+.token { position: absolute; left: .5rem; top: 0; width: 1.35rem; height: 1.35rem; z-index: 2; transition: transform .7s cubic-bezier(.5, 0, .3, 1); background: var(--surface-2); border: 2px solid var(--border); border-radius: 50%; display: grid; place-items: center; }
+.token svg { width: 62%; height: 62%; }
+.route.static .token { display: none; }
+.cast { display: grid; gap: .7rem; }
+.castrow { display: grid; grid-template-columns: 3.4rem 1fr; gap: .8rem; align-items: center; padding: .6rem .8rem; background: var(--surface-2); border: 2px solid var(--border); border-radius: 12px; }
+.castrow .sp { width: 3.4rem; }
+.castrow b { font: 600 1.1rem var(--display); display: flex; align-items: center; gap: .4rem; flex-wrap: wrap; }
+.castrow p { margin: .15rem 0 0; font-size: .95rem; }
+.guest-row { display: flex; gap: 2px; }
+.guest-row svg { width: 1.7rem; }
+
+/* footer */
+footer { margin: 2rem 0 0; padding: 0 0 2rem; }
+footer .panel { border-top: 6px solid var(--accent); display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 1.2rem; }
+footer h4 { font: 500 .75rem var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-muted); margin: 0 0 .4rem; }
+footer p, footer ul { margin: 0; font-size: .95rem; } footer ul { padding-left: 1rem; }
+footer .copy { grid-column: 1 / -1; border-top: 2px dashed rgb(58 46 42 / .25); padding-top: .7rem; font-size: .88rem; color: var(--ink-muted); }
+@media (max-width: 1100px) { footer .panel { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 560px) { footer .panel { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs id="pixdefs"></defs></svg>
+<div id="tip" role="tooltip" hidden></div>
+
+<nav class="nav" aria-label="Main">
+  <div class="wrap">
+    <a class="brand" href="#top"><svg class="sprite" viewBox="0 0 16 16" aria-hidden="true"><use href="#sp-host"/></svg>Sunday Spread</a>
+    <a class="lnk" href="#how">How it works</a>
+    <button class="btn primary sm" type="button" data-open-confirm>Confirm menu</button>
+  </div>
+</nav>
+
+<main id="top">
+  <header class="hero wrap">
+    <div class="panel stitch">
+      <div>
+        <span class="sample">Sample potluck, made-up data</span>
+        <h1>Sunday <span>Spread</span></h1>
+        <p class="tag-line">A potluck planner for friends. The Host AI keeps the table balanced, the Baker AI sizes each recipe to the head count, and you confirm the menu.</p>
+        <ul class="ticks">
+          <li>No two pasta salads</li>
+          <li>Mains, sides, sweets and drinks covered</li>
+          <li>Recipes sized to who's coming</li>
+        </ul>
+        <div class="hero-actions">
+          <button class="btn primary big" type="button" id="playBtn"><span aria-hidden="true">▶</span><span><b>Plan the sample Sunday</b><small>Watch the Host and Baker get it ready</small></span></button>
+        </div>
+      </div>
+      <div>
+        <div class="scene" role="img" aria-label="A picnic blanket with eight plate spots. The Host and Baker sit at the top corners, you at the bottom, guests at the sides. Plates fill as guests claim dishes.">
+          <div class="blanket"><div class="plates" id="plates"></div></div>
+          <figure class="who l" id="sceneHost" style="left:3%;top:4%;width:13%"><svg class="sprite bob" viewBox="0 0 16 16" aria-hidden="true"><use href="#sp-host"/></svg><figcaption><span class="kind ai">AI</span> Host</figcaption></figure>
+          <figure class="who r" id="sceneBaker" style="right:3%;top:4%;width:13%"><svg class="sprite bob" style="animation-delay:-1.2s" viewBox="0 0 16 16" aria-hidden="true"><use href="#sp-baker"/></svg><figcaption><span class="kind ai">AI</span> Baker</figcaption></figure>
+          <figure class="who c" style="left:45%;bottom:3%;width:10%"><svg class="sprite bob" style="animation-delay:-.6s" viewBox="0 0 16 16" aria-hidden="true"><use href="#sp-you"/></svg><figcaption><span class="kind you">You</span></figcaption></figure>
+          <figure class="who l" style="left:3%;bottom:4%;width:17%"><div class="pics"><svg class="sprite bob" style="animation-delay:-.3s" viewBox="0 0 16 16" aria-hidden="true"><use href="#sp-g-mei"/></svg><svg class="sprite bob" style="animation-delay:-1.5s" viewBox="0 0 16 16" aria-hidden="true"><use href="#sp-g-arun"/></svg></div><figcaption><span class="kind guest">Guests</span></figcaption></figure>
+          <figure class="who r" style="right:3%;bottom:4%;width:17%"><div class="pics"><svg class="sprite bob" style="animation-delay:-.9s" viewBox="0 0 16 16" aria-hidden="true"><use href="#sp-g-jo"/></svg><svg class="sprite bob" style="animation-delay:-2s" viewBox="0 0 16 16" aria-hidden="true"><use href="#sp-g-priya"/></svg></div><figcaption><span class="kind guest">Guests</span></figcaption></figure>
+        </div>
+        <div class="legend">
+          <span><i class="gl host">H</i> Host AI</span><span><i class="gl baker">B</i> Baker AI</span><span><i class="gl you">Y</i> You</span><span><i class="gl guest">G</i> Guests</span>
+          <span id="plateCount" class="mono">0 of 8 plates</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- STAGE 1 -->
+  <section class="stage wrap" aria-labelledby="st1h">
+    <div class="step" id="st1"><span class="n">1</span><h2 id="st1h">Invite your friends</h2><span class="who-chips"><span class="kind you">You</span></span>
+      <button class="i" type="button" aria-label="About inviting" data-tip="You set the day and the guest list|Tick who's coming, untick who can't|Each guest who's coming brings one dish|The head count goes straight to the Baker|Why you: only you know who's actually free">i</button></div>
+    <ol class="explain"><li>You pick the day</li><li class="arr" aria-hidden="true">→</li><li>Friends say yes</li><li class="arr" aria-hidden="true">→</li><li>Each brings one dish</li></ol>
+    <div class="panel">
+      <div class="event">
+        <div><span class="lab">When</span><b>Sunday 16 Nov</b><span class="mono">12:30 to 16:00</span></div>
+        <div><span class="lab">Where</span><b>The big lawn</b><span>by the duck pond</span></div>
+        <div><span class="lab">Organiser</span><b>You</b><span><i class="gl you">Y</i> brings the blanket</span></div>
+        <span class="sample">Sample event</span>
+      </div>
+      <fieldset style="border:0;margin:0;padding:0;min-width:0">
+        <legend class="lab" style="margin-bottom:.5rem">Guest list, tap to switch</legend>
+        <div class="guests" id="guests"></div>
+      </fieldset>
+      <p class="count"><span class="big mono" id="headCount">9</span> people eating <span class="lab" id="headSub">8 guests + you</span></p>
+    </div>
+    <div class="connector" aria-hidden="true"></div>
+  </section>
+
+  <!-- STAGE 2 -->
+  <section class="stage wrap" aria-labelledby="st2h">
+    <div class="step" id="st2"><span class="n">2</span><h2 id="st2h">Let the Host balance the table</h2><span class="who-chips"><span class="kind guest">Guests</span><span class="kind ai">AI</span></span>
+      <button class="i" type="button" aria-label="About the Host" data-tip="Guests claim dishes, the Host checks the spread|Spots two people bringing the same thing|Spots empty courses, like no drinks yet|Suggests a dish to someone who's still free|The guest decides; the Host only suggests|Why an AI: dish names come in as free text, like 'nana's pasta thing'">i</button></div>
+    <ol class="explain"><li>Guests claim dishes</li><li class="arr" aria-hidden="true">→</li><li>Host spots doubles and gaps</li><li class="arr" aria-hidden="true">→</li><li>Guests take a suggestion</li></ol>
+    <div class="cols">
+      <div class="panel">
+        <h3>Menu board <span class="sample">Sample claims</span>
+          <button class="i" type="button" aria-label="About the menu board" data-tip="One row per course|The number on the right is dishes so far, out of what this group needs|A red chip means two people claimed the same dish|Dashed chips are still open">i</button></h3>
+        <div class="board" id="board"></div>
+      </div>
+      <div class="panel" id="hostPanel">
+        <div class="host-head">
+          <div class="sp" id="hostSp"><svg class="sprite" viewBox="0 0 16 16" role="img" aria-label="The Host, an AI helper"><use href="#sp-host"/></svg></div>
+          <div class="bubble" id="hostSay" aria-live="polite">Reading the board…</div>
+        </div>
+        <ul class="notes" id="notes"></ul>
+        <p style="margin:.8rem 0 0"><button class="btn sm" type="button" id="resetBtn">↺ Reset the sample</button></p>
+      </div>
+    </div>
+    <div class="connector" aria-hidden="true"></div>
+  </section>
+
+  <!-- STAGE 3 -->
+  <section class="stage wrap" aria-labelledby="st3h">
+    <div class="step" id="st3"><span class="n">3</span><h2 id="st3h">Let the Baker size the recipes</h2><span class="who-chips"><span class="kind ai">AI</span></span>
+      <button class="i" type="button" aria-label="About the Baker" data-tip="The Baker rewrites each claimed recipe for your head count|Starts from what the recipe serves|Rounds up to things you can buy, like whole eggs|Adds one kitchen tip for the bigger batch|Why an AI: recipes don't scale in a straight line, tins and pans don't grow">i</button></div>
+    <ol class="explain"><li>Head count from stage 1</li><li class="arr" aria-hidden="true">→</li><li>Baker scales the recipe</li><li class="arr" aria-hidden="true">→</li><li>Guest gets a shopping list</li></ol>
+    <div class="panel baker" id="bakerPanel">
+      <div class="side">
+        <div class="sp" id="bakerSp"><svg class="sprite" viewBox="0 0 16 16" role="img" aria-label="The Baker, an AI helper"><use href="#sp-baker"/></svg></div>
+        <div><b style="font:600 1.15rem var(--display)">Baker</b> <span class="kind ai">AI</span><div class="lab" style="margin-top:.3rem">Amounts are estimates</div></div>
+      </div>
+      <div style="min-width:0">
+        <fieldset class="tabs" id="tabs"><legend class="sr-only">Pick a claimed dish</legend></fieldset>
+        <div class="scale" id="scale"></div>
+        <table class="ing" id="ing"></table>
+        <p class="btip" id="btip"></p>
+      </div>
+    </div>
+    <div class="connector" aria-hidden="true"></div>
+  </section>
+
+  <!-- STAGE 4 -->
+  <section class="stage wrap" aria-labelledby="st4h">
+    <div class="step" id="st4"><span class="n">4</span><h2 id="st4h">Confirm the menu</h2><span class="who-chips"><span class="kind you">You</span></span>
+      <button class="i" type="button" aria-label="About confirming" data-tip="Nothing is final until you confirm|You see every dish and who brings it|You can confirm with gaps; the Host just warns you|Change anything later and you confirm again|Why you: it's your Sunday">i</button></div>
+    <ol class="explain"><li>Check the spread</li><li class="arr" aria-hidden="true">→</li><li>You confirm</li><li class="arr" aria-hidden="true">→</li><li>Everyone gets the menu</li></ol>
+    <div class="panel" id="decidePanel">
+      <div class="kpis" id="kpis"></div>
+      <div class="decide">
+        <button class="btn primary" type="button" id="confirmBtn" data-open-confirm>Review and confirm the menu</button>
+        <span class="stamp" id="stamp" hidden>✓ Menu confirmed</span>
+        <span id="decideNote" style="color:var(--ink-muted)">Nothing goes out until you confirm.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section id="how" class="wrap" aria-labelledby="howh">
+    <div class="step"><h2 id="howh" style="font-size:clamp(1.7rem,3.2vw,2.3rem)">How it works</h2>
+      <button class="i" type="button" aria-label="About how it works" data-tip="Two AI helpers, one organiser, a handful of friends|AI suggests and scales|Guests choose what to bring|You confirm the final menu|Nothing is sent without you">i</button></div>
+    <div class="how">
+      <div class="panel">
+        <ol class="route" id="route">
+          <li><i>1</i><b>You invite friends</b> <span class="kind you">You</span><p>Set the day and tick who's coming. That's the head count.</p></li>
+          <li><i>2</i><b>Guests claim dishes</b> <span class="kind guest">Guests</span><p>Each guest picks something to bring, in their own words.</p></li>
+          <li><i>3</i><b>The Host checks the spread</b> <span class="kind ai">AI</span><p>Flags double-ups and empty courses, then suggests a dish to someone free.</p></li>
+          <li><i>4</i><b>The Baker sizes recipes</b> <span class="kind ai">AI</span><p>Scales each claimed recipe to the head count and adds a tip.</p></li>
+          <li><i>5</i><b>You confirm the menu</b> <span class="kind you">You</span><p>Review every dish and who's bringing it, then confirm.</p></li>
+          <span class="token" id="token" aria-hidden="true"></span>
+        </ol>
+      </div>
+      <div class="panel">
+        <h3>Who's who</h3>
+        <div class="cast">
+          <div class="castrow"><div class="sp"><svg class="sprite" viewBox="0 0 16 16" aria-hidden="true"><use href="#sp-host"/></svg></div><div><b><i class="gl host">H</i> Host <span class="kind ai">AI</span></b><p>Pink headscarf, clipboard. Keeps the table balanced and suggests dishes. Never claims for anyone.</p></div></div>
+          <div class="castrow"><div class="sp"><svg class="sprite" viewBox="0 0 16 16" aria-hidden="true"><use href="#sp-baker"/></svg></div><div><b><i class="gl baker">B</i> Baker <span class="kind ai">AI</span></b><p>Chef's hat, green apron. Scales each recipe to the head count.</p></div></div>
+          <div class="castrow"><div class="sp"><svg class="sprite" viewBox="0 0 16 16" aria-hidden="true"><use href="#sp-you"/></svg></div><div><b><i class="gl you">Y</i> You <span class="kind you">You</span></b><p>Sun hat. Invites friends and confirms the menu.</p></div></div>
+          <div class="castrow"><div class="guest-row" id="guestRow" style="grid-column:1/-1"></div><div style="grid-column:1/-1"><b><i class="gl guest">G</i> Guests <span class="kind guest">Guests</span></b><p>Your friends. Each one claims a dish and decides whether to take the Host's suggestion.</p></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="wrap">
+  <div class="panel">
+    <div><a class="brand" href="#top" style="margin-bottom:.3rem"><svg class="sprite" viewBox="0 0 16 16" aria-hidden="true"><use href="#sp-baker"/></svg>Sunday Spread</a>
+      <p>A potluck planner for friends, with a Host that balances the table and a Baker that sizes the recipes.</p></div>
+    <div><h4>Data</h4><p>Every name, dish, date and recipe here is made-up sample data. Recipe amounts are estimates.</p></div>
+    <div><h4>Built with</h4><ul><li>cutify-ui, Picnic theme</li><li>Fredoka, Nunito, DM Mono</li><li>Plain HTML, CSS and JS</li></ul></div>
+    <div><h4>Project</h4><p><a href="https://github.com/slyf0xx97/cutify-ui">cutify-ui on GitHub</a><br>An example page, not a real service.</p></div>
+    <p class="copy">© 2026 cutify-ui examples. MIT licence.</p>
+  </div>
+</footer>
+
+<dialog id="dlg" aria-labelledby="dlgh">
+  <div class="dlg-h"><svg class="sprite" viewBox="0 0 16 16" aria-hidden="true"><use href="#sp-you"/></svg><h2 id="dlgh">Confirm Sunday's menu</h2>
+    <button class="btn sm" type="button" data-close>Close ✕</button></div>
+  <div class="dlg-b">
+    <p style="margin:0 0 .8rem"><span class="mono" id="dlgCount"></span> <span class="sample">Sample menu</span></p>
+    <dl id="dlgList"></dl>
+    <p class="warnbox" id="dlgWarn" hidden></p>
+  </div>
+  <div class="dlg-f"><button class="btn" type="button" data-close>Keep editing</button><button class="btn primary" type="button" id="doConfirm">✓ Confirm menu</button></div>
+</dialog>
+
+<script>
+/* ---- pixel sprites (assets/pixel-sprites.js, trimmed) ---- */
+function pixelSprites({ palette, sprites }) {
+  const defs = document.getElementById('pixdefs');
+  for (const [id, rows] of Object.entries(sprites)) {
+    let out = `<symbol id="${id}" viewBox="0 0 16 16" shape-rendering="crispEdges">`;
+    rows.forEach((row, y) => [...row].forEach((ch, x) => {
+      if (ch === '.' || !palette[ch]) return;
+      out += `<rect x="${x}" y="${y}" width="1.02" height="1.02" fill="${palette[ch]}"/>`;
+    }));
+    defs.insertAdjacentHTML('beforeend', out + '</symbol>');
+  }
+}
+const GUEST = ['................', '.....kkkkkk.....', '....kHHHHHHk....', '...kHHHHHHHHk...', '...kHssssssHk...', '...kskksskksk...',
+  '...kssssssssk...', '...ksPsmmsPsk...', '....kssssssk....', '.....kkkkkk.....', '...kTTTTTTTTk...', '..kTTTTTTTTTTk..',
+  '..ksTTTTTTTTsk..', '..kkTTTTTTTTkk..', '...kTTTTTTTTk...', '...kkkkkkkkkk...'];
+const GUESTS = [ // id, name, hair, skin, shirt (palette keys)
+  ['mei', 'Mei', 'n', 's', 'b'], ['arun', 'Arun', 'N', 'S', 't'], ['jo', 'Jo', 'Y', 's', 'L'], ['priya', 'Priya', 'N', 'S', 'C'],
+  ['sam', 'Sam', 'O', 's', 'b'], ['lena', 'Lena', 'R', 's', 't'], ['tomas', 'Tomás', 'n', 'D', 'L'], ['kofi', 'Kofi', 'N', 'D', 'C']];
+const sprites = {
+  'sp-host': ['......kkkk......', '....kpppyypk....', '...kppppppppk...', '..kppppppppppk..', '..kpsssssssspk..', '..kpskksskkspk..',
+    '..kpsssssssspk..', '..kpsPsmmsPspk..', '....kssssssk....', '.....kkkkkk.....', '...kppppppkkkk..', '..kpppppppkwwk..',
+    '..kpppppppkgwk..', '..kpppppppkwwk..', '..kpppppppkgwk..', '..kkkkkkkkkkkk..'],
+  'sp-baker': ['....kkk..kkk....', '...kwwwkkwwwk...', '...kwwwwwwwwk...', '...kwwwwwwwwk...', '...kkkkkkkkkk...', '...kssssssssk...',
+    '...kskksskksk...', '...kssssssssk...', '...ksPsmmsPsk...', '....kssssssk....', '.....kkkkkk.....', '...kwggggggwk...',
+    '..kswggggggwsk..', '...kwggyyggwk...', '...kwggggggwk...', '...kkkkkkkkkk...'],
+  'sp-you': ['.....kkkkkk.....', '....kyyyyyyk....', '....kyyrryyk....', '.kkkkkkkkkkkkkk.', 'kyyyyyyyyyyyyyyk', '.kkksssssssskkk.',
+    '...kskksskksk...', '...kssssssssk...', '...ksPsmmsPsk...', '....kssssssk....', '.....kkkkkk.....', '...kcccccccck...',
+    '..ksccccccccsk..', '...kcccyyccck...', '...kcccccccck...', '...kkkkkkkkkk...'],
+};
+for (const [id, , h, s, t] of GUESTS) sprites['sp-g-' + id] = GUEST.map(r => r.replace(/H/g, h).replace(/s/g, s).replace(/T/g, t));
+pixelSprites({
+  palette: { k: '#2a211e', s: '#f1c7a3', S: '#c99470', D: '#8d5a3b', P: '#ff9fb2', m: '#7a3b2e', w: '#fffdf8', c: '#fff4e0',
+    p: '#FF8FAB', g: '#7BC67E', y: '#FFD86E', r: '#C2272D', b: '#9EC5FF', t: '#7fd3c6', L: '#c9b6ff', C: '#ffb08a',
+    n: '#4a3428', N: '#1f1a18', Y: '#e8c065', O: '#c76b2a', R: '#8a3b2e' },
+  sprites,
+});
+
+/* ---- pixel dish icons from rectangles ---- */
+const R = rs => rs.map(([x, y, w, h]) => `M${x} ${y}h${w}v${h}h${-w}z`).join('');
+const ICON = {
+  Mains: R([[6, 3, 4, 1], [7, 2, 2, 1], [2, 5, 12, 1], [1, 6, 14, 1], [2, 7, 12, 6], [3, 13, 10, 1], [0, 8, 2, 1], [14, 8, 2, 1]]),
+  Sides: R([[4, 4, 8, 1], [2, 5, 12, 1], [1, 6, 14, 7], [2, 13, 12, 1]]),
+  Salads: R([[3, 4, 2, 2], [6, 2, 3, 4], [10, 3, 3, 3], [1, 7, 14, 1], [2, 8, 12, 2], [3, 10, 10, 2], [5, 12, 6, 1]]),
+  Sweets: R([[7, 1, 2, 2], [7, 4, 2, 2], [2, 6, 12, 2], [2, 9, 12, 4], [1, 13, 14, 1]]),
+  Drinks: R([[4, 2, 7, 1], [3, 3, 9, 11], [12, 5, 2, 1], [13, 6, 1, 4], [12, 10, 2, 1], [3, 14, 9, 1]]),
+};
+const icon = c => `<svg viewBox="0 0 16 16" shape-rendering="crispEdges" fill="currentColor" aria-hidden="true"><path d="${ICON[c]}"/></svg>`;
+
+/* ---- sample data (all made up) ---- */
+const COURSES = [['Mains', 2], ['Sides', 2], ['Salads', 1], ['Sweets', 2], ['Drinks', 1]];
+// dish: [course, serves, ingredients [name, amount, unit], Baker's tip, Host's reason when suggesting it]
+const DISHES = {
+  'Chicken rice': ['Mains', 4, [['Jasmine rice', 300, 'g'], ['Chicken thighs', 600, 'g'], ['Ginger', 30, 'g'], ['Chicken stock', 750, 'ml']], 'Cook the rice in two pots. One huge pot goes mushy at the bottom.'],
+  'Roast vegetable tart': ['Mains', 4, [['Puff pastry sheets', 1, 'pc'], ['Cherry tomatoes', 200, 'g'], ['Courgettes', 1, 'pc'], ['Feta', 100, 'g']], 'Use two trays. A crowded tray steams instead of roasting.', 'a veggie main, so everyone has one'],
+  'Lemon herb chicken': ['Mains', 4, [['Chicken drumsticks', 8, 'pc'], ['Lemons', 2, 'pc'], ['Garlic cloves', 4, 'pc'], ['Olive oil', 45, 'ml']], 'Marinate the night before. It travels better cold.', 'travels well and eats cold'],
+  'Garlic bread': ['Sides', 6, [['Baguettes', 1, 'pc'], ['Butter', 120, 'g'], ['Garlic cloves', 4, 'pc'], ['Parsley', 10, 'g']], 'Wrap it in foil at home; it stays warm for an hour.'],
+  'Corn on the cob': ['Sides', 4, [['Corn cobs', 4, 'pc'], ['Butter', 40, 'g'], ['Smoked paprika', 1, 'tsp']], 'Halve the cobs. Half-cobs go further on a shared plate.', 'easy to carry, and it fills Sides'],
+  'Potato wedges': ['Sides', 4, [['Potatoes', 800, 'g'], ['Olive oil', 30, 'ml'], ['Salt', 1, 'tsp']], 'Roast them extra crisp; they soften on the way.', 'a filling side'],
+  'Pasta salad': ['Salads', 4, [['Fusilli', 250, 'g'], ['Cherry tomatoes', 200, 'g'], ['Pesto', 100, 'g'], ['Rocket', 40, 'g']], 'Add the rocket at the park so it stays crisp.'],
+  'Green leaf salad': ['Salads', 4, [['Mixed leaves', 150, 'g'], ['Cucumbers', 1, 'pc'], ['Lemon dressing', 60, 'ml']], 'Bring the dressing in a jar and toss at the last minute.', 'something fresh next to the rich dishes'],
+  'Mango sticky rice': ['Sweets', 4, [['Glutinous rice', 300, 'g'], ['Coconut milk', 400, 'ml'], ['Mangoes', 2, 'pc'], ['Sugar', 60, 'g']], 'Slice the mango at the park so it stays bright.'],
+  'Banana bread': ['Sweets', 8, [['Ripe bananas', 3, 'pc'], ['Flour', 250, 'g'], ['Eggs', 2, 'pc'], ['Butter', 115, 'g'], ['Brown sugar', 150, 'g']], 'Bake two loaves, not one big one. A giant loaf stays raw in the middle.', 'a sweet that slices easily for a crowd'],
+  'Lemon bars': ['Sweets', 6, [['Flour', 180, 'g'], ['Butter', 120, 'g'], ['Eggs', 3, 'pc'], ['Lemons', 2, 'pc']], 'Chill them overnight so they cut cleanly.', 'a bright sweet for a warm day'],
+  'Iced lemon tea': ['Drinks', 4, [['Black tea bags', 4, 'pc'], ['Lemons', 2, 'pc'], ['Honey', 60, 'ml'], ['Water', 1000, 'ml']], 'Bring the ice in a separate cool bag, or the tea is watery by lunch.', 'nobody is bringing a drink yet'],
+  'Barley water': ['Drinks', 4, [['Pearl barley', 80, 'g'], ['Water', 1500, 'ml'], ['Rock sugar', 60, 'g']], 'Make it the day before and chill it.', 'nobody is bringing a drink yet'],
+};
+const POOL = { Mains: ['Roast vegetable tart', 'Lemon herb chicken'], Sides: ['Corn on the cob', 'Potato wedges'], Salads: ['Green leaf salad'],
+  Sweets: ['Banana bread', 'Lemon bars'], Drinks: ['Iced lemon tea', 'Barley water'] };
+const START = { mei: 'Chicken rice', arun: 'Pasta salad', jo: 'Pasta salad', priya: 'Mango sticky rice', sam: 'Garlic bread' };
+
+const S = { coming: Object.fromEntries(GUESTS.map(g => [g[0], true])), claims: { ...START }, confirmed: false, dish: null, busy: false, seen: new Set() };
+const NAME = Object.fromEntries(GUESTS.map(g => [g[0], g[1]]));
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const $ = id => document.getElementById(id);
+let timers = [];
+const sleep = ms => new Promise(r => timers.push(setTimeout(r, reduced ? Math.min(ms, 120) : ms)));
+
+const active = () => GUESTS.filter(g => S.coming[g[0]] && S.claims[g[0]]).map(g => [g[0], S.claims[g[0]]]);
+const people = () => GUESTS.filter(g => S.coming[g[0]]).length + 1;
+
+/* The Host's read of the board (sample logic standing in for the AI). */
+function hostCheck() {
+  const claims = active(), byDish = {};
+  claims.forEach(([g, d]) => (byDish[d] ||= []).push(g));
+  const doubles = Object.entries(byDish).filter(([, gs]) => gs.length > 1);
+  const swappers = doubles.flatMap(([d, gs]) => gs.slice(1).map(g => ({ g, from: d, others: gs.slice(0, 1) })));
+  const free = GUESTS.filter(g => S.coming[g[0]] && !S.claims[g[0]]).map(g => ({ g: g[0] }));
+  const people_ = [...swappers, ...free], used = new Set(Object.keys(byDish)), notes = [];
+  const have = c => Object.keys(byDish).filter(d => DISHES[d][0] === c).length;
+  const gaps = COURSES.flatMap(([c, need]) => Array.from({ length: Math.max(0, need - have(c)) }, () => c));
+  for (const c of gaps) {
+    const dish = POOL[c].find(d => !used.has(d)); if (!dish) continue; used.add(dish);
+    const who = people_.shift();
+    notes.push({ type: who && who.from ? 'double' : 'gap', course: c, dish, who: who && who.g, from: who && who.from, others: who && who.others });
+  }
+  for (const w of people_.filter(p => p.from)) { // a double with no gap left: swap within the same course
+    const dish = POOL[DISHES[w.from][0]].find(d => !used.has(d)); if (dish) used.add(dish);
+    notes.push({ type: 'double', course: DISHES[w.from][0], dish, who: w.g, from: w.from, others: w.others });
+  }
+  notes.sort((a, b) => (a.type === 'double' ? 0 : 1) - (b.type === 'double' ? 0 : 1));
+  return { notes, doubles: doubles.length, gaps: gaps.length, have };
+}
+
+function render() {
+  const H = hostCheck(), claims = active();
+  // guests
+  $('guests').innerHTML = GUESTS.map(([id, name]) => `<label class="gcard"><input type="checkbox" data-g="${id}" ${S.coming[id] ? 'checked' : ''} aria-label="${name} is coming">
+    <svg class="sprite sp" viewBox="0 0 16 16" aria-hidden="true"><use href="#sp-g-${id}"/></svg><span class="nm">${name}</span>
+    <span class="dish">${S.claims[id] ? S.claims[id] : 'No dish yet'}</span></label>`).join('');
+  const n = people();
+  $('headCount').textContent = n; $('headSub').textContent = `${n - 1} guest${n === 2 ? '' : 's'} + you`;
+  // board
+  const dupSet = new Set(H.notes.filter(x => x.type === 'double').map(x => x.from));
+  $('board').innerHTML = COURSES.map(([c, need]) => {
+    const items = claims.filter(([, d]) => DISHES[d][0] === c), got = H.have(c);
+    const open = Math.max(0, need - got);
+    return `<div class="course" data-course="${c}"><b>${icon(c)}${c}</b><ul>${items.map(([g, d]) => `<li class="${dupSet.has(d) ? 'dup' : ''}${S.seen.has(g + d) ? '' : ' new'}" title="${d}, from ${NAME[g]}">${icon(c)}${d} <small>${NAME[g]}</small></li>`).join('')}
+      ${Array.from({ length: open }, () => '<li class="open">Open</li>').join('')}</ul>
+      <span class="tally">${got >= need ? '✓' : '!'} ${got} of ${need}</span></div>`;
+  }).join('');
+  claims.forEach(([g, d]) => S.seen.add(g + d));
+  // host
+  if (!S.busy) $('hostSay').innerHTML = H.notes.length
+    ? `I see ${H.doubles ? `${H.doubles} double-up${H.doubles > 1 ? 's' : ''} and ` : ''}${H.gaps} gap${H.gaps === 1 ? '' : 's'}. Here's what I'd suggest.`
+    : '✓ The table is balanced. Every course is covered, no double-ups.';
+  $('notes').innerHTML = H.notes.length ? H.notes.map((x, i) => {
+    const head = x.type === 'double' ? `<span class="mark">✕ Double-up</span><p>${NAME[x.others[0]]} and ${NAME[x.who]} are both bringing ${x.from}.${x.dish ? ` ${NAME[x.who]} could bring <b>${x.dish}</b> instead, ${DISHES[x.dish][4]}.` : ''}</p>`
+      : `<span class="mark">! Gap in ${x.course}</span><p>${x.course}: ${x.course === 'Drinks' ? 'nothing yet' : 'one short'}. ${x.who ? `Suggest <b>${x.dish}</b> to ${NAME[x.who]}, ${DISHES[x.dish][4]}.` : `Nobody is free to bring <b>${x.dish}</b>. Tick another friend in stage 1.`}</p>`;
+    return `<li class="note ${x.type}">${head}<div class="row">${x.who && x.dish ? `<button class="btn sm butter" type="button" data-note="${i}">Send to ${NAME[x.who]}</button><span class="kind guest">${NAME[x.who]} decides</span>` : ''}</div></li>`;
+  }).join('') : `<li class="note good"><span class="mark">✓ Balanced</span><p>${claims.length} dishes across ${COURSES.length} courses. Over to you to confirm.</p></li>`;
+  S.notes = H.notes;
+  // hero plates
+  const plates = claims.slice(0, 8);
+  $('plates').innerHTML = Array.from({ length: 8 }, (_, i) => {
+    const p = plates[i]; if (!p) return '<span class="plate empty" aria-hidden="true"></span>';
+    return `<span class="plate${dupSet.has(p[1]) && claims.findIndex(c => c[1] === p[1]) !== i ? ' dup' : ''}" data-k="${p[0] + p[1]}" aria-hidden="true">${icon(DISHES[p[1]][0])}</span>`;
+  }).join('');
+  $('plateCount').textContent = `${claims.length} of 8 plates`;
+  renderBaker(); renderKpis(H, claims);
+}
+
+function nice(x, u) {
+  if (u === 'g') return Math.ceil(x / 10) * 10;
+  if (u === 'ml') return Math.ceil(x / 50) * 50;
+  if (u === 'tsp') return Math.ceil(x * 2) / 2;
+  return Math.ceil(x - 1e-9);
+}
+const fmt = (x, u) => `${x.toLocaleString('en-GB')}${u === 'pc' ? '' : ' ' + u}`;
+function renderBaker() {
+  const dishes = [...new Set(active().map(c => c[1]))].sort((a, b) => COURSES.findIndex(c => c[0] === DISHES[a][0]) - COURSES.findIndex(c => c[0] === DISHES[b][0]));
+  if (!dishes.includes(S.dish)) S.dish = dishes.includes('Banana bread') ? 'Banana bread' : dishes[0];
+  $('tabs').innerHTML = '<legend class="sr-only">Pick a claimed dish</legend>' + dishes.map(d => `<label><input type="radio" name="dish" value="${d}" ${d === S.dish ? 'checked' : ''}><span>${d}</span></label>`).join('');
+  if (!S.dish) { $('scale').textContent = 'No dishes claimed yet.'; $('ing').innerHTML = ''; $('btip').hidden = true; return; }
+  const [c, serves, ing, tip] = DISHES[S.dish], n = people(), f = n / serves;
+  const by = active().filter(x => x[1] === S.dish).map(x => NAME[x[0]]).join(' and ');
+  $('scale').innerHTML = `<span><b>${S.dish}</b>, brought by ${by}</span><span class="lab">Serves ${serves} → ${n} people</span><span class="x" title="Scale factor">×${f.toFixed(2)}</span>`;
+  $('ing').innerHTML = `<thead><tr><th>Ingredient</th><th class="n">Recipe</th><th class="n">For ${n}</th></tr></thead><tbody>${ing.map(([name, a, u]) =>
+    `<tr><td>${name}</td><td class="n">${fmt(a, u)}</td><td class="n${f !== 1 ? ' new' : ''}">${fmt(nice(a * f, u), u)}</td></tr>`).join('')}</tbody>`;
+  $('btip').hidden = false;
+  $('btip').innerHTML = `<b>Baker's tip:</b> ${tip}`;
+}
+
+function renderKpis(H, claims) {
+  const covered = COURSES.filter(([c, need]) => H.have(c) >= need).length;
+  const k = (cls, label, val, sub) => `<div class="kpi ${cls}"><small>${label}</small><b class="mono">${val}</b><span>${sub}</span></div>`;
+  $('kpis').innerHTML = k('good', 'People', people(), `${people() - 1} guests + you`)
+    + k(claims.length >= 8 ? 'good' : 'warn', 'Dishes claimed', `${claims.length} of 8`, 'one per guest')
+    + k(H.doubles ? 'bad' : 'good', 'Double-ups', H.doubles, H.doubles ? '✕ same dish twice' : '✓ none')
+    + k(covered === COURSES.length ? 'good' : 'warn', 'Courses covered', `${covered} of ${COURSES.length}`, covered === COURSES.length ? '✓ balanced' : '! gaps left');
+}
+
+/* hand-off: a plate flies from the suggestion to its course row, in pixel steps */
+function flyDish(fromEl, course) {
+  const to = document.querySelector(`.course[data-course="${course}"] ul`);
+  if (reduced || !fromEl || !to) return Promise.resolve();
+  const a = fromEl.getBoundingClientRect(), b = to.getBoundingClientRect();
+  const p = document.createElement('span'); p.className = 'fly'; p.innerHTML = icon(course); document.body.append(p);
+  const sx = a.left + a.width / 2 - 16, sy = a.top - 8, ex = b.left + 20, ey = b.top + b.height / 2 - 16, mx = (sx + ex) / 2, my = Math.min(sy, ey) - 60;
+  const anim = p.animate([
+    { transform: `translate(${sx}px,${sy}px) scale(.6)`, opacity: 0, easing: 'steps(3)' },
+    { transform: `translate(${sx}px,${sy}px) scale(1)`, opacity: 1, offset: .12, easing: 'steps(8)' },
+    { transform: `translate(${mx}px,${my}px) scale(1.15) rotate(10deg)`, opacity: 1, offset: .55, easing: 'steps(8)' },
+    { transform: `translate(${ex}px,${ey}px) scale(1)`, opacity: 1, offset: .92 },
+    { transform: `translate(${ex}px,${ey}px) scale(.8)`, opacity: 0 }], { duration: 650, fill: 'both' });
+  return anim.finished.then(() => p.remove());
+}
+
+async function sendNote(i, btn) {
+  const x = S.notes && S.notes[i]; if (!x || S.busy) return;
+  S.busy = true; btn && (btn.disabled = true);
+  $('hostPanel').classList.add('talking');
+  $('hostSay').innerHTML = `Asking ${NAME[x.who]} about ${x.dish}<span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>`;
+  await sleep(900);
+  await flyDish(btn, x.course);
+  S.claims[x.who] = x.dish; unconfirm();
+  $('hostSay').textContent = `✓ ${NAME[x.who]} claimed ${x.dish}.`;
+  $('hostPanel').classList.remove('talking'); S.busy = false;
+  render(); hopBaker();
+  $('hostSay').textContent = `✓ ${NAME[x.who]} claimed ${x.dish}. ` + (S.notes.length ? 'Next one…' : 'The table is balanced.');
+}
+
+function hopBaker() {
+  $('bakerPanel').classList.add('talking');
+  clearTimeout(hopBaker.t); hopBaker.t = setTimeout(() => $('bakerPanel').classList.remove('talking'), reduced ? 0 : 900);
+}
+function unconfirm() {
+  if (!S.confirmed) return;
+  S.confirmed = false; $('stamp').hidden = true; $('confirmBtn').classList.remove('success-glow');
+  $('decideNote').textContent = 'The menu changed, so confirm it again.';
+}
+
+/* events */
+document.addEventListener('change', e => {
+  if (e.target.dataset.g) { S.coming[e.target.dataset.g] = e.target.checked; unconfirm(); render(); hopBaker();
+    document.querySelector(`[data-g="${e.target.dataset.g}"]`).focus(); }
+  if (e.target.name === 'dish') { S.dish = e.target.value; renderBaker(); document.querySelector(`input[name="dish"][value="${S.dish}"]`).focus(); }
+});
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-note]'); if (b) sendNote(+b.dataset.note, b);
+  if (e.target.closest('[data-open-confirm]')) openConfirm(e.target.closest('[data-open-confirm]'));
+  if (e.target.closest('[data-close]')) $('dlg').close();
+});
+$('resetBtn').onclick = () => { stopPlay(); S.claims = { ...START }; GUESTS.forEach(g => S.coming[g[0]] = true); S.busy = false; $('hostPanel').classList.remove('talking'); unconfirm(); $('decideNote').textContent = 'Nothing goes out until you confirm.'; render(); };
+
+/* confirm dialog + confetti */
+let opener = null;
+function openConfirm(btn) {
+  opener = btn; const H = hostCheck(), claims = active();
+  $('dlgCount').textContent = `${claims.length} dishes for ${people()} people`;
+  $('dlgList').innerHTML = COURSES.map(([c]) => {
+    const items = claims.filter(([, d]) => DISHES[d][0] === c);
+    return `<dt>${c}</dt><dd>${items.length ? items.map(([g, d]) => `${d} <small>${NAME[g]}</small>`).join('<br>') : '<small>! Nothing yet</small>'}</dd>`;
+  }).join('');
+  const w = [H.doubles && `${H.doubles} double-up${H.doubles > 1 ? 's' : ''}`, H.gaps && `${H.gaps} gap${H.gaps > 1 ? 's' : ''}`].filter(Boolean);
+  $('dlgWarn').hidden = !w.length; $('dlgWarn').textContent = `! The Host still sees ${w.join(' and ')}. You can confirm anyway.`;
+  $('dlg').showModal();
+}
+$('dlg').addEventListener('click', e => { if (e.target === $('dlg')) $('dlg').close(); });
+$('dlg').addEventListener('close', () => opener && opener.focus());
+$('doConfirm').onclick = () => {
+  $('dlg').close(); S.confirmed = true;
+  const st = $('stamp'); st.hidden = false; st.classList.remove('go'); void st.offsetWidth; st.classList.add('go');
+  $('decideNote').textContent = 'Sample only: in the real app every guest would get the menu now.';
+  const btn = $('confirmBtn'); btn.scrollIntoView({ block: 'center', behavior: reduced ? 'auto' : 'smooth' });
+  setTimeout(() => confetti(btn), reduced ? 0 : 350);
+};
+function confetti(el, n = 30) {
+  if (reduced) return el.classList.add('success-glow');
+  const r = el.getBoundingClientRect(), cols = ['#C2272D', '#FFD86E', '#FF8FAB', '#7BC67E', '#9EC5FF', '#E5484D'];
+  for (let i = 0; i < n; i++) {
+    const p = document.createElement('i'), s = 5 + Math.random() * 5;
+    p.style.cssText = `position:fixed;z-index:950;width:${s}px;height:${s * 1.4}px;pointer-events:none;left:${r.left + r.width / 2}px;top:${r.top}px;background:${cols[i % cols.length]};border:1px solid #3A2E2A`;
+    document.body.append(p);
+    p.animate([{ transform: 'translate(0,0) rotate(0)' },
+      { transform: `translate(${(Math.random() - .5) * 280}px,${-90 - Math.random() * 130}px) rotate(${Math.random() * 720}deg)`, opacity: 1, offset: .6 },
+      { transform: `translate(${(Math.random() - .5) * 320}px,${-20 - Math.random() * 60}px) rotate(${Math.random() * 900}deg)`, opacity: 0 }],
+      { duration: 1100, easing: 'cubic-bezier(.2,.8,.4,1)' }).onfinish = () => p.remove();
+  }
+  el.classList.add('success-glow'); setTimeout(() => el.classList.remove('success-glow'), 1400);
+}
+
+/* hero: play the sample, cancellable */
+let runId = 0;
+function stopPlay() { timers.forEach(clearTimeout); timers = []; runId++; }
+async function play() {
+  stopPlay(); const id = runId;
+  $('resetBtn').onclick(); runId = id;
+  const go = el => el.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' });
+  go($('st2')); await sleep(900);
+  while (S.notes.length && id === runId) {
+    const btn = document.querySelector('[data-note="0"]'); if (!btn) break;
+    await sendNote(0, btn); await sleep(700);
+  }
+  if (id !== runId) return;
+  go($('st3')); await sleep(700); hopBaker(); await sleep(1200);
+  if (id !== runId) return;
+  go($('st4'));
+}
+$('playBtn').onclick = play;
+
+/* tooltips: one paper tag, hover + focus + tap */
+const tip = $('tip'); let tipFor = null;
+function showTip(el) {
+  const [t, ...lines] = el.dataset.tip.split('|');
+  tip.innerHTML = `<b>${t}</b><ul>${lines.map(l => `<li>${l}</li>`).join('')}</ul>`; tip.hidden = false; tipFor = el;
+  el.setAttribute('aria-describedby', 'tip');
+  const r = el.getBoundingClientRect(), w = tip.offsetWidth, h = tip.offsetHeight;
+  const x = Math.min(Math.max(8, r.left + r.width / 2 - w / 2), innerWidth - w - 8);
+  let y = r.bottom + 18, up = false;
+  if (y + h > innerHeight - 8) { y = r.top - 18 - h; up = true; }
+  tip.style.left = x + 'px'; tip.style.top = Math.max(8, y) + 'px';
+  tip.style.setProperty('--ax', Math.min(w - 12, Math.max(10, r.left + r.width / 2 - x - 1)) + 'px'); tip.classList.toggle('up', up);
+}
+function hideTip() { if (tipFor) tipFor.removeAttribute('aria-describedby'); tip.hidden = true; tipFor = null; }
+document.addEventListener('mouseover', e => { const el = e.target.closest('[data-tip]'); if (el && el !== tipFor) showTip(el); });
+document.addEventListener('mouseout', e => { const el = e.target.closest('[data-tip]'); if (el && !el.contains(e.relatedTarget) && document.activeElement !== el) hideTip(); });
+document.addEventListener('focusin', e => { const el = e.target.closest('[data-tip]'); el ? showTip(el) : hideTip(); });
+document.addEventListener('focusout', e => { if (e.target.closest('[data-tip]')) hideTip(); });
+document.addEventListener('click', e => { const el = e.target.closest('[data-tip]'); if (el) showTip(el); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') hideTip(); });
+addEventListener('scroll', () => { if (tipFor && document.activeElement !== tipFor) hideTip(); else if (tipFor) showTip(tipFor); }, { passive: true });
+
+/* how it works: a plate token walks the route, pauses off screen */
+$('token').innerHTML = icon('Sweets');
+$('guestRow').innerHTML = GUESTS.map(g => `<svg class="sprite" viewBox="0 0 16 16" role="img" aria-label="${g[1]}"><use href="#sp-g-${g[0]}"/></svg>`).join('');
+const route = $('route'), stops = [...route.querySelectorAll('li')];
+let stop = 0;
+function walk() {
+  if (route.closest('.is-off')) return;
+  stops.forEach((li, i) => { li.classList.toggle('on', i === stop); li.classList.toggle('done', i < stop); });
+  $('token').style.transform = `translateY(${stops[stop].offsetTop + stops[stop].offsetHeight - 6}px)`;
+  stop = (stop + 1) % stops.length;
+}
+if (reduced) { route.classList.add('static'); stops.forEach(li => li.classList.add('done')); }
+else { walk(); setInterval(walk, 1800); }
+const io = new IntersectionObserver(es => es.forEach(e => e.target.classList.toggle('is-off', !e.isIntersecting)), { rootMargin: '100% 0px' });
+document.querySelectorAll('.hero, .stage, #how').forEach(el => io.observe(el));
+
+render();
+</script>
+</body>
+</html>

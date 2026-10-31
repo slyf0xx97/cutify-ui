@@ -12,6 +12,7 @@ Motion in cutify-ui shows what the product does. Each animation should answer "w
 - Engine 4: scroll-linked journey
 - Engine 5: route with stops (getPointAtLength)
 - Off-screen pause and reduced motion
+- Micro-interactions
 
 ---
 
@@ -147,3 +148,38 @@ document.querySelectorAll('.hero, .stage, #how').forEach(el => io.observe(el));
 .is-off, .is-off *, .is-off *::before, .is-off *::after { animation-play-state: paused !important; }
 ```
 Stop rAF loops too when their section is off screen. Under reduced motion, show the final state of every animation, keep Play/Reset controls but disable them with a `title` explaining why.
+
+## Micro-interactions
+
+Small reactions to what the visitor does. Each one sits inside `@media (prefers-reduced-motion: no-preference)`; the fallback is what reduced-motion users get.
+
+| Name | Sketch | Use it for | Fallback |
+|---|---|---|---|
+| Squash press | `:active { animation: squash .28s cubic-bezier(.3,1.6,.5,1) }` with `30% { scale(1.08, .9) } 60% { scale(.96, 1.04) }` | soft, round buttons (Picnic) | instant colour change |
+| Ledge press | `box-shadow: 0 5px 0 <ledge>`; `:active { translateY(5px); ledge gone }` | toy and game buttons (Toy Box) | keep it; it's instant |
+| Sticker wobble | hover `rotate(-4deg)`, then `3deg`, then `-1deg` over .5s | collectable cards, badges | a static `rotate(-2deg)` and a stronger outline |
+| Peel corner | a `::after` corner fold grows from 0 to 28px on hover or focus | "more detail here" hints | a static 16px fold |
+| Typing dots | three dots hop in turn, `steps(2)` for pixel themes | an agent thinking, a live wait | a static "…" plus `aria-live` text ("The Chef is thinking") |
+| Bouncy toggle | knob `transition: transform .35s cubic-bezier(.34,1.56,.64,1)` | on/off switches | no transition; state also shown by ✓/✕ |
+| Confetti burst | 24 small `position: fixed` pieces animated with the Web Animations API, removed on finish | approve, complete, success | a one-off glow ring and an "Approved" badge |
+| Stage pop-in | `popin .45s` with `animation-delay: calc(var(--i) * 80ms)` | stages arriving in reading order | a 150ms fade or nothing |
+| Self-drawing line | `stroke-dasharray` and `stroke-dashoffset` set from `getTotalLength()`, animated to 0 | connecting agent, rule and result | the line already drawn, end node highlighted |
+| Idle pet blink | the mascot's eye `scaleY(.1)` for 2% of a 5s loop | a persistent mascot or pet | no blink; expression changes only on real events |
+
+Confetti without a library:
+```js
+function confetti(el, n = 24) {
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return el.classList.add('success-glow');
+  const r = el.getBoundingClientRect();
+  for (let i = 0; i < n; i++) {
+    const p = document.createElement('i');
+    p.style.cssText = `position:fixed;width:6px;height:10px;pointer-events:none;left:${r.left + r.width / 2}px;top:${r.top}px;background:hsl(${Math.random() * 360} 90% 60%)`;
+    document.body.append(p);
+    p.animate([{ transform: 'translate(0,0) rotate(0)' },
+      { transform: `translate(${(Math.random() - .5) * 240}px,${-80 - Math.random() * 120}px) rotate(${Math.random() * 720}deg)`, opacity: 0 }],
+      { duration: 900, easing: 'cubic-bezier(.2,.8,.4,1)' }).onfinish = () => p.remove();
+  }
+}
+```
+
+A persistent little toy that reacts to use (a plant you water, a pet you feed, a counter) makes a good signature detail. Keep it to one per page.

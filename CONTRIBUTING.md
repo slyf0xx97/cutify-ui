@@ -24,9 +24,9 @@ Thanks for helping. New themes, components, animation engines and gallery exampl
 
 1. Create `examples/<name>/index.html`, fully self-contained apart from Google Fonts. React examples also include their source tree and a static `index.html` copy.
 2. Label every made-up value as sample data.
-3. Check it in a browser at 1280px and 375px: no overlaps, no clipped tooltips, no sideways scroll, no console errors.
-4. Add `examples/<name>/README.md` with the brief and a screenshot, and a 1280 × 800 screenshot at `docs/gallery/<name>.png`.
-5. Add a card to `index.html` and a cell to the README gallery.
+3. Run the layout QA (below) and look at its screenshots: no overlaps, no clipped tooltips, no sideways scroll, no console errors.
+4. Add `examples/<name>/README.md` with the brief, then take the gallery screenshot with `node shots.mjs http://127.0.0.1:8811 <name>`.
+5. Add a card to `index.html`, an entry to `tools/readme_gallery.py`, then run `python tools/readme_gallery.py` and `python tools/make_cover.py`.
 
 ## Checks
 
@@ -37,6 +37,18 @@ cd tools && npm install && npm run check
 ```
 
 They type-check the React components in strict mode, syntax-check every JavaScript and Python file, check `SKILL.md` frontmatter and size, and make sure every example has its page, README and screenshot.
+
+### Layout QA
+
+```bash
+cd tools && npm install && npx playwright install chromium
+python -m http.server 8811 --bind 127.0.0.1   # from the repo root, in another terminal
+node qa.mjs                                     # or: node qa.mjs http://127.0.0.1:8811 <name>
+```
+
+It loads every page at 375, 768, 1280 and 1440px and reports sideways overflow, overlapping or clipped text, tooltips that leave the screen or get covered, dialogs that don't fit, console errors, fonts that didn't load and low contrast. Screenshots and `results.json` go to `tools/qa-output/`.
+
+Some flags are expected and can be ignored after a look at the screenshot: number badges that hang outside a card on purpose, a marquee that runs past the edge, a chat log that scrolls, and contrast readings over patterned backdrops, where the script can take a star or a dot for the background.
 
 ## Commits and pull requests
 
