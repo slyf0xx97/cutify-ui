@@ -45,12 +45,13 @@ for i in range(0, len(ITEMS), COLS):
     for slug, name, blurb, tags in ITEMS[i:i + COLS]:
         alt = name.replace("&", "and")
         pic = f"docs/gallery/{slug}.gif" if (root / f"docs/gallery/{slug}.gif").exists() else f"docs/gallery/{slug}.png"
-        # the prompt folds away; blank lines around the fenced block let GitHub render it with a copy button
-        cells.append(f'<td width="33%" valign="top">\n\n<a href="{LIVE}{slug}/"><img src="{pic}" alt="{alt}"></a><br>'
-                     f'<b><a href="{LIVE}{slug}/">{name.replace("&", "&amp;")}</a></b> <sub>(<a href="examples/{slug}">source</a>)</sub><br><sub>{tags}</sub>'
-                     f'\n\n<details><summary>Copy the prompt</summary>\n\n```text\n{brief(slug)}\n```\n\n</details>\n\n</td>')
+        cells.append(f'<td width="33%" valign="top"><a href="{LIVE}{slug}/"><img src="{pic}" alt="{alt}"></a><br>'
+                     f'<b><a href="{LIVE}{slug}/">{name.replace("&", "&amp;")}</a></b> <sub>(<a href="examples/{slug}">source</a>)</sub><br><sub>{tags}</sub></td>')
     rows.append("<tr>\n" + "\n".join(cells) + "\n</tr>")
 table = "<table>\n" + "\n".join(rows) + "\n</table>"
+# the prompts sit under the table at full width, so opening them can't stretch the gallery columns
+prompts = "\n\n".join(f"**{name}**\n\n```text\n{brief(slug)}\n```" for slug, name, *_ in ITEMS)
+table += f"\n\n<details><summary><b>Copy an example's prompt</b></summary>\n\n{prompts}\n\n</details>"
 
 p = root / "README.md"
 s = p.read_text(encoding="utf-8")

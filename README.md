@@ -58,10 +58,13 @@ Ask in plain words, for example:
 Make a cute landing page for my study app with three AI tutors.
 ```
 
-| Model | Use it for |
-|---|---|
-| Opus 5.5 | Full pages, about 5 to 7 minutes each |
-| Sonnet 5.5 | Quick components, such as a pricing card in under a minute |
+| What you're building | Model | Effort |
+|---|---|---|
+| A full page with several sections | Opus 5.5 | High |
+| One component, such as a pricing card | Sonnet 5.5 | Default |
+| A quick draft to try ideas | Sonnet 5.5 or Haiku 5.5 | Low |
+
+Set the effort with `/effort` in Claude Code. Our test pages used the default effort, and Opus took about 5 to 7 minutes a page. High effort gives Claude more room to plan the stages and check its own page, so it's worth the extra time on bigger pages.
 
 Have Python 3 installed so Claude can check its page with `scripts/lint_page.py`. If the skill doesn't load, start your prompt with "Use the cutify-ui skill." Every example in the [Gallery](#%EF%B8%8F-gallery) has its prompt ready to copy.
 
@@ -72,170 +75,102 @@ Claude built each example with the skill from a brief of a few sentences, then c
 <!-- GALLERY:START -->
 <table>
 <tr>
-<td width="33%" valign="top">
+<td width="33%" valign="top"><a href="https://slyf0xx97.github.io/cutify-ui/examples/studybuddy/"><img src="docs/gallery/studybuddy.gif" alt="StudyBuddy"></a><br><b><a href="https://slyf0xx97.github.io/cutify-ui/examples/studybuddy/">StudyBuddy</a></b> <sub>(<a href="examples/studybuddy">source</a>)</sub><br><sub>🪟 Glass, HTML</sub></td>
+<td width="33%" valign="top"><a href="https://slyf0xx97.github.io/cutify-ui/examples/fleet-queue/"><img src="docs/gallery/fleet-queue.gif" alt="Fleet Queue"></a><br><b><a href="https://slyf0xx97.github.io/cutify-ui/examples/fleet-queue/">Fleet Queue</a></b> <sub>(<a href="examples/fleet-queue">source</a>)</sub><br><sub>🛫 Apron, HTML</sub></td>
+<td width="33%" valign="top"><a href="https://slyf0xx97.github.io/cutify-ui/examples/sunday-spread/"><img src="docs/gallery/sunday-spread.gif" alt="Sunday Spread"></a><br><b><a href="https://slyf0xx97.github.io/cutify-ui/examples/sunday-spread/">Sunday Spread</a></b> <sub>(<a href="examples/sunday-spread">source</a>)</sub><br><sub>🧺 Picnic, HTML</sub></td>
+</tr>
+<tr>
+<td width="33%" valign="top"><a href="https://slyf0xx97.github.io/cutify-ui/examples/zine-night/"><img src="docs/gallery/zine-night.gif" alt="Zine Night"></a><br><b><a href="https://slyf0xx97.github.io/cutify-ui/examples/zine-night/">Zine Night</a></b> <sub>(<a href="examples/zine-night">source</a>)</sub><br><sub>🖨️ Riso Club, HTML</sub></td>
+<td width="33%" valign="top"><a href="https://slyf0xx97.github.io/cutify-ui/examples/moonlit-market/"><img src="docs/gallery/moonlit-market.gif" alt="Moonlit Market"></a><br><b><a href="https://slyf0xx97.github.io/cutify-ui/examples/moonlit-market/">Moonlit Market</a></b> <sub>(<a href="examples/moonlit-market">source</a>)</sub><br><sub>🏮 Lantern Night, HTML</sub></td>
+<td width="33%" valign="top"><a href="https://slyf0xx97.github.io/cutify-ui/examples/beep-and-build/"><img src="docs/gallery/beep-and-build.gif" alt="Beep and Build"></a><br><b><a href="https://slyf0xx97.github.io/cutify-ui/examples/beep-and-build/">Beep &amp; Build</a></b> <sub>(<a href="examples/beep-and-build">source</a>)</sub><br><sub>🧱 Toy Box, HTML, playable</sub></td>
+</tr>
+<tr>
+<td width="33%" valign="top"><a href="https://slyf0xx97.github.io/cutify-ui/examples/sprout/"><img src="docs/gallery/sprout.gif" alt="Sprout"></a><br><b><a href="https://slyf0xx97.github.io/cutify-ui/examples/sprout/">Sprout</a></b> <sub>(<a href="examples/sprout">source</a>)</sub><br><sub>🪟 Glass, HTML</sub></td>
+<td width="33%" valign="top"><a href="https://slyf0xx97.github.io/cutify-ui/examples/gridline/"><img src="docs/gallery/gridline.gif" alt="Gridline"></a><br><b><a href="https://slyf0xx97.github.io/cutify-ui/examples/gridline/">Gridline</a></b> <sub>(<a href="examples/gridline">source</a>)</sub><br><sub>🛫 Apron, electric palette, HTML</sub></td>
+<td width="33%" valign="top"><a href="https://slyf0xx97.github.io/cutify-ui/examples/snooze-log/"><img src="docs/gallery/snooze-log.gif" alt="Snooze Log"></a><br><b><a href="https://slyf0xx97.github.io/cutify-ui/examples/snooze-log/">Snooze Log</a></b> <sub>(<a href="examples/snooze-log">source</a>)</sub><br><sub>🌙 Custom: Sleepy Dusk, HTML</sub></td>
+</tr>
+<tr>
+<td width="33%" valign="top"><a href="https://slyf0xx97.github.io/cutify-ui/examples/penpal-post/"><img src="docs/gallery/penpal-post.gif" alt="Penpal Post"></a><br><b><a href="https://slyf0xx97.github.io/cutify-ui/examples/penpal-post/">Penpal Post</a></b> <sub>(<a href="examples/penpal-post">source</a>)</sub><br><sub>🍓 Custom: Strawberry Milk + Kawaii JP, HTML</sub></td>
+<td width="33%" valign="top"><a href="https://slyf0xx97.github.io/cutify-ui/examples/pantry-pals/"><img src="docs/gallery/pantry-pals.gif" alt="Pantry Pals"></a><br><b><a href="https://slyf0xx97.github.io/cutify-ui/examples/pantry-pals/">Pantry Pals</a></b> <sub>(<a href="examples/pantry-pals">source</a>)</sub><br><sub>🪟 Glass, Next.js + static copy</sub></td>
+<td width="33%" valign="top"><a href="https://slyf0xx97.github.io/cutify-ui/examples/portfolio/"><img src="docs/gallery/portfolio.gif" alt="Sam Sample, portfolio"></a><br><b><a href="https://slyf0xx97.github.io/cutify-ui/examples/portfolio/">Sam Sample, portfolio</a></b> <sub>(<a href="examples/portfolio">source</a>)</sub><br><sub>🪟 Glass, HTML, no AI</sub></td>
+</tr>
+</table>
 
-<a href="https://slyf0xx97.github.io/cutify-ui/examples/studybuddy/"><img src="docs/gallery/studybuddy.gif" alt="StudyBuddy"></a><br><b><a href="https://slyf0xx97.github.io/cutify-ui/examples/studybuddy/">StudyBuddy</a></b> <sub>(<a href="examples/studybuddy">source</a>)</sub><br><sub>🪟 Glass, HTML</sub>
+<details><summary><b>Copy an example's prompt</b></summary>
 
-<details><summary>Copy the prompt</summary>
+**StudyBuddy**
 
 ```text
 StudyBuddy, an exam-prep app for university students. Three AI tutors: a Planner that builds a revision timetable, a Quizzer that writes practice questions, and a Coach that checks in on your mood. The student approves their weekly plan. Use the Glass (light) theme. A cute, friendly, game-like single-page landing site with animation that shows the tutors working together.
 ```
 
-</details>
-
-</td>
-<td width="33%" valign="top">
-
-<a href="https://slyf0xx97.github.io/cutify-ui/examples/fleet-queue/"><img src="docs/gallery/fleet-queue.gif" alt="Fleet Queue"></a><br><b><a href="https://slyf0xx97.github.io/cutify-ui/examples/fleet-queue/">Fleet Queue</a></b> <sub>(<a href="examples/fleet-queue">source</a>)</sub><br><sub>🛫 Apron, HTML</sub>
-
-<details><summary>Copy the prompt</summary>
+**Fleet Queue**
 
 ```text
 Fleet Queue, a warehouse operations demo. Three AI agents (Picker, Packer and Router robots) coordinate the order queue, a rules engine (plain code) blocks unsafe plans (aisle congestion, battery level, weight limits), and the shift manager approves the final plan. Apron (dark control-room) theme. Robots visibly move along drawn aisles, with a small before/after dashboard. All numbers are labelled sample data.
 ```
 
-</details>
-
-</td>
-<td width="33%" valign="top">
-
-<a href="https://slyf0xx97.github.io/cutify-ui/examples/sunday-spread/"><img src="docs/gallery/sunday-spread.gif" alt="Sunday Spread"></a><br><b><a href="https://slyf0xx97.github.io/cutify-ui/examples/sunday-spread/">Sunday Spread</a></b> <sub>(<a href="examples/sunday-spread">source</a>)</sub><br><sub>🧺 Picnic, HTML</sub>
-
-<details><summary>Copy the prompt</summary>
+**Sunday Spread**
 
 ```text
 "Sunday Spread", a potluck planner for friends. Two AI helpers: the Host, who suggests dishes so nothing doubles up and the meal is balanced, and the Baker, who scales recipes to the guest count. Guests claim dishes; you (the organiser) confirm the menu in a native <dialog>, with a confetti micro-interaction (and a reduced-motion fallback). Picnic theme (assets/picnic.css): gingham backdrop, Fredoka + Nunito + DM Mono, jam-jar-lid stage numbers, paper-tag tooltips. Only this cast (Host AI, Baker AI, You, plus guest avatars as simple pixel sprites); invent no other mechanics. Data is made up and labelled as sample.
 ```
 
-</details>
-
-</td>
-</tr>
-<tr>
-<td width="33%" valign="top">
-
-<a href="https://slyf0xx97.github.io/cutify-ui/examples/zine-night/"><img src="docs/gallery/zine-night.gif" alt="Zine Night"></a><br><b><a href="https://slyf0xx97.github.io/cutify-ui/examples/zine-night/">Zine Night</a></b> <sub>(<a href="examples/zine-night">source</a>)</sub><br><sub>🖨️ Riso Club, HTML</sub>
-
-<details><summary>Copy the prompt</summary>
+**Zine Night**
 
 ```text
 "Zine Night", the page for a (made-up) indie zine fair with 40 tables. One AI helper, the Curator, builds a walking route through the tables from the topics you like; you star tables and approve your route, then get a printable map. Riso Club theme (assets/riso.css): newsprint + grain backdrop with a pink halftone fade behind the hero, Bricolage Grotesque + Rethink Sans + Space Mono, misregistered pink/blue double shadows, outlined stage numbers, a marquee strip divider, overprint (multiply) effects. Draw the fair floor as an SVG map and animate the route drawing itself (self-drawing line) and a pixel visitor walking it. Only this cast (Curator AI, You, simple pixel table-owner sprites); invent nothing else. All data made up and labelled sample.
 ```
 
-</details>
-
-</td>
-<td width="33%" valign="top">
-
-<a href="https://slyf0xx97.github.io/cutify-ui/examples/moonlit-market/"><img src="docs/gallery/moonlit-market.gif" alt="Moonlit Market"></a><br><b><a href="https://slyf0xx97.github.io/cutify-ui/examples/moonlit-market/">Moonlit Market</a></b> <sub>(<a href="examples/moonlit-market">source</a>)</sub><br><sub>🏮 Lantern Night, HTML</sub>
-
-<details><summary>Copy the prompt</summary>
+**Moonlit Market**
 
 ```text
 "Moonlit Market", a night-market food crawl planner. Two AI helpers: the Scout, who finds stalls that match your cravings and budget, and the Queue Guesser, who estimates waits from (sample) crowd data. You pick your cravings and approve the crawl route. Lantern Night theme (assets/lantern.css): dusk sky with stars and a dithered skyline, Jersey 10 headings + Silkscreen tags + Lexend body + Sometype Mono, stepped pixel borders, lantern glows, swaying lanterns over stage numbers with the active one lit, typing dots while an agent thinks. Draw a pixel market street of stalls (original art, no real brands) and animate a pixel visitor walking the chosen route with steps() easing. Only this cast; invent nothing else. All data made up and labelled sample.
 ```
 
-</details>
-
-</td>
-<td width="33%" valign="top">
-
-<a href="https://slyf0xx97.github.io/cutify-ui/examples/beep-and-build/"><img src="docs/gallery/beep-and-build.gif" alt="Beep and Build"></a><br><b><a href="https://slyf0xx97.github.io/cutify-ui/examples/beep-and-build/">Beep &amp; Build</a></b> <sub>(<a href="examples/beep-and-build">source</a>)</sub><br><sub>🧱 Toy Box, HTML, playable</sub>
-
-<details><summary>Copy the prompt</summary>
+**Beep & Build**
 
 ```text
 "Beep & Build", a coding playground for kids aged 7 to 10. A small robot mascot, Bolt (an AI helper that gives hints, never answers), and the child (You). The child snaps command blocks (forward, turn left, turn right, repeat) to guide Bolt across a grid to a battery; Bolt gives a hint after two failed tries. Each solved level adds a brick to a progress tower. Toy Box theme (assets/toybox.css): graph paper backdrop with an isometric floor under the play grid, Dela Gothic One + Outfit + JetBrains Mono, white plastic cards, ledge buttons that press down, brick chips with studs (keep bricks generic; no brand names or references to any toy company). The play area must actually work for 3 short levels. Animate Bolt moving step by step along the program. Only this cast; invent nothing else. Mark it as a sample.
 ```
 
-</details>
-
-</td>
-</tr>
-<tr>
-<td width="33%" valign="top">
-
-<a href="https://slyf0xx97.github.io/cutify-ui/examples/sprout/"><img src="docs/gallery/sprout.gif" alt="Sprout"></a><br><b><a href="https://slyf0xx97.github.io/cutify-ui/examples/sprout/">Sprout</a></b> <sub>(<a href="examples/sprout">source</a>)</sub><br><sub>🪟 Glass, HTML</sub>
-
-<details><summary>Copy the prompt</summary>
+**Sprout**
 
 ```text
 Sprout, a plant-care companion for people who keep killing houseplants. Two AI helpers: Dr. Leaf looks at a photo of a plant and says what's wrong, and Drip plans a watering and light schedule from the plant type and your room. You approve the care plan and get reminders. Glass (light) theme, cosy and cute, with a painted indoor window-sill scene. Animation shows the plant perking up as care happens.
 ```
 
-</details>
-
-</td>
-<td width="33%" valign="top">
-
-<a href="https://slyf0xx97.github.io/cutify-ui/examples/gridline/"><img src="docs/gallery/gridline.gif" alt="Gridline"></a><br><b><a href="https://slyf0xx97.github.io/cutify-ui/examples/gridline/">Gridline</a></b> <sub>(<a href="examples/gridline">source</a>)</sub><br><sub>🛫 Apron, electric palette, HTML</sub>
-
-<details><summary>Copy the prompt</summary>
+**Gridline**
 
 ```text
 Gridline, a control room for a neighbourhood microgrid during a heatwave. Two AI agents: a Forecaster that predicts demand and solar output, and a Dispatcher that decides when the community battery charges and discharges. A safety layer in plain code keeps grid frequency and battery limits. The grid operator approves the evening plan. Animate power flowing along the drawn lines between solar roofs, the battery and houses; show before/after peak load. All numbers labelled sample data.
 ```
 
-</details>
-
-</td>
-<td width="33%" valign="top">
-
-<a href="https://slyf0xx97.github.io/cutify-ui/examples/snooze-log/"><img src="docs/gallery/snooze-log.gif" alt="Snooze Log"></a><br><b><a href="https://slyf0xx97.github.io/cutify-ui/examples/snooze-log/">Snooze Log</a></b> <sub>(<a href="examples/snooze-log">source</a>)</sub><br><sub>🌙 Custom: Sleepy Dusk, HTML</sub>
-
-<details><summary>Copy the prompt</summary>
+**Snooze Log**
 
 ```text
 Snooze Log, a gentle sleep journal. A sleepy pixel cat, Mochi, is the mascot (no AI). One AI helper, the Night Owl, reads your week of (sample) sleep notes and suggests one small change. You log bedtime and mood each morning and decide whether to try the suggestion. This is a NEW theme you make by swapping tokens: the Sleepy Dusk palette from themes.md (dusk #2B2545, cloud #3A3260, lavender #B8A6FF, peach #FFB8A0, star #FFF3B0, ink #F4F0FF), the "dusk with stars" backdrop, the Notebook font pairing (Gaegu 700 for headings at ≥22px, Nunito Sans body, DM Mono), soft rounded cards, and the "idle pet blink" micro-interaction for Mochi (who sleeps more when your sleep is short). A week chart of hours slept (sample), stage numbers as little moons. Only this cast; invent nothing else. All data made up and labelled sample.
 ```
 
-</details>
-
-</td>
-</tr>
-<tr>
-<td width="33%" valign="top">
-
-<a href="https://slyf0xx97.github.io/cutify-ui/examples/penpal-post/"><img src="docs/gallery/penpal-post.gif" alt="Penpal Post"></a><br><b><a href="https://slyf0xx97.github.io/cutify-ui/examples/penpal-post/">Penpal Post</a></b> <sub>(<a href="examples/penpal-post">source</a>)</sub><br><sub>🍓 Custom: Strawberry Milk + Kawaii JP, HTML</sub>
-
-<details><summary>Copy the prompt</summary>
+**Penpal Post**
 
 ```text
 Penpal Post, a letter-writing app that pairs language learners in Japan and English-speaking countries. Two AI helpers: the Translator, who shows a gentle side-by-side translation of your letter, and the Postie, who suggests stickers and a reply prompt. You write the letter and choose when to send. This is a NEW theme you make by swapping tokens: the Strawberry Milk palette from themes.md, the cloud wallpaper backdrop, the Kawaii JP font pairing (Mochiy Pop One display at ≥20px, Zen Maru Gothic body, M PLUS 1 Code mono), pill buttons, speech-bubble tooltips with one sharp corner (radius 24px 24px 24px 4px), the sticker-wobble micro-interaction on stickers, and a letter that folds into an envelope and flies off when sent (with reduced-motion fallback). Show some Japanese text (kana/kanji) correctly. Only this cast (Translator AI, Postie AI, You, and your penpal Aiko shown as a pixel avatar); invent nothing else. All data and letters made up and labelled sample.
 ```
 
-</details>
-
-</td>
-<td width="33%" valign="top">
-
-<a href="https://slyf0xx97.github.io/cutify-ui/examples/pantry-pals/"><img src="docs/gallery/pantry-pals.gif" alt="Pantry Pals"></a><br><b><a href="https://slyf0xx97.github.io/cutify-ui/examples/pantry-pals/">Pantry Pals</a></b> <sub>(<a href="examples/pantry-pals">source</a>)</sub><br><sub>🪟 Glass, Next.js + static copy</sub>
-
-<details><summary>Copy the prompt</summary>
+**Pantry Pals**
 
 ```text
 Pantry Pals, a meal planner. Two AI helpers: a Chef that suggests recipes from what's in your fridge and a Shopper that builds the grocery list. You approve the weekly plan (use the skill's native <dialog> Popup). Glass (light) theme, playful and cute.
 ```
 
-</details>
-
-</td>
-<td width="33%" valign="top">
-
-<a href="https://slyf0xx97.github.io/cutify-ui/examples/portfolio/"><img src="docs/gallery/portfolio.gif" alt="Sam Sample, portfolio"></a><br><b><a href="https://slyf0xx97.github.io/cutify-ui/examples/portfolio/">Sam Sample, portfolio</a></b> <sub>(<a href="examples/portfolio">source</a>)</sub><br><sub>🪟 Glass, HTML, no AI</sub>
-
-<details><summary>Copy the prompt</summary>
+**Sam Sample, portfolio**
 
 ```text
 A personal portfolio site for "Sam Sample" (a made-up interaction design student). No AI in this product: the cast is Sam's pixel-art avatar as a mascot, and the numbered stages are Sam's journey (About, three case studies, Skills, Contact). The avatar walks a trail as you scroll. Glass (light) theme. Each case study card opens a native <dialog> with details. Clearly mark it as a sample portfolio with made-up projects.
 ```
 
 </details>
-
-</td>
-</tr>
-</table>
 <!-- GALLERY:END -->
 
 ## ✨ Features
