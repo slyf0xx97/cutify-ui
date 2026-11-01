@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- PAGE TITLE: product name, then what it does in a few words -->
+<title>Product name, sample starter</title>
+<!-- FONTS: each theme file @imports its own fonts. For another pairing (references/fonts.md), put ONE Google Fonts <link rel="stylesheet"> here and set --display, --body and --mono -->
+<style id="theme">/* paste one assets/<theme>.css here */</style>
+<style>
+/* Layout only. Reads the shared contract variables, so it works with every theme. :where() keeps it below the theme's own rules. */
+:where(*, *::before, *::after) { box-sizing: border-box; }
+:where(body) { margin: 0; font-size: max(1rem, 16px); }
+:where(h1, h2, h3) { font-family: var(--display); }
+.wrap { width: min(1120px, 100% - 32px); margin-inline: auto; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.mono, .num-mono { font-family: var(--mono); }
+
+/* pinned nav */
+.nav { position: sticky; top: 0; z-index: 50; background: var(--surface); border-bottom: 2px solid var(--ink-muted); }
+.nav .wrap { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; min-height: 60px; padding-block: 8px; }
+.brand { display: flex; align-items: center; gap: 8px; margin-right: auto; font: 700 1.2rem var(--display); color: var(--ink); text-decoration: none; }
+.brand .sprite { width: 32px; height: 32px; }
+.nav a:not(.brand) { color: var(--ink); font-weight: 700; }
+
+/* hero */
+.hero { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: 32px; align-items: center; padding-block: 48px 24px; }
+.hero h1 { margin: 0 0 12px; font-size: clamp(2.2rem, 5vw, 3.6rem); line-height: 1.05; color: var(--ink); }
+.hero p { margin: 0 0 16px; max-width: 34rem; }
+.benefits { margin: 0 0 20px; padding: 0; list-style: none; display: grid; gap: 6px; }
+.benefits li::before { content: "✓ "; color: var(--accent); font-weight: 900; }
+.scene { position: relative; display: grid; place-items: center; min-height: 260px; padding: 24px; overflow: hidden; }
+.scene .sprite { width: clamp(96px, 22vw, 160px); height: auto; aspect-ratio: 1; }
+.cast { display: flex; flex-wrap: wrap; gap: 12px 20px; margin: 16px 0 0; padding: 0; list-style: none; }
+.cast li { display: flex; align-items: center; gap: 8px; }
+.cast .sprite { width: 40px; height: 40px; }
+.glyph { display: inline-grid; place-items: center; width: 32px; height: 32px; border: 2px solid var(--ink); border-radius: 50%; background: var(--accent-2); color: var(--accent-2-ink); font: 700 .9rem var(--mono); }
+
+/* numbered stages */
+.stages { margin-block: 0; padding: 0; list-style: none; }
+.stages > li { margin-bottom: 40px; }
+:where(.step) { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+:where(.step) h3 { margin: 0; }
+:where(.explain) { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0 0 12px; padding: 0; list-style: none; }
+:where(.explain) span { padding: 6px 10px; background: var(--surface-2); color: var(--ink); border-radius: 4px; font-size: .9rem; }
+:where(.explain) b { color: var(--accent); }
+.tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 12px; }
+.tiles .kpi b, .tiles .kpi small { font-family: var(--mono); }
+.actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 16px; }
+
+/* tooltip: the theme styles hover and focus; these add tap (.open) and the phone bottom sheet (components.md) */
+.i[data-tip].open::after { content: attr(data-tip); position: absolute; left: 50%; bottom: calc(100% + 10px); transform: translateX(-50%);
+  width: min(320px, 80vw); padding: 10px 12px; background: var(--ink); color: var(--bg); font: 500 .9rem/1.45 var(--body);
+  border-radius: 6px; z-index: 200; white-space: pre-line; pointer-events: none; text-align: left; text-transform: none; letter-spacing: 0; }
+:has(> .i.open) { z-index: 60; }
+@media (max-width: 600px) {
+  .i { transform: none !important; filter: none !important; }
+  .i[data-tip]:is(:hover, :focus-visible, .open)::after { position: fixed; left: 8px; right: 8px; bottom: 8px; top: auto; width: auto; transform: none; }
+}
+
+/* confirm dialog */
+:where(dialog.confirm) { width: min(30rem, 100vw - 32px); padding: 20px; border: 2px solid var(--accent); border-radius: 10px; background: var(--surface-2); color: var(--ink); }
+:where(dialog.confirm)::backdrop { background: rgb(0 0 0 / 55%); }
+dialog.confirm h3 { margin: 0 0 8px; }
+
+/* how it works: numbered cards on a route, one token walks it */
+#how { padding-block: 24px 48px; }
+.route { position: relative; }
+.track { position: relative; height: 48px; margin-bottom: 8px; overflow: hidden; border-bottom: 3px dashed var(--ink-muted); }
+.lane { position: absolute; inset: 0; }
+.token { position: absolute; left: 0; bottom: 4px; width: 40px; height: 40px; }
+.route ol { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin: 0; padding: 0; list-style: none; }
+.route .card h4 { margin: 8px 0 4px; font-family: var(--display); font-size: 1.15rem; }
+.route .card p { margin: 0; }
+.badge { display: inline-grid; place-items: center; min-width: 32px; height: 32px; padding: 0 6px; border-radius: 4px; background: var(--accent); color: var(--accent-ink); font: 700 1rem var(--mono); }
+@media (prefers-reduced-motion: no-preference) {
+  .lane { animation: walk-x 9s cubic-bezier(.5, 0, .3, 1) infinite; }
+  .token { animation: tok-hop .4s steps(2) infinite alternate; }
+  .scene .sprite { animation: tok-bob 3.6s ease-in-out infinite; }
+}
+@keyframes walk-x { 0%, 22% { transform: translateX(calc(16.6% - 20px)); } 33%, 55% { transform: translateX(calc(50% - 20px)); }
+  66%, 92% { transform: translateX(calc(83.3% - 20px)); opacity: 1; } 100% { transform: translateX(calc(83.3% - 20px)); opacity: 0; } }
+@keyframes walk-y { 0%, 22% { transform: translateY(calc(16.6% - 20px)); } 33%, 55% { transform: translateY(calc(50% - 20px)); }
+  66%, 92% { transform: translateY(calc(83.3% - 20px)); opacity: 1; } 100% { transform: translateY(calc(83.3% - 20px)); opacity: 0; } }
+@keyframes tok-hop { to { transform: translateY(-4px); } }
+@keyframes tok-bob { 50% { transform: translateY(-6px); } }
+@media (prefers-reduced-motion: reduce) { .lane { transform: translateX(calc(16.6% - 20px)); } }
+.is-off, .is-off *, .is-off *::before, .is-off *::after { animation-play-state: paused !important; }
+
+/* footer */
+.foot { padding-block: 32px; border-top: 2px solid var(--ink-muted); }
+.foot .wrap { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 24px; }
+.foot ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; }
+.foot small { grid-column: 1 / -1; color: var(--ink-muted); }
+
+/* phones: stack every grid, the route turns vertical */
+@media (max-width: 760px) {
+  .hero, .tiles, .route ol, .foot .wrap { grid-template-columns: minmax(0, 1fr); }
+  .route { padding-left: 56px; }
+  .track { position: absolute; left: 0; top: 0; bottom: 0; width: 48px; height: auto; margin: 0; border-bottom: 0; border-right: 3px dashed var(--ink-muted); }
+  .token { left: 4px; top: 0; bottom: auto; }
+  @media (prefers-reduced-motion: no-preference) { .lane { animation-name: walk-y; } }
+}
+</style>
+</head>
+<body>
+<!-- the sprite pipeline: symbols are drawn into #pixdefs by pixelSprites() at the end of the page -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs id="pixdefs"></defs></svg>
+
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="#top"><svg class="sprite" viewBox="0 0 16 16" aria-hidden="true"><use href="#ch-mascot"/></svg><!-- BRAND NAME -->Product name</a>
+    <a href="#how">How it works</a>
+    <!-- PRIMARY ACTION: one verb from the brief. Apron: use class="go" instead of "btn primary" -->
+    <a class="btn primary" href="#st1">Start the sample</a>
+  </div>
+</header>
+
+<main id="top">
+  <!-- HERO: pick one composition from SKILL.md (text left + scene right is shown) -->
+  <section class="hero wrap" aria-labelledby="hero-title">
+    <div>
+      <p class="lab">Sample starter page</p>
+      <!-- HERO TITLE: what it is in one line, the product's own words -->
+      <h1 id="hero-title">Plan a week of dinners from <span class="hl">what is in your fridge</span></h1>
+      <!-- BENEFITS: up to three, short and specific -->
+      <ul class="benefits">
+        <li>Three sample dinners in under a minute</li>
+        <li>Uses what you already bought</li>
+        <li>You approve every plan</li>
+      </ul>
+      <a class="btn primary" href="#st1">Start the sample</a>
+      <!-- CAST: exactly the actors in the brief, each with a sprite or glyph, a name and a kind chip. Add Code only for a real non-AI step -->
+      <ul class="cast" aria-label="Who does what">
+        <li><svg class="sprite" viewBox="0 0 16 16" role="img" aria-label="Sample mascot"><use href="#ch-mascot"/></svg><span><b>Sprout</b> <span class="kind ai">AI</span></span></li>
+        <li><span class="glyph" aria-hidden="true">Y</span><span><b>You</b> <span class="kind you">You</span></span></li>
+      </ul>
+    </div>
+    <!-- SCENE: a backdrop from references/backgrounds.md, with the cast on it -->
+    <div class="scene panel" aria-hidden="true">
+      <svg class="sprite" viewBox="0 0 16 16"><use href="#ch-mascot"/></svg>
+    </div>
+  </section>
+
+  <!-- STAGES: three to five, in the order the user meets them -->
+  <ol class="stages wrap" aria-label="Stages">
+    <li>
+      <div class="step" id="st1"><span class="n">1</span>
+        <!-- STAGE TITLE: imperative, from the brief -->
+        <h3>Tick what is in the fridge</h3>
+        <!-- TIP: 3 to 8 short lines, ending with why -->
+        <button type="button" class="i" aria-label="About stage 1" aria-describedby="tip-st1"
+          data-tip="You tick the food you already have&#10;Sprout reads the list&#10;Why: fewer things to buy">i</button>
+        <span id="tip-st1" role="tooltip" class="sr-only">You tick the food you already have. Sprout reads the list. Why: fewer things to buy.</span>
+      </div>
+      <!-- EXPLAIN STRIP: chip, arrow, chip, arrow, chip -->
+      <p class="explain"><span>You tick the fridge</span><b aria-hidden="true">→</b><span>Sprout reads the list</span><b aria-hidden="true">→</b><span>Fewer things to buy</span></p>
+      <!-- CONTENT PANEL -->
+      <div class="panel">
+        <p class="lab">Sample fridge <span class="kind you">You</span></p>
+        <p>Eggs, spinach, half a lemon, cheddar, rice from yesterday.</p>
+      </div>
+    </li>
+    <li>
+      <div class="step" id="st2"><span class="n">2</span>
+        <h3>Let Sprout suggest dinners</h3>
+        <button type="button" class="i" aria-label="About stage 2" aria-describedby="tip-st2"
+          data-tip="Sprout matches recipes to your list&#10;Each card says what is missing&#10;Why: you see the gap before you shop">i</button>
+        <span id="tip-st2" role="tooltip" class="sr-only">Sprout matches recipes to your list. Each card says what is missing. Why: you see the gap before you shop.</span>
+      </div>
+      <div class="panel">
+        <p class="lab">Sample results <span class="kind ai">AI</span></p>
+        <div class="tiles">
+          <div class="kpi"><small>Dinners</small><b>3</b></div>
+          <div class="kpi"><small>Items used</small><b>5 of 5</b></div>
+          <div class="kpi"><small>To buy</small><b>2</b></div>
+        </div>
+      </div>
+    </li>
+    <li>
+      <!-- LAST STAGE: the result, or the user's decision -->
+      <div class="step" id="st3"><span class="n">3</span>
+        <h3>Approve the week</h3>
+        <button type="button" class="i" aria-label="About stage 3" aria-describedby="tip-st3"
+          data-tip="Nothing is saved until you approve&#10;You can change any dinner first&#10;Why: the plan is yours">i</button>
+        <span id="tip-st3" role="tooltip" class="sr-only">Nothing is saved until you approve. You can change any dinner first. Why: the plan is yours.</span>
+      </div>
+      <div class="panel">
+        <p>Mon: spinach omelette. Wed: lemon rice. Fri: cheddar bake. <span class="lab">sample</span></p>
+        <div class="actions">
+          <button type="button" class="btn primary" id="open-confirm">Approve plan</button>
+          <button type="button" class="btn">Change a dinner</button>
+        </div>
+      </div>
+    </li>
+  </ol>
+
+  <!-- CONFIRM: native dialog for anything the user commits to -->
+  <dialog class="confirm" id="confirm" aria-labelledby="confirm-title">
+    <form method="dialog">
+      <h3 id="confirm-title">Approve this week?</h3>
+      <p>Three sample dinners go on your plan. You can undo it later.</p>
+      <div class="actions">
+        <button class="btn primary" value="yes">Approve</button>
+        <button class="btn" value="no">Not yet</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- HOW IT WORKS: the same steps as numbered cards; the token walks the route -->
+  <section id="how" class="wrap" aria-labelledby="how-title">
+    <h2 id="how-title">How it works</h2>
+    <div class="route">
+      <div class="track" aria-hidden="true"><div class="lane"><svg class="token sprite" viewBox="0 0 16 16"><use href="#ch-mascot"/></svg></div></div>
+      <ol>
+        <li class="card"><span class="badge">1</span><h4>You list the fridge</h4><p>Tick boxes, no typing.</p></li>
+        <li class="card"><span class="badge">2</span><h4>Sprout picks dinners</h4><p>From the sample recipe set.</p></li>
+        <li class="card"><span class="badge">3</span><h4>You approve</h4><p>Nothing saves without you.</p></li>
+      </ol>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <!-- FOOTER: brand + blurb | links | © line -->
+    <div><b>Product name</b><p>One line on what it is, from the brief.</p></div>
+    <ul><li><a href="#how">How it works</a></li><li><a href="#top">Back to top</a></li></ul>
+    <small>All names and numbers on this page are sample data. © 2026 Product name</small>
+  </div>
+</footer>
+
+<script>
+// pixel sprites: minimal copy of assets/pixel-sprites.js. One char per pixel, '.' is empty
+function pixelSprites({ palette, sprites, animate = {} }) {
+  const defs = document.getElementById('pixdefs');
+  for (const [id, rows] of Object.entries(sprites)) {
+    let out = `<symbol id="${id}" viewBox="0 0 16 16" shape-rendering="crispEdges">`;
+    rows.forEach((row, y) => [...row].forEach((ch, x) => {
+      if (!palette[ch]) return;
+      const cls = animate[ch] ? ` class="${animate[ch]}"` : '';
+      out += `<rect x="${x}" y="${y}" width="1.02" height="1.02" fill="${palette[ch]}"${cls}/>`;
+    }));
+    defs.insertAdjacentHTML('beforeend', out + '</symbol>');
+  }
+}
+// SPRITES: draw one 16 x 16 grid per actor in the brief (references/pixel-art.md). This one is a sample mascot
+pixelSprites({
+  palette: { k: '#16171a', b: '#8fd6a8', w: '#ffffff', p: '#ff9aa2', a: '#ffd400' },
+  animate: { a: 'px-blink' },
+  sprites: { 'ch-mascot': [
+    '.......a........', '.......k........', '.....kkkkkk.....', '...kkbbbbbbkk...',
+    '..kbbbbbbbbbbk..', '..kbbbbbbbbbbk..', '.kbbkkbbbbkkbbk.', '.kbbkwbbbbkwbbk.',
+    '.kbbbbbbbbbbbbk.', '.kbpbbbkkbbbpbk.', '.kbbbbbbbbbbbbk.', '..kbbbbbbbbbbk..',
+    '..kbbbbbbbbbbk..', '...kkbbbbbbkk...', '...kbk....kbk...', '...kkk....kkk...'] },
+});
+
+// tooltips: tap or click toggles, Escape or a tap elsewhere closes
+document.addEventListener('click', (e) => {
+  const t = e.target.closest('.i[data-tip]');
+  document.querySelectorAll('.i.open').forEach((o) => o !== t && o.classList.remove('open'));
+  if (t) t.classList.toggle('open');
+});
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') document.querySelectorAll('.i.open').forEach((o) => o.classList.remove('open')); });
+
+// confirm dialog: Escape, focus trap and focus return are native; a backdrop click closes it
+const dlg = document.getElementById('confirm');
+document.getElementById('open-confirm').addEventListener('click', () => dlg.showModal());
+dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close('no'); });
+dlg.addEventListener('close', () => { /* ON APPROVE: act on dlg.returnValue === 'yes' */ });
+
+// pause loops off screen
+const io = new IntersectionObserver((es) => es.forEach((e) => e.target.classList.toggle('is-off', !e.isIntersecting)), { rootMargin: '100% 0px' });
+document.querySelectorAll('.hero, #how').forEach((el) => io.observe(el));
+</script>
+</body>
+</html>

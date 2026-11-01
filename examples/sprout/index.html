@@ -295,7 +295,7 @@ legend { font-weight: 800; margin-bottom: .35rem; display: flex; align-items: ce
 .arch { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: .5rem .8rem; align-content: start; }
 .arch .box { padding: .6rem .75rem; background: #fff; border: 2px solid var(--ink); border-radius: 12px; box-shadow: var(--hard); display: flex; flex-direction: column; gap: .2rem; }
 .arch .box b { display: flex; align-items: center; gap: .4rem; flex-wrap: wrap; }
-.arch .box span { font-size: .9rem; color: var(--ink-soft); }
+.arch .box span:not(.kind) { font-size: .9rem; color: var(--ink-soft); }
 .arch .box.leaf { background: #f1fbf4; } .arch .box.drip { background: #eefafc; } .arch .box.you { background: #fffaea; }
 .arch .full { grid-column: 1 / -1; }
 .arch .down { text-align: center; font: 900 1.2rem var(--body); color: var(--teal-dark); line-height: 1; }

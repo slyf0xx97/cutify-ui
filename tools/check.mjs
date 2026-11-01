@@ -103,6 +103,12 @@ try {
 } catch (e) {
   for (const l of String(e.stdout).split("\n").filter((l) => l.startsWith("FAIL"))) fail(l.slice(5).replace(root, "").replace(/^[\\/]/, ""));
 }
+try {
+  execFileSync(process.platform === "win32" ? "python" : "python3", [join(root, "tools/lint-test.py")], { encoding: "utf8" });
+  ok("lint_page.py catches every broken fixture in tools/lint-test.py");
+} catch (e) {
+  for (const l of String(e.stdout).split("\n").filter((l) => l.startsWith("BAD"))) fail(`lint-test: ${l.slice(4)}`);
+}
 
 console.log("Page weight");
 cssBefore = fails.length;

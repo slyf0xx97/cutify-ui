@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: clickable-prototype
+expected_outcome: |
+  A single prototype.html that shows four phone-sized screens (onboarding, add a habit, daily check-in, weekly streak) linked by clickable controls, with an indicator of the current screen, in a cute theme without emoji icons or a landing-page wrapper.

@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: process-flow-rules
+expected_outcome: |
+  A single flow.html where one reservation animates through reserve, rule check, librarian pull and pickup notice, and a second reservation is blocked with the rule named. Each rule has a short ID and a plain-English line, the rule check is tagged Code, and nothing is tagged AI.

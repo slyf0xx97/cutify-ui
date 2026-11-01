@@ -77,6 +77,10 @@ Screenshots and `results.json` go to `tools/qa-output/`.
 
 To check Firefox and WebKit (Safari's engine) as well, run `npx playwright install firefox webkit` once, then `node xbrowser.mjs http://127.0.0.1:8811`. It loads every example at 375px and 1280px and lists page errors and sideways scrolling, with screenshots in `tools/qa-output/xbrowser/`.
 
+To run the accessibility audit, keep the server running and use `node a11y.mjs http://127.0.0.1:8811` (or add an example's name to check one page). It runs axe-core's WCAG 2.1 A and AA rules at 390px and 1280px and writes the details to `tools/qa-output/a11y.json`.
+
+If you change `plugin/skills/cutify-ui/assets/starter.html` or a theme, run `node starter-check.mjs`. It loads the starter with each of the six themes at 390px and 1280px and fails on any page error or sideways scroll.
+
 Some flags are expected, and you can ignore them after a look at the screenshot:
 
 - number badges that hang outside a card on purpose

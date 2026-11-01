@@ -252,6 +252,7 @@ plugin/                    the Claude Code plugin, the only part an install down
     scripts/
       lint_page.py         checks a finished page for the problems the skill rules out
     assets/
+      starter.html         a page skeleton that works with every theme, so Claude edits instead of starting blank
       <theme>.css          one stylesheet per theme, all with the same class names
       pixel-sprites.js     turns text grids into crisp SVG sprites
       react/               typed React 19 components and their stylesheet
@@ -276,6 +277,7 @@ Every push runs these checks on GitHub Actions, and you can run them yourself wi
 | CSS | Every stylesheet and every `<style>` block in the gallery and examples is valid CSS | [csstree-validator](https://github.com/csstree/validator) |
 | Smooth motion | No animation loop changes `box-shadow`, `filter`, `background-position` or layout properties, which make the browser repaint every frame | [`check.mjs`](tools/check.mjs) |
 | Page linter | [`lint_page.py`](plugin/skills/cutify-ui/scripts/lint_page.py), the script the skill has Claude run on each page it builds, passes on every example and the gallery | Python, no packages |
+| Linter self-test | Eight small broken pages each trip their check (a skewed sprite row, a script syntax error, bare `fr` columns, widths too wide for a phone), and the safe cases pass | [`lint-test.py`](tools/lint-test.py) |
 | React types | The React 19 components pass TypeScript in strict mode | `tsc --strict` |
 | React rendering | Each component renders, and its markup is accessible: sprites have `role="img"` and a label, tooltip triggers are labelled buttons that point at a tip that exists, and modals use a native `<dialog>` | [`react-test.mjs`](tools/react-test.mjs) |
 | JavaScript and Python | Every `.js`, `.mjs` and `.py` file parses | `node --check`, `py_compile` |
@@ -342,24 +344,33 @@ All checks passed.
 
 [`qa.mjs`](tools/qa.mjs) opens every example in Chromium at 375px, 768px, 1280px and 1440px. It reports sideways scrolling, overlapping or clipped text, tooltips that leave the screen or get covered, dialogs that don't fit, console errors, fonts that didn't load and low contrast. [CONTRIBUTING.md](CONTRIBUTING.md#layout-qa) explains how to read its report.
 
+### Accessibility
+
+[`a11y.mjs`](tools/a11y.mjs) runs [axe-core](https://github.com/dequelabs/axe-core) against WCAG 2.1 A and AA rules on every example and the gallery, at 390px and 1280px. All 19 pages pass with no serious or critical findings. It's an automated check, so it doesn't replace trying the pages with a real screen reader.
+
 ### Prompt tests
 
-The skill was tested the way Anthropic's skill-creator suggests. The same prompts ran with and without the skill, and each page was graded on checks such as crisp pixel art, reduced motion, AI and You tags, numbered stages and keyboard tooltips.
+The skill is tested the way Anthropic's skill-creator suggests. The same prompts run with and without the skill, and each page is graded on 10 to 17 checks:
 
-| Test prompt | With cutify-ui | Without |
-|---|---|---|
-| StudyBuddy landing page (HTML) | 6 / 6 | 2 / 6 |
-| Warehouse robot demo, dark (HTML) | 9 / 9 | 3 / 9 |
-| Pantry Pals meal planner (Next.js) | 6 / 7 | 3 / 7 |
+- the skill's own rules, such as crisp pixel art, reduced motion, AI and You tags, numbered stages and keyboard tooltips
+- the usual signs of an AI-made page, such as purple gradients, emoji icons and Inter headings
+- the page linter
+- a real browser load at 390px and 1280px with no script errors and no sideways scroll
+- strict TypeScript for the Next.js case
 
-Two later tests checked how the skill picks a theme and how much it builds:
+| Test prompt | v0.5 skill | v0.4 skill | No skill |
+|---|---|---|---|
+| Bakery pre-order page, theme left to Claude | 17 / 17 | 17 / 17 | 11 / 17 |
+| StudyBuddy landing page | 13 / 13 | 12 / 13, scrolled sideways on a phone | 7 / 13 |
+| Warehouse robot demo, dark | 16 / 16 | 15 / 16, rules had no IDs | 10 / 16 |
+| Pantry Pals meal planner, Next.js | 12 / 12 | 12 / 12 | 8 / 14 |
+| Just a Toy Box pricing card | 10 / 10 | 10 / 10 | 9 / 10 |
+| Clickable app prototype | 11 / 11 | 11 / 11 | not run |
+| Library reservation flow with rules | 12 / 12 | 11 / 12, rules had no IDs | not run |
 
-| Test prompt | Result |
-|---|---|
-| A bakery pre-order page with one AI helper, no theme named | Picked Picnic, said why, and kept to the two characters in the brief (4 / 4) |
-| Just a Toy Box pricing card | Built only the card, in Toy Box fonts with a ledge button (3 / 3) |
+A second test checks when the skill switches on. 20 prompts ran twice each: 10 that should use the skill and 10 near-misses that shouldn't, such as a corporate dashboard, a Godot sprite sheet and a cute birthday message. The v0.4 description caught 19 of 20 and missed a game-jam site. The v0.5 description caught 20 of 20 and still left all 10 near-misses alone.
 
-Each prompt ran once, so read these numbers as a direction, not a benchmark. The prompts and graders are in [`evals/`](evals).
+Each prompt ran once per version, so read these as a direction, not a benchmark. The starter page in v0.5 didn't make builds faster: tokens fell about 3% and time didn't improve. The prompts and graders are in [`evals/`](plugin/skills/cutify-ui/evals).
 
 ## 🛡️ Privacy and limits
 

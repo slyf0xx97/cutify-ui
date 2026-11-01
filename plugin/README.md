@@ -20,13 +20,13 @@ The plugin has one skill, `skills/cutify-ui`:
 
 - `SKILL.md`, the workflow Claude follows
 - `references/`, Markdown guides that Claude reads when a request needs them
-- `assets/`, theme stylesheets, a pixel sprite helper, typed React components and Streamlit helpers that Claude copies into the pages it builds
+- `assets/`, a starter page, theme stylesheets, a pixel sprite helper, typed React components and Streamlit helpers that Claude copies into the pages it builds
 - `scripts/lint_page.py`, a checker that uses only the Python standard library
 - `evals/`, test prompts for `claude plugin eval`
 
 ## What it runs and sends
 
-The plugin has no hooks, no MCP servers and no commands, and it holds no keys. The skill asks Claude to run `scripts/lint_page.py` on each page it builds. The script reads that page and prints problems to the terminal. It doesn't write files or use the network.
+The plugin has no hooks, no MCP servers and no commands, and it holds no keys. The skill asks Claude to run `scripts/lint_page.py` on each page it builds. The script reads that page and prints problems to the terminal. If Node is installed, it also passes the page's inline scripts to Node to check their syntax, without running them. It doesn't write files or use the network.
 
 The theme stylesheets that Claude copies into your pages load fonts from Google Fonts, so a visitor's browser asks Google for the font files. `references/themes.md` explains how to host the fonts yourself instead.
 

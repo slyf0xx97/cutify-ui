@@ -2,6 +2,23 @@
 
 All notable changes to cutify-ui are listed here. The project uses [semantic versioning](https://semver.org).
 
+## [0.5.0] (2026-11-01)
+
+### Added
+
+- `assets/starter.html`, a page skeleton that works with every theme. Claude pastes in the theme and replaces the placeholders, so every page starts with the tooltip wiring, confirm dialog, How it works route, reduced motion and phone-safe grid columns in place. It loads with no errors or sideways scroll in all six themes at 390px and 1280px.
+- New linter checks: pixel sprite rows of the wrong width, script syntax errors (parsed with Node when it's installed, never run), fixed widths and grid minimums too wide for a phone, and a self-test in `tools/lint-test.py` that runs with the repo checks.
+- Guidance to give rules short IDs, such as `AISLE-01`, beside a plain-English line, so a blocked plan can name the rule it broke.
+- Two test cases for a clickable app prototype and a process flow with rules, an accessibility audit (`tools/a11y.mjs`, axe-core with WCAG 2.1 A and AA rules) and a starter check (`tools/starter-check.mjs`).
+
+### Changed
+
+- The skill description now names event and game-jam sites, mini-games, prototypes, animated explainers and process flows, and says the six themes are a starting point. In a 20-prompt test it triggered on 20 of 20, up from 19.
+
+### Fixed
+
+- Sprout's "You" tags were grey on orange at a 3.76:1 contrast, because a more specific rule overrode their colour. They now pass WCAG AA, and every example passes the accessibility audit.
+
 ## [0.4.0] (2026-11-01)
 
 ### Added
