@@ -12,7 +12,7 @@
 ![Plain HTML](https://img.shields.io/badge/plain-HTML%2FCSS%2FSVG-2b8fb3?style=flat-square)
 [![CI](https://img.shields.io/github/actions/workflow/status/slyf0xx97/cutify-ui/ci.yml?style=flat-square&label=checks)](https://github.com/slyf0xx97/cutify-ui/actions)
 
-<p><a href="https://donate.stripe.com/00w4gr2TU7wC52iaXf18c01"><img src="https://img.shields.io/badge/%E2%99%A5%20Support%20cutify--ui-Donate%20with%20Stripe-ff8fab?style=for-the-badge&labelColor=1f2430" alt="Support cutify-ui: donate with Stripe"></a></p>
+<p><a href="https://donate.stripe.com/00w4gr2TU7wC52iaXf18c01"><img src="docs/support-button.png" alt="Support cutify-ui: donate with Stripe" width="344"></a></p>
 
 cutify-ui is an open-source [Claude skill](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/overview). Ask Claude for a landing page, a product demo or a portfolio, and the skill gives it six themes, ready components and animation patterns to build from. It works in Claude Code, Claude.ai and the Claude API, and builds in React and Next.js or in plain HTML, CSS and SVG.
 
@@ -20,18 +20,10 @@ cutify-ui is an open-source [Claude skill](https://docs.claude.com/en/docs/agent
 
 ## Contents
 
-- [Install](#%EF%B8%8F-install)
-- [Why it doesn't look AI-made](#-why-it-doesnt-look-ai-made)
-- [Features](#-features)
-- [Gallery](#%EF%B8%8F-gallery)
-- [Themes](#-themes)
-- [Sample prompts](#-sample-prompts)
-- [What's inside](#-whats-inside)
-- [Testing and validation](#-testing-and-validation)
-- [Privacy and limits](#%EF%B8%8F-privacy-and-limits)
-- [Contributing](#-contributing)
-- [Support](#-support)
-- [License](#-license)
+<table>
+<tr><th align="left">🚀 Start</th><th align="left">👀 Look</th><th align="left">🔧 Build</th><th align="left">📄 About</th></tr>
+<tr><td valign="top"><a href="#%EF%B8%8F-install">Install</a><br><a href="#quickstart">Quickstart</a><br><a href="#-sample-prompts">Sample prompts</a></td><td valign="top"><a href="#-why-it-doesnt-look-ai-made">Why it doesn't look AI-made</a><br><a href="#-features">Features</a><br><a href="#%EF%B8%8F-gallery">Gallery</a><br><a href="#-themes">Themes</a></td><td valign="top"><a href="#-whats-inside">What's inside</a><br><a href="#-testing-and-validation">Testing and validation</a></td><td valign="top"><a href="#%EF%B8%8F-privacy-and-limits">Privacy and limits</a><br><a href="#-contributing">Contributing</a><br><a href="#-support">Support</a><br><a href="#-license">License</a></td></tr>
+</table>
 
 ## 🛠️ Install
 
@@ -58,6 +50,35 @@ That's all. Ask for a cute landing page and your agent uses the skill on its own
 
 </details>
 
+### Quickstart
+
+Ask for a page in plain words. Claude picks a theme, tells you which one and builds it. If it reaches for another skill instead, start the prompt with "Use the cutify-ui skill." and it loads this one.
+
+```text
+Make a cute landing page for my study app with three AI tutors. Write it as a single index.html in the current folder.
+```
+
+```text
+Build a dark control-room demo for our warehouse robots, with sample numbers. Write it as a single index.html in the current folder.
+```
+
+```text
+Make a portfolio site for a made-up design student, with a pixel avatar that walks a trail as you scroll. Write it as a single index.html in the current folder.
+```
+
+```text
+Just a Toy Box pricing card for my budgeting app, please. Write it as a single index.html in the current folder.
+```
+
+Works best with
+
+- Opus 5.5 or Sonnet 5.5 for full pages. In Claude Code at the default effort, Opus took about 5 to 7 minutes a page. Higher effort may be worth trying for big pages with many sections.
+- Sonnet 5.5 for a quick component. It built the pricing card in 44 seconds and stayed closest to the brief. Haiku 5.5 works too but follows the brief less closely.
+- Python 3, so Claude can run `scripts/lint_page.py`. It needs only the standard library.
+- A browser tool such as a Playwright MCP server, if you have one. Claude uses it to screenshot the page at 1440px and 390px and fix what it sees.
+
+There's nothing else to install and no API key. Name a theme if you want a particular look, or ask for three directions to pick from.
+
 ## 🙅 Why it doesn't look AI-made
 
 Pages that Claude designs on its own often look alike, because it falls back on the safest choice for every font, colour and layout. cutify-ui makes those choices before Claude writes any CSS:
@@ -70,44 +91,152 @@ Pages that Claude designs on its own often look alike, because it falls back on 
 
 ## ✨ Features
 
-Look and feel
+In the order you'll meet them on a page:
 
-- 🎨 Six themes, each with its own fonts, palette and kind of depth: Glass, Apron, Picnic, Riso Club, Lantern Night and Toy Box.
-- 🧺 19 backdrops in pure CSS or inline SVG, from gingham and riso grain to a starry dusk and 1-bit dither, with a guide for picking one that fits the product.
-- 🔤 Ten font pairings. Every font is under the SIL Open Font License, and the guide says which faces stay readable at small sizes.
-
-Characters and story
-
-- 👾 Pixel sprites drawn as text grids that render as crisp SVG at any size. Single pixels can blink or wave.
-- 🗺️ Numbered stages that walk a visitor through the product in order.
-- 🏷️ AI and You tags with a shape for each character, so nobody has to tell characters apart by colour alone.
-
-Motion
-
-- ✈️ Sprites that follow a real drawn route, using CSS `offset-path`.
-- ⏯️ Five ways to animate a product at work, such as a story you can replay, a clock-driven simulation and a journey that follows your scroll.
-- 🍬 Ten small interactions, including a ledge press, a peel corner, typing dots and confetti.
-- 🧘 Every animation stops for visitors who ask for reduced motion, and pauses when it's off screen.
-
-Components
-
-- 💬 Tooltips that open on hover, keyboard focus and tap, with labels that screen readers can read.
-- 🎮 Buttons, pills, meters, number tiles, small SVG charts, native `<dialog>` modals and loading screens.
-- ⚛️ Typed React 19 components (`PixelSprite`, `PixelIcon`, `Popup`, `WordTip`, `StageHeader` and `KindChip`) that pass strict type-checking.
-- 🐍 Helpers for hosting the pages inside Streamlit.
+| Area | What you get |
+|---|---|
+| 🎨 Themes | Six themes with their own fonts, palette and kind of depth: Glass, Apron, Picnic, Riso Club, Lantern Night and Toy Box |
+| 🧺 Backdrops | 19 backgrounds in pure CSS or inline SVG, from gingham and riso grain to a starry dusk and 1-bit dither, with a guide to picking one |
+| 🔤 Fonts | Ten font pairings, all under the SIL Open Font License, with notes on which faces stay readable at small sizes |
+| 👾 Characters | Pixel sprites drawn as text grids that render as crisp SVG at any size, with single pixels that blink or wave |
+| 🏷️ AI and You tags | A shape for each character, so nobody has to tell them apart by colour alone |
+| 🗺️ Story stages | Numbered stages that walk a visitor through the product in order |
+| ✈️ Routes | Sprites that follow a real drawn path with CSS `offset-path` |
+| ⏯️ Animation patterns | Five ways to show a product at work, such as a story you can replay, a clock-driven simulation and a journey that follows your scroll |
+| 🍬 Small interactions | Ten of them, including a ledge press, a peel corner, typing dots and confetti |
+| 🧘 Reduced motion | Every animation stops for visitors who ask for reduced motion, and pauses when it's off screen |
+| 💬 Tooltips | Open on hover, keyboard focus and tap, with labels screen readers can read |
+| 🎮 Components | Buttons, pills, meters, number tiles, small SVG charts, native `<dialog>` modals and loading screens |
+| ⚛️ React 19 | Typed components for React and Next.js: `PixelSprite`, `PixelIcon`, `Popup`, `WordTip`, `StageHeader` and `KindChip` |
+| 🐍 Streamlit | Helpers for hosting the pages inside Streamlit and sending clicks back to Python |
+| 🔎 Page linter | `scripts/lint_page.py`, which Claude runs on each page it builds to catch repainting animations, emoji icons, outside scripts and unlabelled sample data |
 
 ## 🖼️ Gallery
 
-Claude built each example with the skill from a brief of a few sentences, then checked it in a browser at widths from 375px to 1440px. The first six briefs described only the product and its characters. The newer six also named a theme or palette, to show each one. Click a picture to open the page, or open its folder to read the exact brief.
+Claude built each example with the skill from a brief of a few sentences, then checked it in a browser at widths from 375px to 1440px. The first six briefs described only the product and its characters. The newer six also named a theme or palette, to show each one. Click a picture to open the page. The brief Claude got sits under each one, with a copy button.
 
 <!-- GALLERY:START -->
 <table>
-<tr><td width="50%" valign="top"><a href="https://slyf0xx97.github.io/cutify-ui/examples/studybuddy/"><img src="docs/gallery/studybuddy.png" alt="StudyBuddy"></a><br><b><a href="https://slyf0xx97.github.io/cutify-ui/examples/studybuddy/">StudyBuddy</a></b> (<a href="examples/studybuddy">source</a>)<br>Three AI tutors plan, quiz and check in. You approve the week.<br><sub>🪟 Glass, HTML</sub></td><td width="50%" valign="top"><a href="https://slyf0xx97.github.io/cutify-ui/examples/fleet-queue/"><img src="docs/gallery/fleet-queue.png" alt="Fleet Queue"></a><br><b><a href="https://slyf0xx97.github.io/cutify-ui/examples/fleet-queue/">Fleet Queue</a></b> (<a href="examples/fleet-queue">source</a>)<br>Warehouse robots plan the order queue, code blocks unsafe moves, a manager approves.<br><sub>🛫 Apron, HTML</sub></td></tr>
-<tr><td width="50%" valign="top"><a href="https://slyf0xx97.github.io/cutify-ui/examples/sunday-spread/"><img src="docs/gallery/sunday-spread.png" alt="Sunday Spread"></a><br><b><a href="https://slyf0xx97.github.io/cutify-ui/examples/sunday-spread/">Sunday Spread</a></b> (<a href="examples/sunday-spread">source</a>)<br>A Host and a Baker plan a potluck so nothing doubles up. You confirm the menu.<br><sub>🧺 Picnic, HTML</sub></td><td width="50%" valign="top"><a href="https://slyf0xx97.github.io/cutify-ui/examples/zine-night/"><img src="docs/gallery/zine-night.png" alt="Zine Night"></a><br><b><a href="https://slyf0xx97.github.io/cutify-ui/examples/zine-night/">Zine Night</a></b> (<a href="examples/zine-night">source</a>)<br>The Curator draws a route through a 40-table zine fair. You star tables and print the map.<br><sub>🖨️ Riso Club, HTML</sub></td></tr>
-<tr><td width="50%" valign="top"><a href="https://slyf0xx97.github.io/cutify-ui/examples/moonlit-market/"><img src="docs/gallery/moonlit-market.png" alt="Moonlit Market"></a><br><b><a href="https://slyf0xx97.github.io/cutify-ui/examples/moonlit-market/">Moonlit Market</a></b> (<a href="examples/moonlit-market">source</a>)<br>A Scout and a Queue Guesser plan a night-market food crawl under swaying lanterns.<br><sub>🏮 Lantern Night, HTML</sub></td><td width="50%" valign="top"><a href="https://slyf0xx97.github.io/cutify-ui/examples/beep-and-build/"><img src="docs/gallery/beep-and-build.png" alt="Beep and Build"></a><br><b><a href="https://slyf0xx97.github.io/cutify-ui/examples/beep-and-build/">Beep &amp; Build</a></b> (<a href="examples/beep-and-build">source</a>)<br>Kids snap code blocks to guide Bolt the robot. Every solved level adds a brick to the tower.<br><sub>🧱 Toy Box, HTML, playable</sub></td></tr>
-<tr><td width="50%" valign="top"><a href="https://slyf0xx97.github.io/cutify-ui/examples/sprout/"><img src="docs/gallery/sprout.png" alt="Sprout"></a><br><b><a href="https://slyf0xx97.github.io/cutify-ui/examples/sprout/">Sprout</a></b> (<a href="examples/sprout">source</a>)<br>Dr. Leaf diagnoses your plant, Drip plans the watering, and the plant perks up.<br><sub>🪟 Glass, HTML</sub></td><td width="50%" valign="top"><a href="https://slyf0xx97.github.io/cutify-ui/examples/gridline/"><img src="docs/gallery/gridline.png" alt="Gridline"></a><br><b><a href="https://slyf0xx97.github.io/cutify-ui/examples/gridline/">Gridline</a></b> (<a href="examples/gridline">source</a>)<br>A microgrid control room on a heatwave evening, with power flowing along the wires.<br><sub>🛫 Apron, electric palette, HTML</sub></td></tr>
-<tr><td width="50%" valign="top"><a href="https://slyf0xx97.github.io/cutify-ui/examples/snooze-log/"><img src="docs/gallery/snooze-log.png" alt="Snooze Log"></a><br><b><a href="https://slyf0xx97.github.io/cutify-ui/examples/snooze-log/">Snooze Log</a></b> (<a href="examples/snooze-log">source</a>)<br>A sleep journal with a cat that dozes when you don't. The Night Owl suggests one small change.<br><sub>🌙 Custom: Sleepy Dusk, HTML</sub></td><td width="50%" valign="top"><a href="https://slyf0xx97.github.io/cutify-ui/examples/penpal-post/"><img src="docs/gallery/penpal-post.png" alt="Penpal Post"></a><br><b><a href="https://slyf0xx97.github.io/cutify-ui/examples/penpal-post/">Penpal Post</a></b> (<a href="examples/penpal-post">source</a>)<br>Write to a penpal in Japan. A Translator and a Postie help, then the letter folds and flies off.<br><sub>🍓 Custom: Strawberry Milk + Kawaii JP, HTML</sub></td></tr>
-<tr><td width="50%" valign="top"><a href="https://slyf0xx97.github.io/cutify-ui/examples/pantry-pals/"><img src="docs/gallery/pantry-pals.png" alt="Pantry Pals"></a><br><b><a href="https://slyf0xx97.github.io/cutify-ui/examples/pantry-pals/">Pantry Pals</a></b> (<a href="examples/pantry-pals">source</a>)<br>A Chef and a Shopper plan your week from what's in the fridge.<br><sub>🪟 Glass, Next.js + static copy</sub></td><td width="50%" valign="top"><a href="https://slyf0xx97.github.io/cutify-ui/examples/portfolio/"><img src="docs/gallery/portfolio.png" alt="Sam Sample, portfolio"></a><br><b><a href="https://slyf0xx97.github.io/cutify-ui/examples/portfolio/">Sam Sample, portfolio</a></b> (<a href="examples/portfolio">source</a>)<br>A sample designer portfolio where the avatar walks a trail as you scroll.<br><sub>🪟 Glass, HTML, no AI</sub></td></tr>
+<tr>
+<td width="50%" valign="top">
+
+<a href="https://slyf0xx97.github.io/cutify-ui/examples/studybuddy/"><img src="docs/gallery/studybuddy.gif" alt="StudyBuddy"></a><br><b><a href="https://slyf0xx97.github.io/cutify-ui/examples/studybuddy/">StudyBuddy</a></b> (<a href="examples/studybuddy">source</a>)<br>Three AI tutors plan, quiz and check in. You approve the week.<br><sub>🪟 Glass, HTML</sub>
+
+```text
+StudyBuddy, an exam-prep app for university students. Three AI tutors: a Planner that builds a revision timetable, a Quizzer that writes practice questions, and a Coach that checks in on your mood. The student approves their weekly plan. Use the Glass (light) theme. A cute, friendly, game-like single-page landing site with animation that shows the tutors working together.
+```
+
+</td>
+<td width="50%" valign="top">
+
+<a href="https://slyf0xx97.github.io/cutify-ui/examples/fleet-queue/"><img src="docs/gallery/fleet-queue.gif" alt="Fleet Queue"></a><br><b><a href="https://slyf0xx97.github.io/cutify-ui/examples/fleet-queue/">Fleet Queue</a></b> (<a href="examples/fleet-queue">source</a>)<br>Warehouse robots plan the order queue, code blocks unsafe moves, a manager approves.<br><sub>🛫 Apron, HTML</sub>
+
+```text
+Fleet Queue, a warehouse operations demo. Three AI agents (Picker, Packer and Router robots) coordinate the order queue, a rules engine (plain code) blocks unsafe plans (aisle congestion, battery level, weight limits), and the shift manager approves the final plan. Apron (dark control-room) theme. Robots visibly move along drawn aisles, with a small before/after dashboard. All numbers are labelled sample data.
+```
+
+</td>
+</tr>
+<tr>
+<td width="50%" valign="top">
+
+<a href="https://slyf0xx97.github.io/cutify-ui/examples/sunday-spread/"><img src="docs/gallery/sunday-spread.gif" alt="Sunday Spread"></a><br><b><a href="https://slyf0xx97.github.io/cutify-ui/examples/sunday-spread/">Sunday Spread</a></b> (<a href="examples/sunday-spread">source</a>)<br>A Host and a Baker plan a potluck so nothing doubles up. You confirm the menu.<br><sub>🧺 Picnic, HTML</sub>
+
+```text
+"Sunday Spread", a potluck planner for friends. Two AI helpers: the Host, who suggests dishes so nothing doubles up and the meal is balanced, and the Baker, who scales recipes to the guest count. Guests claim dishes; you (the organiser) confirm the menu in a native <dialog>, with a confetti micro-interaction (and a reduced-motion fallback). Picnic theme (assets/picnic.css): gingham backdrop, Fredoka + Nunito + DM Mono, jam-jar-lid stage numbers, paper-tag tooltips. Only this cast (Host AI, Baker AI, You, plus guest avatars as simple pixel sprites); invent no other mechanics. Data is made up and labelled as sample.
+```
+
+</td>
+<td width="50%" valign="top">
+
+<a href="https://slyf0xx97.github.io/cutify-ui/examples/zine-night/"><img src="docs/gallery/zine-night.gif" alt="Zine Night"></a><br><b><a href="https://slyf0xx97.github.io/cutify-ui/examples/zine-night/">Zine Night</a></b> (<a href="examples/zine-night">source</a>)<br>The Curator draws a route through a 40-table zine fair. You star tables and print the map.<br><sub>🖨️ Riso Club, HTML</sub>
+
+```text
+"Zine Night", the page for a (made-up) indie zine fair with 40 tables. One AI helper, the Curator, builds a walking route through the tables from the topics you like; you star tables and approve your route, then get a printable map. Riso Club theme (assets/riso.css): newsprint + grain backdrop with a pink halftone fade behind the hero, Bricolage Grotesque + Rethink Sans + Space Mono, misregistered pink/blue double shadows, outlined stage numbers, a marquee strip divider, overprint (multiply) effects. Draw the fair floor as an SVG map and animate the route drawing itself (self-drawing line) and a pixel visitor walking it. Only this cast (Curator AI, You, simple pixel table-owner sprites); invent nothing else. All data made up and labelled sample.
+```
+
+</td>
+</tr>
+<tr>
+<td width="50%" valign="top">
+
+<a href="https://slyf0xx97.github.io/cutify-ui/examples/moonlit-market/"><img src="docs/gallery/moonlit-market.gif" alt="Moonlit Market"></a><br><b><a href="https://slyf0xx97.github.io/cutify-ui/examples/moonlit-market/">Moonlit Market</a></b> (<a href="examples/moonlit-market">source</a>)<br>A Scout and a Queue Guesser plan a night-market food crawl under swaying lanterns.<br><sub>🏮 Lantern Night, HTML</sub>
+
+```text
+"Moonlit Market", a night-market food crawl planner. Two AI helpers: the Scout, who finds stalls that match your cravings and budget, and the Queue Guesser, who estimates waits from (sample) crowd data. You pick your cravings and approve the crawl route. Lantern Night theme (assets/lantern.css): dusk sky with stars and a dithered skyline, Jersey 10 headings + Silkscreen tags + Lexend body + Sometype Mono, stepped pixel borders, lantern glows, swaying lanterns over stage numbers with the active one lit, typing dots while an agent thinks. Draw a pixel market street of stalls (original art, no real brands) and animate a pixel visitor walking the chosen route with steps() easing. Only this cast; invent nothing else. All data made up and labelled sample.
+```
+
+</td>
+<td width="50%" valign="top">
+
+<a href="https://slyf0xx97.github.io/cutify-ui/examples/beep-and-build/"><img src="docs/gallery/beep-and-build.gif" alt="Beep and Build"></a><br><b><a href="https://slyf0xx97.github.io/cutify-ui/examples/beep-and-build/">Beep &amp; Build</a></b> (<a href="examples/beep-and-build">source</a>)<br>Kids snap code blocks to guide Bolt the robot. Every solved level adds a brick to the tower.<br><sub>🧱 Toy Box, HTML, playable</sub>
+
+```text
+"Beep & Build", a coding playground for kids aged 7 to 10. A small robot mascot, Bolt (an AI helper that gives hints, never answers), and the child (You). The child snaps command blocks (forward, turn left, turn right, repeat) to guide Bolt across a grid to a battery; Bolt gives a hint after two failed tries. Each solved level adds a brick to a progress tower. Toy Box theme (assets/toybox.css): graph paper backdrop with an isometric floor under the play grid, Dela Gothic One + Outfit + JetBrains Mono, white plastic cards, ledge buttons that press down, brick chips with studs (keep bricks generic; no brand names or references to any toy company). The play area must actually work for 3 short levels. Animate Bolt moving step by step along the program. Only this cast; invent nothing else. Mark it as a sample.
+```
+
+</td>
+</tr>
+<tr>
+<td width="50%" valign="top">
+
+<a href="https://slyf0xx97.github.io/cutify-ui/examples/sprout/"><img src="docs/gallery/sprout.gif" alt="Sprout"></a><br><b><a href="https://slyf0xx97.github.io/cutify-ui/examples/sprout/">Sprout</a></b> (<a href="examples/sprout">source</a>)<br>Dr. Leaf diagnoses your plant, Drip plans the watering, and the plant perks up.<br><sub>🪟 Glass, HTML</sub>
+
+```text
+Sprout, a plant-care companion for people who keep killing houseplants. Two AI helpers: Dr. Leaf looks at a photo of a plant and says what's wrong, and Drip plans a watering and light schedule from the plant type and your room. You approve the care plan and get reminders. Glass (light) theme, cosy and cute, with a painted indoor window-sill scene. Animation shows the plant perking up as care happens.
+```
+
+</td>
+<td width="50%" valign="top">
+
+<a href="https://slyf0xx97.github.io/cutify-ui/examples/gridline/"><img src="docs/gallery/gridline.gif" alt="Gridline"></a><br><b><a href="https://slyf0xx97.github.io/cutify-ui/examples/gridline/">Gridline</a></b> (<a href="examples/gridline">source</a>)<br>A microgrid control room on a heatwave evening, with power flowing along the wires.<br><sub>🛫 Apron, electric palette, HTML</sub>
+
+```text
+Gridline, a control room for a neighbourhood microgrid during a heatwave. Two AI agents: a Forecaster that predicts demand and solar output, and a Dispatcher that decides when the community battery charges and discharges. A safety layer in plain code keeps grid frequency and battery limits. The grid operator approves the evening plan. Animate power flowing along the drawn lines between solar roofs, the battery and houses; show before/after peak load. All numbers labelled sample data.
+```
+
+</td>
+</tr>
+<tr>
+<td width="50%" valign="top">
+
+<a href="https://slyf0xx97.github.io/cutify-ui/examples/snooze-log/"><img src="docs/gallery/snooze-log.gif" alt="Snooze Log"></a><br><b><a href="https://slyf0xx97.github.io/cutify-ui/examples/snooze-log/">Snooze Log</a></b> (<a href="examples/snooze-log">source</a>)<br>A sleep journal with a cat that dozes when you don't. The Night Owl suggests one small change.<br><sub>🌙 Custom: Sleepy Dusk, HTML</sub>
+
+```text
+Snooze Log, a gentle sleep journal. A sleepy pixel cat, Mochi, is the mascot (no AI). One AI helper, the Night Owl, reads your week of (sample) sleep notes and suggests one small change. You log bedtime and mood each morning and decide whether to try the suggestion. This is a NEW theme you make by swapping tokens: the Sleepy Dusk palette from themes.md (dusk #2B2545, cloud #3A3260, lavender #B8A6FF, peach #FFB8A0, star #FFF3B0, ink #F4F0FF), the "dusk with stars" backdrop, the Notebook font pairing (Gaegu 700 for headings at ≥22px, Nunito Sans body, DM Mono), soft rounded cards, and the "idle pet blink" micro-interaction for Mochi (who sleeps more when your sleep is short). A week chart of hours slept (sample), stage numbers as little moons. Only this cast; invent nothing else. All data made up and labelled sample.
+```
+
+</td>
+<td width="50%" valign="top">
+
+<a href="https://slyf0xx97.github.io/cutify-ui/examples/penpal-post/"><img src="docs/gallery/penpal-post.png" alt="Penpal Post"></a><br><b><a href="https://slyf0xx97.github.io/cutify-ui/examples/penpal-post/">Penpal Post</a></b> (<a href="examples/penpal-post">source</a>)<br>Write to a penpal in Japan. A Translator and a Postie help, then the letter folds and flies off.<br><sub>🍓 Custom: Strawberry Milk + Kawaii JP, HTML</sub>
+
+```text
+Penpal Post, a letter-writing app that pairs language learners in Japan and English-speaking countries. Two AI helpers: the Translator, who shows a gentle side-by-side translation of your letter, and the Postie, who suggests stickers and a reply prompt. You write the letter and choose when to send. This is a NEW theme you make by swapping tokens: the Strawberry Milk palette from themes.md, the cloud wallpaper backdrop, the Kawaii JP font pairing (Mochiy Pop One display at ≥20px, Zen Maru Gothic body, M PLUS 1 Code mono), pill buttons, speech-bubble tooltips with one sharp corner (radius 24px 24px 24px 4px), the sticker-wobble micro-interaction on stickers, and a letter that folds into an envelope and flies off when sent (with reduced-motion fallback). Show some Japanese text (kana/kanji) correctly. Only this cast (Translator AI, Postie AI, You, and your penpal Aiko shown as a pixel avatar); invent nothing else. All data and letters made up and labelled sample.
+```
+
+</td>
+</tr>
+<tr>
+<td width="50%" valign="top">
+
+<a href="https://slyf0xx97.github.io/cutify-ui/examples/pantry-pals/"><img src="docs/gallery/pantry-pals.gif" alt="Pantry Pals"></a><br><b><a href="https://slyf0xx97.github.io/cutify-ui/examples/pantry-pals/">Pantry Pals</a></b> (<a href="examples/pantry-pals">source</a>)<br>A Chef and a Shopper plan your week from what's in the fridge.<br><sub>🪟 Glass, Next.js + static copy</sub>
+
+```text
+Pantry Pals, a meal planner. Two AI helpers: a Chef that suggests recipes from what's in your fridge and a Shopper that builds the grocery list. You approve the weekly plan (use the skill's native <dialog> Popup). Glass (light) theme, playful and cute.
+```
+
+</td>
+<td width="50%" valign="top">
+
+<a href="https://slyf0xx97.github.io/cutify-ui/examples/portfolio/"><img src="docs/gallery/portfolio.gif" alt="Sam Sample, portfolio"></a><br><b><a href="https://slyf0xx97.github.io/cutify-ui/examples/portfolio/">Sam Sample, portfolio</a></b> (<a href="examples/portfolio">source</a>)<br>A sample designer portfolio where the avatar walks a trail as you scroll.<br><sub>🪟 Glass, HTML, no AI</sub>
+
+```text
+A personal portfolio site for "Sam Sample" (a made-up interaction design student). No AI in this product: the cast is Sam's pixel-art avatar as a mascot, and the numbered stages are Sam's journey (About, three case studies, Skills, Contact). The avatar walks a trail as you scroll. Glass (light) theme. Each case study card opens a native <dialog> with details. Clearly mark it as a sample portfolio with made-up projects.
+```
+
+</td>
+</tr>
 </table>
 <!-- GALLERY:END -->
 
@@ -371,6 +500,8 @@ New themes, components and examples are welcome. [CONTRIBUTING.md](CONTRIBUTING.
 - Report security problems privately, as [SECURITY.md](SECURITY.md) describes.
 
 ## 💖 Support
+
+<p><a href="https://donate.stripe.com/00w4gr2TU7wC52iaXf18c01"><img src="docs/support-button.png" alt="Support cutify-ui: donate with Stripe" width="344"></a></p>
 
 If cutify-ui saves you time, you can [support it through Stripe](https://donate.stripe.com/00w4gr2TU7wC52iaXf18c01). You choose the amount on Stripe's own checkout page, and the gallery and every example page have the same link in their footer.
 

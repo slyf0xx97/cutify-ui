@@ -37,7 +37,8 @@ Thanks for helping. New themes, components, animation engines and gallery exampl
 2. Label every made-up value as sample data.
 3. Run the layout QA (below) and look at its screenshots: no overlaps, no clipped tooltips, no sideways scroll, no console errors.
 4. Add `examples/<name>/README.md` with the brief, then take the gallery screenshot with `node shots.mjs http://127.0.0.1:8811 <name>`.
-5. Add a card to `index.html`, an entry to `tools/readme_gallery.py`, then run `python tools/readme_gallery.py`.
+5. Record the moving preview with `node make_gif.mjs http://127.0.0.1:8811 examples/<name>/ ../docs/gallery/<name>.gif,../docs/gallery/<name>.mp4 560 4`. It needs ffmpeg, either on your PATH or named in the `FFMPEG` environment variable. If you have gifsicle, name it in `GIFSICLE` and the GIF comes out about half the size.
+6. Add a card to `index.html`, an entry to `tools/readme_gallery.py`, then run `python tools/readme_gallery.py`.
 
 ## Checks
 

@@ -1,9 +1,14 @@
-"""Rebuild the README gallery table between <!-- GALLERY:START --> and <!-- GALLERY:END -->.
+"""Rebuild the README gallery table between <!-- GALLERY:START --> and <!-- GALLERY:END -->,
+and refresh each card's prompt and preview on the gallery page (index.html).
 
 Run from the repo root: python tools/readme_gallery.py
 Each example's title, one-line description and tags come from the ITEMS list below.
+The prompt under each picture is the quoted brief in examples/<name>/README.md, and the picture is
+docs/gallery/<name>.gif when that file exists, else the .png.
 """
+import html
 import pathlib
+import re
 
 LIVE = "https://slyf0xx97.github.io/cutify-ui/examples/"
 ITEMS = [
@@ -22,19 +27,52 @@ ITEMS = [
 ]
 
 root = pathlib.Path(__file__).resolve().parent.parent
+
+
+def brief(slug):
+    """The quoted lines under '## The brief' in the example's README, without the '> ' marks."""
+    text = (root / "examples" / slug / "README.md").read_text(encoding="utf-8")
+    section = text.split("## The brief", 1)[1].split("\n## ", 1)[0]
+    quoted = [line[1:].strip() for line in section.splitlines() if line.startswith(">")]
+    assert quoted and "```" not in " ".join(quoted), f"{slug}: no usable quoted brief"
+    return " ".join(quoted)
+
+
 rows = []
 for i in range(0, len(ITEMS), 2):
     cells = []
     for slug, name, blurb, tags in ITEMS[i:i + 2]:
         alt = name.replace("&", "and")
-        cells.append(f'<td width="50%" valign="top"><a href="{LIVE}{slug}/"><img src="docs/gallery/{slug}.png" alt="{alt}"></a><br>'
-                     f'<b><a href="{LIVE}{slug}/">{name.replace("&", "&amp;")}</a></b> (<a href="examples/{slug}">source</a>)<br>{blurb}<br><sub>{tags}</sub></td>')
-    rows.append("<tr>" + "".join(cells) + "</tr>")
+        pic = f"docs/gallery/{slug}.gif" if (root / f"docs/gallery/{slug}.gif").exists() else f"docs/gallery/{slug}.png"
+        # blank lines around the fenced block so GitHub renders it as code (with a copy button) inside the cell
+        cells.append(f'<td width="50%" valign="top">\n\n<a href="{LIVE}{slug}/"><img src="{pic}" alt="{alt}"></a><br>'
+                     f'<b><a href="{LIVE}{slug}/">{name.replace("&", "&amp;")}</a></b> (<a href="examples/{slug}">source</a>)<br>{blurb}<br><sub>{tags}</sub>'
+                     f'\n\n```text\n{brief(slug)}\n```\n\n</td>')
+    rows.append("<tr>\n" + "\n".join(cells) + "\n</tr>")
 table = "<table>\n" + "\n".join(rows) + "\n</table>"
 
 p = root / "README.md"
 s = p.read_text(encoding="utf-8")
 a, b = "<!-- GALLERY:START -->", "<!-- GALLERY:END -->"
 s = s[:s.index(a) + len(a)] + "\n" + table + "\n" + s[s.index(b):]
-p.write_text(s, encoding="utf-8")
+p.write_bytes(s.encode("utf-8"))  # LF line endings on every OS
 print(f"README gallery: {len(ITEMS)} examples")
+
+# Gallery page: the same prompt in each card, and docs/gallery/<name>.mp4 as a moving preview once it exists
+p = root / "index.html"
+s = p.read_text(encoding="utf-8")
+for slug, *_ in ITEMS:
+    s, n = re.subn(rf'(<p class="brief-text" id="b-{slug}"[^>]*>)[\s\S]*?(</p>)',
+                   lambda m: m.group(1) + html.escape(brief(slug), quote=False) + m.group(2), s)
+    assert n == 1, f"index.html has no prompt box for {slug}"
+    old = re.compile(rf'<img src="docs/gallery/{slug}\.png" alt="([^"]*)" loading="lazy">|<video src="docs/gallery/{slug}\.mp4"[^>]*aria-label="([^"]*)"></video>')
+    m = old.search(s)
+    assert m, f"index.html has no preview for {slug}"
+    alt = m.group(1) or m.group(2)
+    if (root / f"docs/gallery/{slug}.mp4").exists():
+        new = f'<video src="docs/gallery/{slug}.mp4" poster="docs/gallery/{slug}.png" autoplay muted loop playsinline preload="metadata" aria-label="{alt}"></video>'
+    else:
+        new = f'<img src="docs/gallery/{slug}.png" alt="{alt}" loading="lazy">'
+    s = s[:m.start()] + new + s[m.end():]
+p.write_bytes(s.encode("utf-8"))
+print(f"index.html: {len(ITEMS)} prompts and previews")
