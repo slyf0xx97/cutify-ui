@@ -132,7 +132,7 @@ Use `<dialog>` for modals and for confirming anything the user commits to, real 
 
 ### Widths
 
-Design at 1280px and make it hold at 375px with no sideways scroll. Stack columns, shrink scenes, keep sprites 32px or more, and move tooltips to a bottom sheet on narrow screens if they can't fit. Dense dashboards hosted in Streamlit can scale down instead (see `references/streamlit.md`).
+Design at 1280px and make it hold at 375px with no sideways scroll. Stack columns, shrink scenes, keep sprites 32px or more, and move tooltips to a bottom sheet on narrow screens if they can't fit. Write grid columns as `minmax(0, 1fr)` and never a bare `1fr`, and give single-column stacks `grid-template-columns: minmax(0, 1fr)` too. A bare `1fr` column can't shrink below its widest child, so one timetable or long word pushes the whole page past a phone screen. Dense dashboards hosted in Streamlit can scale down instead (see `references/streamlit.md`).
 
 ### Light and dark
 

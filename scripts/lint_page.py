@@ -77,6 +77,10 @@ def lint(path):
         hues = [hue(h) for h in HEX.findall(m.group(1))]
         if any(250 <= h <= 290 and s > .35 for h, s in hues) and any(200 <= h < 250 and s > .35 for h, s in hues):
             found.append(("WARN", None, "a purple-to-blue gradient, a common AI tell. Keep it only if it's a painted sky inside a scene"))
+    bare = [m for m in re.finditer(r"grid-template-columns\s*:\s*([^;}]+)", css) if re.search(r"(?<![\w.-])\d*\.?\d+fr\b", re.sub(r"minmax\([^()]*\)", "", m.group(1)))]
+    if bare:
+        first = bare[0].group(0)
+        add("WARN", text.find(first) if first in text else None, f"{len(bare)} grid column list(s) use a bare fr, such as \"{first.strip()}\". Write minmax(0, 1fr) so a wide child can't push the page past a phone screen")
     radii = set(re.findall(r"border-radius\s*:\s*([^;}]+)", css))
     if len(radii) == 1 and css.count("border-radius") > 6:
         found.append(("WARN", None, f"every element uses border-radius {radii.pop().strip()}. Vary corners with the size and role of each element"))

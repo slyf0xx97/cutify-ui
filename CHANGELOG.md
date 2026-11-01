@@ -2,6 +2,12 @@
 
 All notable changes to cutify-ui are listed here. The project uses [semantic versioning](https://semver.org).
 
+## [Unreleased]
+
+### Fixed
+
+- Pages could scroll sideways on phones when a grid column was a bare `1fr`, because the column can't shrink below its widest child. `SKILL.md` now asks for `minmax(0, 1fr)` columns, including single-column stacks, and `scripts/lint_page.py` warns about bare `fr` columns. An evaluation run found the bug on a 390px screen, and a rerun with the fix had no overflow.
+
 ## [0.3.0] (2026-11-01)
 
 ### Added
