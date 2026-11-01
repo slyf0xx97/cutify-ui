@@ -4,6 +4,9 @@
 
 **A Claude Code skill for cute, pixel-art, game-like UI. Claude builds landing pages, prototypes and animated process flows with pixel characters, story stages and motion that shows your product at work.**
 
+[![Stars](https://img.shields.io/github/stars/slyf0xx97/cutify-ui?style=social)](https://github.com/slyf0xx97/cutify-ui/stargazers)
+[![Forks](https://img.shields.io/github/forks/slyf0xx97/cutify-ui?style=social)](https://github.com/slyf0xx97/cutify-ui/forks)
+[![Watchers](https://img.shields.io/github/watchers/slyf0xx97/cutify-ui?style=social)](https://github.com/slyf0xx97/cutify-ui/watchers)
 [![Live gallery](https://img.shields.io/badge/gallery-cutify.ghernie.com-ff8fab?style=flat-square)](https://cutify.ghernie.com/)
 [![Release](https://img.shields.io/github/v/release/slyf0xx97/cutify-ui?style=flat-square&color=e8912d)](https://github.com/slyf0xx97/cutify-ui/releases/latest)
 ![License](https://img.shields.io/badge/license-MIT-167a66?style=flat-square)
@@ -22,7 +25,7 @@ cutify-ui is an open-source [Claude skill](https://docs.claude.com/en/docs/agent
 
 <table>
 <tr><th align="left" width="25%">🚀 Start<br><img src="docs/spacer.png" width="240" height="1" alt=""></th><th align="left" width="25%">👀 Look<br><img src="docs/spacer.png" width="240" height="1" alt=""></th><th align="left" width="25%">🔧 Build<br><img src="docs/spacer.png" width="240" height="1" alt=""></th><th align="left" width="25%">📄 About<br><img src="docs/spacer.png" width="240" height="1" alt=""></th></tr>
-<tr><td valign="top"><a href="#%EF%B8%8F-install">Install</a><br><a href="#quickstart">Quickstart</a></td><td valign="top"><a href="#%EF%B8%8F-gallery">Gallery</a><br><a href="#-features">Features</a><br><a href="#-why-it-doesnt-look-ai-made">Why it doesn't look AI-made</a><br><a href="#-themes">Themes</a></td><td valign="top"><a href="#-whats-inside">What's inside</a><br><a href="#-testing-and-validation">Testing and validation</a></td><td valign="top"><a href="#%EF%B8%8F-privacy-and-limits">Privacy and limits</a><br><a href="#-faq">FAQ</a><br><a href="#-contributing">Contributing</a><br><a href="#-support">Support</a><br><a href="#-license">License</a></td></tr>
+<tr><td valign="top"><a href="#%EF%B8%8F-install">Install</a><br><a href="#quickstart">Quickstart</a></td><td valign="top"><a href="#%EF%B8%8F-gallery">Gallery</a><br><a href="#-why-it-doesnt-look-ai-made">Why it doesn't look AI-made</a></td><td valign="top"><a href="#-whats-inside">What's inside</a><br><a href="#-testing-and-validation">Testing and validation</a></td><td valign="top"><a href="#%EF%B8%8F-privacy-and-limits">Privacy and limits</a><br><a href="#-faq">FAQ</a><br><a href="#-contributing">Contributing</a><br><a href="#-support">Support</a><br><a href="#-license">License</a></td></tr>
 </table>
 
 ## 🛠️ Install
@@ -173,47 +176,15 @@ A personal portfolio site for "Sam Sample" (a made-up interaction design student
 </details>
 <!-- GALLERY:END -->
 
-## ✨ Features
-
-<table>
-<tr><th>Area</th><th>What you get</th><th>From the examples</th></tr>
-<tr><td>👾 Characters</td><td>Pixel sprites that render crisp at any size, with parts that blink or wave</td><td><img src="docs/features/characters.png" width="300" alt="Six pixel characters from different example pages, including robots and people"></td></tr>
-<tr><td>🏷️ AI and You tags</td><td>Each character gets a shape and a chip, so nobody tells them apart by colour alone</td><td><img src="docs/features/tags.png" width="300" alt="Two page legends where each character has its own badge shape and an AI, Code or You chip"></td></tr>
-<tr><td>🗺️ Story stages</td><td>Numbered stages that walk a visitor through the product in order</td><td><img src="docs/features/stages.png" width="300" alt="Three stage headers numbered 1 to 3: Read the order queue, Check the plan, Approve the plan"></td></tr>
-<tr><td>✈️ Motion</td><td>Characters travel real routes to show the product at work, and everything stops for visitors who ask for reduced motion</td><td><img src="docs/features/routes.gif" width="300" alt="Animation of three robots driving along dotted routes on a warehouse floor map"></td></tr>
-<tr><td>💬 Tooltips</td><td>Open on hover, keyboard focus and tap, and screen readers can read them</td><td><img src="docs/features/tooltips.png" width="300" alt="A tooltip open above a stage heading's i button, explaining what happens in that stage"></td></tr>
-<tr><td>🎮 Components</td><td>Buttons that press, pills, number tiles, small charts, native <code>&lt;dialog&gt;</code> modals and loading screens</td><td><img src="docs/features/components.png" width="300" alt="Four number tiles with sample data above an open dialog that asks to send the evening plan, with two buttons"></td></tr>
-<tr><td>⚛️ React 19</td><td>Typed components for React and Next.js, such as <code>PixelSprite</code>, <code>WordTip</code> and <code>StageHeader</code></td><td><img src="docs/features/react.png" width="300" alt="A StageHeader line from the Next.js example and the stage header it renders"></td></tr>
-<tr><td>🐍 Streamlit</td><td>Helpers for hosting the pages inside Streamlit and sending clicks back to Python</td><td><img src="docs/features/streamlit.png" width="300" alt="Usage lines from cutify_streamlit.py and the toPython function from cutify-bridge.js"></td></tr>
-<tr><td>🔎 Page linter</td><td><code>scripts/lint_page.py</code> checks each page Claude builds and lists what to fix</td><td><img src="docs/features/linter.png" width="300" alt="Terminal output of the linter: five FAIL lines for a draft page, then OK for an example page"></td></tr>
-</table>
-
-### 🙅 Why it doesn't look AI-made
+## 🙅 Why it doesn't look AI-made
 
 Pages that Claude designs on its own often look alike, because it falls back on the safest choice for every font, colour and layout. cutify-ui makes those choices before Claude writes any CSS:
 
-- Each theme fixes exact fonts, hex colours and one kind of depth, so Claude never has to guess at "modern".
+- Each of the six themes (Glass, Apron, Picnic, Riso Club, Lantern Night and Toy Box) fixes exact fonts, hex colours and one kind of depth, so Claude never has to guess at "modern". Glass and Apron come from [itsa10but](https://ghernie.com/projects/itsa10but) and [SkyQueue](https://skyqueue.ghernie.com), and the [inspiration library](docs/INSPIRATION.md) lists the sources behind the other four.
 - The skill names the usual tells and tells Claude to avoid them: purple-to-blue gradients, soft-shadowed rounded cards everywhere, emoji as icons, a centred hero over three feature boxes, Inter as the headline font and lorem ipsum.
 - Claude writes the real copy from your brief before the layout, and labels anything made up as "sample".
 - If your project has a `taste.md` file of things you like and dislike, Claude reads it first and offers to add your reactions to it.
 - Before showing you a page, Claude checks the draft against your brief and the list of tells, then screenshots it at 1440px and 390px.
-
-## 🎨 Themes
-
-<p align="center"><img src="docs/gallery/demo.gif" alt="Six example pages animating side by side, one per theme: StudyBuddy in Glass, Fleet Queue in Apron, Sunday Spread in Picnic, Zine Night in Riso Club, Moonlit Market in Lantern Night and Beep and Build in Toy Box" width="1000"><br><sub>One example per theme, all running at once.</sub></p>
-
-| Theme | Look | Display font | Depth | Good for |
-|---|---|---|---|---|
-| 🪟 Glass | Frosted glass over painted scenery | Pixelify Sans | Hard sticker shadow | Consumer apps, careers, outdoors |
-| 🛫 Apron | Airfield signage on a dark dot grid | Anybody | Hard sticker shadow | Operations, control rooms, data |
-| 🧺 Picnic | Gingham under napkin cards | Fredoka | Soft blanket shadow | Food, weekends, family |
-| 🖨️ Riso Club | Newsprint and halftone | Bricolage Grotesque | A pink and blue shadow like a slipped print | Events, zines, portfolios |
-| 🏮 Lantern Night | Dusk sky over a dithered skyline | Jersey 10 | Lantern glow and stepped pixel borders | Night, sleep, games |
-| 🧱 Toy Box | Plastic cards on graph paper | Dela Gothic One | A ledge that presses down | Kids, learning, building |
-
-Glass and Apron come from [itsa10but](https://ghernie.com/projects/itsa10but), a résumé reviewer, and [SkyQueue](https://skyqueue.ghernie.com), a multi-agent airport queue planner. The other four came from a survey of playful sites, games and type, and the [inspiration library](docs/INSPIRATION.md) lists every source and what each one taught us.
-
-All six themes share the same variable and class names, so a component written for one works in the others.
 
 ## 📁 What's inside
 
@@ -405,6 +376,10 @@ New themes, components and examples are welcome. [CONTRIBUTING.md](CONTRIBUTING.
 <p><a href="https://donate.stripe.com/00w4gr2TU7wC52iaXf18c01"><img src="docs/support-button.png" alt="Support cutify-ui: donate with Stripe" height="68"></a>&nbsp;&nbsp;<a href="https://ko-fi.com/K6P629UOFQ"><img src="docs/kofi-button.png" alt="Support cutify-ui: tip on Ko-fi" height="68"></a></p>
 
 If cutify-ui saves you time, you can support it through [Stripe](https://donate.stripe.com/00w4gr2TU7wC52iaXf18c01) or [Ko-fi](https://ko-fi.com/K6P629UOFQ). You choose the amount on either site. The gallery and every example page also have the Stripe link in their footer.
+
+### ⭐ Star history
+
+[![Star history chart for cutify-ui](https://api.star-history.com/svg?repos=slyf0xx97/cutify-ui&type=Date)](https://star-history.com/#slyf0xx97/cutify-ui&Date)
 
 ## 📄 License
 

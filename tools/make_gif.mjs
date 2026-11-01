@@ -16,7 +16,7 @@ import { allowFraming } from "./framing.mjs";
 
 const [base = "http://127.0.0.1:8811", target = "tools/cover.html", out = "../docs/gallery/cover.gif", width, seconds] = process.argv.slice(2);
 const ffmpeg = process.env.FFMPEG ?? "ffmpeg";
-const sizes = { "tools/cover.html": { width: 1280, height: 640 }, "tools/demo-grid.html": { width: 1216, height: 528 } };
+const sizes = { "tools/cover.html": { width: 1280, height: 640 } };
 const size = sizes[target] ?? { width: 1280, height: 800 }; // an example page is recorded at a desktop size
 const outWidth = Number(width ?? size.width);
 const LENGTH = Number(seconds ?? 6); // seconds of motion; six lines up with the Sprout watering cycle on the cover
