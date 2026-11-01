@@ -16,7 +16,7 @@ cutify-ui is an open-source [Claude skill](https://docs.claude.com/en/docs/agent
 
 <p align="center"><a href="https://slyf0xx97.github.io/cutify-ui/"><img src="docs/gallery-button.png" alt="Open the live gallery: come see the examples move" height="84"></a></p>
 
-<p align="center"><a href="https://donate.stripe.com/00w4gr2TU7wC52iaXf18c01"><img src="docs/support-button.png" alt="Support cutify-ui: donate with Stripe" height="68"></a>&nbsp;&nbsp;<a href="https://ko-fi.com/K6P629UOFQ"><img src="https://ko-fi.com/img/githubbutton_sm.svg" alt="Support me on Ko-fi" height="48"></a></p>
+<p align="center"><a href="https://donate.stripe.com/00w4gr2TU7wC52iaXf18c01"><img src="docs/support-button.png" alt="Support cutify-ui: donate with Stripe" height="68"></a>&nbsp;&nbsp;<a href="https://ko-fi.com/K6P629UOFQ"><img src="docs/kofi-button.png" alt="Support cutify-ui: tip on Ko-fi" height="68"></a></p>
 
 ## Contents
 
@@ -487,7 +487,7 @@ New themes, components and examples are welcome. [CONTRIBUTING.md](CONTRIBUTING.
 
 ## 💖 Support
 
-<p><a href="https://donate.stripe.com/00w4gr2TU7wC52iaXf18c01"><img src="docs/support-button.png" alt="Support cutify-ui: donate with Stripe" height="68"></a>&nbsp;&nbsp;<a href="https://ko-fi.com/K6P629UOFQ"><img src="https://ko-fi.com/img/githubbutton_sm.svg" alt="Support me on Ko-fi" height="48"></a></p>
+<p><a href="https://donate.stripe.com/00w4gr2TU7wC52iaXf18c01"><img src="docs/support-button.png" alt="Support cutify-ui: donate with Stripe" height="68"></a>&nbsp;&nbsp;<a href="https://ko-fi.com/K6P629UOFQ"><img src="docs/kofi-button.png" alt="Support cutify-ui: tip on Ko-fi" height="68"></a></p>
 
 If cutify-ui saves you time, you can support it through [Stripe](https://donate.stripe.com/00w4gr2TU7wC52iaXf18c01) or [Ko-fi](https://ko-fi.com/K6P629UOFQ). You choose the amount on either site. The gallery and every example page also have the Stripe link in their footer.
 

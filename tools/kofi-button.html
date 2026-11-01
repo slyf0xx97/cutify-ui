@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ko-fi button</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@600&family=Atkinson+Hyperlegible:wght@700&family=Spline+Sans+Mono:wght@700&display=swap">
+<style>
+/* Rendered to docs/kofi-button.png by make_button.mjs. The Stripe button's shape, in Ko-fi blue. */
+:root { --ink: #1f2430; --soft: #4a5260; }
+html, body { margin: 0; background: transparent; }
+#shot { display: inline-block; padding: 6px 12px 14px 6px; }
+.btn { display: inline-flex; align-items: center; gap: 14px; padding: 12px 26px 12px 18px; border: 2px solid var(--ink); border-radius: 999px;
+  background: #d8f0fb; color: var(--ink); box-shadow: 0 5px 0 var(--ink); }
+.heart { flex: none; display: grid; place-items: center; width: 44px; height: 44px; border: 2px solid var(--ink); border-radius: 50%; background: #fff; }
+.text { display: grid; gap: 3px; }
+.label { font: 700 22px/1.1 'Atkinson Hyperlegible', sans-serif; white-space: nowrap; }
+.sub { display: flex; align-items: center; gap: 7px; font: 700 11.5px/1 'Spline Sans Mono', monospace; letter-spacing: .06em; text-transform: uppercase; color: var(--soft); white-space: nowrap; }
+.tag { padding: 3px 7px 2px; border-radius: 999px; background: #13c3ff; color: #1f2430; }
+.arrow { flex: none; margin-left: 2px; }
+</style>
+</head>
+<body>
+<div id="shot"><span class="btn">
+  <span class="heart"><svg viewBox="0 0 16 16" width="28" height="28" shape-rendering="crispEdges" aria-hidden="true"><path fill="#1f2430" d="M2 5h10v1h2v1h1v3h-1v1h-2v2h-1v1H4v-1H3v-1H2z"/><path fill="#fff" d="M3 6h8v6h-1v1H5v-1H4V6z"/><path fill="#ff5c8a" d="M5 7h2v1h1V7h2v2H9v1H8v1H7v-1H6V9H5z"/><path fill="#fff" d="M12 7h1v3h-1z"/><path fill="#1f2430" d="M5 1h1v3H5zM8 1h1v3H8z"/></svg></span>
+  <span class="text"><span class="label">Support cutify-ui</span><span class="sub">Tip on <span class="tag">Ko-fi</span></span></span>
+  <svg class="arrow" viewBox="0 0 8 8" width="20" height="20" shape-rendering="crispEdges" aria-hidden="true"><path fill="#1f2430" d="M4 1h1v6H4zM5 2h1v4H5zM6 3h1v2H6zM0 3h4v2H0z"/></svg>
+</span></div>
+</body>
+</html>
