@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Features card</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@600&family=Atkinson+Hyperlegible:wght@400;700&family=Spline+Sans+Mono:wght@700&display=swap">
+<style>
+/* Rendered to docs/features.png by make_button.mjs. Six feature stickers on graph paper, then the AI tells the skill skips. */
+:root { --ink: #1f2430; --soft: #4a5260; --paper: #fbf7ee; --rule: #ece3cf; --accent: #ff5c8a; }
+html, body { margin: 0; background: transparent; }
+#shot { display: inline-block; padding: 8px 14px 18px 8px; }
+.board { width: 940px; box-sizing: border-box; padding: 26px 28px 28px; border: 2px solid var(--ink); border-radius: 24px; color: var(--ink); box-shadow: 0 6px 0 var(--ink);
+  background-color: var(--paper); background-image: linear-gradient(var(--rule) 1px, transparent 1px), linear-gradient(90deg, var(--rule) 1px, transparent 1px); background-size: 24px 24px; }
+.kicker { display: flex; align-items: center; gap: 10px; margin: 0 0 18px; font: 700 13px/1 'Spline Sans Mono', monospace; letter-spacing: .1em; text-transform: uppercase; color: var(--soft); }
+.kicker b { padding: 6px 10px 5px; border: 2px solid var(--ink); border-radius: 999px; background: #fff; color: var(--ink); }
+.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px 16px; }
+.tile { display: grid; grid-template-columns: 52px 1fr; gap: 12px; align-items: center; padding: 14px 16px; border: 2px solid var(--ink); border-radius: 18px; background: var(--c); box-shadow: 0 4px 0 var(--ink); transform: rotate(var(--r)); }
+.ico { width: 52px; height: 52px; display: grid; place-items: center; border: 2px solid var(--ink); border-radius: 50%; background: #fff; }
+.tile h3 { margin: 0 0 3px; font: 600 21px/1.05 'Pixelify Sans', sans-serif; }
+.tile p { margin: 0; font: 400 15px/1.3 'Atkinson Hyperlegible', sans-serif; color: #2b3140; }
+.tells { display: grid; grid-template-columns: auto 1fr; gap: 18px; align-items: center; margin-top: 24px; padding: 16px 20px 18px; border-radius: 18px; background: var(--ink); color: var(--paper); }
+.stamp { display: grid; justify-items: center; gap: 6px; padding: 10px 14px 9px; border: 2px dashed var(--accent); border-radius: 14px; transform: rotate(-4deg); }
+.stamp span { font: 600 19px/1 'Pixelify Sans', sans-serif; color: #ffb3c7; white-space: nowrap; }
+.tells h3 { margin: 0 0 10px; font: 700 16px/1.2 'Atkinson Hyperlegible', sans-serif; }
+.pills { display: flex; flex-wrap: wrap; gap: 8px; }
+.pill { padding: 6px 12px 5px; border-radius: 999px; background: #353c50; color: #eef0f5; font: 700 13px/1 'Spline Sans Mono', monospace; text-decoration: line-through; text-decoration-color: var(--accent); text-decoration-thickness: 2px; }
+</style>
+</head>
+<body>
+<div id="shot"><div class="board">
+  <p class="kicker"><b>cutify-ui</b> what Claude gets</p>
+  <div class="grid">
+    <div class="tile" style="--c:#ffe28a;--r:-1deg"><span class="ico" data-icon="face"></span><div><h3>A pixel cast</h3><p>Characters cast from your brief</p></div></div>
+    <div class="tile" style="--c:#bfe3ff;--r:.8deg"><span class="ico" data-icon="steps"></span><div><h3>Story stages</h3><p>Numbered steps through the product</p></div></div>
+    <div class="tile" style="--c:#ffb3c7;--r:-.6deg"><span class="ico" data-icon="route"></span><div><h3>Motion with meaning</h3><p>Routes and flows that show the work</p></div></div>
+    <div class="tile" style="--c:#b9f0d6;--r:.7deg"><span class="ico" data-icon="swatch"></span><div><h3>Six themes</h3><p>Glass to Toy Box, or your own</p></div></div>
+    <div class="tile" style="--c:#d9ccff;--r:-.8deg"><span class="ico" data-icon="code"></span><div><h3>React or HTML</h3><p>React 19, Next.js or plain HTML</p></div></div>
+    <div class="tile" style="--c:#ffd2b0;--r:.9deg"><span class="ico" data-icon="check"></span><div><h3>Checks its work</h3><p>Lint and screenshots before you see it</p></div></div>
+  </div>
+  <div class="tells">
+    <div class="stamp"><span data-icon="no"></span><span>Not AI-made</span></div>
+    <div><h3>The skill names the usual tells, and Claude skips them</h3>
+      <div class="pills"><span class="pill">purple gradients</span><span class="pill">emoji as icons</span><span class="pill">centred hero + 3 boxes</span><span class="pill">Inter headlines</span><span class="pill">soft shadows everywhere</span><span class="pill">lorem ipsum</span></div>
+    </div>
+  </div>
+</div></div>
+<script>
+// pixel icons: grids are one character per pixel ('.' is empty), dots are [x, y, colour] lists on a w x h canvas
+const P = { k: "#1f2430", p: "#ff8fab", y: "#ffd23f", b: "#5aa9e6", g: "#2fa878", l: "#7c5cff", o: "#ff9b54", r: "#ff5c8a" };
+function fromDots(w, h, dots) { const g = Array.from({ length: h }, () => Array(w).fill(".")); dots.forEach(([x, y, c]) => (g[y][x] = c)); return g.map((r) => r.join("")); }
+const ICONS = {
+  face:   ["..kkkkkk..", ".kppppppk.", "kppppppppk", "kppkppkppk", "kppkppkppk", "krpppppprk", "kpppkkpppk", ".kppppppk.", "..kkkkkk.."],
+  steps:  ["......bb", "......bb", "....bbbb", "....bbbb", "..bbbbbb", "..bbbbbb", "bbbbbbbb", "kkkkkkkk"],
+  route:  fromDots(10, 10, [[8,0,"k"],[8,1,"k"],[8,2,"k"],[8,3,"k"],[8,4,"k"],[9,0,"r"],[9,1,"r"],[7,4,"b"],[6,5,"b"],[4,6,"b"],[3,7,"b"],[0,8,"p"],[1,8,"p"],[0,9,"p"],[1,9,"p"]]),
+  swatch: ["yyy.ggg", "yyy.ggg", "yyy.ggg", ".......", "lll.ooo", "lll.ooo", "lll.ooo"],
+  code:   fromDots(13, 7, [[3,0],[2,1],[1,2],[0,3],[1,4],[2,5],[3,6],[7,0],[7,1],[6,2],[6,3],[5,4],[5,5],[4,6],[9,0],[10,1],[11,2],[12,3],[11,4],[10,5],[9,6]].map(([x, y]) => [x, y, "l"])),
+  check:  ["kkkkkkkk", "k......k", "k.....gk", "k....g.k", "kg..g..k", "k.gg...k", "k......k", "kkkkkkkk"],
+  no:     ["..rrrr..", ".r....r.", "r....rrr", "r...r..r", "r..r...r", "rrr....r", ".r....r.", "..rrrr.."],
+};
+function svg(name, size) {
+  const g = ICONS[name], w = g[0].length, h = g.length, s = size / Math.max(w, h);
+  let out = `<svg viewBox="0 0 ${w} ${h}" width="${Math.round(w * s)}" height="${Math.round(h * s)}" shape-rendering="crispEdges" aria-hidden="true">`;
+  g.forEach((row, y) => [...row].forEach((ch, x) => { if (P[ch]) out += `<rect x="${x}" y="${y}" width="1" height="1" fill="${P[ch]}"/>`; }));
+  return out + "</svg>";
+}
+document.querySelectorAll("[data-icon]").forEach((el) => { el.innerHTML = svg(el.dataset.icon, el.classList.contains("ico") ? 30 : 34); });
+</script>
+</body>
+</html>

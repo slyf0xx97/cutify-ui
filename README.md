@@ -17,7 +17,7 @@
 
 cutify-ui is an open-source [Claude skill](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/overview). Ask Claude for a landing page, a product demo or a portfolio, and the skill gives it six themes, ready components and animation patterns to build from. It works in Claude Code, Claude.ai and the Claude API, and builds in React and Next.js or in plain HTML, CSS and SVG.
 
-<p align="center"><a href="https://cutify.ghernie.com/"><img src="docs/gallery-button.png" alt="Open the live gallery: come see the examples move" height="84"></a></p>
+<p align="center"><a href="https://cutify.ghernie.com/"><img src="docs/gallery-button.png" alt="Open the live gallery: see them move at cutify.ghernie.com" height="84"></a></p>
 
 <p align="center"><a href="https://donate.stripe.com/00w4gr2TU7wC52iaXf18c01"><img src="docs/support-button.png" alt="Support cutify-ui: donate with Stripe" height="68"></a>&nbsp;&nbsp;<a href="https://ko-fi.com/K6P629UOFQ"><img src="docs/kofi-button.png" alt="Support cutify-ui: tip on Ko-fi" height="68"></a></p>
 
@@ -25,7 +25,7 @@ cutify-ui is an open-source [Claude skill](https://docs.claude.com/en/docs/agent
 
 <table>
 <tr><th align="left" width="25%">🚀 Start<br><img src="docs/spacer.png" width="240" height="1" alt=""></th><th align="left" width="25%">👀 Look<br><img src="docs/spacer.png" width="240" height="1" alt=""></th><th align="left" width="25%">🔧 Build<br><img src="docs/spacer.png" width="240" height="1" alt=""></th><th align="left" width="25%">📄 About<br><img src="docs/spacer.png" width="240" height="1" alt=""></th></tr>
-<tr><td valign="top"><a href="#%EF%B8%8F-install">Install</a><br><a href="#quickstart">Quickstart</a></td><td valign="top"><a href="#%EF%B8%8F-gallery">Gallery</a><br><a href="#-why-it-doesnt-look-ai-made">Why it doesn't look AI-made</a></td><td valign="top"><a href="#-whats-inside">What's inside</a><br><a href="#-testing-and-validation">Testing and validation</a></td><td valign="top"><a href="#%EF%B8%8F-privacy-and-limits">Privacy and limits</a><br><a href="#-faq">FAQ</a><br><a href="#-contributing">Contributing</a><br><a href="#-support">Support</a><br><a href="#-license">License</a></td></tr>
+<tr><td valign="top"><a href="#%EF%B8%8F-install">Install</a><br><a href="#quickstart">Quickstart</a></td><td valign="top"><a href="#%EF%B8%8F-gallery">Gallery</a><br><a href="#-features">Features</a></td><td valign="top"><a href="#-whats-inside">What's inside</a><br><a href="#-testing-and-validation">Testing and validation</a></td><td valign="top"><a href="#%EF%B8%8F-privacy-and-limits">Privacy and limits</a><br><a href="#-faq">FAQ</a><br><a href="#-contributing">Contributing</a><br><a href="#-support">Support</a><br><a href="#-license">License</a></td></tr>
 </table>
 
 ## 🛠️ Install
@@ -55,6 +55,9 @@ That's all. Ask for a cute landing page and your agent uses the skill on its own
 
 ### Quickstart
 
+> [!TIP]
+> **See all the example pages live at [cutify.ghernie.com](https://cutify.ghernie.com/)**, each with the prompt that made it, ready to copy.
+
 Ask in plain words, for example:
 
 ```text
@@ -70,6 +73,12 @@ Make a cute landing page for my study app with three AI tutors.
 Set the effort with `/effort` in Claude Code. Our test pages used the default effort, and Opus took about 5 to 7 minutes a page. High effort gives Claude more room to plan the stages and check its own page, so it's worth the extra time on bigger pages.
 
 Have Python 3 installed so Claude can check its page with `scripts/lint_page.py`. If the skill doesn't load, start your prompt with "Use the cutify-ui skill." Every example in the [Gallery](#%EF%B8%8F-gallery) has its prompt ready to copy.
+
+## ✨ Features
+
+<p align="center"><img src="docs/features.png" width="900" alt="What Claude gets with cutify-ui: a pixel cast of characters from your brief, numbered story stages, motion that shows the work, six themes from Glass to Toy Box or your own, React 19, Next.js or plain HTML, and a linter plus screenshots before you see the page. It also skips the usual AI tells: purple gradients, emoji as icons, a centred hero over three boxes, Inter headlines, soft shadows everywhere and lorem ipsum."></p>
+
+The six themes are Glass, Apron, Picnic, Riso Club, Lantern Night and Toy Box. Glass and Apron come from [itsa10but](https://ghernie.com/projects/itsa10but) and [SkyQueue](https://skyqueue.ghernie.com), and the [inspiration library](docs/INSPIRATION.md) credits the sources behind the rest.
 
 ## 🖼️ Gallery
 
@@ -175,16 +184,6 @@ A personal portfolio site for "Sam Sample" (a made-up interaction design student
 
 </details>
 <!-- GALLERY:END -->
-
-## 🙅 Why it doesn't look AI-made
-
-Pages that Claude designs on its own often look alike, because it falls back on the safest choice for every font, colour and layout. cutify-ui makes those choices before Claude writes any CSS:
-
-- Each of the six themes (Glass, Apron, Picnic, Riso Club, Lantern Night and Toy Box) fixes exact fonts, hex colours and one kind of depth, so Claude never has to guess at "modern". Glass and Apron come from [itsa10but](https://ghernie.com/projects/itsa10but) and [SkyQueue](https://skyqueue.ghernie.com), and the [inspiration library](docs/INSPIRATION.md) lists the sources behind the other four.
-- The skill names the usual tells and tells Claude to avoid them: purple-to-blue gradients, soft-shadowed rounded cards everywhere, emoji as icons, a centred hero over three feature boxes, Inter as the headline font and lorem ipsum.
-- Claude writes the real copy from your brief before the layout, and labels anything made up as "sample".
-- If your project has a `taste.md` file of things you like and dislike, Claude reads it first and offers to add your reactions to it.
-- Before showing you a page, Claude checks the draft against your brief and the list of tells, then screenshots it at 1440px and 390px.
 
 ## 📁 What's inside
 
@@ -351,7 +350,7 @@ Both. It ships typed React 19 components that work in Next.js, plain HTML, CSS a
 <details>
 <summary><b>How do I stop Claude's UI from looking AI-generated?</b></summary>
 
-The skill lists the usual signs of an AI-made page, such as purple gradients, emoji icons and a centred hero over three feature boxes, and tells Claude to avoid them. It also gives Claude a cast of characters, numbered stages and a theme to build from, so each page has its own look. [Why it doesn't look AI-made](#-why-it-doesnt-look-ai-made) explains each rule.
+The skill lists the usual signs of an AI-made page, such as purple gradients, emoji icons and a centred hero over three feature boxes, and tells Claude to avoid them. It also gives Claude a cast of characters, numbered stages and a theme to build from, so each page has its own look. The [Features](#-features) card lists them.
 
 </details>
 
