@@ -521,13 +521,13 @@ What to expect
 
 - Claude still makes the final design decisions, so results vary with the prompt and the model.
 - A page with a lot of animation took Claude about 5 to 10 minutes to build and check.
-- The examples were checked in Chromium. They weren't tested in Safari or Firefox, or with a screen reader.
+- The examples were checked in Chromium, Firefox and WebKit (the engine inside Safari) at phone and desktop widths, with no page errors and no sideways scrolling. They haven't been tried in Safari on an Apple device or with a screen reader yet.
 
 ## 🤝 Contributing
 
 New themes, components and examples are welcome. [CONTRIBUTING.md](CONTRIBUTING.md) explains how to add each one and how to run the checks.
 
-- Issues labelled [good first issue](https://github.com/slyf0xx97/cutify-ui/labels/good%20first%20issue) are small and well described, such as testing the examples in Safari or with a screen reader.
+- Issues labelled [good first issue](https://github.com/slyf0xx97/cutify-ui/labels/good%20first%20issue) are small and well described, such as trying the examples with a screen reader.
 - Ask questions or share a page you built in [Discussions](https://github.com/slyf0xx97/cutify-ui/discussions).
 - Everyone taking part follows the [code of conduct](CODE_OF_CONDUCT.md).
 - Report security problems privately, as [SECURITY.md](SECURITY.md) describes.

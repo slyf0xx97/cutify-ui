@@ -75,6 +75,8 @@ It loads every page at 375, 768, 1280 and 1440px and reports:
 
 Screenshots and `results.json` go to `tools/qa-output/`.
 
+To check Firefox and WebKit (Safari's engine) as well, run `npx playwright install firefox webkit` once, then `node xbrowser.mjs http://127.0.0.1:8811`. It loads every example at 375px and 1280px and lists page errors and sideways scrolling, with screenshots in `tools/qa-output/xbrowser/`.
+
 Some flags are expected, and you can ignore them after a look at the screenshot:
 
 - number badges that hang outside a card on purpose
