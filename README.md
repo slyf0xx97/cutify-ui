@@ -343,7 +343,7 @@ All checks passed.
 
 ### Layout checks
 
-[`qa.mjs`](tools/qa.mjs) opens every example in Chromium at 375px, 768px, 1280px and 1440px. It reports sideways scrolling, overlapping or clipped text, tooltips that leave the screen or get covered, dialogs that don't fit, console errors, fonts that didn't load and low contrast. [CONTRIBUTING.md](CONTRIBUTING.md#layout-qa) explains how to read its report.
+[`qa.mjs`](tools/qa.mjs) opens every example in Chromium at 375px, 768px, 1280px and 1440px. It reports sideways scrolling, overlapping or clipped text, tooltips that leave the screen or get covered, dialogs that don't fit, console errors, fonts that didn't load and low contrast. [CONTRIBUTING.md](.github/CONTRIBUTING.md#layout-qa) explains how to read its report.
 
 ### Accessibility
 
@@ -426,12 +426,12 @@ Yes. It's open source under the MIT licence, so you can use it in personal and c
 
 ## 🤝 Contributing
 
-New themes, components and examples are welcome. [CONTRIBUTING.md](CONTRIBUTING.md) explains how to add each one and how to run the checks.
+New themes, components and examples are welcome. [CONTRIBUTING.md](.github/CONTRIBUTING.md) explains how to add each one and how to run the checks.
 
 - Issues labelled [good first issue](https://github.com/slyf0xx97/cutify-ui/labels/good%20first%20issue) are small and well described, such as trying the examples with a screen reader.
 - Ask questions or share a page you built in [Discussions](https://github.com/slyf0xx97/cutify-ui/discussions).
-- Everyone taking part follows the [code of conduct](CODE_OF_CONDUCT.md).
-- Report security problems privately, as [SECURITY.md](SECURITY.md) describes.
+- Everyone taking part follows the [code of conduct](.github/CODE_OF_CONDUCT.md).
+- Report security problems privately, as [SECURITY.md](.github/SECURITY.md) describes.
 
 ## 💖 Support
 
