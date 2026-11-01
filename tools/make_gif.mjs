@@ -48,7 +48,8 @@ const page = await context.newPage();
 const cdp = await context.newCDPSession(page);
 await cdp.send("Animation.enable");
 await cdp.send("Animation.setPlaybackRate", { playbackRate: RATE });
-await page.goto(`${base}/${target}`, { waitUntil: "networkidle" });
+// "load", not "networkidle": the live SkyQueue preview keeps a connection open
+await page.goto(`${base}/${target}`, { waitUntil: "load", timeout: 60000 });
 await page.evaluate((z) => { document.documentElement.style.zoom = z; }, SCALE);
 await page.waitForTimeout(LOAD * 1000);
 const clipStart = (Date.now() - started) / 1000;
