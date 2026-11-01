@@ -2,7 +2,7 @@
 
 ![Zine Night](../../docs/gallery/zine-night.png)
 
-**[Open it live](https://slyf0xx97.github.io/cutify-ui/examples/zine-night/)**
+**[Open it live](https://cutify.ghernie.com/examples/zine-night/)**
 
 | | |
 |---|---|

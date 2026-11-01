@@ -2,7 +2,7 @@
 
 ![Beep & Build](../../docs/gallery/beep-and-build.png)
 
-**[Open it live](https://slyf0xx97.github.io/cutify-ui/examples/beep-and-build/)**
+**[Open it live](https://cutify.ghernie.com/examples/beep-and-build/)**
 
 | | |
 |---|---|

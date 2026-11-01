@@ -2,7 +2,7 @@
 
 ![Pantry Pals](../../docs/gallery/pantry-pals.png)
 
-**[Open it live](https://slyf0xx97.github.io/cutify-ui/examples/pantry-pals/)**
+**[Open it live](https://cutify.ghernie.com/examples/pantry-pals/)**
 
 | | |
 |---|---|

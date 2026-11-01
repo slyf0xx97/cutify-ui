@@ -2,7 +2,7 @@
 
 ![StudyBuddy](../../docs/gallery/studybuddy.png)
 
-**[Open it live](https://slyf0xx97.github.io/cutify-ui/examples/studybuddy/)**
+**[Open it live](https://cutify.ghernie.com/examples/studybuddy/)**
 
 | | |
 |---|---|

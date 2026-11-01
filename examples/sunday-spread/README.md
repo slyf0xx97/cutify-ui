@@ -2,7 +2,7 @@
 
 ![Sunday Spread](../../docs/gallery/sunday-spread.png)
 
-**[Open it live](https://slyf0xx97.github.io/cutify-ui/examples/sunday-spread/)**
+**[Open it live](https://cutify.ghernie.com/examples/sunday-spread/)**
 
 | | |
 |---|---|

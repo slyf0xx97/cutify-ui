@@ -2,7 +2,7 @@
 
 ![Penpal Post](../../docs/gallery/penpal-post.png)
 
-**[Open it live](https://slyf0xx97.github.io/cutify-ui/examples/penpal-post/)**
+**[Open it live](https://cutify.ghernie.com/examples/penpal-post/)**
 
 | | |
 |---|---|

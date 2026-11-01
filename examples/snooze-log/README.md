@@ -2,7 +2,7 @@
 
 ![Snooze Log](../../docs/gallery/snooze-log.png)
 
-**[Open it live](https://slyf0xx97.github.io/cutify-ui/examples/snooze-log/)**
+**[Open it live](https://cutify.ghernie.com/examples/snooze-log/)**
 
 | | |
 |---|---|

@@ -2,7 +2,7 @@
 
 ![Moonlit Market](../../docs/gallery/moonlit-market.png)
 
-**[Open it live](https://slyf0xx97.github.io/cutify-ui/examples/moonlit-market/)**
+**[Open it live](https://cutify.ghernie.com/examples/moonlit-market/)**
 
 | | |
 |---|---|

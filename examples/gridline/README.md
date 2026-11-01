@@ -2,7 +2,7 @@
 
 ![Gridline](../../docs/gallery/gridline.png)
 
-**[Open it live](https://slyf0xx97.github.io/cutify-ui/examples/gridline/)**
+**[Open it live](https://cutify.ghernie.com/examples/gridline/)**
 
 | | |
 |---|---|

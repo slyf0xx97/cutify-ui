@@ -2,7 +2,7 @@
 
 ![Fleet Queue](../../docs/gallery/fleet-queue.png)
 
-**[Open it live](https://slyf0xx97.github.io/cutify-ui/examples/fleet-queue/)**
+**[Open it live](https://cutify.ghernie.com/examples/fleet-queue/)**
 
 | | |
 |---|---|

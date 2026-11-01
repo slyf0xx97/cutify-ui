@@ -10,7 +10,7 @@ import html
 import pathlib
 import re
 
-LIVE = "https://slyf0xx97.github.io/cutify-ui/examples/"
+LIVE = "https://cutify.ghernie.com/examples/"
 ITEMS = [
     ("studybuddy", "StudyBuddy", "Three AI tutors plan, quiz and check in. You approve the week.", "🪟 Glass, HTML"),
     ("fleet-queue", "Fleet Queue", "Warehouse robots plan the order queue, code blocks unsafe moves, a manager approves.", "🛫 Apron, HTML"),
