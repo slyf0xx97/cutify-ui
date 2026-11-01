@@ -22,7 +22,7 @@ cutify-ui is an open-source [Claude skill](https://docs.claude.com/en/docs/agent
 
 <table>
 <tr><th align="left" width="25%">🚀 Start<br><img src="docs/spacer.png" width="240" height="1" alt=""></th><th align="left" width="25%">👀 Look<br><img src="docs/spacer.png" width="240" height="1" alt=""></th><th align="left" width="25%">🔧 Build<br><img src="docs/spacer.png" width="240" height="1" alt=""></th><th align="left" width="25%">📄 About<br><img src="docs/spacer.png" width="240" height="1" alt=""></th></tr>
-<tr><td valign="top"><a href="#%EF%B8%8F-install">Install</a><br><a href="#quickstart">Quickstart</a></td><td valign="top"><a href="#-features">Features</a><br><a href="#-why-it-doesnt-look-ai-made">Why it doesn't look AI-made</a><br><a href="#%EF%B8%8F-gallery">Gallery</a><br><a href="#-sample-prompts">Sample prompts</a><br><a href="#-themes">Themes</a></td><td valign="top"><a href="#-whats-inside">What's inside</a><br><a href="#-testing-and-validation">Testing and validation</a></td><td valign="top"><a href="#%EF%B8%8F-privacy-and-limits">Privacy and limits</a><br><a href="#-contributing">Contributing</a><br><a href="#-support">Support</a><br><a href="#-license">License</a></td></tr>
+<tr><td valign="top"><a href="#%EF%B8%8F-install">Install</a><br><a href="#quickstart">Quickstart</a></td><td valign="top"><a href="#%EF%B8%8F-gallery">Gallery</a><br><a href="#-features">Features</a><br><a href="#-why-it-doesnt-look-ai-made">Why it doesn't look AI-made</a><br><a href="#-themes">Themes</a></td><td valign="top"><a href="#-whats-inside">What's inside</a><br><a href="#-testing-and-validation">Testing and validation</a></td><td valign="top"><a href="#%EF%B8%8F-privacy-and-limits">Privacy and limits</a><br><a href="#-contributing">Contributing</a><br><a href="#-support">Support</a><br><a href="#-license">License</a></td></tr>
 </table>
 
 ## 🛠️ Install
@@ -63,42 +63,7 @@ Make a cute landing page for my study app with three AI tutors.
 | Opus 5.5 | Full pages, about 5 to 7 minutes each |
 | Sonnet 5.5 | Quick components, such as a pricing card in under a minute |
 
-Have Python 3 installed so Claude can check its page with `scripts/lint_page.py`. If the skill doesn't load, start your prompt with "Use the cutify-ui skill." More prompts are under [Sample prompts](#-sample-prompts).
-
-## ✨ Features
-
-In the order you'll meet them on a page:
-
-`tools/make_feature_shots.mjs` makes every picture below from this repo: screenshots and clips of the example pages, lines from the source files and a real run of the linter.
-
-<table>
-<tr><th>Area</th><th>What you get</th><th>From the examples</th></tr>
-<tr><td>🎨 Themes</td><td>Six themes with their own fonts, palette and kind of depth: Glass, Apron, Picnic, Riso Club, Lantern Night and Toy Box</td><td><img src="docs/features/themes.png" width="300" alt="Six example pages, one in each theme: Glass, Apron, Picnic, Riso Club, Lantern Night and Toy Box"></td></tr>
-<tr><td>🧺 Backdrops</td><td>19 backgrounds in pure CSS or inline SVG, from gingham and riso grain to a starry dusk and 1-bit dither, with a guide to picking one</td><td><img src="docs/features/backdrops.png" width="300" alt="Six page backgrounds with the content hidden: gingham, a painted scene of sky and hills, cloud wallpaper, starry dusk, graph paper and riso grain"></td></tr>
-<tr><td>🔤 Fonts</td><td>Ten font pairings, all under the SIL Open Font License, with notes on which faces stay readable at small sizes</td><td><img src="docs/features/fonts.png" width="300" alt="Six page headings, each named with its display face: Pixelify Sans, Anybody, Fredoka, Bricolage Grotesque, Jersey 10 and Dela Gothic One"></td></tr>
-<tr><td>👾 Characters</td><td>Pixel sprites drawn as text grids that render as crisp SVG at any size, with single pixels that blink or wave</td><td><img src="docs/features/characters.png" width="300" alt="Six pixel characters from different example pages, including robots and people"></td></tr>
-<tr><td>🏷️ AI and You tags</td><td>A shape for each character, so nobody has to tell them apart by colour alone</td><td><img src="docs/features/tags.png" width="300" alt="Two page legends where each character has its own badge shape and an AI, Code or You chip"></td></tr>
-<tr><td>🗺️ Story stages</td><td>Numbered stages that walk a visitor through the product in order</td><td><img src="docs/features/stages.png" width="300" alt="Three stage headers numbered 1 to 3: Read the order queue, Check the plan, Approve the plan"></td></tr>
-<tr><td>✈️ Routes</td><td>Sprites that follow a real drawn path, with CSS <code>offset-path</code> or <code>getPointAtLength</code></td><td><img src="docs/features/routes.gif" width="300" alt="Animation of three robots driving along dotted routes on a warehouse floor map"></td></tr>
-<tr><td>⏯️ Animation patterns</td><td>Five ways to show a product at work, such as a story you can replay, a clock-driven simulation and a journey that follows your scroll</td><td><img src="docs/features/patterns.gif" width="300" alt="Animation of a clock-driven microgrid simulation: the clock runs past 18:00, power packets move along the wires and the homes light up"></td></tr>
-<tr><td>🍬 Small interactions</td><td>Ten of them, including a ledge press, a peel corner, typing dots and confetti</td><td><img src="docs/features/interactions.png" width="300" alt="The same button at rest on its ledge and pressed down flat"></td></tr>
-<tr><td>🧘 Reduced motion</td><td>Every animation stops for visitors who ask for reduced motion, and pauses when it's off screen. In the clip, the left map runs as usual and the right one has reduced motion turned on.</td><td><img src="docs/features/reduced-motion.gif" width="300" alt="Two copies of the same floor map: on the left the robots move, on the right with reduced motion they stay still"></td></tr>
-<tr><td>💬 Tooltips</td><td>Open on hover, keyboard focus and tap, with labels screen readers can read</td><td><img src="docs/features/tooltips.png" width="300" alt="A tooltip open above a stage heading's i button, explaining what happens in that stage"></td></tr>
-<tr><td>🎮 Components</td><td>Buttons, pills, meters, number tiles, small SVG charts, native <code>&lt;dialog&gt;</code> modals and loading screens</td><td><img src="docs/features/components.png" width="300" alt="Four number tiles with sample data above an open dialog that asks to send the evening plan, with two buttons"></td></tr>
-<tr><td>⚛️ React 19</td><td>Typed components for React and Next.js: <code>PixelSprite</code>, <code>PixelIcon</code>, <code>Popup</code>, <code>WordTip</code>, <code>StageHeader</code> and <code>KindChip</code></td><td><img src="docs/features/react.png" width="300" alt="A StageHeader line from the Next.js example and the stage header it renders"></td></tr>
-<tr><td>🐍 Streamlit</td><td>Helpers for hosting the pages inside Streamlit and sending clicks back to Python</td><td><img src="docs/features/streamlit.png" width="300" alt="Usage lines from cutify_streamlit.py and the toPython function from cutify-bridge.js"></td></tr>
-<tr><td>🔎 Page linter</td><td><code>scripts/lint_page.py</code>, which Claude runs on each page it builds to catch repainting animations, emoji icons, outside scripts and unlabelled sample data</td><td><img src="docs/features/linter.png" width="300" alt="Terminal output of the linter: five FAIL lines for a draft page, then OK for an example page"></td></tr>
-</table>
-
-### 🙅 Why it doesn't look AI-made
-
-Pages that Claude designs on its own often look alike, because it falls back on the safest choice for every font, colour and layout. cutify-ui makes those choices before Claude writes any CSS:
-
-- Each theme fixes exact fonts, hex colours and one kind of depth, so Claude never has to guess at "modern".
-- The skill names the usual tells and tells Claude to avoid them: purple-to-blue gradients, soft-shadowed rounded cards everywhere, emoji as icons, a centred hero over three feature boxes, Inter as the headline font and lorem ipsum.
-- Claude writes the real copy from your brief before the layout, and labels anything made up as "sample".
-- If your project has a `taste.md` file of things you like and dislike, Claude reads it first and offers to add your reactions to it.
-- Before showing you a page, Claude checks the draft against your brief and the list of tells, then screenshots it at 1440px and 390px.
+Have Python 3 installed so Claude can check its page with `scripts/lint_page.py`. If the skill doesn't load, start your prompt with "Use the cutify-ui skill." Every example in the [Gallery](#%EF%B8%8F-gallery) has its prompt ready to copy.
 
 ## 🖼️ Gallery
 
@@ -273,99 +238,30 @@ A personal portfolio site for "Sam Sample" (a made-up interaction design student
 </table>
 <!-- GALLERY:END -->
 
-## 💬 Sample prompts
+## ✨ Features
 
-Each prompt below ran in Claude Code with cutify-ui installed. On the left is the prompt, and on the right is the page Claude built, unedited. Click a page to open it live.
+<table>
+<tr><th>Area</th><th>What you get</th><th>From the examples</th></tr>
+<tr><td>👾 Characters</td><td>Pixel sprites that render crisp at any size, with parts that blink or wave</td><td><img src="docs/features/characters.png" width="300" alt="Six pixel characters from different example pages, including robots and people"></td></tr>
+<tr><td>🏷️ AI and You tags</td><td>Each character gets a shape and a chip, so nobody tells them apart by colour alone</td><td><img src="docs/features/tags.png" width="300" alt="Two page legends where each character has its own badge shape and an AI, Code or You chip"></td></tr>
+<tr><td>🗺️ Story stages</td><td>Numbered stages that walk a visitor through the product in order</td><td><img src="docs/features/stages.png" width="300" alt="Three stage headers numbered 1 to 3: Read the order queue, Check the plan, Approve the plan"></td></tr>
+<tr><td>✈️ Motion</td><td>Characters travel real routes to show the product at work, and everything stops for visitors who ask for reduced motion</td><td><img src="docs/features/routes.gif" width="300" alt="Animation of three robots driving along dotted routes on a warehouse floor map"></td></tr>
+<tr><td>💬 Tooltips</td><td>Open on hover, keyboard focus and tap, and screen readers can read them</td><td><img src="docs/features/tooltips.png" width="300" alt="A tooltip open above a stage heading's i button, explaining what happens in that stage"></td></tr>
+<tr><td>🎮 Components</td><td>Buttons that press, pills, number tiles, small charts, native <code>&lt;dialog&gt;</code> modals and loading screens</td><td><img src="docs/features/components.png" width="300" alt="Four number tiles with sample data above an open dialog that asks to send the evening plan, with two buttons"></td></tr>
+<tr><td>⚛️ React 19</td><td>Typed components for React and Next.js, such as <code>PixelSprite</code>, <code>WordTip</code> and <code>StageHeader</code></td><td><img src="docs/features/react.png" width="300" alt="A StageHeader line from the Next.js example and the stage header it renders"></td></tr>
+<tr><td>🐍 Streamlit</td><td>Helpers for hosting the pages inside Streamlit and sending clicks back to Python</td><td><img src="docs/features/streamlit.png" width="300" alt="Usage lines from cutify_streamlit.py and the toPython function from cutify-bridge.js"></td></tr>
+<tr><td>🔎 Page linter</td><td><code>scripts/lint_page.py</code> checks each page Claude builds and lists what to fix</td><td><img src="docs/features/linter.png" width="300" alt="Terminal output of the linter: five FAIL lines for a draft page, then OK for an example page"></td></tr>
+</table>
 
-### 1. A landing page for a study app
+### 🙅 Why it doesn't look AI-made
 
-<table><tr>
-<td width="38%" valign="top">
+Pages that Claude designs on its own often look alike, because it falls back on the safest choice for every font, colour and layout. cutify-ui makes those choices before Claude writes any CSS:
 
-**Prompt**
-
-```text
-Use the cutify-ui skill. Make a cute landing page for my study app with three AI tutors. Write it as a single index.html in the current folder.
-```
-
-</td>
-<td width="62%" valign="top"><a href="https://slyf0xx97.github.io/cutify-ui/prompts/studybuddy-prompt/"><img src="docs/prompts/studybuddy-prompt-result.png" alt="The page Claude built for this prompt"></a></td>
-</tr></table>
-
-Claude picked Glass: "I used the Glass theme because the skill matches it to learning apps." About 6 minutes.
-
-### 2. A dark demo for warehouse robots
-
-<table><tr>
-<td width="38%" valign="top">
-
-**Prompt**
-
-```text
-Build a dark control-room demo for our warehouse robots, with sample numbers. Write it as a single index.html in the current folder.
-```
-
-</td>
-<td width="62%" valign="top"><a href="https://slyf0xx97.github.io/cutify-ui/prompts/warehouse-prompt/"><img src="docs/prompts/warehouse-prompt-result.png" alt="The page Claude built for this prompt"></a></td>
-</tr></table>
-
-Claude picked Apron, "the skill's pick for operations/data", built it as an app screen and fixed its own phone overflow. About 5 minutes.
-
-### 3. A pre-order page for a bakery
-
-<table><tr>
-<td width="38%" valign="top">
-
-**Prompt**
-
-```text
-Use the cutify-ui skill. Make a cosy pre-order page for my neighbourhood bakery, with one AI helper that suggests what to bake. Write it as a single index.html in the current folder.
-```
-
-</td>
-<td width="62%" valign="top"><a href="https://slyf0xx97.github.io/cutify-ui/prompts/bakery-prompt/"><img src="docs/prompts/bakery-prompt-result.png" alt="The page Claude built for this prompt"></a></td>
-</tr></table>
-
-Claude picked Picnic "because a bakery is about food" and swapped the gingham for a terrazzo counter. About 6 minutes.
-
-### 4. Just one component
-
-<table><tr>
-<td width="38%" valign="top">
-
-**Prompt**
-
-```text
-Just a Toy Box pricing card for my budgeting app, please. Write it as a single index.html in the current folder.
-```
-
-</td>
-<td width="62%" valign="top"><a href="https://slyf0xx97.github.io/cutify-ui/prompts/pricing-prompt/"><img src="docs/prompts/pricing-prompt-result.png" alt="The page Claude built for this prompt"></a></td>
-</tr></table>
-
-Claude built only the card, with a yellow brick for the plan name and a button that presses down. About 1 minute.
-
-### The same prompt on three models
-
-Anthropic suggests testing a skill on every model you plan to use, so the pricing-card prompt also ran on Sonnet and Haiku. All three loaded the skill and passed the page linter.
-
-| Model | Time | What it built |
-|---|---|---|
-| Opus 5.5 | 65 s | [One card](https://slyf0xx97.github.io/cutify-ui/prompts/pricing-prompt/) with a brick-shaped plan name and a piggy bank |
-| Sonnet 5.5 | 44 s | [One centred card](https://slyf0xx97.github.io/cutify-ui/prompts/pricing-prompt-sonnet/) with a monthly and yearly switch |
-| Haiku 5.5 | 54 s | [Three plans and a heading](https://slyf0xx97.github.io/cutify-ui/prompts/pricing-prompt-haiku/), more than the prompt asked for |
-
-### What these runs showed
-
-- The study-app and bakery prompts needed "Use the cutify-ui skill." at the start, because Claude reached for other installed skills first. The skill's description now leads with requests like these. Two new prompts in the same style, for a language-learning app and a cake stall, then loaded cutify-ui without being told to.
-- The study-app page has one linter failure, a sprite that moves with `left` instead of `transform`. The other five pages passed.
-- The runs used the author's own Claude Code setup, with other plugins installed, so a clean install may behave a little differently.
-
-### Tips
-
-Claude picks a theme that fits the product and tells you which one it chose. Name a theme in your request if you want a particular look, or ask for three directions to choose from. A screenshot of a site you like also helps, because Claude carries over its spacing and type sizes.
-
-To steer every page the same way, keep a `taste.md` file in your project with notes like "too busy", "love this spacing" or a link to a site you like.
+- Each theme fixes exact fonts, hex colours and one kind of depth, so Claude never has to guess at "modern".
+- The skill names the usual tells and tells Claude to avoid them: purple-to-blue gradients, soft-shadowed rounded cards everywhere, emoji as icons, a centred hero over three feature boxes, Inter as the headline font and lorem ipsum.
+- Claude writes the real copy from your brief before the layout, and labels anything made up as "sample".
+- If your project has a `taste.md` file of things you like and dislike, Claude reads it first and offers to add your reactions to it.
+- Before showing you a page, Claude checks the draft against your brief and the list of tells, then screenshots it at 1440px and 390px.
 
 ## 🎨 Themes
 
