@@ -12,7 +12,9 @@
 ![License](https://img.shields.io/badge/license-MIT-167a66?style=flat-square)
 [![Claude skill](https://img.shields.io/badge/-Claude%20skill-d97757?style=flat-square&labelColor=d97757&logo=claude&logoColor=white)](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/overview)
 ![React 19](https://img.shields.io/badge/React-19-20232a?style=flat-square&logo=react&logoColor=61DAFB)
-![Plain HTML](https://img.shields.io/badge/plain-HTML%2FCSS%2FSVG-2b8fb3?style=flat-square)
+![Next.js](https://img.shields.io/badge/-Next.js-000000?style=flat-square&labelColor=000000&logo=nextdotjs&logoColor=white)
+![Streamlit](https://img.shields.io/badge/-Streamlit-ff4b4b?style=flat-square&labelColor=ff4b4b&logo=streamlit&logoColor=white)
+![HTML/CSS](https://img.shields.io/badge/-HTML%2FCSS-e34f26?style=flat-square&labelColor=e34f26&logo=html5&logoColor=white)
 [![CI](https://img.shields.io/github/actions/workflow/status/slyf0xx97/cutify-ui/ci.yml?style=flat-square&label=checks)](https://github.com/slyf0xx97/cutify-ui/actions)
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/slyf0xx97/cutify-ui/badge)](https://scorecard.dev/viewer/?uri=github.com/slyf0xx97/cutify-ui)
 
