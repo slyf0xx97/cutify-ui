@@ -9,7 +9,7 @@ const root = fileURLToPath(new URL("..", import.meta.url));
 const base = process.argv[2] ?? "http://127.0.0.1:8811";
 const only = process.argv[3];
 const axe = readFileSync(new URL("./node_modules/axe-core/axe.min.js", import.meta.url), "utf8");
-const pages = [...readdirSync(root + "examples").map((n) => [n, `examples/${n}/`]), ["gallery", ""]].filter(([n]) => !only || n === only);
+const pages = [...readdirSync(root + "examples").map((n) => [n, `examples/${n}/`]), ["gallery", "site/"]].filter(([n]) => !only || n === only);
 
 const browser = await chromium.launch();
 const report = {};

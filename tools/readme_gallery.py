@@ -1,5 +1,5 @@
 """Rebuild the README gallery table between <!-- GALLERY:START --> and <!-- GALLERY:END -->,
-and refresh each card's prompt and preview on the gallery page (index.html).
+and refresh each card's prompt and preview on the gallery page (site/index.html).
 
 Run from the repo root: python tools/readme_gallery.py
 Each example's title, one-line description and tags come from the ITEMS list below.
@@ -67,20 +67,20 @@ p.write_bytes(s.encode("utf-8"))  # LF line endings on every OS
 print(f"README gallery: {len(ITEMS)} examples")
 
 # Gallery page: the same prompt in each card, and docs/gallery/<name>.mp4 as a moving preview once it exists
-p = root / "index.html"
+p = root / "site" / "index.html"
 s = p.read_text(encoding="utf-8")
 for slug, *_ in ITEMS:
     s, n = re.subn(rf'(<p class="brief-text" id="b-{slug}"[^>]*>)[\s\S]*?(</p>)',
                    lambda m: m.group(1) + html.escape(brief(slug), quote=False) + m.group(2), s)
     assert n == 1, f"index.html has no prompt box for {slug}"
-    old = re.compile(rf'<img src="docs/gallery/{slug}\.png" alt="([^"]*)" loading="lazy">|<video src="docs/gallery/{slug}\.mp4"[^>]*aria-label="([^"]*)"></video>')
+    old = re.compile(rf'<img src="/docs/gallery/{slug}\.png" alt="([^"]*)" loading="lazy">|<video src="/docs/gallery/{slug}\.mp4"[^>]*aria-label="([^"]*)"></video>')
     m = old.search(s)
     assert m, f"index.html has no preview for {slug}"
     alt = m.group(1) or m.group(2)
     if (root / f"docs/gallery/{slug}.mp4").exists():
-        new = f'<video src="docs/gallery/{slug}.mp4" poster="docs/gallery/{slug}.png" autoplay muted loop playsinline preload="metadata" aria-label="{alt}"></video>'
+        new = f'<video src="/docs/gallery/{slug}.mp4" poster="/docs/gallery/{slug}.png" autoplay muted loop playsinline preload="metadata" aria-label="{alt}"></video>'
     else:
-        new = f'<img src="docs/gallery/{slug}.png" alt="{alt}" loading="lazy">'
+        new = f'<img src="/docs/gallery/{slug}.png" alt="{alt}" loading="lazy">'
     s = s[:m.start()] + new + s[m.end():]
 p.write_bytes(s.encode("utf-8"))
 print(f"index.html: {len(ITEMS)} prompts and previews")

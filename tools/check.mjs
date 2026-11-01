@@ -79,7 +79,7 @@ const styleOf = (html) => [...html.matchAll(/<style[^>]*>([\s\S]*?)<\/style>/g)]
 const cssFiles = files.filter((f) => f.endsWith(".css") && !/examples[\/]pantry-pals[\/]app/.test(f) && !/qa-output/.test(f));
 const cssSources = [...cssFiles.map((f) => [relative(root, f), readFileSync(f, "utf8")]),
   ...readdirSync(join(root, "examples")).map((n) => [`examples/${n}/index.html`, styleOf(readFileSync(join(root, `examples/${n}/index.html`), "utf8"))]),
-  ["index.html", styleOf(readFileSync(join(root, "index.html"), "utf8"))]];
+  ["site/index.html", styleOf(readFileSync(join(root, "site/index.html"), "utf8"))]];
 let cssBefore = fails.length;
 for (const [name, css] of cssSources) cssErrors(css, name).slice(0, 3).forEach((e) => fail(`${name}: ${e.message} (line ${e.line})`));
 fails.length === cssBefore ? ok(`${cssSources.length} stylesheets and <style> blocks are valid CSS`) : null;
@@ -96,7 +96,7 @@ fails.length === cssBefore ? ok("every @keyframes animates only transform, opaci
 
 console.log("Page linter");
 // the same script the skill tells Claude to run on every page it builds
-const pages = [...readdirSync(join(root, "examples")).map((n) => join(root, `examples/${n}/index.html`)), join(root, "index.html")];
+const pages = [...readdirSync(join(root, "examples")).map((n) => join(root, `examples/${n}/index.html`)), join(root, "site/index.html")];
 try {
   execFileSync(process.platform === "win32" ? "python" : "python3", [join(root, "plugin/skills/cutify-ui/scripts/lint_page.py"), ...pages], { encoding: "utf8" });
   ok(`scripts/lint_page.py passes on ${pages.length} pages`);
@@ -122,14 +122,14 @@ console.log("Plugin manifest");
 try {
   const plugin = JSON.parse(readFileSync(join(root, "plugin/.claude-plugin/plugin.json"), "utf8"));
   const market = JSON.parse(readFileSync(join(root, ".claude-plugin/marketplace.json"), "utf8"));
-  const changelog = readFileSync(join(root, "CHANGELOG.md"), "utf8").match(/^## \[(\d+\.\d+\.\d+)\]/m)?.[1];
+  const changelog = readFileSync(join(root, "docs/CHANGELOG.md"), "utf8").match(/^## \[(\d+\.\d+\.\d+)\]/m)?.[1];
   plugin.name === "cutify-ui" && market.plugins?.[0]?.name === plugin.name ? ok("plugin and marketplace names match") : fail("plugin.json and marketplace.json names don't match");
   plugin.version === changelog && market.plugins[0].version === changelog ? ok(`plugin version ${plugin.version} matches the changelog`) : fail(`plugin version ${plugin.version} / ${market.plugins[0].version} doesn't match the changelog's ${changelog}`);
   existsSync(join(root, "plugin/.claude-plugin/icon.png")) ? ok("plugin icon exists") : fail("missing plugin/.claude-plugin/icon.png");
 } catch (e) { fail(`plugin manifests: ${e.message}`); }
 
 console.log("Copy");
-for (const f of ["README.md", "plugin/skills/cutify-ui/SKILL.md", "plugin/README.md", "index.html", ...files.filter((f) => /examples[\/][^\/]+[\/]README\.md$/.test(f)).map((f) => relative(root, f))]) {
+for (const f of ["README.md", "plugin/skills/cutify-ui/SKILL.md", "plugin/README.md", "site/index.html", ...files.filter((f) => /examples[\/][^\/]+[\/]README\.md$/.test(f)).map((f) => relative(root, f))]) {
   readFileSync(join(root, f), "utf8").includes("·") ? fail(`${f} uses a middle dot separator`) : null;
 }
 ok("no middle-dot separators in the main copy");

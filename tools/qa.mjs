@@ -14,7 +14,7 @@ const ROOT = path.join(HERE, '..');
 const BASE = process.argv[2] || 'http://127.0.0.1:8811';
 const FILTER = process.argv[3] || '';
 const EXAMPLES = fs.readdirSync(path.join(ROOT, 'examples')).filter(d => fs.existsSync(path.join(ROOT, 'examples', d, 'index.html')));
-const PAGES = ['index.html', ...EXAMPLES.map(p => `examples/${p}/index.html`)].filter(p => p.includes(FILTER));
+const PAGES = ['site/index.html', ...EXAMPLES.map(p => `examples/${p}/index.html`)].filter(p => p.includes(FILTER));
 const WIDTHS = [375, 768, 1280, 1440];
 const SHOTS = path.join(HERE, 'qa-output');
 fs.mkdirSync(SHOTS, { recursive: true });
@@ -239,7 +239,7 @@ for (const pg of PAGES) {
       const fams = [...document.querySelectorAll('link[href*="fonts.googleapis"]')].flatMap(l => [...new URL(l.href).searchParams.getAll('family')].map(f => f.split(':')[0].replace(/\+/g, ' ')));
       return fams.map(f => ({ family: f, loaded: [...document.fonts].some(ff => ff.family.replace(/"/g, '') === f && ff.status === 'loaded') }));
     });
-    const slug = pg.replace(/\/index\.html$/, '').replace(/^examples\//, '').replace('index.html', 'gallery');
+    const slug = pg.replace(/\/index\.html$/, '').replace(/^examples\//, '').replace('site/index.html', 'gallery');
     await page.screenshot({ path: path.join(SHOTS, `${slug}-${w}.png`), fullPage: true });
 
     // 4. tooltips
