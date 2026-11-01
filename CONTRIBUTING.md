@@ -5,7 +5,7 @@ Thanks for helping. New themes, components, animation engines and gallery exampl
 ## Before you start
 
 - Open an issue first for anything bigger than a fix, so we can agree on the shape. There are templates for bugs, ideas and new examples.
-- Read `SKILL.md`. The grammar section is the part every change has to keep: a cast of pixel characters taken from the brief, numbered stages, tooltips that explain why, sticker depth, motion that explains, and honest labels.
+- Read `SKILL.md`. The grammar section is the part every change has to keep: a cast of pixel characters taken from the brief, numbered stages, tooltips that explain why, physical depth in the theme's own style, motion that explains, and honest labels.
 
 ## Ground rules
 

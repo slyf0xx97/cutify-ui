@@ -32,7 +32,7 @@ A sprite is 16 rows of 16 characters. Each character is a palette key; `.` is em
 ```
 
 Why it works:
-- Each pixel is a `<rect>` 1.02 wide, not 1.0, so no hairline seams show between pixels when scaled.
+- Each pixel is a `<rect>` 1.02 wide, not 1.0, so no hairline seams show between pixels when scaled. If faint lines still appear while a sprite moves by fractions of a pixel, raise it to 1.1 or move the sprite in whole steps.
 - `shape-rendering="crispEdges"` on the symbol keeps edges hard.
 - Palette keys can carry classes, so one letter can blink (a beacon) or wave (a wand) with CSS alone. Use `steps()` timing so it moves in frames.
 
@@ -65,7 +65,7 @@ Inside SVG, crop the same sheet with a nested `<svg viewBox="x y w h">` around a
 
 ## Designing a cast
 
-- One sprite per actor in the product (agents, the rule checker, the user's helper). Three or four is the sweet spot.
+- One sprite per actor the brief describes (the AI helpers, the user, a mascot). Two to four is the sweet spot; don't add actors to fill a scene.
 - Give each a silhouette you can tell apart at 24px: a hat shape, a held prop (binoculars, clipboard, wands), a body shape. A non-person actor (a parser, a reader) can be an object, like a diamond or a scroll, so it reads as a tool.
 - Outline every sprite with the same near-black (`#16171a`), then two or three fills. Keep one accent pixel group for animation.
 - Pair each sprite with its theme colour and a geometric glyph (square, circle, hexagon via `clip-path`) for places too small for the sprite.

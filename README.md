@@ -1,4 +1,4 @@
-<p align="center"><img src="docs/gallery/cover.png" alt="cutify-ui: six example sites built by Claude with the skill, from a pixel study crew to a dark warehouse control room" width="820"></p>
+<p align="center"><img src="docs/gallery/cover.png" alt="cutify-ui: twelve example sites built by Claude with the skill, from a gingham potluck planner to a lantern-lit night market" width="820"></p>
 
 # 🧸 cutify-ui
 
@@ -28,14 +28,14 @@ Ask an AI model for a "cute" or "playful" page and you usually get the same thin
 
 cutify-ui teaches Claude one design grammar and lets the look change around it. Every page gets a cast of pixel-art characters for the actors in the product, a numbered path of stages, tooltips that explain why, sticker-style depth and motion that shows the system at work. Each block says who does it (AI, code or you), and made-up data says it's made up.
 
-The skill ships with six themes, 16 pure-CSS backdrops and ten font pairings, so a study app, a night market and a warehouse control room each get their own look. Claude reads only the parts a request needs, then builds from real, tested components.
+The skill ships with six themes, 19 pure-CSS backdrops and ten font pairings, so a study app, a night market and a warehouse control room each get their own look. Claude reads only the parts a request needs, then builds from real, tested components.
 
 ## ✨ Key features
 
 Look and feel
 
 - 🎨 Six themes with their own shadow language: Glass, Apron, Picnic, Riso Club, Lantern Night and Toy Box.
-- 🧺 16 backdrops in pure CSS or inline SVG (gingham, riso grain, dusk with stars, 1-bit dither, graph paper and more), with a guide for choosing one per product.
+- 🧺 19 backdrops in pure CSS or inline SVG (gingham, riso grain, dusk with stars, 1-bit dither, graph paper and more), with a guide for choosing one per product.
 - 🔤 Ten font pairings, every font checked as SIL OFL, with readability rules for pixel and handwritten faces.
 
 Characters and story
@@ -60,7 +60,7 @@ Components
 
 ## 🖼️ Gallery
 
-Every example below was built by Claude with this skill from a short brief, then checked in a browser at 375px to 1440px. Click one to open it live, or open its folder to read the exact brief.
+Every example below was built by Claude with this skill from a brief of a few sentences, then checked in a browser at 375px to 1440px. The first six briefs described only the product and the cast; the newer six also named the theme or palette and a few details, to show each theme. Click one to open it live, or open its folder to read the exact brief.
 
 <!-- GALLERY:START -->
 <table>
@@ -103,9 +103,14 @@ Glass and Apron come from itsa10but and SkyQueue. The other four were designed f
 
 **Claude Code**
 
+Download `cutify-ui.zip` from the [latest release](https://github.com/slyf0xx97/cutify-ui/releases/latest) and unzip it into your skills folder, so you get `~/.claude/skills/cutify-ui/SKILL.md`:
+
 ```bash
-git clone https://github.com/slyf0xx97/cutify-ui ~/.claude/skills/cutify-ui
+curl -L -o cutify-ui.zip https://github.com/slyf0xx97/cutify-ui/releases/latest/download/cutify-ui.zip
+unzip cutify-ui.zip -d ~/.claude/skills/
 ```
+
+The zip holds only the skill (about 50 KB). Cloning the whole repository into the skills folder also works, but it brings the examples, screenshots and tools with it.
 
 Then ask for something like "make a cute landing page for my study app with three AI tutors". Claude loads the skill when a request fits.
 
@@ -123,7 +128,7 @@ Upload the same zip with the Skills API and attach it to your requests.
 SKILL.md                 when to use it, the grammar, the workflow and a final checklist
 references/
   themes.md              six themes' tokens, surfaces and palettes, and how to make your own
-  backgrounds.md         16 pure-CSS backdrops and how to choose one
+  backgrounds.md         19 pure-CSS backdrops and how to choose one
   fonts.md               SIL OFL font pairings and readability rules
   pixel-art.md           string-grid sprites, pixel icons, sprite sheets, designing a cast
   motion.md              motion rules, keyframes and five animation engines
@@ -152,7 +157,16 @@ The skill was checked the way Anthropic's skill-creator recommends: the same thr
 | Warehouse robot demo, dark (HTML) | 9 / 9 | 3 / 9 |
 | Pantry Pals meal planner (Next.js) | 6 / 7 | 3 / 7 |
 
-That's a 95% pass rate with the skill and 36% without, on 3 prompts with one run each. Treat it as a direction, not a benchmark. The prompts are in [`evals/`](evals).
+That's a 95% pass rate with the skill and 36% without, on 3 prompts with one run each. Treat it as a direction, not a benchmark.
+
+Two more cases were added in v0.2 to check scope and theme choice, run once with the skill:
+
+| Test prompt | Result |
+|---|---|
+| A bakery pre-order page with one AI helper, no theme named | Picked Picnic, said why, kept to the two characters in the brief, accessible tooltips (4 / 4) |
+| Just a Toy Box pricing card | Built only the card, with Toy Box fonts and a ledge button (3 / 3) |
+
+The prompts and graders are in [`evals/`](evals).
 
 ## 🛡️ Safety and limitations
 
@@ -178,4 +192,4 @@ New themes, components and examples are welcome. See [CONTRIBUTING.md](CONTRIBUT
 
 MIT, copyright 2026 Ghernie Encinas. See [LICENSE](LICENSE). Every font the skill uses is loaded from Google Fonts under the SIL Open Font License 1.1 (listed with links in [`references/fonts.md`](references/fonts.md)). If you self-host them, keep each font's `OFL.txt` with the files. The sites in the [inspiration library](docs/INSPIRATION.md) are described, not copied.
 
-cutify-ui is an independent project. It isn't affiliated with or endorsed by Anthropic. Claude is a trademark of Anthropic. Example product names (StudyBuddy, Fleet Queue, Sprout, Gridline, Pantry Pals) are made up for the demos and don't refer to real products.
+cutify-ui is an independent project. It isn't affiliated with or endorsed by Anthropic. Claude is a trademark of Anthropic. Example product and character names (StudyBuddy, Fleet Queue, Sprout, Gridline, Pantry Pals, Sunday Spread, Zine Night, Moonlit Market, Beep & Build, Snooze Log, Penpal Post and Sam Sample) are made up for the demos and don't refer to real products or people.

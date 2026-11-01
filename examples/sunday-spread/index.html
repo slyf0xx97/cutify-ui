@@ -64,17 +64,17 @@ a { color: var(--accent); }
 .i { display: inline-grid; place-items: center; width: 1.45rem; height: 1.45rem; padding: 0; border-radius: 50%; border: 2px solid currentColor; background: var(--surface-2);
   font: 700 .8rem var(--body); color: var(--accent); cursor: help; flex: none; vertical-align: middle; box-shadow: none; }
 .i:hover, .i:focus-visible { background: var(--accent-2); color: var(--ink); }
-#tip { position: fixed; z-index: 1000; width: min(300px, calc(100vw - 16px)); padding: .65rem .85rem .7rem 1.55rem; background: var(--surface-2); color: var(--ink);
+.tipb { position: fixed; z-index: 1000; width: min(300px, calc(100vw - 16px)); padding: .65rem .85rem .7rem 1.55rem; background: var(--surface-2); color: var(--ink);
   border: 2px solid var(--border); border-radius: 4px 12px 12px 4px; box-shadow: var(--shadow), 0 12px 26px rgb(58 46 42 / .18); pointer-events: none;
   background-image: radial-gradient(circle at .72rem 1rem, var(--bg) 0 4px, var(--border) 4px 5.5px, transparent 6px); transform: rotate(-1deg); }
-#tip[hidden] { display: none; }
-#tip::before { content: ""; position: absolute; left: var(--ax, 50%); top: -18px; height: 16px; border-left: 2px dotted var(--border); }
-#tip.up::before { top: auto; bottom: -18px; }
-#tip b { display: block; font: 600 1.02rem/1.25 var(--display); margin-bottom: .2rem; }
-#tip ul { margin: 0; padding: 0; list-style: none; font-size: .92rem; line-height: 1.4; }
-#tip li { position: relative; padding-left: .9rem; margin: .18rem 0; }
-#tip li::before { content: ""; position: absolute; left: 0; top: .52em; width: 5px; height: 5px; background: var(--accent); }
-@media (prefers-reduced-motion: no-preference) { #tip:not([hidden]) { animation: tip-in .15s ease-out; } }
+.tipb[hidden] { display: none; }
+.tipb::before { content: ""; position: absolute; left: var(--ax, 50%); top: -18px; height: 16px; border-left: 2px dotted var(--border); }
+.tipb.up::before { top: auto; bottom: -18px; }
+.tipb b { display: block; font: 600 1.02rem/1.25 var(--display); margin-bottom: .2rem; }
+.tipb ul { margin: 0; padding: 0; list-style: none; font-size: .92rem; line-height: 1.4; }
+.tipb li { position: relative; padding-left: .9rem; margin: .18rem 0; }
+.tipb li::before { content: ""; position: absolute; left: 0; top: .52em; width: 5px; height: 5px; background: var(--accent); }
+@media (prefers-reduced-motion: no-preference) { .tipb:not([hidden]) { animation: tip-in .15s ease-out; } }
 @keyframes tip-in { from { opacity: 0; translate: 0 4px; } }
 
 /* buttons: round, soft offset, squash on press */
@@ -132,7 +132,7 @@ button { font: inherit; cursor: pointer; color: var(--ink); }
   box-shadow: 3px 4px 0 rgb(58 46 42 / .2); display: grid; }
 .plates { display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(2, 1fr); gap: 6%; place-items: center; }
 .plate { width: min(100%, 3.4rem); aspect-ratio: 1; border-radius: 50%; background: var(--surface-2); border: 2px solid var(--border); display: grid; place-items: center; position: relative; }
-.plate svg { width: 56%; height: 56%; }
+.plate svg { width: 72%; height: 72%; }
 .plate.empty { background: rgb(255 255 255 / .55); border-style: dashed; border-color: rgb(58 46 42 / .55); }
 .plate.dup { box-shadow: 0 0 0 3px var(--bad); }
 .plate.dup::after { content: "2×"; position: absolute; right: -14%; top: -14%; padding: 0 .2rem; background: var(--bad); color: #fff; font: 500 .6rem/1.3 var(--mono); border-radius: 4px; }
@@ -308,7 +308,6 @@ footer .copy { grid-column: 1 / -1; border-top: 2px dashed rgb(58 46 42 / .25); 
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs id="pixdefs"></defs></svg>
-<div id="tip" role="tooltip" hidden></div>
 
 <nav class="nav" aria-label="Main">
   <div class="wrap">
@@ -518,16 +517,23 @@ pixelSprites({
   sprites,
 });
 
-/* ---- pixel dish icons from rectangles ---- */
-const R = rs => rs.map(([x, y, w, h]) => `M${x} ${y}h${w}v${h}h${-w}z`).join('');
-const ICON = {
-  Mains: R([[6, 3, 4, 1], [7, 2, 2, 1], [2, 5, 12, 1], [1, 6, 14, 1], [2, 7, 12, 6], [3, 13, 10, 1], [0, 8, 2, 1], [14, 8, 2, 1]]),
-  Sides: R([[4, 4, 8, 1], [2, 5, 12, 1], [1, 6, 14, 7], [2, 13, 12, 1]]),
-  Salads: R([[3, 4, 2, 2], [6, 2, 3, 4], [10, 3, 3, 3], [1, 7, 14, 1], [2, 8, 12, 2], [3, 10, 10, 2], [5, 12, 6, 1]]),
-  Sweets: R([[7, 1, 2, 2], [7, 4, 2, 2], [2, 6, 12, 2], [2, 9, 12, 4], [1, 13, 14, 1]]),
-  Drinks: R([[4, 2, 7, 1], [3, 3, 9, 11], [12, 5, 2, 1], [13, 6, 1, 4], [12, 10, 2, 1], [3, 14, 9, 1]]),
+/* ---- pixel dish icons: [top row, ...16-wide rows], one palette ---- */
+const DISH_PAL = { k: '#3a2e2a', w: '#ffffff', g: '#6cc26f', G: '#3f8f4a', r: '#e5484d', b: '#9ec5ff', c: '#f2c879', C: '#c98a3a', d: '#ff8fab', y: '#ffd86e', p: '#ff8fab', a: '#d8eefc', l: '#fff3b0' };
+const DISH_ART = {
+  Mains: [3, // a lattice pie
+    '.....kkkkkk.....', '...kkcCccCckk...', '..kcCcccCcccCk..', '.kcccCcccCcccck.', '.kcCcccCcccCcck.', 'kkkkkkkkkkkkkkkk', 'kdwddddddddddddk', 'kddddddddddddddk', '.kddddddddddddk.', '..kkkkkkkkkkkk..'],
+  Sides: [4, // a sandwich
+    '..kkkkkkkkkk....', '.kccccccccccck..', '.kcwcccccccccck.', 'kggGggGggGggk...', '.krrrrrrrrrrk...', '.kyyyyyyyyyyk...', '.kccccccccccck..', '..kkkkkkkkkkkk..'],
+  Salads: [3, // a salad bowl
+    '....gg...rr.....', '...gGgg.rrrr.gg.', '..gGgGgggrrGgGg.', '.kkkkkkkkkkkkkk.', '.kbbbbbbbbbbbbk.', '.kbwbbbbbbbbbbk.', '..kbbbbbbbbbbk..', '...kbbbbbbbbk...', '....kkkkkkkk....', '......kkkk......'],
+  Sweets: [2, // a slice of cake
+    '..........GG....', '.........krrk...', '.........krrk...', '......kkkkkkkk..', '...kkkwwwwwwwwk.', '.kkwwwwwwwwwwwk.', '.kyyyyyyyyyyyyk.', '.kppppppppppppk.', '.kyyyyyyyyyyyyk.', '.kyyyyyyyyyyyyk.', '.kkkkkkkkkkkkkk.'],
+  Drinks: [3, // a jug of lemonade
+    '...kkkkkkkk.....', '..kaaaaaaaak....', '...kaaaaaaakkk..', '...kywwyyyyk.k..', '...kywwyyyyk.k..', '...kyyyyllyk.k..', '...kyyylllykkk..', '...kyyyyyyyk....', '....kkkkkkk.....'],
 };
-const icon = c => `<svg viewBox="0 0 16 16" shape-rendering="crispEdges" fill="currentColor" aria-hidden="true"><path d="${ICON[c]}"/></svg>`;
+const ICON = Object.fromEntries(Object.entries(DISH_ART).map(([c, [top, ...rows]]) => [c, rows.map((row, y) => [...row].map((ch, x) =>
+  ch === '.' ? '' : `<rect x="${x}" y="${y + top}" width="1.02" height="1.02" fill="${DISH_PAL[ch]}"/>`).join('')).join('')]));
+const icon = c => `<svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true">${ICON[c]}</svg>`;
 
 /* ---- sample data (all made up) ---- */
 const COURSES = [['Mains', 2], ['Sides', 2], ['Salads', 1], ['Sweets', 2], ['Drinks', 1]];
@@ -761,12 +767,18 @@ async function play() {
 }
 $('playBtn').onclick = play;
 
-/* tooltips: one paper tag, hover + focus + tap */
-const tip = $('tip'); let tipFor = null;
+/* tooltips: one paper tag per trigger, role=tooltip and named by the trigger's aria-describedby, so screen readers
+   get the text while it is hidden too. Opens on hover, focus and tap; a second tap or Escape closes it. */
+let tip = null, tipFor = null, pinned = false;
+document.querySelectorAll('[data-tip]').forEach((el, n) => {
+  const t = document.createElement('div'), [title, ...lines] = el.dataset.tip.split('|');
+  t.id = 'tip-' + n; t.className = 'tipb'; t.setAttribute('role', 'tooltip'); t.hidden = true;
+  t.innerHTML = `<b>${title}</b><ul>${lines.map(l => `<li>${l}</li>`).join('')}</ul>`;
+  document.body.append(t); el.setAttribute('aria-describedby', t.id);
+});
 function showTip(el) {
-  const [t, ...lines] = el.dataset.tip.split('|');
-  tip.innerHTML = `<b>${t}</b><ul>${lines.map(l => `<li>${l}</li>`).join('')}</ul>`; tip.hidden = false; tipFor = el;
-  el.setAttribute('aria-describedby', 'tip');
+  if (el !== tipFor) hideTip();
+  tipFor = el; tip = $(el.getAttribute('aria-describedby')); tip.hidden = false;
   const r = el.getBoundingClientRect(), w = tip.offsetWidth, h = tip.offsetHeight;
   const x = Math.min(Math.max(8, r.left + r.width / 2 - w / 2), innerWidth - w - 8);
   let y = r.bottom + 18, up = false;
@@ -774,14 +786,18 @@ function showTip(el) {
   tip.style.left = x + 'px'; tip.style.top = Math.max(8, y) + 'px';
   tip.style.setProperty('--ax', Math.min(w - 12, Math.max(10, r.left + r.width / 2 - x - 1)) + 'px'); tip.classList.toggle('up', up);
 }
-function hideTip() { if (tipFor) tipFor.removeAttribute('aria-describedby'); tip.hidden = true; tipFor = null; }
+function hideTip() { if (tip) tip.hidden = true; tip = tipFor = null; pinned = false; }
 document.addEventListener('mouseover', e => { const el = e.target.closest('[data-tip]'); if (el && el !== tipFor) showTip(el); });
-document.addEventListener('mouseout', e => { const el = e.target.closest('[data-tip]'); if (el && !el.contains(e.relatedTarget) && document.activeElement !== el) hideTip(); });
+document.addEventListener('mouseout', e => { const el = e.target.closest('[data-tip]'); if (el && !el.contains(e.relatedTarget) && document.activeElement !== el && !pinned) hideTip(); });
 document.addEventListener('focusin', e => { const el = e.target.closest('[data-tip]'); el ? showTip(el) : hideTip(); });
-document.addEventListener('focusout', e => { if (e.target.closest('[data-tip]')) hideTip(); });
-document.addEventListener('click', e => { const el = e.target.closest('[data-tip]'); if (el) showTip(el); });
+document.addEventListener('focusout', e => { if (e.target.closest('[data-tip]') && !e.target.contains(e.relatedTarget)) hideTip(); });
+document.addEventListener('click', e => {
+  const el = e.target.closest('[data-tip]');
+  if (!el) { if (!e.target.closest('.tipb')) hideTip(); return; }
+  if (el === tipFor && pinned) hideTip(); else { showTip(el); pinned = true; }
+});
 document.addEventListener('keydown', e => { if (e.key === 'Escape') hideTip(); });
-addEventListener('scroll', () => { if (tipFor && document.activeElement !== tipFor) hideTip(); else if (tipFor) showTip(tipFor); }, { passive: true });
+addEventListener('scroll', () => { if (tipFor && document.activeElement !== tipFor && !pinned) hideTip(); else if (tipFor) showTip(tipFor); }, { passive: true });
 
 /* how it works: a plate token walks the route, pauses off screen */
 $('token').innerHTML = icon('Sweets');

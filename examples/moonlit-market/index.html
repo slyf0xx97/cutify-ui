@@ -70,14 +70,15 @@ button { font: inherit; cursor: pointer; }
 .kind { display: inline-block; padding: .05rem .4rem; font: 400 .65rem/1.5 var(--label); text-transform: uppercase; color: var(--bg); white-space: nowrap; vertical-align: middle; }
 .kind.ai { background: var(--jade); } .kind.you { background: var(--ink); }
 
-/* tooltip: focusable i, text in data-tip; JS nudges it inside the viewport (--dx) and flips it up near the bottom */
+/* tooltip: a real button, text in data-tip; shows on hover, focus or a pinning click/tap (.open), Escape hides it (.shut).
+   JS nudges it inside the viewport (--dx), flips it up near the bottom, and copies the text into a hidden role=tooltip for screen readers */
 .i { display: inline-grid; place-items: center; flex: none; width: 1.25rem; height: 1.25rem; font: 400 .7rem var(--label); color: var(--lantern); box-shadow: 0 -2px currentColor, 0 2px currentColor, -2px 0 currentColor, 2px 0 currentColor;
-  cursor: help; position: relative; margin-left: .45rem; vertical-align: middle; }
-.i[data-tip]:hover::after, .i[data-tip]:focus-visible::after { content: attr(data-tip); position: absolute; left: 50%; top: calc(100% + 10px); transform: translateX(calc(-50% + var(--dx, 0px)));
+  cursor: help; position: relative; margin-left: .45rem; vertical-align: middle; padding: 0; border: 0; background: none; }
+.i[data-tip]:is(:hover, :focus-visible, .open):not(.shut)::after { content: attr(data-tip); position: absolute; left: 50%; top: calc(100% + 10px); transform: translateX(calc(-50% + var(--dx, 0px)));
   width: min(290px, calc(100vw - 32px)); padding: .7rem .85rem; background: var(--surface-2); color: var(--ink); box-shadow: var(--glow); font: 400 .92rem/1.5 var(--body);
   text-align: left; text-transform: none; letter-spacing: 0; white-space: pre-line; z-index: 200; pointer-events: none; }
-.i.up[data-tip]:hover::after, .i.up[data-tip]:focus-visible::after { top: auto; bottom: calc(100% + 10px); }
-:has(> .i:hover), :has(> .i:focus-visible) { z-index: 60; }
+.i.up[data-tip]:is(:hover, :focus-visible, .open):not(.shut)::after { top: auto; bottom: calc(100% + 10px); }
+:has(> .i:hover), :has(> .i:focus-visible), :has(> .i.open) { z-index: 60; }
 
 .pill { display: inline-block; padding: .1rem .5rem; font: 400 .7rem/1.6 var(--label); text-transform: uppercase; color: var(--bg); white-space: nowrap; }
 .pill.ok { background: var(--ok); } .pill.bad { background: var(--bad); } .pill.amb { background: var(--warn); }
@@ -328,8 +329,8 @@ dialog.pop::backdrop { background: rgb(8 7 20 / .72); }
     <div class="panel scene" aria-labelledby="sceneCap">
       <p class="sr-only" id="sceneCap">A pixel night-market street with six stalls. A visitor walks the sample route and each stall on it lights up.</p>
       <div class="stage-svg" id="heroStreet">
-        <span class="alab" style="left:12%;top:86%"><i class="glyph scout" aria-hidden="true">S</i>Scout <span class="kind ai">AI</span></span>
-        <span class="alab" style="right:12%;top:86%"><span class="kind ai">AI</span>Queue Guesser <i class="glyph queue" aria-hidden="true">Q</i></span>
+        <span class="alab" style="left:12.5%;top:85.5%"><i class="glyph scout" aria-hidden="true">S</i>Scout <span class="kind ai">AI</span></span>
+        <span class="alab" style="right:12.5%;top:85.5%"><span class="kind ai">AI</span>Queue Guesser <i class="glyph queue" aria-hidden="true">Q</i></span>
       </div>
       <div class="legend">
         <span><i class="glyph scout" aria-hidden="true">S</i>Scout <span class="kind ai">AI</span></span>
@@ -343,7 +344,7 @@ dialog.pop::backdrop { background: rgb(8 7 20 / .72); }
   <!-- STAGE 1 -->
   <section class="wrap stage" id="s1" aria-labelledby="st1h">
     <div class="step on" id="st1"><span class="n"><b></b>1</span><h2 id="st1h">Pick your cravings</h2>
-      <span class="i" tabindex="0" data-tip="Pick your cravings&#10;• Tap as many as you like&#10;• The budget is per person, in sample prices&#10;• Start time is when you reach the first stall&#10;Why you: only you know what you’re hungry for.">i</span>
+      <button class="i" type="button" aria-label="About picking your cravings" data-tip="Pick your cravings&#10;• Tap as many as you like&#10;• The budget is per person, in sample prices&#10;• Start time is when you reach the first stall&#10;Why you: only you know what you’re hungry for.">i</button>
       <span class="kind you">You</span></div>
     <div class="explain"><span>You pick cravings <span class="kind you">You</span></span><i>→</i><span>Set a budget and a start time</span><i>→</i><span>Send them to the Scout</span></div>
     <div class="panel pick">
@@ -372,7 +373,7 @@ dialog.pop::backdrop { background: rgb(8 7 20 / .72); }
   <!-- STAGE 2 -->
   <section class="wrap stage" id="s2" aria-labelledby="st2h">
     <div class="step" id="st2"><span class="n"><b></b>2</span><h2 id="st2h">The Scout finds stalls</h2>
-      <span class="i" tabindex="0" data-tip="The Scout&#10;• Reads your cravings and budget&#10;• Matches them to each stall’s menu&#10;• Most matches first, then cheapest&#10;• Stops before the total goes over budget&#10;• Lines the stops up along the street&#10;Why an AI: cravings are loose words, like “something spicy”.">i</span>
+      <button class="i" type="button" aria-label="About the Scout" data-tip="The Scout&#10;• Reads your cravings and budget&#10;• Matches them to each stall’s menu&#10;• Most matches first, then cheapest&#10;• Stops before the total goes over budget&#10;• Lines the stops up along the street&#10;Why an AI: cravings are loose words, like “something spicy”.">i</button>
       <span class="kind ai">AI</span></div>
     <div class="explain"><span>Cravings in</span><i>→</i><span><i class="glyph scout" aria-hidden="true">S</i>Scout matches menus <span class="kind ai">AI</span></span><i>→</i><span>Stalls that fit the budget</span></div>
     <div class="agent">
@@ -385,7 +386,7 @@ dialog.pop::backdrop { background: rgb(8 7 20 / .72); }
   <!-- STAGE 3 -->
   <section class="wrap stage" id="s3" aria-labelledby="st3h">
     <div class="step" id="st3"><span class="n"><b></b>3</span><h2 id="st3h">The Queue Guesser checks the waits</h2>
-      <span class="i" tabindex="0" data-tip="The Queue Guesser&#10;• Reads sample crowd counts, every 30 min&#10;• Works out when you reach each stall&#10;• Divides the queue by how fast the stall serves&#10;• Adds up the time you’ll spend queueing&#10;Waits are estimates from made-up data.">i</span>
+      <button class="i" type="button" aria-label="About the Queue Guesser" data-tip="The Queue Guesser&#10;• Reads sample crowd counts, every 30 min&#10;• Works out when you reach each stall&#10;• Divides the queue by how fast the stall serves&#10;• Adds up the time you’ll spend queueing&#10;Waits are estimates from made-up data.">i</button>
       <span class="kind ai">AI</span></div>
     <div class="explain"><span>Your stops in order</span><i>→</i><span><i class="glyph queue" aria-hidden="true">Q</i>Queue Guesser reads the crowds <span class="kind ai">AI</span></span><i>→</i><span>A wait estimate per stall</span></div>
     <div class="agent">
@@ -398,7 +399,7 @@ dialog.pop::backdrop { background: rgb(8 7 20 / .72); }
   <!-- STAGE 4 -->
   <section class="wrap stage" id="s4" aria-labelledby="st4h">
     <div class="step" id="st4"><span class="n"><b></b>4</span><h2 id="st4h">Approve your crawl route</h2>
-      <span class="i" tabindex="0" data-tip="Approve the route&#10;• Lit lanterns mark your stops&#10;• Numbers show the order you walk them&#10;• Times and waits are estimates&#10;• Want changes? Go back to step 1&#10;Nothing happens until you approve.">i</span>
+      <button class="i" type="button" aria-label="About approving the route" data-tip="Approve the route&#10;• Lit lanterns mark your stops&#10;• Numbers show the order you walk them&#10;• Times and waits are estimates&#10;• Want changes? Go back to step 1&#10;Nothing happens until you approve.">i</button>
       <span class="kind you">You</span></div>
     <div class="explain"><span>Route on the street</span><i>→</i><span>Check spend and waits</span><i>→</i><span>You approve <span class="kind you">You</span></span></div>
     <div class="route-grid">
@@ -556,7 +557,8 @@ function guess(route, start) {
   const g = guess(r.route, 30); console.assert(g.stops[0].arrive === 31 && g.done > g.stops[2].arrive, 'guess sample'); })();
 
 /* ---------- the street (inline SVG, pixel art) ---------- */
-const VW = 640, VH = 360, SW = 104, X0 = 8, WALK_Y = 290, COUNTER_Y = 252, IN_X = 10, OUT_X = 630;
+const VW = 640, VH = 360, SW = 104, X0 = 8, WALK_Y = 290, COUNTER_Y = 252, IN_X = 32, OUT_X = 608;
+const WS = 56, CAST = 64;  // walker and hero-cast sprite sizes in street units (about 50px and 58px at desktop width)
 const stringY = x => Math.round(34 + 30 * (1 - ((x - 320) / 320) ** 2));
 function streetSVG(p, withCast) {
   let s = `<svg class="street" viewBox="0 0 ${VW} ${VH}" shape-rendering="crispEdges" aria-hidden="true">
@@ -603,8 +605,11 @@ function streetSVG(p, withCast) {
       <rect class="body" x="0" y="6" width="12" height="12"/><rect class="rib" x="3" y="6" width="2" height="12"/><rect class="rib" x="7" y="6" width="2" height="12"/>
       <rect x="2" y="18" width="8" height="2" fill="#16171a"/><rect x="5" y="20" width="2" height="4" fill="#FFE45E"/></g></g>`; });
   s += `</g><path class="route" id="${p}-route" d=""/>`;
-  if (withCast) s += `<g class="bob"><use href="#sp-scout" x="24" y="324" width="32" height="32"/></g><g class="bob" style="animation-delay:-.8s"><use href="#sp-queue" x="584" y="324" width="32" height="32"/></g>`;
-  s += `<g class="walker" id="${p}-walker" style="transform:translate(${IN_X - 16}px,${WALK_Y - 32}px)"><use class="fa" href="#sp-you-a" width="32" height="32"/><use class="fb" href="#sp-you-b" width="32" height="32"/></g></svg>`;
+  if (withCast) s += `<g class="bob"><use href="#sp-scout" x="8" y="${VH - CAST}" width="${CAST}" height="${CAST}"/></g><g class="bob" style="animation-delay:-.8s"><use href="#sp-queue" x="${VW - 8 - CAST}" y="${VH - CAST}" width="${CAST}" height="${CAST}"/></g>`;
+  // the visitor carries a small "You" name chip (square glyph = You) above its head
+  s += `<g class="walker" id="${p}-walker" style="transform:translate(${IN_X - WS / 2}px,${WALK_Y - WS}px)"><use class="fa" href="#sp-you-a" width="${WS}" height="${WS}"/><use class="fb" href="#sp-you-b" width="${WS}" height="${WS}"/>
+    <rect x="${WS / 2 - 27}" y="-21" width="54" height="19" fill="#14132B" stroke="#F7EBD9" stroke-width="2"/><rect x="${WS / 2 - 21}" y="-16" width="9" height="9" fill="#F7EBD9"/>
+    <text x="${WS / 2 + 6}" y="-7" font-family="Silkscreen, monospace" font-size="12" fill="#F7EBD9" text-anchor="middle">YOU</text></g></svg>`;
   return s;
 }
 document.getElementById('heroStreet').insertAdjacentHTML('afterbegin', streetSVG('h', true));
@@ -625,7 +630,7 @@ function drawRoute(p, idx) {
     $(`${p}-lan-${i}`).classList.toggle('lit', n >= 0); $(`${p}-stall-${i}`).classList.remove('lit', 'here');
     $(`${p}-stop-${i}`).classList.toggle('on', n >= 0); $(`${p}-stop-${i}`).querySelector('text').textContent = n + 1; });
 }
-const place = (w, x, y) => w.style.transform = `translate(${x - 16}px,${y - 32}px)`;
+const place = (w, x, y) => w.style.transform = `translate(${x - WS / 2}px,${y - WS}px)`;
 /* walk the waypoints with steps() easing: one Web Animation per straight leg, a pause at each counter */
 async function walk(p, idx, alive, onStop) {
   const w = $(`${p}-walker`), pts = waypoints(idx);
@@ -636,7 +641,7 @@ async function walk(p, idx, alive, onStop) {
     const [ax, ay] = pts[k - 1], [bx, by, stop] = pts[k], dist = Math.hypot(bx - ax, by - ay);
     if (!dist) continue;
     w.classList.add('walking');
-    const a = w.animate([{ transform: `translate(${ax - 16}px,${ay - 32}px)` }, { transform: `translate(${bx - 16}px,${by - 32}px)` }],
+    const a = w.animate([{ transform: `translate(${ax - WS / 2}px,${ay - WS}px)` }, { transform: `translate(${bx - WS / 2}px,${by - WS}px)` }],
       { duration: dist / 0.075, easing: `steps(${Math.max(2, Math.round(dist / 6))}, end)`, fill: 'forwards' });
     p === 'h' ? heroAnims.add(a) : null;
     try { await a.finished; } catch { return; }
@@ -770,8 +775,19 @@ function fitTip(el) {
   const dx = Math.min(0, innerWidth - 16 - (mid + w / 2)) + Math.max(0, 16 - (mid - w / 2));
   el.style.setProperty('--dx', dx + 'px'); el.classList.toggle('up', r.bottom + 240 > innerHeight && r.top > 260);
 }
-document.querySelectorAll('.i[data-tip]').forEach(el => { el.setAttribute('role', 'button'); el.setAttribute('aria-label', el.dataset.tip.split('\n')[0] + ', more info');
-  ['mouseenter', 'focus'].forEach(ev => el.addEventListener(ev, () => fitTip(el))); });
+const tips = [...document.querySelectorAll('.i[data-tip]')];
+tips.forEach((el, k) => {
+  const sr = document.createElement('span');  // the text screen readers hear, linked by aria-describedby
+  sr.id = 'tip-' + k; sr.className = 'sr-only'; sr.setAttribute('role', 'tooltip'); sr.textContent = el.dataset.tip;
+  el.after(sr); el.setAttribute('aria-describedby', sr.id);
+  ['mouseenter', 'focus'].forEach(ev => el.addEventListener(ev, () => fitTip(el)));
+  ['mouseleave', 'blur'].forEach(ev => el.addEventListener(ev, () => el.classList.remove('shut')));
+  el.addEventListener('blur', () => el.classList.remove('open'));
+  // click or tap pins the tip open; a second click closes it even while hovered or focused
+  el.addEventListener('click', () => { const open = el.classList.contains('open'); el.classList.toggle('open', !open); el.classList.toggle('shut', open); });
+});
+addEventListener('pointerdown', e => tips.forEach(el => !el.contains(e.target) && el.classList.remove('open')));
+addEventListener('keydown', e => { if (e.key === 'Escape') tips.forEach(el => { el.classList.remove('open'); if (el.matches(':hover, :focus')) el.classList.add('shut'); }); });
 
 /* ---------- pause off screen ---------- */
 const io = new IntersectionObserver(es => es.forEach(e => {

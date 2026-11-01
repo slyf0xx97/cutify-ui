@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: ambiguous-theme-choice
+expected_outcome: |
+  A single index.html that picks a theme fitting a cosy food/weekend product (most likely Picnic), says in one line which theme it chose and why, uses only the cast in the brief (the AI helper and the customer), and avoids invented mechanics such as rule checkers or negotiation rounds.

@@ -78,14 +78,15 @@ button { font: inherit; color: inherit; cursor: pointer; }
   font: 700 .75rem var(--mono); color: var(--teal-dark); cursor: help; position: relative; vertical-align: middle; background: #fff; }
 .i:hover, .i:focus { color: var(--ink); background: var(--lime); outline: none; }
 .i:focus-visible { box-shadow: 0 0 0 3px var(--ink); }
-.i[data-tip]:hover::after, .i[data-tip]:focus::after { content: attr(data-tip); position: absolute; left: 50%; top: calc(100% + 10px);
+.i[data-tip]:hover::after, .i[data-tip]:focus::after, .i[data-tip].open::after { content: attr(data-tip); position: absolute; left: 50%; top: calc(100% + 10px);
   transform: translateX(calc(-50% + var(--tx, 0px))); width: var(--tw, 300px); padding: .7rem .85rem; background: #fff; color: var(--ink);
   border: 2px solid var(--ink); border-radius: 14px; font: 400 .92rem/1.45 var(--body); text-align: left; letter-spacing: 0; text-transform: none;
   box-shadow: 3px 3px 0 rgb(31 36 48 / 20%), 0 12px 28px rgb(16 70 100 / 26%); white-space: pre-line; z-index: 200; pointer-events: none; }
-.i.up[data-tip]:hover::after, .i.up[data-tip]:focus::after { top: auto; bottom: calc(100% + 10px); }
-@media (prefers-reduced-motion: no-preference) { .i[data-tip]:hover::after, .i[data-tip]:focus::after { animation: tip-in .15s ease-out; } }
+.i.up[data-tip]:hover::after, .i.up[data-tip]:focus::after, .i.up[data-tip].open::after { top: auto; bottom: calc(100% + 10px); }
+@media (prefers-reduced-motion: no-preference) { .i[data-tip]:hover::after, .i[data-tip]:focus::after, .i[data-tip].open::after { animation: tip-in .15s ease-out; } }
 @keyframes tip-in { from { opacity: 0; margin-top: 4px; } }
-:is(section, .glass, .card, header, .stage-head, .label):has(.i:hover, .i:focus) { z-index: 60; }
+:is(section, .glass, .card, header, .stage-head, .label):has(.i:hover, .i:focus, .i.open) { z-index: 60; }
+.i { padding: 0; } .i.shut::after { content: none !important; }
 
 /* ---------- nav ---------- */
 .nav { position: sticky; top: .6rem; z-index: 100; width: min(1120px, calc(100% - 1.5rem)); margin: .6rem auto 0; padding: .45rem .6rem .45rem .9rem;
@@ -347,7 +348,7 @@ dialog.pop::backdrop { background: rgb(14 43 36 / 62%); }
         </div></div></div>
         <p class="bubble">Hi! Scroll down and I'll walk you through my work.</p>
         <span class="label mika"><span class="tag soft">Avatar</span>Sam
-          <span class="i" tabindex="0" data-tip="Pixel Sam, your guide&#10;• A 16 × 16 pixel drawing of me&#10;• Walks the trail at the bottom of the screen as you scroll&#10;• Each flag is one stop on my journey&#10;Why a guide: a person is easier to follow than a progress bar.">i</span></span>
+          <button type="button" class="i" aria-label="About Pixel Sam, your guide" data-tip="Pixel Sam, your guide&#10;• A 16 × 16 pixel drawing of me&#10;• Walks the trail at the bottom of the screen as you scroll&#10;• Each flag is one stop on my journey&#10;Why a guide: a person is easier to follow than a progress bar.">i</button></span>
       </div>
       <div class="legend" aria-hidden="true">
         <span><svg class="sprite" viewBox="0 0 16 16" style="color:#fff"><use href="#flag"/></svg>A stop on the trail</span>
@@ -359,13 +360,13 @@ dialog.pop::backdrop { background: rgb(14 43 36 / 62%); }
 
   <div class="journey-intro"><div class="plate glass">
     <h2>My journey in six stops</h2>
-    <p>Each stop is numbered. Hover or tap any <span class="i" tabindex="0" data-tip="Tips like this one&#10;• Open on hover, keyboard focus or tap&#10;• Say why something is there, not only what&#10;Press Escape to close.">i</span> for the why behind it.</p>
+    <p>Each stop is numbered. Hover or tap any <button type="button" class="i" aria-label="About these tips" data-tip="Tips like this one&#10;• Open on hover, keyboard focus or tap&#10;• Say why something is there, not only what&#10;Press Escape to close.">i</button> for the why behind it.</p>
   </div></div>
 
   <!-- 1 About -->
   <section class="stage glass" id="st1" aria-labelledby="t1" data-short="About">
     <div class="stage-head"><span class="num">1</span><span class="stage-pill">About</span><h2 class="stage-title" id="t1">Meet Sam</h2>
-      <span class="i" tabindex="0" data-tip="Who made this work&#10;• What I study and where&#10;• What I care about in a design&#10;Why it comes first: knowing who made the work helps you read it.">i</span></div>
+      <button type="button" class="i" aria-label="About who made this work" data-tip="Who made this work&#10;• What I study and where&#10;• What I care about in a design&#10;Why it comes first: knowing who made the work helps you read it.">i</button></div>
     <div class="explain"><span>Student</span><i>→</i><span>Notices small frustrations</span><i>→</i><span>Designs a kinder screen</span></div>
     <div class="about">
       <div class="card">
@@ -389,7 +390,7 @@ dialog.pop::backdrop { background: rgb(14 43 36 / 62%); }
   <!-- 5 Skills -->
   <section class="stage glass" id="st5" aria-labelledby="t5" data-short="Skills">
     <div class="stage-head"><span class="num">5</span><span class="stage-pill">Skills</span><h2 class="stage-title" id="t5">Check my toolkit</h2>
-      <span class="i" tabindex="0" data-tip="What I can do today&#10;• Three groups: research, design, build&#10;• Each bar is a self-rating out of 10&#10;Why self-rated: there's no exam for this, so I rate myself and show the work above so you can check.">i</span></div>
+      <button type="button" class="i" aria-label="About my skills" data-tip="What I can do today&#10;• Three groups: research, design, build&#10;• Each bar is a self-rating out of 10&#10;Why self-rated: there's no exam for this, so I rate myself and show the work above so you can check.">i</button></div>
     <div class="explain"><span>Research</span><i>→</i><span>Design</span><i>→</i><span>Build</span><span class="tag made">self-rated</span></div>
     <div class="skills" id="skills"></div>
   </section>
@@ -397,7 +398,7 @@ dialog.pop::backdrop { background: rgb(14 43 36 / 62%); }
   <!-- 6 Contact -->
   <section class="stage glass" id="st6" aria-labelledby="t6" data-short="Contact">
     <div class="stage-head"><span class="num">6</span><span class="stage-pill">Contact</span><h2 class="stage-title" id="t6">Say hello</h2>
-      <span class="i" tabindex="0" data-tip="The end of the trail&#10;• One email address, no forms&#10;• I reply within two working days&#10;Why email: it's the one thing everybody already has.">i</span></div>
+      <button type="button" class="i" aria-label="About getting in touch" data-tip="The end of the trail&#10;• One email address, no forms&#10;• I reply within two working days&#10;Why email: it's the one thing everybody already has.">i</button></div>
     <div class="explain"><span>You write</span><i>→</i><span>I reply in two days</span><i>→</i><span>We chat about the role</span></div>
     <div class="card contact">
       <div>
@@ -538,7 +539,7 @@ document.querySelectorAll('[data-study]').forEach(sec => {
   sec.style.setProperty('--hue', s.hue); sec.style.setProperty('--hue-strong', s.strong);
   sec.innerHTML = `
     <div class="stage-head"><span class="num">${s.n}</span><span class="stage-pill">Case study ${s.n - 1}</span><h2 class="stage-title" id="t${s.n}">${esc(s.title)}</h2>
-      <span class="i" tabindex="0" data-tip="${s.tip}">i</span></div>
+      <button type="button" class="i" aria-label="About case study ${s.n - 1}: ${esc(s.name)}" data-tip="${s.tip}">i</button></div>
     <div class="explain">${s.explain.map(e => `<span>${esc(e)}</span>`).join('<i>→</i>')}</div>
     <article class="card case">
       <div class="case-art"><svg class="sprite" viewBox="0 0 16 16" role="img" aria-label="${esc(s.name)} icon"><use href="#${s.icon}"/></svg></div>
@@ -580,7 +581,7 @@ const SKILLS = [
     'Build&#10;• Making prototypes people can touch&#10;• Enough code to talk well with engineers&#10;Why it matters: a prototype tests better than a picture.'],
 ];
 $('skills').innerHTML = SKILLS.map(([g, hue, items, tip]) => `<div class="card" style="--hue:${hue}">
-  <h3>${g}<span class="i" tabindex="0" data-tip="${tip}">i</span></h3>
+  <h3>${g}<button type="button" class="i" aria-label="About my ${g} skills" data-tip="${tip}">i</button></h3>
   <ul>${items.map(([n, v]) => `<li class="skill"><span>${n}</span><span class="mono">${v}/10</span><span class="meter" role="img" aria-label="${n}: ${v} out of 10"><i style="width:${v * 10}%"></i></span></li>`).join('')}</ul></div>`).join('');
 
 // ---------- copy email ----------
@@ -599,10 +600,9 @@ function placeTip(el) {
   const floor = trail.classList.contains('show') ? innerHeight - trail.offsetHeight : innerHeight;
   el.classList.toggle('up', r.bottom + 240 > floor && r.top > 300);
 }
-['pointerover', 'focusin'].forEach(t => document.addEventListener(t, e => { const i = e.target.closest?.('.i'); if (i) placeTip(i); }));
+['pointerover', 'focusin', 'click'].forEach(t => document.addEventListener(t, e => { const i = e.target.closest?.('.i'); if (i) placeTip(i); }));
 // focusing a trigger scrolls it into view after focusin: re-place the open tip once it has moved
 addEventListener('scroll', () => { const a = document.activeElement; if (a?.classList.contains('i')) placeTip(a); }, { passive: true });
-document.addEventListener('keydown', e => { if (e.key === 'Escape' && document.activeElement?.classList.contains('i')) document.activeElement.blur(); });
 
 // ---------- hero flags along the drawn path ----------
 const hp = $('heroPath'), hl = hp.getTotalLength();
@@ -691,6 +691,30 @@ document.fonts?.ready.then(layout);
 // ---------- pause loops off screen ----------
 const io = new IntersectionObserver(es => es.forEach(e => e.target.classList.toggle('is-off', !e.isIntersecting)), { rootMargin: '100% 0px' });
 document.querySelectorAll('.hero, .stage, .how').forEach(el => io.observe(el));
+// ---------- tooltips for screen readers, tap and Escape ----------
+// each (i) is described by a visually hidden role="tooltip" copy of its text; the visible tip is the ::after
+document.querySelectorAll('.i[data-tip]').forEach((b, k) => {
+  const t = document.createElement('span');
+  t.id = 'tip-text-' + k; t.className = 'sr-only'; t.setAttribute('role', 'tooltip'); t.textContent = b.dataset.tip;
+  document.body.append(t); b.setAttribute('aria-describedby', t.id);
+});
+// click or tap toggles (.open shows, .shut hides even while hovered or focused); touch keeps a sticky :hover, so it goes by .open alone
+let tipPointer = '';
+document.addEventListener('pointerdown', e => { tipPointer = e.pointerType; }, true);
+document.addEventListener('click', e => {
+  const b = e.target.closest?.('.i[data-tip]');
+  document.querySelectorAll('.i.open').forEach(o => o !== b && o.classList.remove('open'));
+  if (b) {
+    const shown = !b.classList.contains('shut') && (tipPointer === 'touch' ? b.classList.contains('open') : getComputedStyle(b, '::after').content !== 'none');
+    b.classList.toggle('open', !shown); b.classList.toggle('shut', shown);
+  }
+  tipPointer = '';
+});
+document.addEventListener('focusout', e => { if (e.target.matches?.('.i[data-tip]')) e.target.classList.remove('open', 'shut'); });
+document.addEventListener('pointerout', e => { const b = e.target.closest?.('.i[data-tip]'); if (b && e.pointerType === 'mouse' && !b.contains(e.relatedTarget)) b.classList.remove('shut'); });
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') document.querySelectorAll('.i[data-tip]').forEach(b => { if (b.matches('.open, :hover, :focus')) { b.classList.remove('open'); b.classList.add('shut'); } });
+});
 </script>
 </body>
 </html>

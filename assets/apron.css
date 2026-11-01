@@ -6,15 +6,19 @@
   --line: #ffd400;   /* accent: actions, numbers, focus, routes; also the Code kind */
   --vis: #ff6b1a;    /* hi-vis: AI kind, constraints, glows */
   --chalk: #f2f0ea;  /* text; also the You kind */
-  --dim: #8d9097; --body: #cfd0d3; --sub: #b9bbc0; --on-bright: #1e1f22;
+  --dim: #8d9097; --body-ink: #cfd0d3; --sub: #b9bbc0; --on-bright: #1e1f22;
   --ok: #5ccf8a; --bad: #ff5a4e;
   --cast-1: #6aa8ff; --cast-2: #b98cff; --cast-3: #ff9a4a;
   --chart-before: #e04438; --chart-after: #3f8ee6; --chart-a: #9b6be0; --chart-b: #a98a00; --chart-c: #d94f8a;
   --hard: 0 6px 0 #00000055;
   --display: 'Anybody', system-ui, sans-serif; --mono: 'Spline Sans Mono', ui-monospace, monospace;
+  /* shared contract (same names in every theme) */
+  --surface: var(--panel); --surface-2: var(--panel-2); --ink: var(--chalk); --ink-muted: var(--dim);
+  --accent: var(--line); --accent-ink: var(--on-bright); --accent-2: var(--vis); --accent-2-ink: #121315;
+  --body: 'Anybody', system-ui, sans-serif;
 }
 *, *::before, *::after { box-sizing: border-box; }
-html, body { margin: 0; background: var(--bg); color: var(--chalk); font: 400 16px/1.5 var(--display); }
+html, body { margin: 0; background: var(--bg); color: var(--chalk); font: 400 16px/1.5 var(--body); }
 .mono { font-family: var(--mono); }
 a { color: var(--line); }
 :focus-visible { outline: 3px solid var(--line); outline-offset: 2px; }
@@ -121,3 +125,6 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .foot h5 { margin: 0 0 8px; font: 700 11px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--dim); }
 .foot a { text-decoration: none; }
 @media (max-width: 1100px) { .foot-grid { grid-template-columns: 1fr; } }
+
+/* contract classes, so recipes work in every theme */
+.hl { color: var(--line); }

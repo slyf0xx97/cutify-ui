@@ -240,21 +240,17 @@ Both theme files load their fonts from Google Fonts with an `@import`, which is 
 
 ## Making a new theme
 
-Keep these roles and swap values:
+Start from the theme file closest in mood, keep its class names, and set the shared contract variables. Every recipe in `references/components.md` and `assets/react/cutify-react.css` reads these, so they must exist in every theme:
 
-| Role | Glass | Apron |
-|---|---|---|
-| page / backdrop | painted scene | `#121315` dot grid |
-| surface | frosted white | `#1b1c1f` dots |
-| raised card | translucent white | `#232428` |
-| text / outline | `#1f2430` ink | `#f2f0ea` chalk |
-| accent (actions, numbers, focus) | orange `#e8912d` + lime `#dbe86a` | yellow `#ffd400` |
-| AI kind | teal or a cast colour | orange `#ff6b1a` |
-| Code kind | ink outline | yellow `#ffd400` |
-| You kind | orange | chalk |
-| ok / bad | `#1f7a4d` / `#c93a25` | `#5ccf8a` / `#ff5a4e` |
-| display font | Pixelify Sans | Anybody wide |
-| label font | Atkinson Hyperlegible bold caps | Spline Sans Mono caps |
-| hard shadow | `0 3px 0 rgb(16 70 100 / 30%)` | `0 6px 0 #00000055` |
+| Variable | Role | Glass | Apron | Picnic | Riso Club | Lantern Night | Toy Box |
+|---|---|---|---|---|---|---|---|
+| `--bg` | page | `#a9d8e8` + scene | `#121315` | `#FFFDF8` | `#F6F1E7` | `#14132B` | `#FAF7F0` |
+| `--surface` | panels | frosted white | `#1b1c1f` | `#FFF4E0` | `#FFFFFF` | `#221F45` | `#FFFFFF` |
+| `--surface-2` | raised cards, tips | `#d9f0fb` | `#232428` | `#FFFFFF` | `#FFE800` | `#2C2858` | `#F3EFE5` |
+| `--ink` / `--ink-muted` | text | `#1f2430` / `#3a4955` | `#f2f0ea` / `#8d9097` | `#3A2E2A` / `#6B5A52` | `#1D1D3B` / `#3D2E8C` | `#F7EBD9` / `#C9BBD9` | `#1A1A1A` / `#4A4A4A` |
+| `--accent` / `--accent-ink` | actions, numbers, focus | orange / ink | yellow / dark | jam red / white | riso blue / white | lantern / night | blue / white |
+| `--accent-2` / `--accent-2-ink` | second accent | lime / ink | hi-vis orange / dark | butter / cocoa | fluoro pink / ink | jade / night | yellow / ink |
+| `--ok` / `--bad` | status | `#1f7a4d` / `#c93a25` | `#5ccf8a` / `#ff5a4e` | `#3E7D48` / `#C2272D` | `#1F7A47` / `#C1121F` | `#2EC4A0` / `#FF7A82` | `#1F7A47` / `#C1121F` |
+| `--display` / `--body` / `--mono` | type | Pixelify Sans / Atkinson / Atkinson | Anybody / Anybody / Spline Sans Mono | Fredoka / Nunito / DM Mono | Bricolage / Rethink Sans / Space Mono | Jersey 10 / Lexend / Sometype Mono | Dela Gothic One / Outfit / JetBrains Mono |
 
-Check every text/background pair for 4.5:1 contrast after swapping.
+Then decide the theme's depth (sticker offset, blanket offset, print plate, glow or ledge) and its signature detail (how stage numbers look, how tooltips look). Check every text/background pair for 4.5:1 contrast after swapping.

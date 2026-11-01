@@ -1,0 +1,47 @@
+/* cutify-ui: styles for the React components (WordTip, Popup, StageHeader). MIT.
+   Import after a theme stylesheet (glass, apron, picnic, riso, lantern or toybox); it uses only the shared contract
+   variables: --surface, --surface-2, --ink, --ink-muted, --accent, --accent-ink, --accent-2, --display, --body, --mono. */
+
+/* WordTip: trigger word and Popover API bubble */
+.word-tip-wrap { display: inline-flex; }
+.word-tip-word { all: unset; cursor: help; font-weight: 700; border-bottom: 2px dotted var(--accent); }
+.word-tip-word:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; border-radius: 4px; }
+.word-tip { position: fixed; inset: auto; margin: 0; width: min(22rem, calc(100vw - 16px)); padding: 0; overflow: visible;
+  background: var(--surface-2); color: var(--ink); border: 2px solid var(--ink); border-radius: 14px;
+  box-shadow: 3px 3px 0 rgb(0 0 0 / 20%), 0 12px 28px rgb(0 0 0 / 22%); }
+.word-tip[hidden] { display: none; }
+.word-tip-head { padding: .5rem .8rem; background: var(--tip-bg, var(--accent)); color: var(--tip-ink, var(--accent-ink));
+  border-radius: 11px 11px 0 0; font: 600 1.1rem var(--display); }
+.word-tip-body { padding: .6rem .8rem .75rem; font: 400 1rem/1.45 var(--body); }
+.word-tip-body ul { margin: 0; padding: 0; }
+.word-tip-body li { list-style: none; position: relative; padding-left: .9rem; }
+.word-tip-body li + li { margin-top: .2rem; }
+.word-tip-body li::before { content: ""; position: absolute; left: 0; top: .55em; width: .4rem; height: .4rem; background: var(--tip-bg, var(--accent)); }
+@media (prefers-reduced-motion: no-preference) { .word-tip:popover-open, .word-tip:not([hidden]) { animation: cutify-tip-in .15s ease-out; } }
+@keyframes cutify-tip-in { from { opacity: 0; transform: translateY(4px); } }
+
+/* Popup: native <dialog> */
+dialog.pop { width: min(44rem, 94vw); max-height: 90dvh; padding: 0; border: 2px solid var(--ink); border-radius: 22px;
+  background: var(--surface-2); color: var(--ink); box-shadow: 0 24px 60px rgb(0 0 0 / 35%); }
+dialog.pop.pop-wide { width: min(70rem, 96vw); }
+dialog.pop[open] { display: flex; flex-direction: column; }
+dialog.pop::backdrop { background: rgb(10 12 20 / 60%); }
+@media (prefers-reduced-motion: no-preference) { dialog.pop[open] { animation: cutify-pop-in .18s ease-out; } }
+@keyframes cutify-pop-in { from { opacity: 0; transform: translateY(10px) scale(.98); } }
+.pop-head { display: flex; align-items: center; gap: .75rem; padding: .9rem 1.1rem; background: var(--pop-hue, var(--surface));
+  border-bottom: 3px solid var(--pop-bar, transparent); border-radius: 20px 20px 0 0; }
+.pop-icon { display: grid; place-items: center; width: 2.75rem; height: 2.75rem; border-radius: 14px; background: var(--surface-2); border: 2px solid var(--ink); }
+.pop-title { margin: 0; flex: 1; font: 800 1.5rem/1.2 var(--body); }
+.pop-close { border: 2px solid var(--ink); border-radius: 999px; background: var(--surface-2); color: var(--ink); padding: .3rem .8rem; font: 700 .95rem var(--body); cursor: pointer; }
+.pop-close:hover, .pop-close:focus-visible { background: var(--accent-2); }
+.pop-body { padding: 1.1rem 1.25rem 1.25rem; overflow: auto; }
+@media (max-width: 560px) { dialog.pop { width: calc(100vw - .75rem); max-height: 94dvh; } .pop-title { font-size: 1.25rem; } }
+
+/* StageHeader */
+.stage-header { display: block; }
+.stage-plate { margin: .75rem; padding: .85rem 1rem; background: var(--surface); border-radius: 14px; }
+.stage-top { display: flex; align-items: center; gap: .75rem; flex-wrap: wrap; }
+.stage-tab { display: inline-block; padding: .25rem .75rem; border-radius: 999px; background: var(--accent); color: var(--accent-ink); font: 800 .95rem var(--body); }
+.stage-title { margin: 0; font: 800 clamp(1.3rem, 2.3vw, 1.7rem)/1.2 var(--body); }
+.stage-line { margin: .4rem 0 0; font-weight: 700; font-size: 1.1rem; }
+.stage-aside { margin-left: auto; display: flex; align-items: center; gap: .5rem; }

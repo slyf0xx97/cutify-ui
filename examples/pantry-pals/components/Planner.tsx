@@ -12,7 +12,7 @@ type Phase = "idle" | "chef" | "shopper" | "ready";
 
 function Tip({ about, title, lines, tone }: { about: string; title: string; lines: string[]; tone?: string }) {
   return (
-    <WordTip word={<><span className="i-dot" aria-hidden="true">i</span><span className="sr-only">About {about}</span></>} title={title} tone={tone}>
+    <WordTip word={<span className="i-dot" aria-hidden="true">i</span>} label={`About ${about}`} title={title} tone={tone}>
       <ul>{lines.map((l) => <li key={l}>{l}</li>)}</ul>
     </WordTip>
   );
@@ -77,7 +77,7 @@ export function Planner() {
       {/* Stage 1 */}
       <section className="stage" id="fridge" aria-labelledby="s1-title">
         <StageHeader n={1} titleId="s1-title" title="Fill your fridge" icon="🧊" line="Tap what you have. The Chef plans around it."
-          aside={<><KindChip kind="you" /><Tip about="stage 1" title="Why start with the fridge" lines={[
+          aside={<><KindChip kind="you" /><Tip about="filling your fridge" title="Why start with the fridge" lines={[
             "Each tile is one thing in your fridge.",
             "Tap to add or remove it.",
             "The Chef ranks recipes by how much they use from here.",
@@ -110,7 +110,7 @@ export function Planner() {
       {/* Stage 2 */}
       <section className="stage" id="chef" aria-labelledby="s2-title">
         <StageHeader n={2} titleId="s2-title" title="Let the Chef plan your week" icon="🍳" line="Seven dinners, picked to use up your fridge first."
-          aside={<><KindChip kind="ai" /><Tip about="stage 2" title="What the Chef does" tone="var(--chef-bar)" lines={[
+          aside={<><KindChip kind="ai" /><Tip about="the Chef" title="What the Chef does" tone="var(--chef-bar)" lines={[
             "Reads what’s in your fridge.",
             "Picks seven dinners that use the most of it.",
             "Shows how much of each dinner you already have.",
@@ -163,7 +163,7 @@ export function Planner() {
       {/* Stage 3 */}
       <section className="stage" id="shopper" aria-labelledby="s3-title">
         <StageHeader n={3} titleId="s3-title" title="Let the Shopper build your list" icon="🧺" line="Only what the plan needs and your fridge doesn’t have."
-          aside={<><KindChip kind="ai" /><Tip about="stage 3" title="What the Shopper does" tone="var(--shopper-bar)" lines={[
+          aside={<><KindChip kind="ai" /><Tip about="the Shopper" title="What the Shopper does" tone="var(--shopper-bar)" lines={[
             "Reads the Chef’s plan and your fridge.",
             "Lists every missing ingredient once.",
             "Says how many dinners need each one.",
@@ -208,7 +208,7 @@ export function Planner() {
       {/* Stage 4 */}
       <section className="stage" id="approve" aria-labelledby="s4-title">
         <StageHeader n={4} titleId="s4-title" title="Approve your week" icon="✅" line="Nothing’s final until you say so."
-          aside={<><KindChip kind="you" /><Tip about="stage 4" title="Why you approve" tone="var(--you-bar)" lines={[
+          aside={<><KindChip kind="you" /><Tip about="approving your week" title="Why you approve" tone="var(--you-bar)" lines={[
             "The helpers suggest. You decide.",
             "Review the seven dinners and the list together.",
             "Change anything first: swap a day or edit your fridge.",

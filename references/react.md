@@ -28,7 +28,7 @@ For Apron use `Anybody` (with `axes: ["wdth"]`) and `Spline_Sans_Mono` the same 
 
 ## Ready components in `assets/react/`
 
-Copy these into `components/` and import the matching CSS from `assets/glass.css` or `assets/apron.css`.
+Copy these into `components/`, import your theme's stylesheet (`assets/<theme>.css`), then `assets/react/cutify-react.css`, which styles `WordTip`, `Popup` and `StageHeader` from the shared contract variables.
 
 | File | What it is |
 |---|---|
@@ -72,7 +72,7 @@ export function Item({ icon, lead, text }: { icon: string; lead: ReactNode; text
 ## What to avoid
 
 - A blur on every card (scroll jank). Blur only top-level surfaces.
-- Black shadows in Glass; soft blurred shadows on small interactive bits in either theme.
+- Black shadows in Glass; soft blurred shadows on small interactive bits in any theme.
 - Animating layout properties, or reading layout inside scroll handlers.
 - Colour as the only signal for state, kind or identity.
 - Copying third-party logos into a template. Use text chips, or let the user add their own.

@@ -86,7 +86,7 @@ button { font: inherit; cursor: pointer; color: inherit; }
 /* pixel art */
 .sprite { image-rendering: pixelated; display: block; }
 @media (prefers-reduced-motion: no-preference) {
-  .bob { animation: bob 3.6s ease-in-out infinite; } .bob.d1 { animation-delay: -.9s; } .bob.d2 { animation-delay: -1.8s; }
+  .bob { animation: bob 3.6s steps(2) infinite; } .bob.d1 { animation-delay: -.9s; } .bob.d2 { animation-delay: -1.8s; }
   .talking { animation: hop .4s steps(2) infinite alternate; }
   .fade-up { animation: fade-up .5s cubic-bezier(.2, .8, .2, 1) backwards; } }
 @keyframes bob { 50% { transform: translateY(-4px); } }
@@ -142,29 +142,29 @@ dialog.pop::backdrop { background: rgb(14 43 36 / 62%); }
 @media (max-width: 560px) { .site-nav .nav-link { display: none; } }
 
 /* hero */
-.hero { display: grid; grid-template-columns: 1.05fr 1fr; gap: 2rem; align-items: center; margin-top: 1.25rem; padding: 1.75rem; }
-.hero h1 { margin: .5rem 0 .4rem; font-size: clamp(2.4rem, 5vw, 3.6rem); line-height: 1; }
-.hero .tagline { margin: 0 0 1rem; font-size: 1.2rem; font-weight: 700; color: var(--text); max-width: 32rem; }
-.benefits { margin: 0 0 1.25rem; padding: 0; display: grid; gap: .45rem; }
+.hero { display: grid; grid-template-columns: 1fr 1.05fr; gap: 2.75rem; align-items: center; margin-top: 1.25rem; padding: 2.25rem 2.25rem 2rem 2.5rem; }
+.hero h1 { margin: 1rem 0 .9rem; font-size: clamp(2.6rem, 5.4vw, 4.1rem); line-height: 1; }
+.hero .tagline { margin: 0 0 1.4rem; font-size: 1.22rem; line-height: 1.5; color: var(--text); max-width: 30rem; }
+.benefits { margin: 0 0 1.75rem; padding: 0; display: grid; gap: .6rem; font-weight: 700; }
 .benefits li { list-style: none; display: flex; gap: .55rem; align-items: baseline; }
 .benefits li::before { content: "✓"; display: inline-grid; place-items: center; flex: none; width: 1.35rem; height: 1.35rem; border-radius: 4px; background: var(--mint-soft);
   border: 1.5px solid var(--ok); color: var(--ok); font-weight: 700; font-size: .85rem; }
 .hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: .9rem; }
 .badge-line { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; }
-@media (max-width: 860px) { .hero { grid-template-columns: 1fr; padding: 1.2rem; gap: 1.25rem; } }
+@media (max-width: 860px) { .hero { grid-template-columns: 1fr; padding: 1.2rem; gap: 1.5rem; } }
 
 /* hero scene: everything inside is placed in cqw so it scales as one picture */
 .scene { position: relative; container-type: inline-size; aspect-ratio: 4 / 3; border-radius: 16px; overflow: hidden; border: 2px solid var(--ink);
-  box-shadow: 0 4px 0 rgb(16 70 100 / 30%); background: #eaf7fb; }
+  box-shadow: 4px 5px 0 rgb(16 70 100 / 28%); background: #eaf7fb; }
 .scene-bg { position: absolute; inset: 0; width: 100%; height: 100%; }
 .actor { position: absolute; left: calc(var(--x) - var(--w) / 2); top: var(--y); width: var(--w); }
 .actor .sprite { width: 100%; height: auto; }
-.alab { position: absolute; left: var(--x); top: var(--y); transform: translate(-50%, -100%); display: inline-flex; align-items: center; gap: .35rem;
+/* name chips sit on the floor, centred under each actor's feet */
+.alab { position: absolute; left: var(--x); top: var(--y); transform: translate(-50%, -50%); display: inline-flex; align-items: center; gap: .35rem;
   padding: .2rem .5rem .2rem .3rem; background: #fff; border: 2px solid var(--ink); border-radius: 999px; font: 700 .85rem var(--body); white-space: nowrap;
   box-shadow: 0 2px 0 rgb(31 36 48 / 30%); z-index: 3; }
-.alab.mid { transform: translate(-50%, -50%); }
-/* small scenes: the legend below carries the AI chips, so the labels drop them to stay inside the frame */
-@container (max-width: 420px) { .alab { font-size: .78rem; padding: .1rem .45rem .1rem .25rem; } .alab .kind.ai { display: none; } }
+/* small scenes: the legend below carries the AI chips and glyphs, so the labels drop them to stay apart */
+@container (max-width: 420px) { .alab { font-size: .78rem; padding: .1rem .45rem; } .alab .kind.ai, .alab .glyph { display: none; } }
 .fly { position: absolute; left: 0; top: 0; width: 8cqw; height: 8cqw; display: grid; place-items: center; font-size: 4.6cqw; line-height: 1;
   background: #fff; border: 2px solid var(--ink); border-radius: 8px; box-shadow: 2px 2px 0 rgb(31 36 48 / 35%); opacity: 0; z-index: 2; }
 @media (prefers-reduced-motion: no-preference) {
@@ -177,12 +177,12 @@ dialog.pop::backdrop { background: rgb(14 43 36 / 62%); }
 @keyframes fly2 { 0%, 33% { opacity: 0; transform: translate(18cqw, 40cqw) scale(.5); } 37% { opacity: 1; transform: translate(18cqw, 40cqw) scale(1); animation-timing-function: steps(6); }
   48% { transform: translate(46cqw, 0cqw) rotate(6deg); animation-timing-function: steps(6); } 60% { opacity: 1; transform: translate(74cqw, 40cqw); } 63%, 100% { opacity: 0; transform: translate(74cqw, 40cqw) scale(.6); } }
 @keyframes fly3 { 0%, 66% { opacity: 0; transform: translate(74cqw, 44cqw) scale(.5); } 70% { opacity: 1; transform: translate(74cqw, 44cqw) scale(1); animation-timing-function: steps(6); }
-  80% { transform: translate(64cqw, 36cqw) rotate(-6deg); animation-timing-function: steps(5); } 92% { opacity: 1; transform: translate(53cqw, 52cqw); } 95%, 100% { opacity: 0; transform: translate(53cqw, 52cqw) scale(.6); } }
+  80% { transform: translate(61cqw, 32cqw) rotate(-6deg); animation-timing-function: steps(5); } 92% { opacity: 1; transform: translate(46cqw, 44cqw); } 95%, 100% { opacity: 0; transform: translate(46cqw, 44cqw) scale(.6); } }
 @keyframes hop1 { 0%, 26%, 33%, 100% { transform: none; } 27%, 31% { transform: translateY(-3cqw) scale(1.06); } 29% { transform: translateY(-1cqw); } }
 @keyframes hop2 { 0%, 59%, 66%, 100% { transform: none; } 60%, 64% { transform: translateY(-3cqw) scale(1.06); } 62% { transform: translateY(-1cqw); } }
 @keyframes hop3 { 0%, 91%, 98%, 100% { transform: none; } 92%, 96% { transform: translateY(-3cqw) scale(1.06); } 94% { transform: translateY(-1cqw); } }
 .hopper { animation-timing-function: steps(1); }
-.legend { display: flex; flex-wrap: wrap; gap: .4rem .9rem; margin: .7rem .2rem 0; padding: 0; font-size: .92rem; }
+.legend { display: flex; flex-wrap: wrap; gap: .45rem 1.25rem; margin: .9rem .25rem 0; padding: 0; font-size: .92rem; }
 .legend li { list-style: none; display: inline-flex; align-items: center; gap: .4rem; }
 
 /* stages */

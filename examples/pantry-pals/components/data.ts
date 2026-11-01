@@ -63,21 +63,21 @@ export const CAST: Record<"chef" | "shopper" | "you", Actor> = {
     palette: { k: ink, W: "#ffffff", s: skin, m: mouth, t: "#1fa98a", y: "#c99470" },
     animate: { y: "px-wl" },
     grid: [
-      "....kkkkkkkk....", "...kWWWWWWWWk...", "..kWWWWWWWWWWk..", "..kWWWWWWWWWWk..",
-      "...kWWWWWWWWk...", "...kkttttttkk...", "...kssssssssk...", "...kskksskksk...",
-      "...kssssssssk.y.", "...ksssmmsssk.y.", "....kssssssk..y.", "...kkkkkkkkkk.y.",
-      "..kWWWtWWtWWWksk", "..kWWWWWWWWWWk..", "..kWWWtWWtWWWk..", "..kkkkkkkkkkkk..",
+      "....kk.kk.kk....", "...kWWkWWkWWk...", "..kWWWWWWWWWWk..", "..kWWWWWWWWWWk..",
+      "...kWWWWWWWWk...", "...kWWWWWWWWk.k.", "...kkkkkkkkkkkyk", "...ksssssssskkyk",
+      "...kskssssksk.k.", "...ksssmmsssk.y.", "....kssssssk..y.", "..kkkWkkkkWkkksk",
+      ".kWWkttttttkWkk.", ".kWWkttyyttkWk..", ".kssktttttttk...", "..kkkkkkkkkkk...",
     ],
   },
   shopper: {
     name: "Shopper",
-    palette: { k: ink, c: "#ef8b74", s: skin, m: mouth, g: "#3f9e57", b: "#c99470" },
+    palette: { k: ink, c: "#ef8b74", s: skin, m: mouth, g: "#3f9e57", b: "#c99470", r: "#e0533c" },
     animate: { g: "px-wl" },
     grid: [
-      "................", "....kkkkkkkk....", "...kccccccccck..", "...kkkkkkkkkkkk.",
-      "...kssssssssk...", "...kskksskksk...", "...kssssssssk...", "...ksssmmsssk...",
-      "....kssssssk....", "...kkkkkkkkkk...", "..kcccccccck.kk.", "..kcccccccckk..k",
-      "..kcccccccskkkkk", "..kcccccccckgggk", "..kcccccccckbbbk", "..kkkkkkkkkkkkkk",
+      "................", "....kkkkkkk.....", "...kcccccccck...", "..kccccccccckk..",
+      "..kkkkkkkkkkkkk.", "...kssssssssk...", "...kskssssksk...", "...ksssmmsssk...",
+      "....kssssssk....", "...kkkkkkkkkk...", "..kcccccccckkkkk", "..kcccccccck.k.k",
+      "..kccccccccskkkk", "..kccccccckbgrbk", "..kkkkkkkkkkbbkk", "...kk..kk..kkkk.",
     ],
   },
   you: {
@@ -85,9 +85,9 @@ export const CAST: Record<"chef" | "shopper" | "you", Actor> = {
     palette: { k: ink, h: "#6b3f2a", s: skin, m: mouth, o: "#e8912d", d: "#3a4955" },
     grid: [
       "................", "....kkkkkkkk....", "...khhhhhhhhk...", "..khhhhhhhhhhk..",
-      "..khsssssssshk..", "..khskksskkshk..", "...kssssssssk...", "...ksssmmsssk...",
+      "..khsssssssshk..", "..khsksssskshk..", "...kssssssssk...", "...ksssmmsssk...",
       "....kssssssk....", "...kkkkkkkkkk...", "..kooooooooook..", ".kooooooooooook.",
-      ".koookooookoook.", ".ksookooookoosk.", "....kddkkddk....", "....kkk..kkk....",
+      ".kskooooooooksk.", ".kskddddddddksk.", "...kddk..kddk...", "...kkkk..kkkk...",
     ],
   },
 };

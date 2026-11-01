@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: small-component-only
+expected_outcome: |
+  A single small card.html containing only a pricing card in the Toy Box theme (ledge button, Dela Gothic One / Outfit), not a full landing page.

@@ -73,14 +73,14 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .i { display: inline-grid; place-items: center; width: 24px; height: 24px; padding: 0; border-radius: 50%; border: 2px solid var(--lavender); background: transparent;
   color: var(--lavender); font: 500 .8rem var(--mono); cursor: help; vertical-align: middle; flex: none; box-shadow: none; }
 .i:hover, .i:focus-visible { background: var(--lavender); color: var(--on-light); }
-#tip { position: fixed; left: 0; top: 0; z-index: 300; width: min(300px, calc(100vw - 24px)); padding: .75rem .9rem .8rem; background: var(--ink); color: var(--on-light);
+.tipb { position: fixed; left: 0; top: 0; z-index: 300; width: min(300px, calc(100vw - 24px)); padding: .75rem .9rem .8rem; background: var(--ink); color: var(--on-light);
   border-radius: 16px; box-shadow: 0 6px 0 rgb(17 13 36 / .5), 0 18px 40px rgb(17 13 36 / .5); font: 400 .95rem/1.45 var(--body); pointer-events: none; }
-#tip[hidden] { display: none; }
-#tip b { display: block; font: 800 1rem var(--body); margin-bottom: .25rem; }
-#tip ul { margin: 0; padding: 0; list-style: none; }
-#tip li { position: relative; padding-left: 14px; }
-#tip li::before { content: ""; position: absolute; left: 0; top: .6em; width: 6px; height: 6px; background: var(--lavender-deep); }
-@media (prefers-reduced-motion: no-preference) { #tip:not([hidden]) { animation: tip-in .15s ease-out; } }
+.tipb[hidden] { display: none; }
+.tipb b { display: block; font: 800 1rem var(--body); margin-bottom: .25rem; }
+.tipb ul { margin: 0; padding: 0; list-style: none; }
+.tipb li { position: relative; padding-left: 14px; }
+.tipb li::before { content: ""; position: absolute; left: 0; top: .6em; width: 6px; height: 6px; background: var(--lavender-deep); }
+@media (prefers-reduced-motion: no-preference) { .tipb:not([hidden]) { animation: tip-in .15s ease-out; } }
 @keyframes tip-in { from { opacity: 0; translate: 0 4px; } }
 
 /* ---- nav ---- */
@@ -131,11 +131,12 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .scene .owl { position: absolute; right: 9%; bottom: 29%; width: 22%; }
 .scene .cushion { position: absolute; left: 4%; bottom: 5%; width: 40%; height: 10%; border-radius: 999px; background: var(--lavender-deep); box-shadow: inset 0 -6px 0 #6151B8; }
 .scene .mochi { position: absolute; left: 9%; bottom: 10%; width: 30%; }
-.scene .zz { position: absolute; left: 36%; bottom: 36%; }
+.scene .zz { position: absolute; left: 40%; bottom: 36%; }
 .lab { position: absolute; display: inline-flex; align-items: center; gap: .4rem; padding: .25rem .55rem .25rem .3rem; border-radius: 999px; background: rgb(30 25 54 / .9);
   border: 1.5px solid rgb(244 240 255 / .3); font: 800 .9rem var(--body); white-space: nowrap; z-index: 3; }
-.lab.owl-l { right: 4%; bottom: 69%; }
-.lab.pet-l { left: 4%; bottom: 52%; }
+/* each name chip sits just above its sprite's head, centred on it (scene is 5:4, so sprite height = width x 1.25) */
+.lab.owl-l { left: 80%; bottom: 57%; transform: translateX(-50%); }
+.lab.pet-l { left: 24%; bottom: 47.5%; transform: translateX(-50%); }
 .legend { display: flex; flex-wrap: wrap; gap: .4rem 1.1rem; font-size: .92rem; color: var(--ink-muted); }
 .legend span { display: inline-flex; align-items: center; gap: .45rem; }
 
@@ -590,7 +591,6 @@ dialog::backdrop { background: rgb(20 16 40 / .72); backdrop-filter: blur(3px); 
   </div>
 </dialog>
 
-<div id="tip" role="tooltip" hidden></div>
 
 <script>
 (() => {
@@ -687,11 +687,13 @@ dialog::backdrop { background: rgb(20 16 40 / .72); backdrop-filter: blur(3px); 
         b.dataset.tip = 'Sunday, this morning\nNot logged yet\nSave stage 1 to fill this bar';
         b.setAttribute('aria-label', 'Sunday, not logged yet');
         b.innerHTML = '<span class="fill"></span><span class="v">?</span>';
+        describe(b, 'bar-' + n.d);
       } else {
         const who = n === today ? 'your log' : 'made-up';
         b.dataset.tip = `${n.d} morning, ${who}\nBed ${n.bed}, up ${n.wake}\n${fmt(n.h)} h asleep\nMood: ${n.mood}` + (n.note ? `\nNote: ${n.note}` : '');
         b.setAttribute('aria-label', `${n.d}: ${fmt(n.h)} hours, mood ${n.mood}`);
         b.innerHTML = `<span class="fill"></span><span class="v">${fmt(n.h)}</span>`;
+        describe(b, 'bar-' + n.d);
       }
       bars.append(b);
     });
@@ -773,13 +775,22 @@ dialog::backdrop { background: rgb(20 16 40 / .72); backdrop-filter: blur(3px); 
     }
   }
 
-  /* ---------- one shared tooltip: hover, focus and tap; clamped inside the viewport ---------- */
-  const tip = $('#tip'); let tipFor = null;
+  /* ---------- tooltips: one bubble per trigger, role=tooltip and named by the trigger's aria-describedby, so screen
+     readers get the text while it is hidden too. Hover, focus and tap (a second tap or Escape closes); clamped on screen. ---------- */
+  let tip = null, tipFor = null, pinned = false;
+  // hoisted and free of outer lets, so renderWeek can call it for the chart bars before this point runs
+  function describe(el, key) {
+    const id = 'tip-' + key; let t = document.getElementById(id);
+    if (!t) { t = document.createElement('div'); t.id = id; t.className = 'tipb'; t.setAttribute('role', 'tooltip'); t.hidden = true; document.body.append(t); }
+    const [title, ...lines] = el.dataset.tip.split('\n');
+    t.textContent = ''; const b = document.createElement('b'); b.textContent = title; t.append(b);
+    if (lines.length) { const ul = document.createElement('ul'); lines.forEach(l => { const li = document.createElement('li'); li.textContent = l; ul.append(li); }); t.append(ul); }
+    el.setAttribute('aria-describedby', id);
+  }
+  $$('.i[data-tip]').forEach((el, n) => describe(el, 'i' + n));
   function showTip(el) {
-    tipFor = el; const [title, ...lines] = el.dataset.tip.split('\n');
-    tip.textContent = ''; const b = document.createElement('b'); b.textContent = title; tip.append(b);
-    if (lines.length) { const ul = document.createElement('ul'); lines.forEach(l => { const li = document.createElement('li'); li.textContent = l; ul.append(li); }); tip.append(ul); }
-    tip.hidden = false; el.setAttribute('aria-describedby', 'tip'); placeTip();
+    if (el !== tipFor) hideTip();
+    tipFor = el; tip = document.getElementById(el.getAttribute('aria-describedby')); tip.hidden = false; placeTip();
   }
   function placeTip() {
     if (!tipFor) return;
@@ -789,12 +800,16 @@ dialog::backdrop { background: rgb(20 16 40 / .72); backdrop-filter: blur(3px); 
     if (y + h > innerHeight - 8 && r.top - h - 10 > 8) y = r.top - h - 10;
     tip.style.transform = `translate(${Math.round(x)}px,${Math.round(y)}px)`;
   }
-  function hideTip() { if (tipFor) tipFor.removeAttribute('aria-describedby'); tipFor = null; tip.hidden = true; }
-  document.addEventListener('pointerover', e => { const t = e.target.closest?.('[data-tip]'); if (t && e.pointerType === 'mouse') showTip(t); });
-  document.addEventListener('pointerout', e => { const t = e.target.closest?.('[data-tip]'); if (t && t === tipFor && !t.contains(e.relatedTarget) && document.activeElement !== t) hideTip(); });
+  function hideTip() { if (tip) tip.hidden = true; tip = tipFor = null; pinned = false; }
+  document.addEventListener('pointerover', e => { const t = e.target.closest?.('[data-tip]'); if (t && e.pointerType === 'mouse' && t !== tipFor) showTip(t); });
+  document.addEventListener('pointerout', e => { const t = e.target.closest?.('[data-tip]'); if (t && t === tipFor && !pinned && !t.contains(e.relatedTarget) && document.activeElement !== t) hideTip(); });
   document.addEventListener('focusin', e => { const t = e.target.closest?.('[data-tip]'); if (t) showTip(t); });
   document.addEventListener('focusout', e => { if (e.target === tipFor) hideTip(); });
-  document.addEventListener('click', e => { const t = e.target.closest('[data-tip]'); if (t) showTip(t); else if (!e.target.closest('#tip')) hideTip(); });
+  document.addEventListener('click', e => {
+    const t = e.target.closest('[data-tip]');
+    if (!t) { if (!e.target.closest('.tipb')) hideTip(); return; }
+    if (t === tipFor && pinned) hideTip(); else { showTip(t); pinned = true; }
+  });
   document.addEventListener('keydown', e => { if (e.key === 'Escape') hideTip(); });
   addEventListener('scroll', placeTip, { passive: true }); addEventListener('resize', placeTip);
 

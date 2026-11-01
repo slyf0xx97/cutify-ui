@@ -15,6 +15,10 @@
   --btn-shadow: 0 3px 0 rgb(16 70 100 / 30%), 0 6px 14px rgb(16 70 100 / 14%);
   --radius: 18px; --spring: cubic-bezier(.34, 1.56, .64, 1);
   --display: 'Pixelify Sans', 'Trebuchet MS', sans-serif; --body: 'Atkinson Hyperlegible', ui-sans-serif, system-ui, sans-serif;
+  /* shared contract (same names in every theme) */
+  --bg: #a9d8e8; --surface: rgb(255 255 255 / 86%); --surface-2: var(--sky-soft);
+  --ink-muted: var(--ink-soft); --accent: var(--orange); --accent-ink: var(--ink);
+  --accent-2: var(--lime); --accent-2-ink: var(--ink); --bad: var(--coral); --mono: var(--body);
 }
 *, *::before, *::after { box-sizing: border-box; }
 html { background: #a9d8e8; scroll-padding-top: 5rem; }
@@ -102,3 +106,16 @@ dialog.pop::backdrop { background: rgb(14 43 36 / 62%); }
 .pop-close { border: 2px solid var(--ink); border-radius: 999px; background: #fff; padding: .3rem .8rem; font-weight: 700; }
 .pop-close:hover { background: var(--lime); }
 .pop-body { padding: 1.1rem 1.25rem; overflow: auto; }
+
+/* contract classes, so recipes work in every theme */
+.panel { background: var(--glass-fill); border: 1.5px solid var(--glass-edge); border-radius: var(--radius);
+  box-shadow: var(--glass-shadow), var(--glass-ring), inset 0 1px 0 rgb(255 255 255 / 90%); backdrop-filter: var(--glass-blur); padding: 1.1rem 1.25rem; }
+@supports not (backdrop-filter: blur(1px)) { .panel { background: rgb(255 255 255 / 94%); } }
+.lab { font: 700 .75rem var(--body); letter-spacing: .06em; text-transform: uppercase; color: var(--ink-soft); }
+.step { display: flex; align-items: center; gap: .8rem; margin: 2rem 0 .8rem; scroll-margin-top: 5rem; }
+.step .n { display: inline-grid; place-items: center; min-width: 2.2rem; height: 2.2rem; background: var(--lime); border: 2px solid var(--ink);
+  border-radius: 4px; box-shadow: 2px 2px 0 rgb(31 36 48 / 45%); font: 600 1.15rem var(--display); }
+.step h3 { margin: 0; font: 800 clamp(1.3rem, 2.3vw, 1.7rem) var(--body); }
+.kpi { padding: .8rem 1rem; background: var(--glass-card); border: 1.5px solid rgb(255 255 255 / 70%); border-radius: 14px; box-shadow: var(--glass-ring); }
+.kpi small { display: block; font: 700 .72rem var(--body); letter-spacing: .06em; text-transform: uppercase; color: var(--ink-soft); }
+.kpi b { font: 600 1.6rem var(--display); }

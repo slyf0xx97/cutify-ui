@@ -23,8 +23,8 @@ export function PixelSprite({ grid, palette, animate = {}, size = 96, label, cla
       if (ch === "." || !fill) return;
       const a = animate[ch];
       const cls = !a ? undefined : typeof a === "string" ? a : a[x < 8 ? 0 : 1];
-      // 1.02 hides hairline seams between pixels when scaled
-      rects.push(<rect key={`${x}-${y}`} x={x} y={y} width={1.02} height={1.02} fill={fill} className={cls} />);
+      // 1.1, not 1.02: the hero sprites bob at fractional scales, where a thinner overlap shows seams between rows
+      rects.push(<rect key={`${x}-${y}`} x={x} y={y} width={1.1} height={1.1} fill={fill} className={cls} />);
     }),
   );
   return (

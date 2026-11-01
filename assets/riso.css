@@ -10,6 +10,8 @@
   --radius: 2px; --shadow: -3px -2px 0 var(--pink), 4px 3px 0 var(--blue); --shadow-hover: -5px -3px 0 var(--pink), 6px 5px 0 var(--blue);
   --ghost: 2px 1px 0 rgb(0 120 191 / .55);
   --display: 'Bricolage Grotesque', system-ui, sans-serif; --body: 'Rethink Sans', system-ui, sans-serif; --mono: 'Space Mono', ui-monospace, monospace;
+  /* shared contract (same names in every theme) */
+  --accent: var(--blue); --accent-ink: var(--blue-ink); --accent-2: var(--pink); --accent-2-ink: var(--pink-ink);
 }
 *, *::before, *::after { box-sizing: border-box; }
 html { background: var(--bg); }

@@ -11,6 +11,8 @@
   --pixel-border: 0 -2px var(--lantern), 0 2px var(--lantern), -2px 0 var(--lantern), 2px 0 var(--lantern);
   --display: 'Jersey 10', system-ui, sans-serif; --label: 'Silkscreen', monospace;
   --body: 'Lexend', system-ui, sans-serif; --mono: 'Sometype Mono', ui-monospace, monospace;
+  /* shared contract (same names in every theme) */
+  --accent: var(--lantern); --accent-ink: var(--lantern-ink); --accent-2: var(--jade); --accent-2-ink: var(--jade-ink);
 }
 *, *::before, *::after { box-sizing: border-box; }
 html { background: var(--bg); }

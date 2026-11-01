@@ -174,6 +174,6 @@ Pair the backdrop with a surface that contrasts with it: a busy pattern wants pl
 
 ## Motion on backgrounds
 
-Backgrounds stay still by default. If one moves, it moves slowly (clouds drifting over 120s or more, blobs over 60s), uses `transform` on a layer instead of `background-position` on a large element, stops under `prefers-reduced-motion`, and pauses off screen.
+Keep the backdrop calm and let one thing on the page move: the product at work. Backgrounds stay still by default. If one moves, it moves slowly (clouds drifting over 120s or more, blobs over 60s), uses `transform` on a layer instead of `background-position` on a large element, stops under `prefers-reduced-motion`, and pauses off screen.
 
 Sources: these recipes were written for cutify-ui after the reference survey in `docs/INSPIRATION.md`. They describe common, generic techniques; no code was copied from the sites listed there.

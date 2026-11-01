@@ -5,14 +5,15 @@
 import { useEffect, useId, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 
 type Props = {
-  word: ReactNode;          // the trigger text
+  word: ReactNode;          // the trigger text, or an icon such as an "i"
+  label?: string;           // accessible name when the trigger is an icon, e.g. "About the menu board"
   title: string;            // short title shown in the tip header
   children: ReactNode;      // 3 to 8 short lines; say why, not just what
   tone?: string;            // header colour, e.g. "var(--teal-dark)"
   panel?: boolean;          // true for a richer panel (role=dialog) instead of a small tooltip
 };
 
-export function WordTip({ word, title, children, tone = "var(--teal-dark)", panel = false }: Props) {
+export function WordTip({ word, label, title, children, tone = "var(--accent)", panel = false }: Props) {
   const [open, setOpen] = useState(false);
   const [pinned, setPinned] = useState(false);
   const btn = useRef<HTMLButtonElement>(null);
@@ -54,7 +55,7 @@ export function WordTip({ word, title, children, tone = "var(--teal-dark)", pane
     <span className="word-tip-wrap"
       onPointerEnter={(e) => { if (e.pointerType === "mouse") setOpen(true); }}
       onPointerLeave={(e) => { if (e.pointerType === "mouse" && !pinned) setOpen(false); }}>
-      <button ref={btn} type="button" className="word-tip-word"
+      <button ref={btn} type="button" className="word-tip-word" aria-label={label}
         aria-describedby={panel ? undefined : id} aria-haspopup={panel ? "dialog" : undefined} aria-expanded={panel ? open : undefined}
         onFocus={(e) => { if (e.currentTarget.matches(":focus-visible")) setOpen(true); }}
         onBlur={() => { if (!pinned) setOpen(false); }}

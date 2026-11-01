@@ -58,8 +58,8 @@ export function Hero() {
             <rect y="248" width="400" height="52" fill="#fcefc2" />
             <path d="M0 274h400M40 248v52M120 248v52M200 248v52M280 248v52M360 248v52" stroke="#e9d48f" strokeWidth="2" />
             <path d="M0 248h400" stroke="#1f2430" strokeWidth="3" />
-            <ellipse cx="68" cy="257" rx="38" ry="6" fill="rgb(31 36 48 / 16%)" />
-            <ellipse cx="332" cy="257" rx="38" ry="6" fill="rgb(31 36 48 / 16%)" />
+            <ellipse cx="68" cy="250" rx="36" ry="5" fill="rgb(31 36 48 / 18%)" />
+            <ellipse cx="332" cy="250" rx="36" ry="5" fill="rgb(31 36 48 / 18%)" />
             <rect x="148" y="40" width="104" height="210" rx="14" fill="#fff" stroke="#1f2430" strokeWidth="4" />
             <path d="M148 104h104" stroke="#1f2430" strokeWidth="3" />
             <rect x="234" y="60" width="7" height="30" rx="3" fill="#1f2430" />
@@ -74,25 +74,26 @@ export function Hero() {
             </g>
             <rect x="160" y="248" width="14" height="6" fill="#1f2430" />
             <rect x="226" y="248" width="14" height="6" fill="#1f2430" />
+            <ellipse cx="200" cy="250" rx="30" ry="5" fill="rgb(31 36 48 / 18%)" />
           </svg>
 
-          <div className="actor" style={at(17, 40, 24)}>
+          <div className="actor" style={at(17, 38, 24)}>
             <div className="hopper h1"><PixelSprite {...CAST.chef} size={96} className="bob" /></div>
           </div>
-          <div className="actor" style={at(83, 40, 24)}>
+          <div className="actor" style={at(83, 38, 24)}>
             <div className="hopper h2"><PixelSprite {...CAST.shopper} size={96} className="bob d1" /></div>
           </div>
-          <div className="actor" style={at(50, 57, 16)}>
-            <div className="hopper h3"><PixelSprite {...CAST.you} size={64} className="bob d2" /></div>
+          <div className="actor" style={at(50, 42, 20)}>
+            <div className="hopper h3"><PixelSprite {...CAST.you} size={80} className="bob d2" /></div>
           </div>
 
           <span className="fly f1" aria-hidden="true">🍅</span>
           <span className="fly f2" aria-hidden="true">📋</span>
           <span className="fly f3" aria-hidden="true">🧾</span>
 
-          <span className="alab" style={at(17, 38)} aria-hidden="true"><span className="glyph chef" />Chef <KindChip kind="ai" /></span>
-          <span className="alab" style={at(83, 38)} aria-hidden="true"><span className="glyph shopper" />Shopper <KindChip kind="ai" /></span>
-          <span className="alab mid" style={at(74, 69)} aria-hidden="true"><span className="glyph you" /><KindChip kind="you" /> approve</span>
+          <span className="alab" style={at(17, 68.5)} aria-hidden="true"><span className="glyph chef" />Chef <KindChip kind="ai" /></span>
+          <span className="alab" style={at(50, 68.5)} aria-hidden="true"><span className="glyph you" /><KindChip kind="you" /> approve</span>
+          <span className="alab" style={at(83, 68.5)} aria-hidden="true"><span className="glyph shopper" />Shopper <KindChip kind="ai" /></span>
         </div>
         <ul className="legend" aria-label="Who does what">
           <li><span className="glyph chef" /> <b>Chef</b> <KindChip kind="ai" /> suggests recipes</li>

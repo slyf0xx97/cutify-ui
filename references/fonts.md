@@ -20,7 +20,7 @@ Every font below is on Google Fonts under the SIL Open Font License 1.1 (checked
 |---|---|---|---|---|
 | Glass | Pixelify Sans 600 | Atkinson Hyperlegible | (body bold caps) | Sunny pixel game |
 | Apron | Anybody 900, stretch 110 to 125% | Anybody 400 | Spline Sans Mono | Wide signage, control room |
-| Bakery | Fredoka 600 | Nunito 400/700 | DM Mono | Soft, warm, safest cute-but-readable |
+| Picnic (Bakery) | Fredoka 600 | Nunito 400/700 | DM Mono | Soft, warm, safest cute-but-readable |
 | Kawaii JP | Mochiy Pop One | Zen Maru Gothic 500 | M PLUS 1 Code | Japanese stationery and character goods; supports kana and kanji |
 | Pixel Cozy | Jersey 10 (headings), Silkscreen (tags) | Lexend 400 | Sometype Mono | Cozy handheld game, a different pixel voice from Glass |
 | Notebook | Gaegu 700 | Nunito Sans 400 | DM Mono | Doodled study notes, margin comments |

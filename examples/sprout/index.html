@@ -62,7 +62,6 @@ mark { background: linear-gradient(transparent 55%, var(--lime) 55%, var(--lime)
   border-radius: 4px; box-shadow: 2px 2px 0 rgb(31 36 48 / 45%); font: 600 1.15rem var(--display); flex: none; }
 .tag { display: inline-block; padding: .2rem .65rem; border-radius: 999px; background: var(--orange); color: var(--ink); font: 700 .78rem var(--body);
   letter-spacing: .04em; text-transform: uppercase; box-shadow: 0 2px 0 rgb(185 101 26 / 55%); }
-.stage-tab { display: inline-block; padding: .2rem .75rem; border-radius: 999px; background: var(--teal-dark); color: #fff; font: 800 .9rem var(--body); }
 .kind { display: inline-block; padding: .05rem .45rem; border: 1.5px solid var(--ink); border-radius: 999px; font: 700 .7rem var(--body);
   letter-spacing: .06em; text-transform: uppercase; line-height: 1.5; vertical-align: .1em; white-space: nowrap; }
 .kind.ai { background: var(--teal-soft); } .kind.you { background: var(--orange); }
@@ -419,7 +418,7 @@ dialog.pop::backdrop { background: rgb(14 43 36 / 55%); }
             <button type="button" data-sample="fern"><svg viewBox="0 0 200 220" aria-hidden="true" data-plant></svg><span><b>Crispy fern</b><span>Brown leaf tips, dry air (sample)</span></span></button>
           </div>
         </div>
-        <button class="i" type="button" aria-label="About the sample" data-tip="Two sample plants|Pick one from the ▾ menu|The photo, the problems and the plan are all made up|Nothing here talks to a real AI or sends real reminders|Why samples: so you can see every step without uploading anything">i</button>
+        <button class="i" type="button" aria-label="About the sample plants" data-tip="Two sample plants|Pick one from the ▾ menu|The photo, the problems and the plan are all made up|Nothing here talks to a real AI or sends real reminders|Why samples: so you can see every step without uploading anything">i</button>
       </div>
     </div>
 
@@ -466,9 +465,9 @@ dialog.pop::backdrop { background: rgb(14 43 36 / 55%); }
     <!-- STAGE 1 -->
     <section class="stage glass" id="st1" aria-labelledby="st1t">
       <div class="stage-top">
-        <span class="num">1</span><span class="stage-tab">Stage 1</span>
+        <span class="num">1</span>
         <h2 class="stage-title" id="st1t">Show Dr. Leaf your plant</h2>
-        <button class="i" type="button" aria-label="About stage 1" data-tip="Dr. Leaf reads the photo|Looks at leaf colour, droop, spots and the soil you can see|Names the most likely problem and one fix|Says what a photo can’t show, like roots|Gives a rough “how sure” score, an estimate|Why an AI helper: every plant and every photo looks different">i</button>
+        <button class="i" type="button" aria-label="About Dr. Leaf’s photo check" data-tip="Dr. Leaf reads the photo|Looks at leaf colour, droop, spots and the soil you can see|Names the most likely problem and one fix|Says what a photo can’t show, like roots|Gives a rough “how sure” score, an estimate|Why an AI helper: every plant and every photo looks different">i</button>
       </div>
       <ol class="explain">
         <li><span class="kind you">You</span>Snap the plant</li><li class="arr" aria-hidden="true">→</li>
@@ -501,9 +500,9 @@ dialog.pop::backdrop { background: rgb(14 43 36 / 55%); }
     <!-- STAGE 2 -->
     <section class="stage glass" id="st2" aria-labelledby="st2t">
       <div class="stage-top">
-        <span class="num">2</span><span class="stage-tab">Stage 2</span>
+        <span class="num">2</span>
         <h2 class="stage-title" id="st2t">Tell Drip about your room</h2>
-        <button class="i" type="button" aria-label="About stage 2" data-tip="Drip plans water and light|Uses the plant type and your room, nothing else|Sunnier spots dry the soil faster, so water comes sooner|Says if the spot is too bright or too dark|Change the room and the plan updates|Why an AI helper: rooms, windows and seasons all mix together">i</button>
+        <button class="i" type="button" aria-label="About Drip’s water and light plan" data-tip="Drip plans water and light|Uses the plant type and your room, nothing else|Sunnier spots dry the soil faster, so water comes sooner|Says if the spot is too bright or too dark|Change the room and the plan updates|Why an AI helper: rooms, windows and seasons all mix together">i</button>
       </div>
       <ol class="explain">
         <li><span class="kind you">You</span>Pick the window and spot</li><li class="arr" aria-hidden="true">→</li>
@@ -555,9 +554,9 @@ dialog.pop::backdrop { background: rgb(14 43 36 / 55%); }
     <!-- STAGE 3 -->
     <section class="stage glass" id="st3" aria-labelledby="st3t">
       <div class="stage-top">
-        <span class="num">3</span><span class="stage-tab">Stage 3</span>
+        <span class="num">3</span>
         <h2 class="stage-title" id="st3t">Approve your care plan</h2>
-        <button class="i" type="button" aria-label="About stage 3" data-tip="You decide|The plan joins Dr. Leaf’s fix and Drip’s schedule|Nothing is scheduled until you press Approve|Reminders follow the water days you approved|Change the room later and you approve again|Why you: it’s your plant and your week">i</button>
+        <button class="i" type="button" aria-label="About approving your care plan" data-tip="You decide|The plan joins Dr. Leaf’s fix and Drip’s schedule|Nothing is scheduled until you press Approve|Reminders follow the water days you approved|Change the room later and you approve again|Why you: it’s your plant and your week">i</button>
       </div>
       <ol class="explain">
         <li><span class="kind ai">AI</span>Fix + schedule</li><li class="arr" aria-hidden="true">→</li>
@@ -594,7 +593,7 @@ dialog.pop::backdrop { background: rgb(14 43 36 / 55%); }
   <!-- HOW IT WORKS -->
   <section class="glass" id="how" aria-labelledby="howt">
     <div class="stage-top"><h2 id="howt">How it works</h2>
-      <button class="i" type="button" aria-label="About how it works" data-tip="Two helpers and you|Dr. Leaf only reads the photo|Drip only plans from plant type and room|You approve before anything is scheduled|Every number on this page is a sample">i</button>
+      <button class="i" type="button" aria-label="About the two helpers and you" data-tip="Two helpers and you|Dr. Leaf only reads the photo|Drip only plans from plant type and room|You approve before anything is scheduled|Every number on this page is a sample">i</button>
     </div>
     <div class="how-grid">
       <div>
@@ -644,7 +643,7 @@ dialog.pop::backdrop { background: rgb(14 43 36 / 55%); }
   </div>
 </dialog>
 
-<div id="tip" role="tooltip" hidden></div>
+<div id="tip" role="tooltip" aria-hidden="true" hidden></div>
 
 <script>
 // cutify-ui pixel sprites (assets/pixel-sprites.js): string grids to crisp SVG symbols
@@ -889,24 +888,30 @@ dlg.addEventListener('click', e => { if (e.target === dlg) dlg.close(); });
 dlg.addEventListener('close', () => $('#approveBtn').disabled || $('#approveBtn').focus());
 $('#confirmBtn').addEventListener('click', () => { st.approved = true; dlg.close(); pour(); setHealth(3); renderPlan(); $('#planState').focus?.(); });
 
-// shared tooltip: hover, focus and tap; clamped to the viewport so it is never clipped
+// shared tooltip: opens on hover and focus, a click or tap pins it (again unpins), Escape closes; clamped to the viewport.
+// Each trigger also gets its own visually hidden role="tooltip" text via aria-describedby, so screen readers hear the tip.
 const tip = $('#tip');
-let tipFor = null;
+let tipFor = null, pinned = false;
 function showTip(el) {
   const [title, ...lines] = el.dataset.tip.split('|');
   tip.innerHTML = `<b>${title}</b><ul>${lines.map(l => `<li>${l}</li>`).join('')}</ul>`;
-  tip.hidden = false; tipFor = el; el.setAttribute('aria-describedby', 'tip');
+  tip.hidden = false; tipFor = el;
   const r = el.getBoundingClientRect(), w = tip.offsetWidth, h = tip.offsetHeight;
   let top = r.bottom + 10; if (top + h > innerHeight - 8) top = Math.max(8, r.top - h - 10);
-  tip.style.left = Math.min(Math.max(8, r.left + r.width / 2 - w / 2), document.documentElement.clientWidth - w - 8) + "px";
+  tip.style.left = Math.min(Math.max(8, r.left + r.width / 2 - w / 2), document.documentElement.clientWidth - w - 8) + 'px';
   tip.style.top = top + 'px';
 }
-function hideTip() { if (tipFor) tipFor.removeAttribute('aria-describedby'); tip.hidden = true; tipFor = null; }
-document.querySelectorAll('[data-tip]').forEach(el => {
-  el.addEventListener('mouseenter', () => showTip(el)); el.addEventListener('mouseleave', () => document.activeElement !== el && hideTip());
-  el.addEventListener('focus', () => showTip(el)); el.addEventListener('blur', hideTip);
-  el.addEventListener('click', e => { e.preventDefault(); tipFor === el ? hideTip() : showTip(el); });
+function hideTip() { tip.hidden = true; tipFor = null; pinned = false; }
+document.querySelectorAll('[data-tip]').forEach((el, k) => {
+  if (!el.textContent) el.textContent = 'i';
+  const sr = document.createElement('span');
+  sr.id = 'tip-' + k; sr.className = 'sr-only'; sr.setAttribute('role', 'tooltip'); sr.textContent = el.dataset.tip.split('|').join('. ');
+  el.after(sr); el.setAttribute('aria-describedby', sr.id);
+  el.addEventListener('mouseenter', () => showTip(el)); el.addEventListener('mouseleave', () => !pinned && document.activeElement !== el && hideTip());
+  el.addEventListener('focus', () => showTip(el)); el.addEventListener('blur', () => tipFor === el && hideTip());
+  el.addEventListener('click', e => { e.preventDefault(); if (tipFor === el && pinned) hideTip(); else { showTip(el); pinned = true; } });
 });
+addEventListener('pointerdown', e => tipFor && !tipFor.contains(e.target) && hideTip());
 addEventListener('keydown', e => { if (e.key === 'Escape') { hideTip(); closeMenu(); } });
 addEventListener('scroll', () => tipFor && showTip(tipFor), { passive: true });   // follow the trigger while the page scrolls
 

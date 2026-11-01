@@ -63,15 +63,18 @@ button { font: inherit; color: inherit; cursor: pointer; }
 
 .i { display: inline-grid; place-items: center; width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid currentColor; font: 700 11px var(--mono); color: var(--dim); cursor: help; position: relative; margin-left: 6px; vertical-align: middle; flex: none; }
 .i:hover, .i:focus-visible { color: var(--line); outline: none; }
-.i[data-tip]:hover::after, .i[data-tip]:focus-visible::after { content: attr(data-tip); position: absolute; left: 50%; bottom: calc(100% + 10px); transform: translateX(-50%);
+.i[data-tip]:hover::after, .i[data-tip]:focus-visible::after, .i[data-tip].open::after { content: attr(data-tip); position: absolute; left: 50%; bottom: calc(100% + 10px); transform: translateX(-50%);
   width: 320px; padding: 10px 12px; background: var(--chalk); color: var(--on-bright); font: 500 13px/1.45 var(--display); text-transform: none; letter-spacing: 0; text-align: left;
   border-radius: 6px; box-shadow: var(--hard); z-index: 200; white-space: pre-line; pointer-events: none; }
-.i.down[data-tip]:hover::after, .i.down[data-tip]:focus-visible::after { bottom: auto; top: calc(100% + 10px); }
-.i.left[data-tip]:hover::after, .i.left[data-tip]:focus-visible::after { left: auto; right: -10px; transform: none; }
-.i.right[data-tip]:hover::after, .i.right[data-tip]:focus-visible::after { left: -10px; transform: none; }
-:has(> .i:hover), :has(> .i:focus-visible) { z-index: 60; }
+.i.down[data-tip]:hover::after, .i.down[data-tip]:focus-visible::after, .i.down[data-tip].open::after { bottom: auto; top: calc(100% + 10px); }
+.i.left[data-tip]:hover::after, .i.left[data-tip]:focus-visible::after, .i.left[data-tip].open::after { left: auto; right: -10px; transform: none; }
+.i.right[data-tip]:hover::after, .i.right[data-tip]:focus-visible::after, .i.right[data-tip].open::after { left: -10px; transform: none; }
+:has(> .i:hover), :has(> .i:focus-visible), :has(> .i.open) { z-index: 60; }
+.i { padding: 0; background: none; } .i.shut::after { content: none !important; }
+.i:hover, .i:active { transform: none; filter: none; } /* a transform would trap the fixed bottom-sheet tip below 900px */
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 @media (max-width: 900px) { /* phones and tablets: tips become a bottom sheet so they never clip */
-  .i[data-tip]:hover::after, .i[data-tip]:focus-visible::after { position: fixed; left: 16px !important; right: 16px !important; top: auto !important; bottom: 16px; width: auto; transform: none !important; } }
+  .i[data-tip]:hover::after, .i[data-tip]:focus-visible::after, .i[data-tip].open::after { position: fixed; left: 16px !important; right: 16px !important; top: auto !important; bottom: 16px; width: auto; transform: none !important; } }
 
 .pill { display: inline-block; font: 700 11px var(--mono); padding: 3px 8px; border-radius: 3px; white-space: nowrap; }
 .pill.ok { background: var(--ok); color: #10291a; } .pill.bad { background: var(--bad); color: #2a0703; } .pill.amb { background: var(--line); color: #241e00; } .pill.q { background: #ffffff14; color: var(--sub); }
@@ -323,7 +326,7 @@ dialog::backdrop { background: #000000b0; }
     </div>
   </div>
   <div class="panel art reveal" style="animation-delay:.15s">
-    <div class="art-head"><span class="lab">Floor 2, live view <span class="i down left" tabindex="0" data-tip="The warehouse floor&#10;• Five racks with aisles A1 to A4 between them&#10;• Yellow dashed lines are the main lanes&#10;• Robots drive the routes their latest plan gives them&#10;Why show it: you can see where a plan sends each robot before you approve it.">i</span></span><span class="pill q">Sample data</span></div>
+    <div class="art-head"><span class="lab">Floor 2, live view <button type="button" class="i down left" aria-label="About the warehouse floor" data-tip="The warehouse floor&#10;• Five racks with aisles A1 to A4 between them&#10;• Yellow dashed lines are the main lanes&#10;• Robots drive the routes their latest plan gives them&#10;Why show it: you can see where a plan sends each robot before you approve it.">i</button></span><span class="pill q">Sample data</span></div>
     <svg class="floor" id="heroFloor" viewBox="0 0 480 310" role="img" aria-label="Warehouse floor map with Picker, Packer and Router robots driving along the aisles"></svg>
     <div class="legend" aria-label="Legend">
       <span><i class="gl picker" aria-hidden="true">P</i>Picker <b class="kind ai">AI</b></span>
@@ -337,7 +340,7 @@ dialog::backdrop { background: #000000b0; }
 
 <!-- STAGE 1 -->
 <section class="wrap stage" aria-labelledby="st1h">
-  <div class="step" id="st1"><span class="n">1</span><h3 id="st1h">Read the order queue</h3><span class="i" tabindex="0" data-tip="Read the order queue&#10;• Orders arrive with items, weight, aisle and truck time&#10;• Each robot reads the queue and claims its part&#10;• Two orders in aisle A3 share the 14:10 truck, so they go first&#10;Why AI here: priorities change by the minute and arrive as notes, not fields.">i</span></div>
+  <div class="step" id="st1"><span class="n">1</span><h3 id="st1h">Read the order queue</h3><button type="button" class="i" aria-label="About stage 1: Read the order queue" data-tip="Read the order queue&#10;• Orders arrive with items, weight, aisle and truck time&#10;• Each robot reads the queue and claims its part&#10;• Two orders in aisle A3 share the 14:10 truck, so they go first&#10;Why AI here: priorities change by the minute and arrive as notes, not fields.">i</button></div>
   <div class="explain"><span>Orders arrive</span><i>→</i><span>Robots read the queue <b class="kind ai">AI</b></span><i>→</i><span>Each robot claims its part</span></div>
   <div class="grid2">
     <div class="panel">
@@ -348,7 +351,7 @@ dialog::backdrop { background: #000000b0; }
       </table>
     </div>
     <div class="panel">
-      <div class="ph"><span class="lab">The robots</span><span class="lab">Battery <span class="i left" tabindex="0" data-tip="Battery meters&#10;• Bar shows charge now&#10;• White tick marks 20%, the lowest a robot may finish a route on&#10;• Rule BATT-01 checks this for every plan&#10;Why: a robot that dies mid-aisle blocks everyone behind it.">i</span></span></div>
+      <div class="ph"><span class="lab">The robots</span><span class="lab">Battery <button type="button" class="i left" aria-label="About the battery meters" data-tip="Battery meters&#10;• Bar shows charge now&#10;• White tick marks 20%, the lowest a robot may finish a route on&#10;• Rule BATT-01 checks this for every plan&#10;Why: a robot that dies mid-aisle blocks everyone behind it.">i</button></span></div>
       <div class="cast">
         <div class="bot-card" style="--c:var(--cast-1)">
           <svg class="sprite idle1" viewBox="0 0 16 16" role="img" aria-label="Picker robot"><use href="#rb-picker"/></svg>
@@ -377,7 +380,7 @@ dialog::backdrop { background: #000000b0; }
 
 <!-- STAGE 2 -->
 <section class="wrap stage" aria-labelledby="st2h">
-  <div class="step" id="st2"><span class="n">2</span><h3 id="st2h">Check the plan</h3><span class="i" tabindex="0" data-tip="Check the plan&#10;• The robots write a joint plan in plain words&#10;• The rules engine tests it against three safety rules&#10;• A blocked plan goes back with the rule that failed&#10;Why code, not AI: safety needs the same answer every time.">i</span></div>
+  <div class="step" id="st2"><span class="n">2</span><h3 id="st2h">Check the plan</h3><button type="button" class="i" aria-label="About stage 2: Check the plan" data-tip="Check the plan&#10;• The robots write a joint plan in plain words&#10;• The rules engine tests it against three safety rules&#10;• A blocked plan goes back with the rule that failed&#10;Why code, not AI: safety needs the same answer every time.">i</button></div>
   <div class="explain"><span>Robots propose <b class="kind ai">AI</b></span><i>→</i><span>Rules engine checks <b class="kind code">Code</b></span><i>→</i><span>Unsafe plans go back</span></div>
   <div class="grid2">
     <div class="panel">
@@ -402,7 +405,7 @@ dialog::backdrop { background: #000000b0; }
     </div>
   </div>
   <div class="panel" style="margin-top:14px">
-    <div class="ph"><span class="lab">Safety rules <span class="i" tabindex="0" data-tip="Safety rules&#10;• Plain Python-style checks, no AI&#10;• Each rule has an ID you can quote in a report&#10;• Every plan is checked, including the revised one&#10;Why: the robots suggest, the rules decide what's allowed.">i</span></span><span class="kind code">Code</span></div>
+    <div class="ph"><span class="lab">Safety rules <button type="button" class="i" aria-label="About the safety rules" data-tip="Safety rules&#10;• Plain Python-style checks, no AI&#10;• Each rule has an ID you can quote in a report&#10;• Every plan is checked, including the revised one&#10;Why: the robots suggest, the rules decide what's allowed.">i</button></span><span class="kind code">Code</span></div>
     <div class="rules" id="rules">
       <div class="rule head"><span>Rule</span><span>What it checks</span><span>First plan</span><span>Revised</span></div>
     </div>
@@ -414,7 +417,7 @@ dialog::backdrop { background: #000000b0; }
 
 <!-- STAGE 3 -->
 <section class="wrap stage" aria-labelledby="st3h">
-  <div class="step" id="st3"><span class="n">3</span><h3 id="st3h">Approve the plan</h3><span class="i" tabindex="0" data-tip="Approve the plan&#10;• Compare this shift with the same shift before Fleet Queue&#10;• All numbers here are sample data, not a real warehouse&#10;• Approving sends the plan to the robots&#10;Why a person: the manager is accountable for the floor.">i</span></div>
+  <div class="step" id="st3"><span class="n">3</span><h3 id="st3h">Approve the plan</h3><button type="button" class="i" aria-label="About stage 3: Approve the plan" data-tip="Approve the plan&#10;• Compare this shift with the same shift before Fleet Queue&#10;• All numbers here are sample data, not a real warehouse&#10;• Approving sends the plan to the robots&#10;Why a person: the manager is accountable for the floor.">i</button></div>
   <div class="explain"><span>Compare before and after</span><i>→</i><span>Read the plan</span><i>→</i><span>You approve <b class="kind you">You</b></span></div>
   <div class="panel">
     <div class="ph"><span class="lab">Before and after, one sample shift</span><span class="pill q">Sample data</span></div>
@@ -426,11 +429,11 @@ dialog::backdrop { background: #000000b0; }
     </div>
     <div class="dash">
       <div class="card">
-        <div class="ph"><span class="lab">Orders waiting, 06:00 to 14:00 <span class="i" tabindex="0" data-tip="Orders waiting in the queue&#10;• Red line: the shift before Fleet Queue&#10;• Blue line: the same shift with checked plans&#10;• Hover or tap the chart to read each hour&#10;Sample data, made up for this demo.">i</span></span></div>
+        <div class="ph"><span class="lab">Orders waiting, 06:00 to 14:00 <button type="button" class="i" aria-label="About the orders-waiting chart" data-tip="Orders waiting in the queue&#10;• Red line: the shift before Fleet Queue&#10;• Blue line: the same shift with checked plans&#10;• Hover or tap the chart to read each hour&#10;Sample data, made up for this demo.">i</button></span></div>
         <div class="chart" id="lineChart" role="img" aria-label="Line chart, sample data: orders waiting peak at 34 before and 19 after"></div>
       </div>
       <div class="card">
-        <div class="ph"><span class="lab">Plans blocked by rule <span class="i left" tabindex="0" data-tip="Blocks this shift&#10;• How often each rule sent a plan back&#10;• Every blocked plan was revised and passed&#10;Why it matters: these are the jams and drops that never happened.&#10;Sample data.">i</span></span></div>
+        <div class="ph"><span class="lab">Plans blocked by rule <button type="button" class="i left" aria-label="About the plans-blocked chart" data-tip="Blocks this shift&#10;• How often each rule sent a plan back&#10;• Every blocked plan was revised and passed&#10;Why it matters: these are the jams and drops that never happened.&#10;Sample data.">i</button></span></div>
         <div class="stack" aria-hidden="true"><span style="flex:5;background:var(--chart-a)"></span><span style="flex:3;background:var(--chart-b)"></span><span style="flex:2;background:var(--chart-c)"></span></div>
         <div class="slegend">
           <div><span class="sw" style="background:var(--chart-a)"></span><span class="mono">AISLE-01</span><span>Two robots in one aisle</span><b class="mono">5</b></div>
@@ -803,6 +806,30 @@ const io = new IntersectionObserver(es => es.forEach(e => e.target.classList.tog
 document.querySelectorAll('.hero, .stage, .feed').forEach(el => io.observe(el));
 
 finalState();
+// ---------- tooltips for screen readers, tap and Escape ----------
+// each (i) is described by a visually hidden role="tooltip" copy of its text; the visible tip is the ::after
+document.querySelectorAll('.i[data-tip]').forEach((b, k) => {
+  const t = document.createElement('span');
+  t.id = 'tip-text-' + k; t.className = 'sr-only'; t.setAttribute('role', 'tooltip'); t.textContent = b.dataset.tip;
+  document.body.append(t); b.setAttribute('aria-describedby', t.id);
+});
+// click or tap toggles (.open shows, .shut hides even while hovered or focused); touch keeps a sticky :hover, so it goes by .open alone
+let tipPointer = '';
+document.addEventListener('pointerdown', e => { tipPointer = e.pointerType; }, true);
+document.addEventListener('click', e => {
+  const b = e.target.closest?.('.i[data-tip]');
+  document.querySelectorAll('.i.open').forEach(o => o !== b && o.classList.remove('open'));
+  if (b) {
+    const shown = !b.classList.contains('shut') && (tipPointer === 'touch' ? b.classList.contains('open') : getComputedStyle(b, '::after').content !== 'none');
+    b.classList.toggle('open', !shown); b.classList.toggle('shut', shown);
+  }
+  tipPointer = '';
+});
+document.addEventListener('focusout', e => { if (e.target.matches?.('.i[data-tip]')) e.target.classList.remove('open', 'shut'); });
+document.addEventListener('pointerout', e => { const b = e.target.closest?.('.i[data-tip]'); if (b && e.pointerType === 'mouse' && !b.contains(e.relatedTarget)) b.classList.remove('shut'); });
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') document.querySelectorAll('.i[data-tip]').forEach(b => { if (b.matches('.open, :hover, :focus')) { b.classList.remove('open'); b.classList.add('shut'); } });
+});
 </script>
 </body>
 </html>

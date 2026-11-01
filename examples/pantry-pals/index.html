@@ -99,7 +99,7 @@ button { font: inherit; cursor: pointer; color: inherit; }
 /* pixel art */
 .sprite { image-rendering: pixelated; display: block; }
 @media (prefers-reduced-motion: no-preference) {
-  .bob { animation: bob 3.6s ease-in-out infinite; } .bob.d1 { animation-delay: -.9s; } .bob.d2 { animation-delay: -1.8s; }
+  .bob { animation: bob 3.6s steps(2) infinite; } .bob.d1 { animation-delay: -.9s; } .bob.d2 { animation-delay: -1.8s; }
   .talking { animation: hop .4s steps(2) infinite alternate; }
   .fade-up { animation: fade-up .5s cubic-bezier(.2, .8, .2, 1) backwards; } }
 @keyframes bob { 50% { transform: translateY(-4px); } }
@@ -155,29 +155,29 @@ dialog.pop::backdrop { background: rgb(14 43 36 / 62%); }
 @media (max-width: 560px) { .site-nav .nav-link { display: none; } }
 
 /* hero */
-.hero { display: grid; grid-template-columns: 1.05fr 1fr; gap: 2rem; align-items: center; margin-top: 1.25rem; padding: 1.75rem; }
-.hero h1 { margin: .5rem 0 .4rem; font-size: clamp(2.4rem, 5vw, 3.6rem); line-height: 1; }
-.hero .tagline { margin: 0 0 1rem; font-size: 1.2rem; font-weight: 700; color: var(--text); max-width: 32rem; }
-.benefits { margin: 0 0 1.25rem; padding: 0; display: grid; gap: .45rem; }
+.hero { display: grid; grid-template-columns: 1fr 1.05fr; gap: 2.75rem; align-items: center; margin-top: 1.25rem; padding: 2.25rem 2.25rem 2rem 2.5rem; }
+.hero h1 { margin: 1rem 0 .9rem; font-size: clamp(2.6rem, 5.4vw, 4.1rem); line-height: 1; }
+.hero .tagline { margin: 0 0 1.4rem; font-size: 1.22rem; line-height: 1.5; color: var(--text); max-width: 30rem; }
+.benefits { margin: 0 0 1.75rem; padding: 0; display: grid; gap: .6rem; font-weight: 700; }
 .benefits li { list-style: none; display: flex; gap: .55rem; align-items: baseline; }
 .benefits li::before { content: "✓"; display: inline-grid; place-items: center; flex: none; width: 1.35rem; height: 1.35rem; border-radius: 4px; background: var(--mint-soft);
   border: 1.5px solid var(--ok); color: var(--ok); font-weight: 700; font-size: .85rem; }
 .hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: .9rem; }
 .badge-line { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; }
-@media (max-width: 860px) { .hero { grid-template-columns: 1fr; padding: 1.2rem; gap: 1.25rem; } }
+@media (max-width: 860px) { .hero { grid-template-columns: 1fr; padding: 1.2rem; gap: 1.5rem; } }
 
 /* hero scene: everything inside is placed in cqw so it scales as one picture */
 .scene { position: relative; container-type: inline-size; aspect-ratio: 4 / 3; border-radius: 16px; overflow: hidden; border: 2px solid var(--ink);
-  box-shadow: 0 4px 0 rgb(16 70 100 / 30%); background: #eaf7fb; }
+  box-shadow: 4px 5px 0 rgb(16 70 100 / 28%); background: #eaf7fb; }
 .scene-bg { position: absolute; inset: 0; width: 100%; height: 100%; }
 .actor { position: absolute; left: calc(var(--x) - var(--w) / 2); top: var(--y); width: var(--w); }
 .actor .sprite { width: 100%; height: auto; }
-.alab { position: absolute; left: var(--x); top: var(--y); transform: translate(-50%, -100%); display: inline-flex; align-items: center; gap: .35rem;
+/* name chips sit on the floor, centred under each actor's feet */
+.alab { position: absolute; left: var(--x); top: var(--y); transform: translate(-50%, -50%); display: inline-flex; align-items: center; gap: .35rem;
   padding: .2rem .5rem .2rem .3rem; background: #fff; border: 2px solid var(--ink); border-radius: 999px; font: 700 .85rem var(--body); white-space: nowrap;
   box-shadow: 0 2px 0 rgb(31 36 48 / 30%); z-index: 3; }
-.alab.mid { transform: translate(-50%, -50%); }
-/* small scenes: the legend below carries the AI chips, so the labels drop them to stay inside the frame */
-@container (max-width: 420px) { .alab { font-size: .78rem; padding: .1rem .45rem .1rem .25rem; } .alab .kind.ai { display: none; } }
+/* small scenes: the legend below carries the AI chips and glyphs, so the labels drop them to stay apart */
+@container (max-width: 420px) { .alab { font-size: .78rem; padding: .1rem .45rem; } .alab .kind.ai, .alab .glyph { display: none; } }
 .fly { position: absolute; left: 0; top: 0; width: 8cqw; height: 8cqw; display: grid; place-items: center; font-size: 4.6cqw; line-height: 1;
   background: #fff; border: 2px solid var(--ink); border-radius: 8px; box-shadow: 2px 2px 0 rgb(31 36 48 / 35%); opacity: 0; z-index: 2; }
 @media (prefers-reduced-motion: no-preference) {
@@ -190,12 +190,12 @@ dialog.pop::backdrop { background: rgb(14 43 36 / 62%); }
 @keyframes fly2 { 0%, 33% { opacity: 0; transform: translate(18cqw, 40cqw) scale(.5); } 37% { opacity: 1; transform: translate(18cqw, 40cqw) scale(1); animation-timing-function: steps(6); }
   48% { transform: translate(46cqw, 0cqw) rotate(6deg); animation-timing-function: steps(6); } 60% { opacity: 1; transform: translate(74cqw, 40cqw); } 63%, 100% { opacity: 0; transform: translate(74cqw, 40cqw) scale(.6); } }
 @keyframes fly3 { 0%, 66% { opacity: 0; transform: translate(74cqw, 44cqw) scale(.5); } 70% { opacity: 1; transform: translate(74cqw, 44cqw) scale(1); animation-timing-function: steps(6); }
-  80% { transform: translate(64cqw, 36cqw) rotate(-6deg); animation-timing-function: steps(5); } 92% { opacity: 1; transform: translate(53cqw, 52cqw); } 95%, 100% { opacity: 0; transform: translate(53cqw, 52cqw) scale(.6); } }
+  80% { transform: translate(61cqw, 32cqw) rotate(-6deg); animation-timing-function: steps(5); } 92% { opacity: 1; transform: translate(46cqw, 44cqw); } 95%, 100% { opacity: 0; transform: translate(46cqw, 44cqw) scale(.6); } }
 @keyframes hop1 { 0%, 26%, 33%, 100% { transform: none; } 27%, 31% { transform: translateY(-3cqw) scale(1.06); } 29% { transform: translateY(-1cqw); } }
 @keyframes hop2 { 0%, 59%, 66%, 100% { transform: none; } 60%, 64% { transform: translateY(-3cqw) scale(1.06); } 62% { transform: translateY(-1cqw); } }
 @keyframes hop3 { 0%, 91%, 98%, 100% { transform: none; } 92%, 96% { transform: translateY(-3cqw) scale(1.06); } 94% { transform: translateY(-1cqw); } }
 .hopper { animation-timing-function: steps(1); }
-.legend { display: flex; flex-wrap: wrap; gap: .4rem .9rem; margin: .7rem .2rem 0; padding: 0; font-size: .92rem; }
+.legend { display: flex; flex-wrap: wrap; gap: .45rem 1.25rem; margin: .9rem .25rem 0; padding: 0; font-size: .92rem; }
 .legend li { list-style: none; display: inline-flex; align-items: center; gap: .4rem; }
 
 /* stages */
@@ -382,8 +382,8 @@ dialog.pop::backdrop { background: rgb(14 43 36 / 62%); }
         <rect y="248" width="400" height="52" fill="#fcefc2"/>
         <path d="M0 274h400M40 248v52M120 248v52M200 248v52M280 248v52M360 248v52" stroke="#e9d48f" stroke-width="2"/>
         <path d="M0 248h400" stroke="#1f2430" stroke-width="3"/>
-        <ellipse cx="68" cy="257" rx="38" ry="6" fill="rgb(31 36 48 / 16%)"/>
-        <ellipse cx="332" cy="257" rx="38" ry="6" fill="rgb(31 36 48 / 16%)"/>
+        <ellipse cx="68" cy="250" rx="36" ry="5" fill="rgb(31 36 48 / 18%)"/>
+        <ellipse cx="332" cy="250" rx="36" ry="5" fill="rgb(31 36 48 / 18%)"/>
         <rect x="148" y="40" width="104" height="210" rx="14" fill="#fff" stroke="#1f2430" stroke-width="4"/>
         <path d="M148 104h104" stroke="#1f2430" stroke-width="3"/>
         <rect x="234" y="60" width="7" height="30" rx="3" fill="#1f2430"/>
@@ -395,16 +395,17 @@ dialog.pop::backdrop { background: rgb(14 43 36 / 62%); }
         <g transform="rotate(-6 186 150)"><rect x="170" y="128" width="34" height="42" rx="3" fill="#fcefc2" stroke="#1f2430" stroke-width="2"/><path d="M176 140h22M176 148h22M176 156h14" stroke="#b9651a" stroke-width="2"/></g>
         <rect x="160" y="248" width="14" height="6" fill="#1f2430"/>
         <rect x="226" y="248" width="14" height="6" fill="#1f2430"/>
+        <ellipse cx="200" cy="250" rx="30" ry="5" fill="rgb(31 36 48 / 18%)"/>
       </svg>
-      <div class="actor" style="--x:17cqw;--y:40cqw;--w:24cqw"><div class="hopper h1"><svg data-sprite="chef" data-size="96" class="bob"></svg></div></div>
-      <div class="actor" style="--x:83cqw;--y:40cqw;--w:24cqw"><div class="hopper h2"><svg data-sprite="shopper" data-size="96" class="bob d1"></svg></div></div>
-      <div class="actor" style="--x:50cqw;--y:57cqw;--w:16cqw"><div class="hopper h3"><svg data-sprite="you" data-size="64" class="bob d2"></svg></div></div>
+      <div class="actor" style="--x:17cqw;--y:38cqw;--w:24cqw"><div class="hopper h1"><svg data-sprite="chef" data-size="96" class="bob"></svg></div></div>
+      <div class="actor" style="--x:83cqw;--y:38cqw;--w:24cqw"><div class="hopper h2"><svg data-sprite="shopper" data-size="96" class="bob d1"></svg></div></div>
+      <div class="actor" style="--x:50cqw;--y:42cqw;--w:20cqw"><div class="hopper h3"><svg data-sprite="you" data-size="80" class="bob d2"></svg></div></div>
       <span class="fly f1" aria-hidden="true">🍅</span>
       <span class="fly f2" aria-hidden="true">📋</span>
       <span class="fly f3" aria-hidden="true">🧾</span>
-      <span class="alab" style="--x:17cqw;--y:38cqw" aria-hidden="true"><span class="glyph chef"></span>Chef <span class="kind ai">AI</span></span>
-      <span class="alab" style="--x:83cqw;--y:38cqw" aria-hidden="true"><span class="glyph shopper"></span>Shopper <span class="kind ai">AI</span></span>
-      <span class="alab mid" style="--x:74cqw;--y:69cqw" aria-hidden="true"><span class="glyph you"></span><span class="kind you">You</span> approve</span>
+      <span class="alab" style="--x:17cqw;--y:68.5cqw" aria-hidden="true"><span class="glyph chef"></span>Chef <span class="kind ai">AI</span></span>
+      <span class="alab" style="--x:50cqw;--y:68.5cqw" aria-hidden="true"><span class="glyph you"></span><span class="kind you">You</span> approve</span>
+      <span class="alab" style="--x:83cqw;--y:68.5cqw" aria-hidden="true"><span class="glyph shopper"></span>Shopper <span class="kind ai">AI</span></span>
     </div>
     <ul class="legend" aria-label="Who does what">
       <li><span class="glyph chef"></span> <b>Chef</b> <span class="kind ai">AI</span> suggests recipes</li>
@@ -418,7 +419,7 @@ dialog.pop::backdrop { background: rgb(14 43 36 / 62%); }
   <section class="stage" id="fridge" aria-labelledby="s1-title">
     <div class="stage-header"><div class="stage-plate">
       <div class="stage-top"><span class="stage-tab">Stage 1</span><h2 id="s1-title" class="stage-title">Fill your fridge</h2>
-        <div class="stage-aside"><span class="kind you">You</span><span data-tip="stage 1" data-title="Why start with the fridge"
+        <div class="stage-aside"><span class="kind you">You</span><span data-tip="filling your fridge" data-title="Why start with the fridge"
           data-lines="Each tile is one thing in your fridge.|Tap to add or remove it.|The Chef ranks recipes by how much they use from here.|Why: cooking what you have means less waste and a shorter list."></span></div></div>
       <p class="stage-line"><span aria-hidden="true">🧊 </span><span>Tap what you have. The Chef plans around it.</span></p>
     </div></div>
@@ -434,7 +435,7 @@ dialog.pop::backdrop { background: rgb(14 43 36 / 62%); }
   <section class="stage" id="chef" aria-labelledby="s2-title">
     <div class="stage-header"><div class="stage-plate">
       <div class="stage-top"><span class="stage-tab">Stage 2</span><h2 id="s2-title" class="stage-title">Let the Chef plan your week</h2>
-        <div class="stage-aside"><span class="kind ai">AI</span><span data-tip="stage 2" data-title="What the Chef does" data-tone="var(--chef-bar)"
+        <div class="stage-aside"><span class="kind ai">AI</span><span data-tip="the Chef" data-title="What the Chef does" data-tone="var(--chef-bar)"
           data-lines="Reads what’s in your fridge.|Picks seven dinners that use the most of it.|Shows how much of each dinner you already have.|Swap any day you don’t fancy.|Why an AI helper: it can weigh what you have against many recipes at once."></span></div></div>
       <p class="stage-line"><span aria-hidden="true">🍳 </span><span>Seven dinners, picked to use up your fridge first.</span></p>
     </div></div>
@@ -460,7 +461,7 @@ dialog.pop::backdrop { background: rgb(14 43 36 / 62%); }
   <section class="stage" id="shopper" aria-labelledby="s3-title">
     <div class="stage-header"><div class="stage-plate">
       <div class="stage-top"><span class="stage-tab">Stage 3</span><h2 id="s3-title" class="stage-title">Let the Shopper build your list</h2>
-        <div class="stage-aside"><span class="kind ai">AI</span><span data-tip="stage 3" data-title="What the Shopper does" data-tone="var(--shopper-bar)"
+        <div class="stage-aside"><span class="kind ai">AI</span><span data-tip="the Shopper" data-title="What the Shopper does" data-tone="var(--shopper-bar)"
           data-lines="Reads the Chef’s plan and your fridge.|Lists every missing ingredient once.|Says how many dinners need each one.|Updates the list when you swap a day.|Why: one list means one trip to the shop."></span></div></div>
       <p class="stage-line"><span aria-hidden="true">🧺 </span><span>Only what the plan needs and your fridge doesn’t have.</span></p>
     </div></div>
@@ -481,7 +482,7 @@ dialog.pop::backdrop { background: rgb(14 43 36 / 62%); }
   <section class="stage" id="approve" aria-labelledby="s4-title">
     <div class="stage-header"><div class="stage-plate">
       <div class="stage-top"><span class="stage-tab">Stage 4</span><h2 id="s4-title" class="stage-title">Approve your week</h2>
-        <div class="stage-aside"><span class="kind you">You</span><span data-tip="stage 4" data-title="Why you approve" data-tone="var(--you-bar)"
+        <div class="stage-aside"><span class="kind you">You</span><span data-tip="approving your week" data-title="Why you approve" data-tone="var(--you-bar)"
           data-lines="The helpers suggest. You decide.|Review the seven dinners and the list together.|Change anything first: swap a day or edit your fridge.|Any change after approving asks you again."></span></div></div>
       <p class="stage-line"><span aria-hidden="true">✅ </span><span>Nothing’s final until you say so.</span></p>
     </div></div>
@@ -590,14 +591,14 @@ function shopperList(plan, fridge) {
 const ink = "#16171a", skin = "#f1c7a3", mouth = "#7a3b2e";
 const CAST = {
   chef: { palette: { k: ink, W: "#ffffff", s: skin, m: mouth, t: "#1fa98a", y: "#c99470" }, animate: { y: "px-wl" }, grid: [
-    "....kkkkkkkk....", "...kWWWWWWWWk...", "..kWWWWWWWWWWk..", "..kWWWWWWWWWWk..", "...kWWWWWWWWk...", "...kkttttttkk...", "...kssssssssk...", "...kskksskksk...",
-    "...kssssssssk.y.", "...ksssmmsssk.y.", "....kssssssk..y.", "...kkkkkkkkkk.y.", "..kWWWtWWtWWWksk", "..kWWWWWWWWWWk..", "..kWWWtWWtWWWk..", "..kkkkkkkkkkkk.."] },
-  shopper: { palette: { k: ink, c: "#ef8b74", s: skin, m: mouth, g: "#3f9e57", b: "#c99470" }, animate: { g: "px-wl" }, grid: [
-    "................", "....kkkkkkkk....", "...kccccccccck..", "...kkkkkkkkkkkk.", "...kssssssssk...", "...kskksskksk...", "...kssssssssk...", "...ksssmmsssk...",
-    "....kssssssk....", "...kkkkkkkkkk...", "..kcccccccck.kk.", "..kcccccccckk..k", "..kcccccccskkkkk", "..kcccccccckgggk", "..kcccccccckbbbk", "..kkkkkkkkkkkkkk"] },
+    "....kk.kk.kk....", "...kWWkWWkWWk...", "..kWWWWWWWWWWk..", "..kWWWWWWWWWWk..", "...kWWWWWWWWk...", "...kWWWWWWWWk.k.", "...kkkkkkkkkkkyk", "...ksssssssskkyk",
+    "...kskssssksk.k.", "...ksssmmsssk.y.", "....kssssssk..y.", "..kkkWkkkkWkkksk", ".kWWkttttttkWkk.", ".kWWkttyyttkWk..", ".kssktttttttk...", "..kkkkkkkkkkk..."] },
+  shopper: { palette: { k: ink, c: "#ef8b74", s: skin, m: mouth, g: "#3f9e57", b: "#c99470", r: "#e0533c" }, animate: { g: "px-wl" }, grid: [
+    "................", "....kkkkkkk.....", "...kcccccccck...", "..kccccccccckk..", "..kkkkkkkkkkkkk.", "...kssssssssk...", "...kskssssksk...", "...ksssmmsssk...",
+    "....kssssssk....", "...kkkkkkkkkk...", "..kcccccccckkkkk", "..kcccccccck.k.k", "..kccccccccskkkk", "..kccccccckbgrbk", "..kkkkkkkkkkbbkk", "...kk..kk..kkkk."] },
   you: { palette: { k: ink, h: "#6b3f2a", s: skin, m: mouth, o: "#e8912d", d: "#3a4955" }, animate: {}, grid: [
-    "................", "....kkkkkkkk....", "...khhhhhhhhk...", "..khhhhhhhhhhk..", "..khsssssssshk..", "..khskksskkshk..", "...kssssssssk...", "...ksssmmsssk...",
-    "....kssssssk....", "...kkkkkkkkkk...", "..kooooooooook..", ".kooooooooooook.", ".koookooookoook.", ".ksookooookoosk.", "....kddkkddk....", "....kkk..kkk...."] },
+    "................", "....kkkkkkkk....", "...khhhhhhhhk...", "..khhhhhhhhhhk..", "..khsssssssshk..", "..khsksssskshk..", "...kssssssssk...", "...ksssmmsssk...",
+    "....kssssssk....", "...kkkkkkkkkk...", "..kooooooooook..", ".kooooooooooook.", ".kskooooooooksk.", ".kskddddddddksk.", "...kddk..kddk...", "...kkkk..kkkk..."] },
 };
 const TOMATO = ["......gg......", ".....gggg.....", "...kkkkkkkk...", "..krrrrrrrrk..", ".krrwrrrrrrrk.", ".krwrrrrrrrrk.", ".krrrrrrrrrrk.", ".krrrrrrrrrrk.", "..krrrrrrrrk..", "...kkkkkkkk..."];
 
@@ -606,7 +607,7 @@ function rects(grid, palette, animate = {}, dy = 0) {
   grid.forEach((row, y) => [...row].forEach((ch, x) => {
     if (ch === "." || !palette[ch]) return;
     const a = animate[ch], cls = !a ? "" : ` class="${Array.isArray(a) ? a[x < 8 ? 0 : 1] : a}"`;
-    out += `<rect x="${x}" y="${y + dy}" width="1.02" height="1.02" fill="${palette[ch]}"${cls}/>`;
+    out += `<rect x="${x}" y="${y + dy}" width="1.1" height="1.1" fill="${palette[ch]}"${cls}/>`;
   }));
   return out;
 }
@@ -621,11 +622,11 @@ document.querySelectorAll("svg[data-sprite]").forEach(el => {
   el.innerHTML = rects(c.grid, c.palette, c.animate);
 });
 
-// Tooltips: same markup and behaviour as WordTip.tsx (Popover API, hover + focus + tap, Escape, flips above)
+// Tooltips: same markup and behaviour as WordTip.tsx (Popover API, hover + focus + tap to toggle, Escape, flips above)
 let tipN = 0;
 document.querySelectorAll("[data-tip]").forEach(host => {
   const id = "tip" + ++tipN;
-  host.outerHTML = `<span class="word-tip-wrap" data-wrap><button type="button" class="word-tip-word" aria-describedby="${id}"><span class="i-dot" aria-hidden="true">i</span><span class="sr-only">About ${host.dataset.tip}</span></button>`
+  host.outerHTML = `<span class="word-tip-wrap" data-wrap><button type="button" class="word-tip-word" aria-label="About ${host.dataset.tip}" aria-describedby="${id}"><span class="i-dot" aria-hidden="true">i</span></button>`
     + `<div id="${id}" class="word-tip" popover="manual" role="tooltip" hidden style="--tip-bg:${host.dataset.tone || "var(--teal-dark)"}"><div class="word-tip-head">${host.dataset.title}</div>`
     + `<div class="word-tip-body"><ul>${host.dataset.lines.split("|").map(l => `<li>${l}</li>`).join("")}</ul></div></div></span>`;
 });
@@ -648,7 +649,7 @@ document.querySelectorAll("[data-wrap]").forEach(wrap => {
   wrap.addEventListener("pointerleave", e => { if (e.pointerType === "mouse" && !pinned) hide(); });
   btn.addEventListener("focus", () => { if (btn.matches(":focus-visible")) show(); });
   btn.addEventListener("blur", () => { if (!pinned) hide(); });
-  btn.addEventListener("click", () => { pinned = !pinned; show(); });
+  btn.addEventListener("click", () => { if (open && pinned) hide(); else { pinned = true; show(); } });
   addEventListener("keydown", e => { if (open && e.key === "Escape") { hide(); btn.focus(); } });
   addEventListener("pointerdown", e => { if (open && !tip.contains(e.target) && !btn.contains(e.target)) hide(); });
 });

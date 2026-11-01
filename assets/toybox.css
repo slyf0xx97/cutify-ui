@@ -12,6 +12,8 @@
   --radius: 18px; --ledge: 5px;
   --stud: radial-gradient(circle at 50% 40%, #fff6 0 30%, transparent 32%);
   --display: 'Dela Gothic One', system-ui, sans-serif; --body: 'Outfit', system-ui, sans-serif; --mono: 'JetBrains Mono', ui-monospace, monospace;
+  /* shared contract (same names in every theme) */
+  --surface-2: #F3EFE5; --accent: var(--blue); --accent-ink: var(--blue-ink); --accent-2: var(--yellow); --accent-2-ink: var(--yellow-ink);
 }
 *, *::before, *::after { box-sizing: border-box; }
 html { background: var(--bg); }

@@ -25,10 +25,17 @@ else {
 }
 const lines = skill.split("\n").length;
 lines < 500 ? ok(`${lines} lines (under 500)`) : fail(`SKILL.md is ${lines} lines; move detail into references/`);
-for (const ref of skill.matchAll(/`((?:references|assets)\/[^`*]+?)`/g)) {
-  existsSync(join(root, ref[1])) ? null : fail(`SKILL.md points to missing ${ref[1]}`);
+const missing = [...skill.matchAll(/`((?:references|assets)\/[^`*<]+?)`/g)].map((m) => m[1]).filter((p) => !existsSync(join(root, p)));
+missing.length ? missing.forEach((p) => fail(`SKILL.md points to missing ${p}`)) : ok("every path SKILL.md mentions exists");
+const before = fails.length;
+for (const theme of ["glass", "apron", "picnic", "riso", "lantern", "toybox"]) {
+  const css = readFileSync(join(root, `assets/${theme}.css`), "utf8");
+  const vars = ["bg", "surface", "surface-2", "ink", "ink-muted", "accent", "accent-ink", "accent-2", "accent-2-ink", "ok", "bad", "display", "body", "mono"]
+    .filter((v) => !css.includes(`--${v}:`));
+  const classes = ["panel", "card", "lab", "hl", "step", "btn", "kind", "i", "pill", "kpi", "sprite"].filter((c) => !new RegExp(`\\.${c}\\b`).test(css));
+  vars.length || classes.length ? fail(`${theme}.css is missing ${[...vars.map((v) => "--" + v), ...classes.map((c) => "." + c)].join(", ")}`) : null;
 }
-ok("every path SKILL.md mentions exists");
+fails.length === before ? ok("all six themes define the shared contract variables and classes") : null;
 
 console.log("TypeScript (strict)");
 try {
