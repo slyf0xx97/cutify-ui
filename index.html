@@ -75,9 +75,17 @@ h1 span { background: linear-gradient(transparent 58%, var(--pink) 58%, var(--pi
   .btn:active { transform: translateY(2px); box-shadow: 0 2px 0 var(--ink); }
   .card:hover, .card:focus-within { transform: rotate(0deg) translateY(-6px); box-shadow: 8px 12px 0 var(--ink); }
   .tape { animation: wobble 3.2s ease-in-out infinite; } @keyframes wobble { 50% { transform: rotate(1deg); } } }
-section.about { padding: 0 0 4rem; display: grid; gap: 1.5rem; }
+section.about { display: grid; gap: 1.5rem; margin-top: 2.5rem; }
+@media (min-width: 960px) {
+  header { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 34rem); gap: 3rem; align-items: start; padding-top: 3rem; }
+  section.about { margin-top: 0; gap: 1.1rem; }
+  .about .panel { padding: 1rem 1.3rem; }
+  .about h2 { font-size: 1.3rem; margin-bottom: .3rem; }
+  .about p { margin: .4rem 0; font-size: .9rem; line-height: 1.5; }
+  .about pre { margin: .4rem 0; padding: .6rem .8rem; font-size: .8rem; }
+}
 .about .panel { background: #fff; border: 2px solid var(--ink); border-radius: 16px; box-shadow: 6px 7px 0 var(--ink); padding: 1.4rem 1.6rem; }
-.about h3 { font: 600 1.6rem 'Pixelify Sans', sans-serif; margin: 0 0 .5rem; }
+.about h2 { font: 600 1.6rem 'Pixelify Sans', sans-serif; margin: 0 0 .5rem; }
 pre { background: var(--ink); color: #fbf7ee; padding: .9rem 1rem; border-radius: 10px; overflow-x: auto; font: 500 .9rem 'Spline Sans Mono', monospace; white-space: pre-wrap; overflow-wrap: anywhere; }
 footer { padding: 2rem 0 3rem; font: 500 .85rem 'Spline Sans Mono', monospace; color: var(--soft); }
 footer a, .about a { color: var(--ink); }
@@ -90,10 +98,26 @@ footer a, .about a { color: var(--ink); }
 </head>
 <body>
 <header class="wrap">
+  <div class="intro">
   <span class="tape">A Claude skill, MIT</span>
   <h1>cutify<span>-ui</span></h1>
   <p class="lede">Playful, game-like interfaces with pixel-art characters, numbered story stages and motion that shows what the product does, in six themes from frosted glass to riso print. Every page below was built by Claude with the skill from a short brief.</p>
   <div class="btns"><a class="btn main" href="https://github.com/slyf0xx97/cutify-ui">Get the skill on GitHub</a><a class="btn" href="#gallery">See the examples ↓</a><a class="btn donate" href="https://buy.stripe.com/00w4gr2TU7wC52iaXf18c01" target="_blank" rel="noopener noreferrer"><svg aria-hidden="true" focusable="false" viewBox="0 0 16 16" width="16" height="16" shape-rendering="crispEdges"><path fill="currentColor" d="M3 3h3v1h1v1h2V4h1V3h3v1h1v4h-1v1h-1v1h-1v1h-1v1H9v1H7v-1H6v-1H5V9H4V8H3V7H2V4h1z"/></svg>Support cutify-ui<span class="sr-only"> (opens Stripe in a new tab)</span></a></div>
+  </div>
+  <section class="about">
+    <div class="panel">
+      <h2>What's in the skill</h2>
+      <p>cutify-ui is an open-source <a href="https://docs.claude.com/en/docs/agents-and-tools/agent-skills/overview">Claude skill</a> for Claude Code, Claude.ai and the Claude API. It gives Claude six themes (Glass, Apron, Picnic, Riso Club, Lantern Night and Toy Box), 19 CSS backdrops, ten open-licence font pairings, pixel-art sprites drawn as SVG, accessible tooltips, and typed React 19 components. Claude uses them to build cute landing pages, product demos, portfolios and multi-agent explainers in React, Next.js or plain HTML. The skill also lists the usual tells of AI-made pages, such as purple gradients, emoji icons and a centred hero over three feature boxes, so the results don't look generated.</p>
+    </div>
+    <div class="panel">
+      <h2>Install</h2>
+      <p>In Claude Code, paste this into the chat:</p>
+      <pre>/plugin install cutify-ui --marketplace slyf0xx97/cutify-ui</pre>
+      <p>For Cursor, Codex or another coding agent, run this in your terminal:</p>
+      <pre>npx skills add slyf0xx97/cutify-ui</pre>
+      <p>Then ask for something like "a cute landing page for my study app with three AI tutors". Claude.ai users can upload the zip from the <a href="https://github.com/slyf0xx97/cutify-ui/releases/latest">latest release</a>. More in the <a href="https://github.com/slyf0xx97/cutify-ui#readme">README</a>.</p>
+    </div>
+  </section>
 </header>
 
 <main class="wrap">
@@ -119,20 +143,6 @@ footer a, .about a { color: var(--ink); }
   </ul>
   <p class="sr-only" id="copy-status" aria-live="polite"></p>
 
-  <section class="about">
-    <div class="panel">
-      <h3>What's in the skill</h3>
-      <p>cutify-ui is an open-source <a href="https://docs.claude.com/en/docs/agents-and-tools/agent-skills/overview">Claude skill</a> for Claude Code, Claude.ai and the Claude API. It gives Claude six themes (Glass, Apron, Picnic, Riso Club, Lantern Night and Toy Box), 19 CSS backdrops, ten open-licence font pairings, pixel-art sprites drawn as SVG, accessible tooltips, and typed React 19 components. Claude uses them to build cute landing pages, product demos, portfolios and multi-agent explainers in React, Next.js or plain HTML. The skill also lists the usual tells of AI-made pages, such as purple gradients, emoji icons and a centred hero over three feature boxes, so the results don't look generated.</p>
-    </div>
-    <div class="panel">
-      <h3>Install</h3>
-      <p>In Claude Code, paste this into the chat:</p>
-      <pre>/plugin install cutify-ui --marketplace slyf0xx97/cutify-ui</pre>
-      <p>For Cursor, Codex or another coding agent, run this in your terminal:</p>
-      <pre>npx skills add slyf0xx97/cutify-ui</pre>
-      <p>Then ask for something like "a cute landing page for my study app with three AI tutors". Claude.ai users can upload the zip from the <a href="https://github.com/slyf0xx97/cutify-ui/releases/latest">latest release</a>. More in the <a href="https://github.com/slyf0xx97/cutify-ui#readme">README</a>.</p>
-    </div>
-  </section>
 </main>
 
 <footer class="wrap"><div class="foot-row">
