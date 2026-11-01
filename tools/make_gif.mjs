@@ -1,40 +1,29 @@
-// Records a looping GIF that visits several example pages, about two seconds each, for the README.
-// Run from tools/ with a static server on the repo root:
-//   node make_gif.mjs http://127.0.0.1:8811 studybuddy,fleet-queue,sunday-spread ../docs/gallery/demo.gif
+// Records tools/demo-grid.html (six examples animating side by side) as smooth video, then turns it into a GIF with ffmpeg.
+// Run from tools/ with a static server on the repo root and ffmpeg on PATH or in FFMPEG:
+//   node make_gif.mjs http://127.0.0.1:8811 ../docs/gallery/demo.gif
 import { chromium } from "playwright";
-import { PNG } from "pngjs";
-import gifenc from "gifenc";
-import { writeFileSync } from "node:fs";
+import { execFileSync } from "node:child_process";
+import { mkdtempSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 
-const [base = "http://127.0.0.1:8811", list = "fleet-queue", out = "../docs/gallery/demo.gif"] = process.argv.slice(2);
-const W = 720, H = 405, PER_PAGE = 13, STEP = 90; // about 1.7 s per page at 8 fps keeps six pages near 3 MB
-const { GIFEncoder, quantize, applyPalette } = gifenc;
+const [base = "http://127.0.0.1:8811", out = "../docs/gallery/demo.gif"] = process.argv.slice(2);
+const ffmpeg = process.env.FFMPEG ?? "ffmpeg";
+const size = { width: 1216, height: 528 };
+const LOAD = 6, LENGTH = 5; // seconds: skip the page loads, then keep five seconds of motion
 
+const dir = mkdtempSync(join(tmpdir(), "cutify-gif-"));
 const browser = await chromium.launch();
-// lay each page out at desktop width (1280px), then scale the frames down to W x H
-const page = await browser.newPage({ viewport: { width: 1280, height: 1280 * H / W }, deviceScaleFactor: W / 1280 });
-const shots = [];
-for (const name of list.split(",")) {
-  await page.goto(`${base}/examples/${name}/`, { waitUntil: "networkidle" });
-  await page.evaluate(() => document.fonts.ready);
-  await page.waitForTimeout(1200);
-  // each screenshot takes real time, so every frame's delay is the measured gap, keeping playback at real speed
-  for (let i = 0, t = Date.now(); i < PER_PAGE; i++) {
-    const png = await page.screenshot();
-    await page.waitForTimeout(STEP);
-    const now = Date.now();
-    shots.push({ png, delay: now - t });
-    t = now;
-  }
-  shots.at(-1).delay += 400; // a short hold before the next page
-}
+const context = await browser.newContext({ viewport: size, recordVideo: { dir, size } });
+const page = await context.newPage();
+await page.goto(`${base}/tools/demo-grid.html`, { waitUntil: "networkidle" });
+await page.waitForTimeout((LOAD + LENGTH) * 1000 + 500);
+const video = await page.video().path();
+await context.close();
 await browser.close();
-const gif = GIFEncoder();
-for (const { png, delay } of shots) {
-  const { data } = PNG.sync.read(png);
-  const palette = quantize(data, 256);
-  gif.writeFrame(applyPalette(data, palette), W, H, { palette, delay: Math.round(delay / 10) * 10 });
-}
-gif.finish();
-writeFileSync(out, gif.bytes());
-console.log(`${out} ${shots.length} frames, ${(gif.bytes().length / 1024).toFixed(0)} KB`);
+
+// one palette for the whole clip keeps colours steady, and 20 fps keeps the motion smooth
+const filters = "fps=20,scale=1000:-1:flags=lanczos,split[a][b];[a]palettegen=max_colors=160:stats_mode=diff[p];[b][p]paletteuse=dither=bayer:bayer_scale=4:diff_mode=rectangle";
+execFileSync(ffmpeg, ["-y", "-loglevel", "error", "-ss", String(LOAD), "-t", String(LENGTH), "-i", video, "-vf", filters, "-loop", "0", out]);
+rmSync(dir, { recursive: true, force: true });
+console.log(out);

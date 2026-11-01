@@ -1,0 +1,29 @@
+<!doctype html>
+<!-- Six examples running side by side, recorded by make_gif.mjs for the README demo. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spline+Sans+Mono:wght@700&display=swap">
+<style>
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { width: 1216px; height: 528px; padding: 16px; overflow: hidden;
+  background: repeating-linear-gradient(0deg, transparent 0 27px, #e6dcc8 27px 28px), repeating-linear-gradient(90deg, transparent 0 27px, #efe6d4 27px 28px), #fbf7ee; }
+.grid { display: grid; grid-template-columns: repeat(3, 384px); gap: 16px; }
+.tile { position: relative; width: 384px; height: 240px; overflow: hidden; border: 2px solid #1f2430; border-radius: 10px; background: #fff; }
+/* each page lays out at 1280 x 800, then shrinks to the tile */
+.tile iframe { width: 1280px; height: 800px; border: 0; transform: scale(.2969); transform-origin: 0 0; pointer-events: none; }
+.tag { position: absolute; left: 8px; bottom: 8px; padding: 2px 8px; border: 2px solid #1f2430; border-radius: 999px; background: #fffdf7; font: 700 11px 'Spline Sans Mono', monospace; color: #1f2430; }
+</style>
+</head>
+<body>
+<div class="grid">
+  <div class="tile"><iframe src="../examples/studybuddy/" title="StudyBuddy"></iframe><span class="tag">Glass</span></div>
+  <div class="tile"><iframe src="../examples/fleet-queue/" title="Fleet Queue"></iframe><span class="tag">Apron</span></div>
+  <div class="tile"><iframe src="../examples/sunday-spread/" title="Sunday Spread"></iframe><span class="tag">Picnic</span></div>
+  <div class="tile"><iframe src="../examples/zine-night/" title="Zine Night"></iframe><span class="tag">Riso Club</span></div>
+  <div class="tile"><iframe src="../examples/moonlit-market/" title="Moonlit Market"></iframe><span class="tag">Lantern Night</span></div>
+  <div class="tile"><iframe src="../examples/beep-and-build/" title="Beep and Build"></iframe><span class="tag">Toy Box</span></div>
+</div>
+</body>
+</html>

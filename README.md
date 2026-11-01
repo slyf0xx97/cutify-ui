@@ -17,7 +17,7 @@ cutify-ui is an open-source [Claude skill](https://docs.claude.com/en/docs/agent
 
 🌐 See all twelve examples in the [live gallery](https://slyf0xx97.github.io/cutify-ui/).
 
-<p align="center"><img src="docs/gallery/demo.gif" alt="Six example pages in turn, one per theme: StudyBuddy, Fleet Queue, Sunday Spread, Zine Night, Moonlit Market and Beep and Build, each with its pixel characters moving" width="720"><br><sub>Six of the twelve examples, one per theme, recorded at 1280px.</sub></p>
+<p align="center"><img src="docs/gallery/demo.gif" alt="Six example pages animating side by side, one per theme: StudyBuddy in Glass, Fleet Queue in Apron, Sunday Spread in Picnic, Zine Night in Riso Club, Moonlit Market in Lantern Night and Beep and Build in Toy Box" width="1000"><br><sub>Six of the twelve examples running at once, one per theme.</sub></p>
 
 ## Contents
 
@@ -129,56 +129,40 @@ All six themes share the same variable and class names, so a component written f
 
 ## 💬 Sample prompts
 
-Each prompt below ran in Claude Code with cutify-ui installed. On the left is the session, redrawn from its log with nothing reworded. On the right is the page it built, unedited, and clicking it opens the page live.
+Each prompt below ran in Claude Code with cutify-ui installed. On the left is the prompt, and on the right is the page Claude built, unedited. Click a page to open it live.
 
 ### 1. A landing page for a study app
 
-```
-Use the cutify-ui skill. Make a cute landing page for my study app with three AI tutors. Write it as a single index.html in the current folder.
-```
-
 <table><tr>
-<td width="50%" valign="top"><img src="docs/prompts/studybuddy-prompt-terminal.png" alt="The Claude Code session for this prompt"></td>
-<td width="50%" valign="top"><a href="https://slyf0xx97.github.io/cutify-ui/prompts/studybuddy-prompt/"><img src="docs/prompts/studybuddy-prompt-result.png" alt="The page Claude built for this prompt"></a></td>
+<td width="38%" valign="top"><b>Prompt</b><br><br><code>Use the cutify-ui skill. Make a cute landing page for my study app with three AI tutors. Write it as a single index.html in the current folder.</code></td>
+<td width="62%" valign="top"><a href="https://slyf0xx97.github.io/cutify-ui/prompts/studybuddy-prompt/"><img src="docs/prompts/studybuddy-prompt-result.png" alt="The page Claude built for this prompt"></a></td>
 </tr></table>
 
 Claude picked Glass: "I used the Glass theme because the skill matches it to learning apps." About 6 minutes.
 
 ### 2. A dark demo for warehouse robots
 
-```
-Build a dark control-room demo for our warehouse robots, with sample numbers. Write it as a single index.html in the current folder.
-```
-
 <table><tr>
-<td width="50%" valign="top"><img src="docs/prompts/warehouse-prompt-terminal.png" alt="The Claude Code session for this prompt"></td>
-<td width="50%" valign="top"><a href="https://slyf0xx97.github.io/cutify-ui/prompts/warehouse-prompt/"><img src="docs/prompts/warehouse-prompt-result.png" alt="The page Claude built for this prompt"></a></td>
+<td width="38%" valign="top"><b>Prompt</b><br><br><code>Build a dark control-room demo for our warehouse robots, with sample numbers. Write it as a single index.html in the current folder.</code></td>
+<td width="62%" valign="top"><a href="https://slyf0xx97.github.io/cutify-ui/prompts/warehouse-prompt/"><img src="docs/prompts/warehouse-prompt-result.png" alt="The page Claude built for this prompt"></a></td>
 </tr></table>
 
 Claude picked Apron, "the skill's pick for operations/data", built it as an app screen and fixed its own phone overflow. About 5 minutes.
 
 ### 3. A pre-order page for a bakery
 
-```
-Use the cutify-ui skill. Make a cosy pre-order page for my neighbourhood bakery, with one AI helper that suggests what to bake. Write it as a single index.html in the current folder.
-```
-
 <table><tr>
-<td width="50%" valign="top"><img src="docs/prompts/bakery-prompt-terminal.png" alt="The Claude Code session for this prompt"></td>
-<td width="50%" valign="top"><a href="https://slyf0xx97.github.io/cutify-ui/prompts/bakery-prompt/"><img src="docs/prompts/bakery-prompt-result.png" alt="The page Claude built for this prompt"></a></td>
+<td width="38%" valign="top"><b>Prompt</b><br><br><code>Use the cutify-ui skill. Make a cosy pre-order page for my neighbourhood bakery, with one AI helper that suggests what to bake. Write it as a single index.html in the current folder.</code></td>
+<td width="62%" valign="top"><a href="https://slyf0xx97.github.io/cutify-ui/prompts/bakery-prompt/"><img src="docs/prompts/bakery-prompt-result.png" alt="The page Claude built for this prompt"></a></td>
 </tr></table>
 
 Claude picked Picnic "because a bakery is about food" and swapped the gingham for a terrazzo counter. About 6 minutes.
 
 ### 4. Just one component
 
-```
-Just a Toy Box pricing card for my budgeting app, please. Write it as a single index.html in the current folder.
-```
-
 <table><tr>
-<td width="50%" valign="top"><img src="docs/prompts/pricing-prompt-terminal.png" alt="The Claude Code session for this prompt"></td>
-<td width="50%" valign="top"><a href="https://slyf0xx97.github.io/cutify-ui/prompts/pricing-prompt/"><img src="docs/prompts/pricing-prompt-result.png" alt="The page Claude built for this prompt"></a></td>
+<td width="38%" valign="top"><b>Prompt</b><br><br><code>Just a Toy Box pricing card for my budgeting app, please. Write it as a single index.html in the current folder.</code></td>
+<td width="62%" valign="top"><a href="https://slyf0xx97.github.io/cutify-ui/prompts/pricing-prompt/"><img src="docs/prompts/pricing-prompt-result.png" alt="The page Claude built for this prompt"></a></td>
 </tr></table>
 
 Claude built only the card, with a yellow brick for the plan name and a button that presses down. About 1 minute.
