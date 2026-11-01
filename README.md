@@ -15,7 +15,7 @@
 ![Plain HTML](https://img.shields.io/badge/plain-HTML%2FCSS%2FSVG-2b8fb3?style=flat-square)
 [![CI](https://img.shields.io/github/actions/workflow/status/slyf0xx97/cutify-ui/ci.yml?style=flat-square&label=checks)](https://github.com/slyf0xx97/cutify-ui/actions)
 
-cutify-ui is an open-source [Claude skill](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/overview). Ask Claude for a landing page, a product demo or a portfolio, and the skill gives it six themes, ready components and animation patterns to build from. It works in Claude Code, Claude.ai and the Claude API, and builds in React and Next.js or in plain HTML, CSS and SVG.
+cutify-ui is an open-source [Claude skill](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/overview). Ask Claude for a landing page, a product demo or a portfolio, and the skill gives it themes, ready components and animation patterns to build from. It works in Claude Code, Claude.ai and the Claude API, and builds in React and Next.js or in plain HTML, CSS and SVG.
 
 <p align="center"><a href="https://cutify.ghernie.com/"><img src="docs/gallery-button.png" alt="Open the live gallery: see them move at cutify.ghernie.com" height="84"></a></p>
 
@@ -76,9 +76,9 @@ Have Python 3 installed so Claude can check its page with `scripts/lint_page.py`
 
 ## ✨ Features
 
-<p align="center"><img src="docs/features.png" width="900" alt="What Claude gets with cutify-ui: a pixel cast of characters from your brief, numbered story stages, motion that shows the work, six themes from Glass to Toy Box or your own, React 19, Next.js or plain HTML, and a linter plus screenshots before you see the page. It also skips the usual AI tells: purple gradients, emoji as icons, a centred hero over three boxes, Inter headlines, soft shadows everywhere and lorem ipsum."></p>
+<p align="center"><img src="docs/features.png" width="900" alt="Features of cutify-ui: a pixel cast of characters from your brief, numbered story stages, motion that shows the work, any look from Glass or Riso to one you describe, React 19, Next.js or plain HTML, and lint plus screenshots before you see the page. Instead of the usual AI look, it uses a fixed palette for each theme in place of purple gradients, pixel characters in place of emoji icons, a painted scene and a story in stages in place of a centred hero over three boxes, a display font with character in place of Inter, one kind of depth per theme in place of soft shadows everywhere, and real copy with made-up data labelled in place of lorem ipsum."></p>
 
-The six themes are Glass, Apron, Picnic, Riso Club, Lantern Night and Toy Box. Glass and Apron come from [itsa10but](https://ghernie.com/projects/itsa10but) and [SkyQueue](https://skyqueue.ghernie.com), and the [inspiration library](docs/INSPIRATION.md) credits the sources behind the rest.
+Six themes come ready to use: Glass, Apron, Picnic, Riso Club, Lantern Night and Toy Box. Claude can also make a new theme from your brief, as Snooze Log and Penpal Post in the gallery show. Glass and Apron come from [itsa10but](https://ghernie.com/projects/itsa10but) and [SkyQueue](https://skyqueue.ghernie.com), and the [inspiration library](docs/INSPIRATION.md) credits the sources behind the rest.
 
 ## 🖼️ Gallery
 
