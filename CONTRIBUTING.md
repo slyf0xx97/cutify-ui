@@ -5,7 +5,7 @@ Thanks for helping. New themes, components, animation engines and gallery exampl
 ## Before you start
 
 - Open an issue first for anything bigger than a fix, so we can agree on the shape. There are templates for bugs, ideas and new examples.
-- Read `SKILL.md`. Every change has to keep the grammar section, which covers:
+- Read `plugin/skills/cutify-ui/SKILL.md`. Every change has to keep the grammar section, which covers:
   - a cast of pixel characters taken from the brief
   - numbered stages
   - tooltips that explain why
@@ -27,8 +27,8 @@ Thanks for helping. New themes, components, animation engines and gallery exampl
 
 ## Adding a theme
 
-1. Add its tokens and base components as `assets/<theme>.css`, keeping the variable roles listed at the end of `references/themes.md`.
-2. Document it in `references/themes.md` with its colours, type, surfaces and signature details.
+1. Add its tokens and base components as `plugin/skills/cutify-ui/assets/<theme>.css`, keeping the variable roles listed at the end of `references/themes.md`.
+2. Document it in `plugin/skills/cutify-ui/references/themes.md` with its colours, type, surfaces and signature details.
 3. Add at least one example built with it.
 
 ## Adding an example

@@ -6,7 +6,7 @@ import ts from "typescript";
 import { createElement as h } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 
-const src = new URL("../assets/react/", import.meta.url);
+const src = new URL("../plugin/skills/cutify-ui/assets/react/", import.meta.url);
 const out = new URL("./.react-test/", import.meta.url);
 rmSync(out, { recursive: true, force: true });
 mkdirSync(out);

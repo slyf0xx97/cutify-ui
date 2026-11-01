@@ -188,28 +188,33 @@ A personal portfolio site for "Sam Sample" (a made-up interaction design student
 ## 📁 What's inside
 
 ```
-SKILL.md                 when to use the skill, the design rules, the workflow and a final checklist
-references/
-  themes.md              the six themes, their palettes, and how to make your own
-  backgrounds.md         19 backdrops and how to choose one
-  fonts.md               font pairings and readability rules
-  pixel-art.md           sprites, pixel icons and designing characters
-  motion.md              motion rules, animation patterns and small interactions
-  components.md          tooltips, buttons, stage headers, number tiles, charts, dialogs and loaders
-  react.md               React 19 and Next.js patterns
-  streamlit.md           plain HTML pages and hosting them in Streamlit
-  voice.md               how labels and copy should read
-scripts/
-  lint_page.py           checks a finished page for the problems the skill rules out
-assets/
-  <theme>.css            one stylesheet per theme, all with the same class names
-  pixel-sprites.js       turns text grids into crisp SVG sprites
-  react/                 typed React 19 components and their stylesheet
-  streamlit/             helpers for hosting pages in Streamlit
-examples/                the twelve gallery pages, each with its brief
-docs/INSPIRATION.md      the sources behind the themes
-evals/                   test prompts and graders for the skill
-tools/                   repo checks, layout QA and gallery screenshot scripts
+plugin/                    the Claude Code plugin, the only part an install downloads
+  .claude-plugin/          plugin.json and the plugin icon
+  README.md                what the plugin contains, runs and sends
+  skills/cutify-ui/
+    SKILL.md               when to use the skill, the design rules, the workflow and a final checklist
+    references/
+      themes.md            the six themes, their palettes, and how to make your own
+      backgrounds.md       19 backdrops and how to choose one
+      fonts.md             font pairings and readability rules
+      pixel-art.md         sprites, pixel icons and designing characters
+      motion.md            motion rules, animation patterns and small interactions
+      components.md        tooltips, buttons, stage headers, number tiles, charts, dialogs and loaders
+      react.md             React 19 and Next.js patterns
+      streamlit.md         plain HTML pages and hosting them in Streamlit
+      voice.md             how labels and copy should read
+    scripts/
+      lint_page.py         checks a finished page for the problems the skill rules out
+    assets/
+      <theme>.css          one stylesheet per theme, all with the same class names
+      pixel-sprites.js     turns text grids into crisp SVG sprites
+      react/               typed React 19 components and their stylesheet
+      streamlit/           helpers for hosting pages in Streamlit
+    evals/                 test prompts and graders for the skill
+.claude-plugin/            marketplace.json, which points Claude Code at plugin/
+examples/                  the gallery pages, each with its brief
+docs/INSPIRATION.md        the sources behind the themes
+tools/                     repo checks, layout QA and gallery screenshot scripts
 ```
 
 ## 🧪 Testing and validation
@@ -224,7 +229,7 @@ Every push runs these checks on GitHub Actions, and you can run them yourself wi
 | Themes | All six theme stylesheets define the same 14 variables and 11 classes, so a component works in any theme | [`check.mjs`](tools/check.mjs) |
 | CSS | Every stylesheet and every `<style>` block in the gallery and examples is valid CSS | [csstree-validator](https://github.com/csstree/validator) |
 | Smooth motion | No animation loop changes `box-shadow`, `filter`, `background-position` or layout properties, which make the browser repaint every frame | [`check.mjs`](tools/check.mjs) |
-| Page linter | [`lint_page.py`](scripts/lint_page.py), the script the skill has Claude run on each page it builds, passes on every example and the gallery | Python, no packages |
+| Page linter | [`lint_page.py`](plugin/skills/cutify-ui/scripts/lint_page.py), the script the skill has Claude run on each page it builds, passes on every example and the gallery | Python, no packages |
 | React types | The React 19 components pass TypeScript in strict mode | `tsc --strict` |
 | React rendering | Each component renders, and its markup is accessible: sprites have `role="img"` and a label, tooltip triggers are labelled buttons that point at a tip that exists, and modals use a native `<dialog>` | [`react-test.mjs`](tools/react-test.mjs) |
 | JavaScript and Python | Every `.js`, `.mjs` and `.py` file parses | `node --check`, `py_compile` |
@@ -384,6 +389,6 @@ If cutify-ui saves you time, you can support it through [Stripe](https://donate.
 
 MIT, copyright 2026 [Ghernie Encinas](https://www.linkedin.com/in/ghernie). See [LICENSE](LICENSE).
 
-Every font the skill uses comes from Google Fonts under the SIL Open Font License 1.1, and [`references/fonts.md`](references/fonts.md) lists them with links. If you host the fonts yourself, keep each font's `OFL.txt` file with them.
+Every font the skill uses comes from Google Fonts under the SIL Open Font License 1.1, and [`references/fonts.md`](plugin/skills/cutify-ui/references/fonts.md) lists them with links. If you host the fonts yourself, keep each font's `OFL.txt` file with them.
 
 cutify-ui is an independent project and isn't affiliated with or endorsed by Anthropic. Claude is a trademark of Anthropic. The product and character names in the examples (StudyBuddy, Fleet Queue, Sprout, Gridline, Pantry Pals, Sunday Spread, Zine Night, Moonlit Market, Beep & Build, Snooze Log, Penpal Post and Sam Sample) are made up and don't refer to real products or people.

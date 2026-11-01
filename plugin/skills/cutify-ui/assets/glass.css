@@ -82,7 +82,7 @@ button { font: inherit; cursor: pointer; }
 .pill.done { background: var(--mint-soft); color: #14502f; } .pill.working { background: var(--yellow-soft); } .pill.gap { background: var(--coral-soft); color: #7a1f10; }
 
 /* scannable rows: icon tile, bold lead, one line */
-.cl-item { display: grid; grid-template-columns: 3rem 1fr; gap: .85rem; align-items: start; padding: .75rem 0; border-top: 1.5px dashed rgb(31 36 48 / 18%); list-style: none; }
+.cl-item { display: grid; grid-template-columns: 3rem minmax(0, 1fr); gap: .85rem; align-items: start; padding: .75rem 0; border-top: 1.5px dashed rgb(31 36 48 / 18%); list-style: none; }
 .cl-icon { display: grid; place-items: center; width: 3rem; height: 3rem; border-radius: 14px; background: var(--glass-fill); box-shadow: 0 1px 3px rgb(18 52 63 / 22%); font-size: 1.5rem; }
 .cl-lead { display: block; font-size: 1.25rem; font-weight: 800; }
 

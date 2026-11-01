@@ -79,7 +79,7 @@ Split button with a menu that opens upward (for a primary action near the bottom
 .menu { position: absolute; bottom: calc(100% + 8px); left: 0; width: 340px; background: var(--surface-2); border: 1px solid #ffffff30;
   border-radius: 6px; padding: 6px; display: none; z-index: 100; box-shadow: 0 10px 30px #000a; }
 .menu.open { display: block; }
-.menu button { display: grid; grid-template-columns: 40px 1fr; gap: 10px; width: 100%; padding: 8px 10px; border-radius: 4px; text-align: left; }
+.menu button { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 10px; width: 100%; padding: 8px 10px; border-radius: 4px; text-align: left; }
 ```
 Toggle `.open` on the caret (with `stopPropagation`), close on a document click and on Escape, update `aria-expanded`.
 
@@ -143,14 +143,14 @@ Glass segmented meter: `repeating-linear-gradient(90deg, transparent 0 calc(10% 
 <div class="kpis"><div class="kpi good"><small>Taxi fuel saved</small><b>1,384 kg</b><span>4,373 kg CO₂, estimate</span></div> ...</div>
 ```
 ```css
-.kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
 .kpi { padding: 8px 12px; background: var(--surface-2); border-radius: 6px; border-top: 3px solid #ffffff25; display: flex; flex-direction: column; gap: 2px; }
 .kpi small { font: 700 10px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-muted); }
 .kpi b { font: 900 22px var(--display); color: var(--ink); }
 .kpi span { font-size: 11.5px; color: #b9bbc0; }
 .kpi.good { border-top-color: var(--ok); } .kpi.bad { border-top-color: var(--bad); }
 ```
-A dashboard row under the tiles: `grid-template-columns: 1.25fr 1.25fr .8fr` (chart, chart, small stacked bars). Size SVG charts to their real pixel width (measure the container) so text doesn't scale up.
+A dashboard row under the tiles: `grid-template-columns: minmax(0, 1.25fr) minmax(0, 1.25fr) minmax(0, .8fr)` (chart, chart, small stacked bars). Size SVG charts to their real pixel width (measure the container) so text doesn't scale up.
 
 ## Charts
 
@@ -181,8 +181,8 @@ Lines read `<b style="color: actor colour">Chef</b> <i>suggests:</i> text`. The 
 ## Rule rows
 
 ```css
-.rgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-.rule { display: grid; grid-template-columns: 68px 1fr; gap: 8px; padding: 6px 8px; background: var(--surface-2); border-radius: 4px;
+.rgrid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 6px; }
+.rule { display: grid; grid-template-columns: 68px minmax(0, 1fr); gap: 8px; padding: 6px 8px; background: var(--surface-2); border-radius: 4px;
   font-size: 13px; line-height: 1.3; border-left: 3px solid #ffffff20; transition: background .2s, border-color .2s; }
 .rule .mono { font-size: 11px; color: var(--accent); }
 .rule.hit { background: #ff5a4e30; border-left-color: var(--bad); } .rule.hit .mono { color: var(--bad); }
@@ -224,4 +224,4 @@ Build it on native radios (a `radiogroup` of two) so arrow keys and screen reade
 
 ## Footer
 
-A panel with a 4px accent top border, a grid `1.4fr 1fr 1fr 1fr` (brand and one-line blurb, Data, Built with, Project), mono uppercase `h5` headings in `--dim`, links in the accent colour, and a bottom row with `© year Name`. Collapse to one column under 1100px.
+A panel with a 4px accent top border, a grid `minmax(0, 1.4fr) repeat(3, minmax(0, 1fr))` (brand and one-line blurb, Data, Built with, Project), mono uppercase `h5` headings in `--dim`, links in the accent colour, and a bottom row with `© year Name`. Collapse to one column under 1100px.

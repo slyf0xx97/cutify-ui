@@ -33,7 +33,7 @@ All names and marks belong to their owners. Listing a site here doesn't mean its
 
 ## Typefaces
 
-Every font the skill recommends is listed with its specimen link in [`references/fonts.md`](../references/fonts.md). All are under the SIL Open Font License 1.1, checked against the `ofl/` folders of the [google/fonts](https://github.com/google/fonts) repository on 31 October 2026. The four used by the original themes:
+Every font the skill recommends is listed with its specimen link in [`references/fonts.md`](../plugin/skills/cutify-ui/references/fonts.md). All are under the SIL Open Font License 1.1, checked against the `ofl/` folders of the [google/fonts](https://github.com/google/fonts) repository on 31 October 2026. The four used by the original themes:
 
 | Font | Designers | Licence |
 |---|---|---|

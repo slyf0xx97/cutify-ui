@@ -8,7 +8,7 @@
   "plugins": [
     {
       "name": "cutify-ui",
-      "source": "./",
+      "source": "./plugin",
       "description": "Cute, game-like web pages with pixel-art characters, story stages and motion. Six themes, in React, Next.js or plain HTML.",
       "category": "design",
       "tags": [
