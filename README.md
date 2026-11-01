@@ -7,7 +7,7 @@
 [![Stars](https://img.shields.io/github/stars/slyf0xx97/cutify-ui?style=social)](https://github.com/slyf0xx97/cutify-ui/stargazers)
 [![Forks](https://img.shields.io/github/forks/slyf0xx97/cutify-ui?style=social)](https://github.com/slyf0xx97/cutify-ui/forks)
 [![Watchers](https://img.shields.io/github/watchers/slyf0xx97/cutify-ui?style=social)](https://github.com/slyf0xx97/cutify-ui/watchers)
-[![Open source](https://img.shields.io/badge/open_source-yes-3da639?style=flat-square&logo=opensourceinitiative&logoColor=white)](LICENSE)
+[![Open source](https://img.shields.io/badge/-open%20source-3da639?style=flat-square&logo=opensourceinitiative&logoColor=white)](LICENSE)
 ![Free](https://img.shields.io/badge/price-free-e8912d?style=flat-square)
 ![License](https://img.shields.io/badge/license-MIT-167a66?style=flat-square)
 [![Claude skill](https://img.shields.io/badge/Claude-skill-d97757?style=flat-square&logo=claude&logoColor=white)](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/overview)
