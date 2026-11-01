@@ -11,7 +11,7 @@
 ![React 19](https://img.shields.io/badge/React-19-1f2430?style=flat-square)
 ![Plain HTML](https://img.shields.io/badge/plain-HTML%2FCSS%2FSVG-2b8fb3?style=flat-square)
 [![CI](https://img.shields.io/github/actions/workflow/status/slyf0xx97/cutify-ui/ci.yml?style=flat-square&label=checks)](https://github.com/slyf0xx97/cutify-ui/actions)
-[![Support](https://img.shields.io/badge/support-Stripe-635bff?style=flat-square)](https://donate.stripe.com/3cIcMX8ee5oufGWd5n18c00)
+[![Support](https://img.shields.io/badge/support-Stripe-635bff?style=flat-square)](https://donate.stripe.com/00w4gr2TU7wC52iaXf18c01)
 
 cutify-ui is an open-source [Claude skill](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/overview). Ask Claude for a landing page, a product demo or a portfolio, and the skill gives it six themes, ready components and animation patterns to build from. It works in Claude Code, Claude.ai and the Claude API, and builds in React and Next.js or in plain HTML, CSS and SVG.
 
@@ -355,7 +355,7 @@ New themes, components and examples are welcome. [CONTRIBUTING.md](CONTRIBUTING.
 
 ## 💖 Support
 
-If cutify-ui saves you time, you can [support it through Stripe](https://donate.stripe.com/3cIcMX8ee5oufGWd5n18c00). You choose the amount on Stripe's own checkout page, and the gallery and every example page have the same link in their footer.
+If cutify-ui saves you time, you can [support it through Stripe](https://donate.stripe.com/00w4gr2TU7wC52iaXf18c01). You choose the amount on Stripe's own checkout page, and the gallery and every example page have the same link in their footer.
 
 ## 📄 License
 
