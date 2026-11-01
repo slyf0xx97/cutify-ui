@@ -9,8 +9,8 @@ function fit(selector) {
 new ResizeObserver(() => fit()).observe(document.body);
 
 // Send a message to Python through the hidden bridge input (see bridge() in cutify_streamlit.py).
-function toPython(payload, key = 'bridge') {
-  const input = parent.document.querySelector(`.st-key-${key} input`);
+function toPython(payload, widget = 'bridge') {
+  const input = parent.document.querySelector(`.st-key-${widget} input`);   // widget is the st.text_input's Streamlit name
   if (!input) return false;
   const set = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set;   // native setter, so React sees it
   set.call(input, JSON.stringify({ ...payload, n: Date.now() }));                          // n keeps each message unique
