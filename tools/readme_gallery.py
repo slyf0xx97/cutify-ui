@@ -39,15 +39,16 @@ def brief(slug):
 
 
 rows = []
-for i in range(0, len(ITEMS), 2):
+COLS = 3  # three examples a row keeps the gallery compact
+for i in range(0, len(ITEMS), COLS):
     cells = []
-    for slug, name, blurb, tags in ITEMS[i:i + 2]:
+    for slug, name, blurb, tags in ITEMS[i:i + COLS]:
         alt = name.replace("&", "and")
         pic = f"docs/gallery/{slug}.gif" if (root / f"docs/gallery/{slug}.gif").exists() else f"docs/gallery/{slug}.png"
-        # blank lines around the fenced block so GitHub renders it as code (with a copy button) inside the cell
-        cells.append(f'<td width="50%" valign="top">\n\n<a href="{LIVE}{slug}/"><img src="{pic}" alt="{alt}"></a><br>'
-                     f'<b><a href="{LIVE}{slug}/">{name.replace("&", "&amp;")}</a></b> (<a href="examples/{slug}">source</a>)<br>{blurb}<br><sub>{tags}</sub>'
-                     f'\n\n```text\n{brief(slug)}\n```\n\n</td>')
+        # the prompt folds away; blank lines around the fenced block let GitHub render it with a copy button
+        cells.append(f'<td width="33%" valign="top">\n\n<a href="{LIVE}{slug}/"><img src="{pic}" alt="{alt}"></a><br>'
+                     f'<b><a href="{LIVE}{slug}/">{name.replace("&", "&amp;")}</a></b> <sub>(<a href="examples/{slug}">source</a>)</sub><br><sub>{tags}</sub>'
+                     f'\n\n<details><summary>Copy the prompt</summary>\n\n```text\n{brief(slug)}\n```\n\n</details>\n\n</td>')
     rows.append("<tr>\n" + "\n".join(cells) + "\n</tr>")
 table = "<table>\n" + "\n".join(rows) + "\n</table>"
 
