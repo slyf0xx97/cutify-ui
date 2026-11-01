@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+message: "If you use cutify-ui in your work, please cite it as below."
+title: "cutify-ui"
+abstract: "A Claude skill for cute, pixel-art, game-like web pages, prototypes and animated process flows, in React, Next.js or plain HTML."
+type: software
+authors:
+  - given-names: Ghernie
+    family-names: Encinas
+version: 0.5.0
+date-released: 2026-11-01
+license: MIT
+repository-code: "https://github.com/slyf0xx97/cutify-ui"
+url: "https://cutify.ghernie.com/"
+keywords:
+  - claude-skill
+  - claude-code
+  - pixel-art
+  - user-interface
+  - design-system
+  - prototyping

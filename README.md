@@ -14,6 +14,7 @@
 ![React 19](https://img.shields.io/badge/React-19-1f2430?style=flat-square)
 ![Plain HTML](https://img.shields.io/badge/plain-HTML%2FCSS%2FSVG-2b8fb3?style=flat-square)
 [![CI](https://img.shields.io/github/actions/workflow/status/slyf0xx97/cutify-ui/ci.yml?style=flat-square&label=checks)](https://github.com/slyf0xx97/cutify-ui/actions)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/slyf0xx97/cutify-ui/badge)](https://scorecard.dev/viewer/?uri=github.com/slyf0xx97/cutify-ui)
 
 cutify-ui is an open-source [Claude skill](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/overview). Ask Claude for a landing page, a product demo or a portfolio, and the skill gives it themes, ready components and animation patterns to build from. It works in Claude Code, Claude.ai and the Claude API, and builds in React and Next.js or in plain HTML, CSS and SVG.
 
