@@ -2,9 +2,20 @@
 
 ## Reporting a problem
 
-If you find a security problem in cutify-ui, please report it privately through GitHub: open the Security tab of this repository and choose "Report a vulnerability". Please don't open a public issue for it.
+If you find a security vulnerability in cutify-ui, please report it privately. Please don't open a public issue for it.
 
-Include what you found, the file involved and the steps to reproduce it. I'll reply as soon as I can, and I'll credit you in the fix if you'd like.
+- Use GitHub's private reporting: open the [Security tab](https://github.com/slyf0xx97/cutify-ui/security/advisories/new) and choose "Report a vulnerability".
+- Or email hello@ghernie.com with "cutify-ui security" in the subject.
+
+Include what you found, the file involved and the steps to reproduce it.
+
+## What happens next
+
+1. I'll acknowledge your report within 3 days.
+2. I'll confirm the problem and agree a fix date with you, aiming for 30 days at most.
+3. I'll release the fix, then publish a GitHub security advisory that describes the vulnerability and credits you, unless you'd rather stay anonymous.
+
+Please give me that time before disclosing the problem publicly. If a fix needs longer, I'll tell you why and agree a new disclosure date with you.
 
 ## What matters most here
 
@@ -12,7 +23,7 @@ cutify-ui is a Claude skill: Markdown instructions, CSS and small JavaScript, Ty
 
 - A helper that turns untrusted text into HTML without escaping it (the skill tells Claude to pass every user or data string through `esc()` before `innerHTML`).
 - The Streamlit bridge accepting a message in a way that lets a page run code or reach data it shouldn't. Messages are untrusted input and must be validated on the Python side.
-- Instructions in `SKILL.md` or `references/` that would lead Claude to load scripts from unknown origins, store secrets in a page, or log user data.
+- Instructions in `plugin/skills/cutify-ui/SKILL.md` or its `references/` that would lead Claude to load scripts from unknown origins, store secrets in a page, or log user data.
 - Anything in the repository that calls a network service other than Google Fonts.
 
 ## Supported version

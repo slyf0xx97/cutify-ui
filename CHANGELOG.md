@@ -2,7 +2,15 @@
 
 All notable changes to cutify-ui are listed here. The project uses [semantic versioning](https://semver.org).
 
-## [0.5.0] (2026-11-01)
+## [0.5.1] (2026-11-01)
+
+### Changed
+
+- Each release zip now comes with a signed build-provenance attestation (`cutify-ui.zip.intoto.jsonl`), so you can check it was built by this repo's release workflow. Run `gh attestation verify cutify-ui.zip -R slyf0xx97/cutify-ui` to confirm.
+- The security policy gives an email address, response times and a disclosure process.
+- The repo runs OpenSSF Scorecard and CodeQL code scanning, pins every workflow action to a commit, and has a `CITATION.cff` file.
+
+ (2026-11-01)
 
 ### Added
 
