@@ -52,32 +52,18 @@ That's all. Ask for a cute landing page and your agent uses the skill on its own
 
 ### Quickstart
 
-Ask for a page in plain words. Claude picks a theme, tells you which one and builds it. If it reaches for another skill instead, start the prompt with "Use the cutify-ui skill." and it loads this one.
+Ask in plain words, for example:
 
 ```text
-Make a cute landing page for my study app with three AI tutors. Write it as a single index.html in the current folder.
+Make a cute landing page for my study app with three AI tutors.
 ```
 
-```text
-Build a dark control-room demo for our warehouse robots, with sample numbers. Write it as a single index.html in the current folder.
-```
+| Model | Use it for |
+|---|---|
+| Opus 5.5 | Full pages, about 5 to 7 minutes each |
+| Sonnet 5.5 | Quick components, such as a pricing card in under a minute |
 
-```text
-Make a portfolio site for a made-up design student, with a pixel avatar that walks a trail as you scroll. Write it as a single index.html in the current folder.
-```
-
-```text
-Just a Toy Box pricing card for my budgeting app, please. Write it as a single index.html in the current folder.
-```
-
-Works best with
-
-- Opus 5.5 or Sonnet 5.5 for full pages. In Claude Code at the default effort, Opus took about 5 to 7 minutes a page. Higher effort may be worth trying for big pages with many sections.
-- Sonnet 5.5 for a quick component. It built the pricing card in 44 seconds and stayed closest to the brief. Haiku 5.5 works too but follows the brief less closely.
-- Python 3, so Claude can run `scripts/lint_page.py`. It needs only the standard library.
-- A browser tool such as a Playwright MCP server, if you have one. Claude uses it to screenshot the page at 1440px and 390px and fix what it sees.
-
-There's nothing else to install and no API key. Name a theme if you want a particular look, or ask for three directions to pick from.
+Have Python 3 installed so Claude can check its page with `scripts/lint_page.py`. If the skill doesn't load, start your prompt with "Use the cutify-ui skill." More prompts are under [Sample prompts](#-sample-prompts).
 
 ## 🙅 Why it doesn't look AI-made
 
