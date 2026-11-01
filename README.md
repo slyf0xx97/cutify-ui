@@ -1,4 +1,4 @@
-<p align="center"><img src="docs/gallery/demo.gif" alt="Six example pages animating side by side, one per theme: StudyBuddy in Glass, Fleet Queue in Apron, Sunday Spread in Picnic, Zine Night in Riso Club, Moonlit Market in Lantern Night and Beep and Build in Toy Box" width="1000"><br><sub>Six of the twelve examples running at once, one per theme.</sub></p>
+<p align="center"><img src="docs/gallery/cover.gif" alt="cutify-ui, a free Claude skill: Claude builds cute, game-like web pages with pixel characters, story stages and motion. Beside the title, three live examples animate, and in the Sprout example a droopy houseplant gets watered and perks up." width="1000"></p>
 
 # 🧸 cutify-ui
 
@@ -11,7 +11,8 @@
 ![React 19](https://img.shields.io/badge/React-19-1f2430?style=flat-square)
 ![Plain HTML](https://img.shields.io/badge/plain-HTML%2FCSS%2FSVG-2b8fb3?style=flat-square)
 [![CI](https://img.shields.io/github/actions/workflow/status/slyf0xx97/cutify-ui/ci.yml?style=flat-square&label=checks)](https://github.com/slyf0xx97/cutify-ui/actions)
-[![Support](https://img.shields.io/badge/support-Stripe-635bff?style=flat-square)](https://donate.stripe.com/00w4gr2TU7wC52iaXf18c01)
+
+<p><a href="https://donate.stripe.com/00w4gr2TU7wC52iaXf18c01"><img src="https://img.shields.io/badge/%E2%99%A5%20Support%20cutify--ui-Donate%20with%20Stripe-ff8fab?style=for-the-badge&labelColor=1f2430" alt="Support cutify-ui: donate with Stripe"></a></p>
 
 cutify-ui is an open-source [Claude skill](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/overview). Ask Claude for a landing page, a product demo or a portfolio, and the skill gives it six themes, ready components and animation patterns to build from. It works in Claude Code, Claude.ai and the Claude API, and builds in React and Next.js or in plain HTML, CSS and SVG.
 
@@ -112,6 +113,8 @@ Claude built each example with the skill from a brief of a few sentences, then c
 
 ## 🎨 Themes
 
+<p align="center"><img src="docs/gallery/demo.gif" alt="Six example pages animating side by side, one per theme: StudyBuddy in Glass, Fleet Queue in Apron, Sunday Spread in Picnic, Zine Night in Riso Club, Moonlit Market in Lantern Night and Beep and Build in Toy Box" width="1000"><br><sub>One example per theme, all running at once.</sub></p>
+
 | Theme | Look | Display font | Depth | Good for |
 |---|---|---|---|---|
 | 🪟 Glass | Frosted glass over painted scenery | Pixelify Sans | Hard sticker shadow | Consumer apps, careers, outdoors |
@@ -132,7 +135,15 @@ Each prompt below ran in Claude Code with cutify-ui installed. On the left is th
 ### 1. A landing page for a study app
 
 <table><tr>
-<td width="38%" valign="top"><b>Prompt</b><br><br><code>Use the cutify-ui skill. Make a cute landing page for my study app with three AI tutors. Write it as a single index.html in the current folder.</code></td>
+<td width="38%" valign="top">
+
+**Prompt**
+
+```text
+Use the cutify-ui skill. Make a cute landing page for my study app with three AI tutors. Write it as a single index.html in the current folder.
+```
+
+</td>
 <td width="62%" valign="top"><a href="https://slyf0xx97.github.io/cutify-ui/prompts/studybuddy-prompt/"><img src="docs/prompts/studybuddy-prompt-result.png" alt="The page Claude built for this prompt"></a></td>
 </tr></table>
 
@@ -141,7 +152,15 @@ Claude picked Glass: "I used the Glass theme because the skill matches it to lea
 ### 2. A dark demo for warehouse robots
 
 <table><tr>
-<td width="38%" valign="top"><b>Prompt</b><br><br><code>Build a dark control-room demo for our warehouse robots, with sample numbers. Write it as a single index.html in the current folder.</code></td>
+<td width="38%" valign="top">
+
+**Prompt**
+
+```text
+Build a dark control-room demo for our warehouse robots, with sample numbers. Write it as a single index.html in the current folder.
+```
+
+</td>
 <td width="62%" valign="top"><a href="https://slyf0xx97.github.io/cutify-ui/prompts/warehouse-prompt/"><img src="docs/prompts/warehouse-prompt-result.png" alt="The page Claude built for this prompt"></a></td>
 </tr></table>
 
@@ -150,7 +169,15 @@ Claude picked Apron, "the skill's pick for operations/data", built it as an app 
 ### 3. A pre-order page for a bakery
 
 <table><tr>
-<td width="38%" valign="top"><b>Prompt</b><br><br><code>Use the cutify-ui skill. Make a cosy pre-order page for my neighbourhood bakery, with one AI helper that suggests what to bake. Write it as a single index.html in the current folder.</code></td>
+<td width="38%" valign="top">
+
+**Prompt**
+
+```text
+Use the cutify-ui skill. Make a cosy pre-order page for my neighbourhood bakery, with one AI helper that suggests what to bake. Write it as a single index.html in the current folder.
+```
+
+</td>
 <td width="62%" valign="top"><a href="https://slyf0xx97.github.io/cutify-ui/prompts/bakery-prompt/"><img src="docs/prompts/bakery-prompt-result.png" alt="The page Claude built for this prompt"></a></td>
 </tr></table>
 
@@ -159,7 +186,15 @@ Claude picked Picnic "because a bakery is about food" and swapped the gingham fo
 ### 4. Just one component
 
 <table><tr>
-<td width="38%" valign="top"><b>Prompt</b><br><br><code>Just a Toy Box pricing card for my budgeting app, please. Write it as a single index.html in the current folder.</code></td>
+<td width="38%" valign="top">
+
+**Prompt**
+
+```text
+Just a Toy Box pricing card for my budgeting app, please. Write it as a single index.html in the current folder.
+```
+
+</td>
 <td width="62%" valign="top"><a href="https://slyf0xx97.github.io/cutify-ui/prompts/pricing-prompt/"><img src="docs/prompts/pricing-prompt-result.png" alt="The page Claude built for this prompt"></a></td>
 </tr></table>
 
