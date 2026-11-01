@@ -784,7 +784,10 @@ let tip = null, tipFor = null, pinned = false;
 document.querySelectorAll('[data-tip]').forEach((el, n) => {
   const t = document.createElement('div'), [title, ...lines] = el.dataset.tip.split('|');
   t.id = 'tip-' + n; t.className = 'tipb'; t.setAttribute('role', 'tooltip'); t.hidden = true;
-  t.innerHTML = `<b>${title}</b><ul>${lines.map(l => `<li>${l}</li>`).join('')}</ul>`;
+  const head = document.createElement('b'), list = document.createElement('ul');
+  head.textContent = title;
+  for (const l of lines) list.appendChild(document.createElement('li')).textContent = l;
+  t.append(head, list);
   document.body.append(t); el.setAttribute('aria-describedby', t.id);
 });
 function showTip(el) {

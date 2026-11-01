@@ -804,7 +804,10 @@ const tip = $('#tip');
 let tipFor = null;
 function showTip(el) {
   const [title, ...lines] = el.dataset.tip.split('|');
-  tip.innerHTML = `<b>${title}</b><ul>${lines.map(l => `<li>${l}</li>`).join('')}</ul>`;
+  const head = document.createElement('b'), list = document.createElement('ul');
+  head.textContent = title;
+  for (const l of lines) list.appendChild(document.createElement('li')).textContent = l;
+  tip.replaceChildren(head, list);
   tip.hidden = false; tipFor = el; el.setAttribute('aria-describedby', 'tip');
   const r = el.getBoundingClientRect(), w = tip.offsetWidth, h = tip.offsetHeight, vw = document.documentElement.clientWidth;
   const below = r.top - h - 10 < 64;                    // keep clear of the pinned nav

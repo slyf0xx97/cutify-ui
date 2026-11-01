@@ -747,7 +747,10 @@ const tip = $('#tip');
 let tipFor = null, pinned = false;
 function showTip(el) {
   const [title, ...lines] = el.dataset.tip.split('|');
-  tip.innerHTML = `<b>${title}</b><ul>${lines.map(l => `<li>${l}</li>`).join('')}</ul>`;
+  const head = document.createElement('b'), list = document.createElement('ul');
+  head.textContent = title;
+  for (const l of lines) list.appendChild(document.createElement('li')).textContent = l;
+  tip.replaceChildren(head, list);
   tip.hidden = false; tipFor = el;
   const r = el.getBoundingClientRect(), w = tip.offsetWidth, h = tip.offsetHeight;
   let top = r.bottom + 10; if (top + h > innerHeight - 8) top = Math.max(8, r.top - h - 10);

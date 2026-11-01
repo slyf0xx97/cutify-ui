@@ -68,7 +68,7 @@ for (const name of readdirSync(join(root, "examples"))) {
   const html = readFileSync(join(root, `examples/${name}/index.html`), "utf8");
   /prefers-reduced-motion/.test(html) ? null : fail(`${name}: no prefers-reduced-motion handling`);
   /sample|made-up/i.test(html) ? null : fail(`${name}: made-up data isn't labelled`);
-  const external = [...html.matchAll(/(?:src|href)=["'](https?:\/\/[^"']+)/g)].map((m) => m[1]).filter((u) => !/fonts\.(googleapis|gstatic)\.com|(?:buy|donate).stripe.com|github\.com|ghernie\.com|linkedin\.com|github\.io|slyf0xx97/.test(u));
+  const external = [...html.matchAll(/(?:src|href)=["'](https?:\/\/[^"']+)/g)].map((m) => m[1]).filter((u) => !/fonts\.(googleapis|gstatic)\.com|(?:buy|donate)\.stripe\.com|github\.com|ghernie\.com|linkedin\.com|github\.io|slyf0xx97/.test(u));
   external.length ? fail(`${name}: loads from ${external.join(", ")}`) : null;
 }
 
