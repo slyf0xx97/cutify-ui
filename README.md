@@ -1,4 +1,4 @@
-<p align="center"><img src="docs/gallery/cover.png" alt="cutify-ui: twelve example sites built by Claude with the skill, from a gingham potluck planner to a lantern-lit night market" width="820"></p>
+<p align="center"><img src="docs/gallery/demo.gif" alt="Six example pages animating side by side, one per theme: StudyBuddy in Glass, Fleet Queue in Apron, Sunday Spread in Picnic, Zine Night in Riso Club, Moonlit Market in Lantern Night and Beep and Build in Toy Box" width="1000"><br><sub>Six of the twelve examples running at once, one per theme.</sub></p>
 
 # 🧸 cutify-ui
 
@@ -16,8 +16,6 @@
 cutify-ui is an open-source [Claude skill](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/overview). Ask Claude for a landing page, a product demo or a portfolio, and the skill gives it six themes, ready components and animation patterns to build from. It works in Claude Code, Claude.ai and the Claude API, and builds in React and Next.js or in plain HTML, CSS and SVG.
 
 🌐 See all twelve examples in the [live gallery](https://slyf0xx97.github.io/cutify-ui/).
-
-<p align="center"><img src="docs/gallery/demo.gif" alt="Six example pages animating side by side, one per theme: StudyBuddy in Glass, Fleet Queue in Apron, Sunday Spread in Picnic, Zine Night in Riso Club, Moonlit Market in Lantern Night and Beep and Build in Toy Box" width="1000"><br><sub>Six of the twelve examples running at once, one per theme.</sub></p>
 
 ## Contents
 
