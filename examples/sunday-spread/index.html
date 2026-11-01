@@ -792,7 +792,7 @@ document.querySelectorAll('[data-tip]').forEach((el, n) => {
 });
 function showTip(el) {
   if (el !== tipFor) hideTip();
-  tipFor = el; tip = $(el.getAttribute('aria-describedby')); tip.hidden = false;
+  tipFor = el; tip = document.getElementById(el.getAttribute('aria-describedby')); tip.hidden = false;
   const r = el.getBoundingClientRect(), w = tip.offsetWidth, h = tip.offsetHeight;
   const x = Math.min(Math.max(8, r.left + r.width / 2 - w / 2), innerWidth - w - 8);
   let y = r.bottom + 18, up = false;

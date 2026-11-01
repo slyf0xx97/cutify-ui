@@ -70,7 +70,7 @@ def js_errors(text):
     if not node:
         return []
     errors = []
-    for m in re.finditer(r"<script\b([^>]*)>([\s\S]*?)</script\s*>", text, re.I):
+    for m in re.finditer(r"<script\b([^>]*)>([\s\S]*?)</script\b[^>]*>", text, re.I):
         attrs, body = m.group(1), m.group(2)
         if "src=" in attrs or re.search(r"type=[\"']?(module|application/json|application/ld\+json|importmap|text/plain)", attrs, re.I) or not body.strip():
             continue
