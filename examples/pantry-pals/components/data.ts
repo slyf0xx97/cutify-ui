@@ -1,35 +1,36 @@
 // Pantry Pals sample data. Everything here is made-up and labelled "sample" on the page.
 import type { Animate, Palette, SpriteGrid } from "./PixelSprite";
+import type { IconName } from "./PxIcon";
 
-export type Food = { id: string; name: string; icon: string; inFridge: boolean };
-export type Recipe = { id: string; name: string; icon: string; needs: string[] };
+export type Food = { id: string; name: string; icon: IconName; inFridge: boolean };
+export type Recipe = { id: string; name: string; icon: IconName; needs: string[] };
 
 export const FOODS: Food[] = [
-  { id: "eggs", name: "Eggs", icon: "🥚", inFridge: true },
-  { id: "spinach", name: "Spinach", icon: "🥬", inFridge: true },
-  { id: "cheese", name: "Cheese", icon: "🧀", inFridge: true },
-  { id: "onion", name: "Onion", icon: "🧅", inFridge: true },
-  { id: "tomatoes", name: "Tomatoes", icon: "🍅", inFridge: true },
-  { id: "garlic", name: "Garlic", icon: "🧄", inFridge: true },
-  { id: "rice", name: "Rice", icon: "🍚", inFridge: true },
-  { id: "chicken", name: "Chicken", icon: "🍗", inFridge: true },
-  { id: "peppers", name: "Peppers", icon: "🫑", inFridge: false },
-  { id: "milk", name: "Milk", icon: "🥛", inFridge: false },
-  { id: "pasta", name: "Pasta", icon: "🍝", inFridge: false },
-  { id: "yogurt", name: "Yogurt", icon: "🥣", inFridge: false },
+  { id: "eggs", name: "Eggs", icon: "egg", inFridge: true },
+  { id: "spinach", name: "Spinach", icon: "greens", inFridge: true },
+  { id: "cheese", name: "Cheese", icon: "cheese", inFridge: true },
+  { id: "onion", name: "Onion", icon: "onion", inFridge: true },
+  { id: "tomatoes", name: "Tomatoes", icon: "tomato", inFridge: true },
+  { id: "garlic", name: "Garlic", icon: "garlic", inFridge: true },
+  { id: "rice", name: "Rice", icon: "rice", inFridge: true },
+  { id: "chicken", name: "Chicken", icon: "chicken", inFridge: true },
+  { id: "peppers", name: "Peppers", icon: "pepper", inFridge: false },
+  { id: "milk", name: "Milk", icon: "milk", inFridge: false },
+  { id: "pasta", name: "Pasta", icon: "pasta", inFridge: false },
+  { id: "yogurt", name: "Yogurt", icon: "bowl", inFridge: false },
 ];
 
 export const RECIPES: Recipe[] = [
-  { id: "omelette", name: "Spinach omelette", icon: "🍳", needs: ["eggs", "spinach", "cheese", "onion"] },
-  { id: "tomato-pasta", name: "Tomato pasta", icon: "🍝", needs: ["pasta", "tomatoes", "garlic", "onion", "basil"] },
-  { id: "fried-rice", name: "Chicken fried rice", icon: "🍚", needs: ["rice", "chicken", "eggs", "peppers", "onion", "soy sauce"] },
-  { id: "stuffed-peppers", name: "Stuffed peppers", icon: "🫑", needs: ["peppers", "rice", "cheese", "tomatoes"] },
-  { id: "curry", name: "Chicken curry", icon: "🍛", needs: ["chicken", "onion", "garlic", "yogurt", "rice", "curry paste"] },
-  { id: "pasta-bake", name: "Cheesy pasta bake", icon: "🧀", needs: ["pasta", "cheese", "milk", "tomatoes"] },
-  { id: "shakshuka", name: "Shakshuka", icon: "🍅", needs: ["eggs", "tomatoes", "peppers", "onion", "bread"] },
-  { id: "stir-fry", name: "Veggie stir-fry", icon: "🥬", needs: ["peppers", "spinach", "garlic", "noodles", "soy sauce"] },
-  { id: "wraps", name: "Chicken wraps", icon: "🌯", needs: ["chicken", "tortillas", "peppers", "yogurt", "lettuce"] },
-  { id: "soup", name: "Tomato soup", icon: "🥣", needs: ["tomatoes", "onion", "garlic", "milk", "bread"] },
+  { id: "omelette", name: "Spinach omelette", icon: "pan", needs: ["eggs", "spinach", "cheese", "onion"] },
+  { id: "tomato-pasta", name: "Tomato pasta", icon: "pasta", needs: ["pasta", "tomatoes", "garlic", "onion", "basil"] },
+  { id: "fried-rice", name: "Chicken fried rice", icon: "rice", needs: ["rice", "chicken", "eggs", "peppers", "onion", "soy sauce"] },
+  { id: "stuffed-peppers", name: "Stuffed peppers", icon: "pepper", needs: ["peppers", "rice", "cheese", "tomatoes"] },
+  { id: "curry", name: "Chicken curry", icon: "curry", needs: ["chicken", "onion", "garlic", "yogurt", "rice", "curry paste"] },
+  { id: "pasta-bake", name: "Cheesy pasta bake", icon: "cheese", needs: ["pasta", "cheese", "milk", "tomatoes"] },
+  { id: "shakshuka", name: "Shakshuka", icon: "tomato", needs: ["eggs", "tomatoes", "peppers", "onion", "bread"] },
+  { id: "stir-fry", name: "Veggie stir-fry", icon: "greens", needs: ["peppers", "spinach", "garlic", "noodles", "soy sauce"] },
+  { id: "wraps", name: "Chicken wraps", icon: "wrap", needs: ["chicken", "tortillas", "peppers", "yogurt", "lettuce"] },
+  { id: "soup", name: "Tomato soup", icon: "soup", needs: ["tomatoes", "onion", "garlic", "milk", "bread"] },
 ];
 
 export const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];

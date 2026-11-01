@@ -3,3 +3,6 @@ contact_links:
   - name: Security problem
     url: https://github.com/slyf0xx97/cutify-ui/security/advisories/new
     about: Please report security problems privately.
+  - name: Question or show and tell
+    url: https://github.com/slyf0xx97/cutify-ui/discussions
+    about: Ask how to use the skill, or share a page you built with it.

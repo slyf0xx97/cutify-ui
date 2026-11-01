@@ -105,11 +105,13 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .benefits { list-style: none; margin: 0; padding: 0; display: grid; gap: .35rem; font-weight: 700; }
 .benefits li { display: flex; gap: .6rem; align-items: center; }
 .benefits li span { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--star); color: var(--on-light); font-size: .85rem; flex: none; }
-.live { display: inline-flex; align-items: center; gap: .5rem; font: 500 .78rem var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ink);
+.live { position: relative; isolation: isolate; display: inline-flex; align-items: center; gap: .5rem; font: 500 .78rem var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ink);
   padding: .3rem .7rem; border-radius: 999px; background: rgb(255 243 176 / .08); box-shadow: inset 0 0 0 1.5px rgb(255 243 176 / .5); }
 .live::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--star); }
-@media (prefers-reduced-motion: no-preference) { .live::before { animation: live 2.4s infinite; } }
-@keyframes live { 0% { box-shadow: 0 0 0 0 rgb(255 243 176 / .7); } 70%, 100% { box-shadow: 0 0 0 10px rgb(255 243 176 / 0); } }
+/* the ring scales on its own layer behind the dot (dot + 10px each side), so the pulse never repaints */
+.live::after { content: ""; position: absolute; z-index: -1; left: .7rem; top: 50%; width: 8px; height: 8px; margin-top: -4px; border-radius: 50%; background: var(--star); opacity: 0; }
+@media (prefers-reduced-motion: no-preference) { .live::after { animation: live 2.4s infinite; } }
+@keyframes live { 0% { transform: scale(1); opacity: .7; } 70%, 100% { transform: scale(3.5); opacity: 0; } }
 .cta { display: flex; flex-wrap: wrap; gap: .75rem; align-items: center; }
 .cta .btn.primary { flex-direction: column; align-items: flex-start; gap: 0; padding: .55rem 1.3rem; font-size: 1.1rem; }
 
@@ -171,7 +173,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 /* ---- stages ---- */
 .stage { margin: 2.2rem 0; padding: 1.5rem 1.5rem 1.6rem; scroll-margin-top: 5.5rem; }
 .step { display: flex; align-items: center; flex-wrap: wrap; gap: .5rem .85rem; margin-bottom: .6rem; }
-.step h2 { font-size: clamp(2rem, 4vw, 2.6rem); }
+.step h2 { font-size: clamp(2rem, 4vw, 2.6rem); max-width: calc(100% - 48px - .85rem); text-wrap: balance; }   /* the moon stays beside its heading on phones */
 /* stage numbers as little moons that wax along the journey (--shade: how much of the left edge is still in shadow) */
 .moon-n { position: relative; display: grid; place-items: center; width: 48px; height: 48px; flex: none; border-radius: 50%; overflow: hidden;
   background: radial-gradient(circle at 74% 28%, #EFE19A 0 4px, transparent 5px), radial-gradient(circle at 70% 76%, #EFE19A 0 3px, transparent 4px), var(--star);
@@ -312,12 +314,19 @@ legend { font-weight: 700; padding: 0; margin-bottom: .45rem; }
 .who-you { aspect-ratio: 1; display: grid; place-items: center; background: var(--star); border-radius: 16px; outline: 3px solid var(--outline); outline-offset: -3px; color: var(--on-light); font: 700 1.9rem var(--display); }
 
 /* ---- footer ---- */
-footer { margin: 2.4rem auto 1.6rem; padding: 1.5rem 1.5rem 1rem; }
+/* footer.wrap: plain footer lost to .wrap, which zeroed the gap above and the side gutter on phones */
+footer.wrap { margin: 2.4rem max(16px, calc((100% - 1148px) / 2)) 1.6rem; padding: 1.5rem 1.5rem 1.2rem; }
 .foot { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 1.2rem; }
 .foot p { margin: .4rem 0 0; color: var(--ink-muted); font-size: .98rem; }
 .foot h5 { margin: 0 0 .4rem; font: 500 .75rem var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--lavender); }
 .foot ul { list-style: none; margin: 0; padding: 0; display: grid; gap: .2rem; font-size: .96rem; }
-.copy { margin-top: 1.2rem; padding-top: .8rem; border-top: 1.5px dashed rgb(244 240 255 / .2); font: 500 .8rem var(--mono); color: var(--ink-muted); }
+.copy { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .8rem 1.5rem; margin-top: 1.2rem; padding-top: 1rem; border-top: 1.5px dashed rgb(244 240 255 / .2); font: 500 .8rem var(--mono); color: var(--ink-muted); }
+.donate { display: inline-flex; align-items: center; gap: .4rem; min-height: 2.75rem; padding: .2rem .9rem; border: 2px solid var(--ink); border-radius: 999px;
+  background: var(--cloud-2); color: var(--ink); font: 800 .95rem var(--body); text-decoration: none; white-space: nowrap; box-shadow: 0 4px 0 rgb(17 13 36 / .5); transition: transform .14s ease, filter .14s ease; }
+.donate svg { flex: none; color: var(--peach); }
+.donate:hover { filter: brightness(1.12); }
+@media (prefers-reduced-motion: no-preference) { .donate:hover { transform: translateY(-2px); } }
+.donate:focus-visible { outline: 3px solid var(--star); outline-offset: 3px; border-radius: 999px; }
 
 /* ---- dialog ---- */
 dialog { width: min(520px, calc(100vw - 1.5rem)); max-height: 94dvh; padding: 0; border: 2px solid rgb(184 166 255 / .4); border-radius: 24px; background: var(--cloud); color: var(--ink); box-shadow: 0 20px 60px rgb(10 8 24 / .6); }
@@ -578,7 +587,7 @@ dialog::backdrop { background: rgb(20 16 40 / .72); backdrop-filter: blur(3px); 
     <div><h5>Built with</h5><ul><li>Plain HTML, CSS and SVG</li><li>cutify-ui, custom Sleepy Dusk theme</li><li>Gaegu, Nunito Sans, DM Mono</li></ul></div>
     <div><h5>Project</h5><ul><li>Example page for cutify-ui</li><li>Not a real product</li></ul></div>
   </div>
-  <div class="copy">© 2026 cutify-ui example. Every value on this page is a sample.</div>
+  <div class="copy"><span>© 2026 cutify-ui example. Every value on this page is a sample.</span><a class="donate" href="https://donate.stripe.com/3cIcMX8ee5oufGWd5n18c00" target="_blank" rel="noopener noreferrer"><svg aria-hidden="true" focusable="false" viewBox="0 0 16 16" width="16" height="16" shape-rendering="crispEdges"><path fill="currentColor" d="M3 3h3v1h1v1h2V4h1V3h3v1h1v4h-1v1h-1v1h-1v1h-1v1H9v1H7v-1H6v-1H5V9H4V8H3V7H2V4h1z"/></svg>Support cutify-ui<span class="sr-only"> (opens Stripe in a new tab)</span></a></div>
 </footer>
 
 <dialog id="tryDlg" aria-labelledby="dlgT">
@@ -811,7 +820,7 @@ dialog::backdrop { background: rgb(20 16 40 / .72); backdrop-filter: blur(3px); 
     if (t === tipFor && pinned) hideTip(); else { showTip(t); pinned = true; }
   });
   document.addEventListener('keydown', e => { if (e.key === 'Escape') hideTip(); });
-  addEventListener('scroll', placeTip, { passive: true }); addEventListener('resize', placeTip);
+  addEventListener('scroll', placeTip, { passive: true });
 
   /* ---------- how it works: a star token walks the route ---------- */
   const route = $('[data-route]'), cards = $$('li', route), token = $('[data-token]'), toggle = $('[data-route-toggle]');
@@ -822,9 +831,9 @@ dialog::backdrop { background: rgb(20 16 40 / .72); backdrop-filter: blur(3px); 
   }
   goStep(0);
   if (reduced) { toggle.disabled = true; toggle.title = 'Paused because your system asks for reduced motion'; }
-  else setInterval(() => { if (!routePaused && howVisible) goStep((step + 1) % cards.length); }, 1900);
+  else setInterval(() => { if (!routePaused && howVisible && !document.hidden) goStep((step + 1) % cards.length); }, 1900);
   toggle.addEventListener('click', () => { routePaused = !routePaused; toggle.setAttribute('aria-pressed', routePaused); toggle.textContent = routePaused ? '▶ Play' : '❚❚ Pause'; });
-  addEventListener('resize', () => goStep(step));
+  let rz = 0; addEventListener('resize', () => { rz ||= requestAnimationFrame(() => { rz = 0; goStep(step); placeTip(); }); });
 
   /* ---------- pause loops off screen ---------- */
   const io = new IntersectionObserver(es => es.forEach(e => {

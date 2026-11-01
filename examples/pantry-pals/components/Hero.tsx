@@ -2,6 +2,7 @@ import type { CSSProperties } from "react";
 import { CAST } from "./data";
 import { KindChip } from "./KindChip";
 import { PixelSprite } from "./PixelSprite";
+import { PxIcon } from "./PxIcon";
 
 const at = (x: number, y: number, w?: number) => ({ "--x": `${x}cqw`, "--y": `${y}cqw`, ...(w ? { "--w": `${w}cqw` } : {}) }) as CSSProperties;
 
@@ -87,9 +88,9 @@ export function Hero() {
             <div className="hopper h3"><PixelSprite {...CAST.you} size={80} className="bob d2" /></div>
           </div>
 
-          <span className="fly f1" aria-hidden="true">🍅</span>
-          <span className="fly f2" aria-hidden="true">📋</span>
-          <span className="fly f3" aria-hidden="true">🧾</span>
+          <span className="fly f1" aria-hidden="true"><PxIcon name="tomato" /></span>
+          <span className="fly f2" aria-hidden="true"><PxIcon name="plan" /></span>
+          <span className="fly f3" aria-hidden="true"><PxIcon name="receipt" /></span>
 
           <span className="alab" style={at(17, 68.5)} aria-hidden="true"><span className="glyph chef" />Chef <KindChip kind="ai" /></span>
           <span className="alab" style={at(50, 68.5)} aria-hidden="true"><span className="glyph you" /><KindChip kind="you" /> approve</span>

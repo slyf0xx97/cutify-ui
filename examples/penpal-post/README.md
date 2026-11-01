@@ -22,11 +22,11 @@ Claude was given this brief with the cutify-ui skill installed:
 - Aiko's sample letter in English, with a little Japanese (もち, 焼きいも) that has notes on hover
 - Your reply in a text box, with one reply idea at a time from the Postie
 - The Translator's side-by-side view: each line of your letter with Japanese next to it and a few gentle notes
-- Five pixel stickers that wobble on hover; the Postie marks two
-- Sending opens a native dialog, then the letter folds into an envelope, gets a heart seal and flies off the screen. Under reduced motion it just shows as sent
+- Five pixel stickers that wobble on hover, and the Postie marks two of them
+- Sending opens a native dialog, then the letter folds into an envelope, gets a heart seal and flies off the screen. Under reduced motion, it shows as sent without the animation
 
 ## Run it
 
-Open `index.html` in a browser. It's one self-contained file; only the fonts load from Google Fonts.
+Open `index.html` in a browser. It's one self-contained file, and only the fonts load from Google Fonts.
 
 Checked in Chromium at 1280px, 768px and 375px wide: no overlaps, no sideways scroll, no console errors, Japanese glyphs in the right fonts, body text at 4.5:1 or better.

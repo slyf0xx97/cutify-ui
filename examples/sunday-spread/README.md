@@ -26,6 +26,6 @@ Claude was given this brief with the cutify-ui skill installed:
 
 ## Run it
 
-Open `index.html` in a browser. It's one self-contained file; only the fonts load from Google Fonts.
+Open `index.html` in a browser. It's one self-contained file, and only the fonts load from Google Fonts.
 
 Checked in Chromium at 1280px, 768px and 375px wide, and with reduced motion: no overlaps, tooltips stay on screen, the dialog fits, no sideways scroll, no console errors.

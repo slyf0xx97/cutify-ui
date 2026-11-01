@@ -34,9 +34,11 @@ export function WordTip({ word, label, title, children, tone = "var(--teal-dark)
       el.dataset.side = flip ? "above" : "below";
     };
     place();
-    addEventListener("scroll", place, true); addEventListener("resize", place);
+    let raf = 0;
+    const queue = () => { raf ||= requestAnimationFrame(() => { raf = 0; place(); }); };   // re-place at most once a frame
+    addEventListener("scroll", queue, { capture: true, passive: true }); addEventListener("resize", queue, { passive: true });
     return () => {
-      removeEventListener("scroll", place, true); removeEventListener("resize", place);
+      removeEventListener("scroll", queue, true); removeEventListener("resize", queue); cancelAnimationFrame(raf);
       try { (el as HTMLElement & { hidePopover?: () => void }).hidePopover?.(); } catch { /* ignore */ }
     };
   }, [open]);

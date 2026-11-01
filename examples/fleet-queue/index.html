@@ -33,16 +33,16 @@ a { color: var(--line); }
 .panel { background: radial-gradient(#ffffff08 1px, transparent 1.5px) 0 0/14px 14px, linear-gradient(135deg, #1e1f22, #161719);
   border: 1px solid #ffffff14; border-radius: 6px; padding: 16px 18px; }
 .card { background: var(--panel-2); border-radius: 6px; padding: 12px 14px; }
-.lab { font: 500 12px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--dim); }
+.lab { font: 500 12px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--dim); text-wrap: balance; }
 .ring-on { border-color: var(--line) !important; box-shadow: 0 0 0 4px #ffd40022; }
 
 .display { font-family: var(--display); font-weight: 900; font-stretch: 118%; text-transform: uppercase; line-height: .9; letter-spacing: -.01em; }
 .display span, h2 span { color: var(--line); }
 h2 { font: 900 34px/.9 var(--display); font-stretch: 118%; text-transform: uppercase; margin: 0; }
 
-.step { display: flex; align-items: center; gap: 12px; margin: 26px 0 12px; scroll-margin-top: 76px; flex-wrap: wrap; }
+.step { display: flex; align-items: center; gap: 12px; margin: 26px 0 12px; scroll-margin-top: 76px; }
 .step .n { display: grid; place-items: center; width: 34px; height: 34px; background: var(--line); color: var(--on-bright); font: 800 18px var(--mono); border-radius: 4px; flex: none; box-shadow: 0 3px 0 #00000055; }
-.step h3 { margin: 0; font: 800 24px var(--display); font-stretch: 112%; text-transform: uppercase; }
+.step h3 { margin: 0; font: 800 24px var(--display); font-stretch: 112%; text-transform: uppercase; text-wrap: balance; }
 .explain { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 14px; }
 .explain span { padding: 6px 10px; background: var(--panel-2); border-radius: 4px; font-size: 14px; }
 .explain i { font-style: normal; font-weight: 900; color: var(--line); }
@@ -89,8 +89,10 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .kpi.good { border-top-color: var(--ok); } .kpi.bad { border-top-color: var(--bad); }
 @media (max-width: 760px) { .kpis { grid-template-columns: repeat(2, 1fr); } }
 
-.live-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: var(--ok); animation: live 1.6s infinite; flex: none; }
-@keyframes live { from { box-shadow: 0 0 0 0 #5ccf8aaa; } to { box-shadow: 0 0 0 12px #5ccf8a00; } }
+.live-dot { position: relative; display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: var(--ok); flex: none; }
+/* the ring scales on its own layer, so the pulse never repaints */
+.live-dot::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: #5ccf8a; animation: live 1.6s infinite; }
+@keyframes live { from { transform: scale(1); opacity: .67; } to { transform: scale(3.4); opacity: 0; } }
 
 .sprite { image-rendering: pixelated; display: block; }
 .px-blink { animation: px-blink 1.2s steps(1) infinite; }
@@ -106,6 +108,13 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .foot h5 { margin: 0 0 8px; font: 700 11px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--dim); }
 .foot a { text-decoration: none; }
 @media (max-width: 1100px) { .foot-grid { grid-template-columns: 1fr; } }
+.donate { display: inline-flex; align-items: center; gap: .4rem; min-height: 2.75rem; padding: .2rem .9rem; border: 2px solid var(--chalk); border-radius: 4px; background: color-mix(in srgb, var(--line) 14%, var(--panel)); color: var(--chalk); font: 700 13px var(--mono); letter-spacing: .06em; text-transform: uppercase; text-decoration: none; white-space: nowrap; transition: transform .14s ease, box-shadow .14s ease; }
+.donate svg { flex: none; color: var(--line); }
+.donate:hover { color: var(--chalk); box-shadow: 0 3px 0 #00000077; }
+.donate:focus-visible { outline: 3px solid var(--line); outline-offset: 2px; }
+@media (prefers-reduced-motion: no-preference) { .donate:hover { transform: translateY(-1px); } }
+footer.wrap { padding-bottom: 32px; }
+.foot-copy { margin-top: 20px; display: flex; align-items: center; justify-content: space-between; gap: 12px 24px; flex-wrap: wrap; }
 
 /* ===== Fleet Queue page ===== */
 body { overflow-x: hidden; }
@@ -118,7 +127,7 @@ p { color: var(--body); }
 .gl.picker { background: var(--cast-1); border-radius: 3px; }
 .gl.packer { background: var(--cast-2); border-radius: 50%; }
 .gl.router { background: var(--cast-3); clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%); }
-.gl.rules { background: var(--line); clip-path: polygon(0 0, 100% 0, 100% 60%, 50% 100%, 0 60%); }
+.gl.rules { display: inline-grid; gap: 0; margin-top: 0; background: var(--line); clip-path: polygon(0 0, 100% 0, 100% 60%, 50% 100%, 0 60%); }
 .gl.you { background: var(--chalk); clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); }
 
 /* nav */
@@ -132,6 +141,7 @@ p { color: var(--body); }
 .nav .go { padding: 8px 14px; font-size: 14px; }
 @media (max-width: 720px) { .nav .links { display: none; } .nav .go { margin-left: auto; } }
 @media (max-width: 600px) { .wrap { padding: 0 16px; } }
+@media (max-width: 440px) { .step h3 { font-size: 20px; } .nav .wrap { gap: 12px; } .nav .brand { font-size: 18px; } .nav .go { white-space: nowrap; padding-inline: 10px; font-size: 13px; } }
 
 /* hero */
 .hero { display: grid; grid-template-columns: 1fr 1.15fr; gap: 36px; align-items: center; padding-top: 48px; padding-bottom: 28px; }
@@ -204,10 +214,13 @@ p { color: var(--body); }
 
 /* connectors between stages */
 .feed { position: relative; height: 44px; margin-left: 16px; }
-.feed i { position: absolute; left: 0; top: 0; bottom: 8px; width: 4px; background-image: linear-gradient(var(--line) 50%, transparent 50%); background-size: 4px 12px; animation: flowd .7s linear infinite; }
+.feed i { position: absolute; left: 0; top: 0; bottom: 8px; width: 4px; }
+/* the dashes slide as one layer; the clip moves the other way so the visible line stays put (the arrow ::after can't be clipped) */
+.feed i::before { content: ""; position: absolute; left: 0; right: 0; top: -12px; bottom: 0; background-image: linear-gradient(var(--line) 50%, transparent 50%); background-size: 4px 12px; clip-path: inset(12px 0 0); animation: flowd .7s linear infinite; }
 .feed i::after { content: ""; position: absolute; left: -5px; bottom: -8px; border: 7px solid transparent; border-top-color: var(--line); border-bottom: 0; }
 .feed span { position: absolute; left: 18px; top: 12px; font: 700 10px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--dim); }
-@keyframes flowd { to { background-position: 0 12px; } }
+@keyframes flowd { to { transform: translateY(12px); clip-path: inset(0 0 12px); } }
+@keyframes flowd10 { to { transform: translateY(10px); clip-path: inset(0 0 10px); } }
 
 /* stage 2: crew, chat, rules */
 .crew { display: flex; gap: 14px; align-items: flex-end; margin-bottom: 10px; flex-wrap: wrap; }
@@ -229,7 +242,7 @@ p { color: var(--body); }
 .rule.head { background: none; padding-top: 0; padding-bottom: 0; font: 700 10px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--dim); border: 0; }
 .rule .pill { justify-self: start; }
 @media (max-width: 560px) { .rule { grid-template-columns: 70px 1fr; } .rule .r1, .rule .r2 { grid-column: auto; } .rule.head { display: none; } .rule .r1::before { content: "First "; } .rule .r2::before { content: "Revised "; } .rule .r1, .rule .r2 { font: 700 10px var(--mono); color: var(--dim); display: flex; gap: 6px; align-items: center; } .rule .r1 { grid-column: 1 / -1; } .rule .r2 { grid-column: 1 / -1; } }
-.verdict { margin-top: 12px; display: flex; align-items: center; gap: 10px; font: 800 17px var(--display); flex-wrap: wrap; }
+.verdict { margin-top: 12px; display: flex; align-items: center; gap: 10px; font: 800 17px var(--display); flex-wrap: wrap; text-wrap: balance; }
 @media (prefers-reduced-motion: no-preference) { .verdict.stamp .pill { animation: stamp .22s cubic-bezier(.5, 1.8, .6, 1); } }
 @keyframes stamp { from { transform: scale(2.2); } }
 
@@ -253,7 +266,8 @@ p { color: var(--body); }
 .slegend .mono { font-size: 12px; }
 .approve { margin-top: 14px; display: grid; grid-template-columns: auto 1fr auto; gap: 16px; align-items: center; border-top: 3px solid var(--chalk); }
 .approve .sprite { width: 64px; height: 64px; }
-.approve h4 { margin: 0 0 2px; font: 800 18px var(--display); font-stretch: 112%; text-transform: uppercase; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.approve h4 { margin: 0 0 4px; font: 800 18px/1.4 var(--display); font-stretch: 112%; text-transform: uppercase; }
+.approve h4 .gl { vertical-align: -4px; margin-right: 6px; }
 .approve p { margin: 0; font-size: 15px; }
 .status { font: 700 13px var(--mono); margin-top: 6px; color: var(--sub); }
 .status.done { color: var(--ok); }
@@ -289,7 +303,8 @@ dialog::backdrop { background: #000000b0; }
 .box .trio { display: flex; gap: 10px; flex-wrap: wrap; width: 100%; }
 .box .trio span { display: inline-flex; gap: 6px; align-items: center; background: #ffffff0a; border-radius: 4px; padding: 4px 8px; font: 700 12px var(--mono); }
 .dn { position: relative; width: 100%; height: 34px; display: flex; justify-content: center; }
-.dn i { position: relative; width: 4px; height: 26px; background-image: linear-gradient(var(--line) 50%, transparent 50%); background-size: 4px 10px; animation: flowd .7s linear infinite; }
+.dn i { position: relative; width: 4px; height: 26px; }
+.dn i::before { content: ""; position: absolute; left: 0; right: 0; top: -10px; bottom: 0; background-image: linear-gradient(var(--line) 50%, transparent 50%); background-size: 4px 10px; clip-path: inset(10px 0 0); animation: flowd10 .7s linear infinite; }
 .dn i::after { content: ""; position: absolute; left: -5px; bottom: -7px; border: 7px solid transparent; border-top-color: var(--line); border-bottom: 0; }
 .dn em { white-space: nowrap; position: absolute; left: calc(50% + 14px); top: 9px; font: 700 10px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--dim); font-style: normal; }
 .dn em.back { color: var(--bad); }
@@ -493,7 +508,7 @@ dialog::backdrop { background: #000000b0; }
       <div><h5>Built with</h5><p style="margin:0;font-size:14px">One HTML file: CSS, SVG and a little JavaScript. Fonts: Anybody, Spline Sans Mono.</p></div>
       <div><h5>Project</h5><p style="margin:0;font-size:14px"><a href="../../SKILL.md">cutify-ui skill</a>, Apron theme</p></div>
     </div>
-    <p class="mono" style="margin:20px 0 0;font-size:11px;color:var(--dim)">© 2026 cutify-ui, MIT licence</p>
+    <div class="foot-copy"><p class="mono" style="margin:0;font-size:11px;color:var(--dim)">© 2026 cutify-ui, MIT licence</p><a class="donate" href="https://donate.stripe.com/3cIcMX8ee5oufGWd5n18c00" target="_blank" rel="noopener noreferrer"><svg aria-hidden="true" focusable="false" viewBox="0 0 16 16" width="16" height="16" shape-rendering="crispEdges"><path fill="currentColor" d="M3 3h3v1h1v1h2V4h1V3h3v1h1v4h-1v1h-1v1h-1v1h-1v1H9v1H7v-1H6v-1H5V9H4V8H3V7H2V4h1z"/></svg>Support cutify-ui<span class="sr-only"> (opens Stripe in a new tab)</span></a></div>
   </div>
 </footer>
 
@@ -624,15 +639,18 @@ function Floor(svg, bots) {
 const hero = Floor($('heroFloor'), [{ who: 'picker', d: ROUTES.heroPicker }, { who: 'packer', d: ROUTES.packer }, { who: 'router', d: ROUTES.router }]);
 const plan = Floor($('planFloor'), [{ who: 'picker', d: ROUTES.v1Picker }, { who: 'packer', d: ROUTES.packer }, { who: 'router', d: ROUTES.router }]);
 const floors = [hero, plan];
-if (!reduced) {
-  let last = performance.now();
-  const frame = now => {
-    const dt = Math.min(.1, (now - last) / 1000); last = now;
-    for (const f of floors) if (!f.svg.closest('.is-off')) f.tick(dt);
-    requestAnimationFrame(frame);
-  };
-  requestAnimationFrame(frame);
-}
+// the loop stops when no floor is on screen (and the browser stops it in a hidden tab); kickFloors() restarts it
+let floorRaf = 0, floorLast = 0;
+const floorFrame = now => {
+  floorRaf = 0;
+  const on = floors.filter(f => !f.svg.closest('.is-off'));
+  if (!on.length) return;
+  const dt = Math.min(.1, (now - floorLast) / 1000); floorLast = now;
+  for (const f of on) f.tick(dt);
+  floorRaf = requestAnimationFrame(floorFrame);
+};
+function kickFloors() { if (!reduced && !floorRaf) { floorLast = performance.now(); floorRaf = requestAnimationFrame(floorFrame); } }
+kickFloors();
 
 /* ===== stage 1: order queue (sample data) ===== */
 const ORDERS = [
@@ -795,14 +813,14 @@ function routeStep() {
   steps.forEach((li, k) => { li.classList.toggle('on', k === ri); li.classList.toggle('done', k < ri); });
   ri = (ri + 1) % steps.length;
 }
-setInterval(() => { if (routeOn && !$('how').classList.contains('is-off')) routeStep(); }, 1700);
+setInterval(() => { if (routeOn && !document.hidden && !$('how').classList.contains('is-off')) routeStep(); }, 1700);
 routeStep();
 const rp = $('routePause');
 if (reduced) { rp.disabled = true; rp.title = 'Paused because your system asks for reduced motion'; }
 rp.addEventListener('click', () => { routeOn = !routeOn; rp.textContent = routeOn ? '❚❚ Pause' : '▶ Resume'; });
 
 /* ===== pause everything off screen ===== */
-const io = new IntersectionObserver(es => es.forEach(e => e.target.classList.toggle('is-off', !e.isIntersecting)), { rootMargin: '100px 0px' });
+const io = new IntersectionObserver(es => { es.forEach(e => e.target.classList.toggle('is-off', !e.isIntersecting)); kickFloors(); }, { rootMargin: '100px 0px' });
 document.querySelectorAll('.hero, .stage, .feed').forEach(el => io.observe(el));
 
 finalState();

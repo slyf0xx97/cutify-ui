@@ -65,7 +65,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .go { background: var(--line); color: var(--on-bright); border: 0; border-radius: 4px; padding: 13px 24px; font: 800 18px var(--display); font-stretch: 110%; text-transform: uppercase; box-shadow: 0 4px 0 #00000077; }
 .go:not(:disabled):hover { box-shadow: 0 6px 0 #00000077; } .go:not(:disabled):active { box-shadow: 0 2px 0 #00000077; }
 .go:disabled { opacity: .35; cursor: not-allowed; }
-.go small { display: block; font: 500 12px var(--mono); text-transform: none; letter-spacing: 0; }
+.go small { display: block; font: 500 12px var(--mono); text-transform: none; letter-spacing: 0; text-wrap: balance; }
 .go.sm { padding: 9px 16px; font-size: 15px; }
 .btn { background: transparent; color: var(--chalk); border: 2px solid #ffffff40; border-radius: 4px; padding: 8px 14px; font: 700 13px var(--mono); letter-spacing: .08em; text-transform: uppercase; box-shadow: 0 3px 0 #00000066; }
 .btn:hover { border-color: var(--line); color: var(--line); }
@@ -106,12 +106,14 @@ button { font: inherit; color: inherit; cursor: pointer; }
 @media (max-width: 980px) { .hero h1 { font-size: clamp(40px, 12vw, 104px); } }
 .tag { font: 700 19px/1.3 var(--display); color: var(--vis); margin: 14px 0 10px; max-width: 30ch; }
 .benefits { list-style: none; padding: 0; margin: 0 0 20px; display: grid; gap: 6px; }
-.benefits li { display: flex; gap: 10px; align-items: baseline; font-size: 16px; color: var(--body); }
+.benefits li { display: flex; gap: 10px; align-items: baseline; font-size: 16px; color: var(--body); text-wrap: balance; }
 .benefits li::before { content: "✓"; color: var(--ok); font-weight: 900; }
 .badge { display: inline-flex; align-items: center; gap: 10px; font: 500 12px var(--mono); color: var(--body); margin-bottom: 14px; }
-.live-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--ok); flex: none; }
-@media (prefers-reduced-motion: no-preference) { .live-dot { animation: live 1.6s infinite; } }
-@keyframes live { from { box-shadow: 0 0 0 0 #5ef08aaa; } to { box-shadow: 0 0 0 12px #5ef08a00; } }
+.live-dot { position: relative; width: 10px; height: 10px; border-radius: 50%; background: var(--ok); flex: none; }
+/* the ring scales on its own layer, so the pulse never repaints */
+.live-dot::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: #5ef08a; opacity: 0; }
+@media (prefers-reduced-motion: no-preference) { .live-dot::after { animation: live 1.6s infinite; } }
+@keyframes live { from { transform: scale(1); opacity: .67; } to { transform: scale(3.4); opacity: 0; } }
 
 /* status bar */
 .status { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 18px; padding: 10px 14px; border-top: 3px solid var(--line); }
@@ -166,15 +168,17 @@ button { font: inherit; color: inherit; cursor: pointer; }
 section.stage { padding: 6px 0 4px; scroll-margin-top: 50px; }
 .step { display: flex; align-items: center; gap: 12px; margin: 26px 0 12px; scroll-margin-top: 76px; }
 .step .n { display: grid; place-items: center; width: 34px; height: 34px; background: var(--line); color: var(--on-bright); font: 800 18px var(--mono); border-radius: 4px; flex: none; box-shadow: 0 3px 0 #00000066; }
-.step h3 { min-width: 0; margin: 0; font: 800 24px/1.05 var(--display); font-stretch: 112%; text-transform: uppercase; }
+.step h3 { min-width: 0; margin: 0; font: 800 24px/1.05 var(--display); font-stretch: 112%; text-transform: uppercase; text-wrap: balance; }
 .step .kind { margin-left: 2px; }
 .explain { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 12px; }
 .explain span { padding: 6px 10px; background: var(--panel-2); border-radius: 4px; font-size: 14px; }
 .explain i { font-style: normal; font-weight: 900; color: var(--line); }
 .feed { height: 46px; margin-left: 15px; display: flex; align-items: center; gap: 12px; }
-.feed i { display: block; width: 4px; height: 100%; background-image: linear-gradient(var(--line) 50%, transparent 50%); background-size: 4px 12px; }
-@media (prefers-reduced-motion: no-preference) { .feed i { animation: flowd .7s linear infinite; } }
-@keyframes flowd { to { background-position: 0 12px; } }
+.feed i { position: relative; overflow: hidden; display: block; width: 4px; height: 100%; }
+/* the dashes slide as one layer a dash-period taller, so the loop is seamless and never repaints */
+.feed i::before { content: ""; position: absolute; left: 0; right: 0; top: -12px; bottom: 0; background-image: linear-gradient(var(--line) 50%, transparent 50%); background-size: 4px 12px; }
+@media (prefers-reduced-motion: no-preference) { .feed i::before { animation: flowd .7s linear infinite; } }
+@keyframes flowd { to { transform: translateY(12px); } }
 .feed span { font: 500 11px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--dim); }
 .ptitle { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
 
@@ -286,12 +290,20 @@ dialog::backdrop { background: #05070acc; }
 @keyframes march { to { stroke-dashoffset: -26; } }
 
 /* footer */
-.foot { margin-top: 40px; padding: 26px 0 18px; border-top: 4px solid var(--line); }
+.foot { margin-top: 40px; padding: 26px 0 32px; border-top: 4px solid var(--line); }
 .foot-grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 24px; }
 .foot h5 { margin: 0 0 8px; font: 700 11px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--dim); }
 .foot p, .foot li { font-size: 14px; color: var(--body); margin: 0; }
 .foot ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 4px; }
 .foot .copy { margin-top: 20px; font: 500 12px var(--mono); color: var(--dim); }
+.donate { display: inline-flex; align-items: center; gap: .4rem; min-height: 2.75rem; padding: .2rem .9rem; border: 2px solid var(--chalk); border-radius: 4px; background: color-mix(in srgb, var(--line) 14%, var(--panel)); color: var(--chalk); font: 700 13px var(--mono); letter-spacing: .06em; text-transform: uppercase; text-decoration: none; white-space: nowrap; transition: transform .14s ease, box-shadow .14s ease; }
+.donate svg { flex: none; color: var(--line); }
+.donate:hover { color: var(--chalk); box-shadow: 0 3px 0 #00000077; }
+.donate:focus-visible { outline: 3px solid var(--line); outline-offset: 2px; }
+@media (prefers-reduced-motion: no-preference) { .donate:hover { transform: translateY(-1px); } }
+.foot-copy { margin-top: 20px; display: flex; align-items: center; justify-content: space-between; gap: 12px 24px; flex-wrap: wrap; }
+.foot-copy .copy { margin: 0; }
+.nowrap { white-space: nowrap; }
 
 /* entrances */
 @media (prefers-reduced-motion: no-preference) { .reveal { opacity: 0; animation: reveal .8s ease-out forwards; } }
@@ -460,7 +472,7 @@ dialog::backdrop { background: #05070acc; }
         <div class="kpi good"><small>Evening peak</small><b class="mono">260 kW</b><span>was 410 kW, sample data</span></div>
         <div class="kpi good"><small>Peak cut</small><b class="mono">−37%</b><span>−150 kW at 19:00, sample</span></div>
         <div class="kpi good"><small>Spare solar stored</small><b class="mono">335 kWh</b><span>instead of exported, sample</span></div>
-        <div class="kpi good"><small>Safety rules</small><b class="mono">6 / 6 ✓</b><span>1 trim at 22:00 (BATT-01)</span></div>
+        <div class="kpi good"><small>Safety rules</small><b class="mono">6 / 6 ✓</b><span>1 trim at 22:00 <span class="nowrap">(BATT-01)</span></span></div>
       </div>
       <div class="ptitle"><span class="lab">Power drawn from the grid, before vs after</span><span class="sample">Sample data</span></div>
       <div class="chart" id="chPeak"></div>
@@ -516,7 +528,7 @@ dialog::backdrop { background: #05070acc; }
       <div><h5>Built with</h5><ul><li>Plain HTML, CSS and SVG</li><li>Pixel sprites from string grids</li><li><a href="../../SKILL.md">cutify-ui</a>, Apron grammar</li></ul></div>
       <div><h5>Project</h5><ul><li>A cutify-ui example</li><li><a href="#how">How it works</a></li><li><a href="#top">Back to top</a></li></ul></div>
     </div>
-    <p class="copy">© 2026 Gridline example. Not a real grid, not real data.</p>
+    <div class="foot-copy"><p class="copy">© 2026 Gridline example. Not a real grid, not real data.</p><a class="donate" href="https://donate.stripe.com/3cIcMX8ee5oufGWd5n18c00" target="_blank" rel="noopener noreferrer"><svg aria-hidden="true" focusable="false" viewBox="0 0 16 16" width="16" height="16" shape-rendering="crispEdges"><path fill="currentColor" d="M3 3h3v1h1v1h2V4h1V3h3v1h1v4h-1v1h-1v1h-1v1h-1v1H9v1H7v-1H6v-1H5V9H4V8H3V7H2V4h1z"/></svg>Support cutify-ui<span class="sr-only"> (opens Stripe in a new tab)</span></a></div>
   </div>
 </footer>
 
@@ -618,7 +630,7 @@ document.addEventListener('click', e => {
 });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeTip(); });
 // keyboard focus scrolls the trigger into view: move an open tip along instead of leaving it behind
-addEventListener('scroll', () => { if (tipFor) document.activeElement === tipFor ? openTip(tipFor) : closeTip(); }, { passive: true });
+let tipRaf = 0; addEventListener('scroll', () => { tipRaf ||= requestAnimationFrame(() => { tipRaf = 0; if (tipFor) document.activeElement === tipFor ? openTip(tipFor) : closeTip(); }); }, { passive: true });
 
 // ---------- cast list under the scene ----------
 const CAST = [
@@ -723,13 +735,17 @@ function drawScene(t) {
   $('roGrd').textContent = f.grid < -2 ? `↑ Export ${Math.round(-f.grid)} kW` : `${Math.round(Math.max(0, f.grid))} kW`;
   $('roPeak').textContent = mode === 'after' ? 'peak 260 kW, sample' : 'peak 410 kW, sample';
 }
-let sceneVisible = true, last = performance.now();
+// the loop stops off screen (and the browser stops it in a hidden tab); kickScene() restarts it
+let sceneVisible = true, last = performance.now(), sceneRaf = 0;
 function frame(now) {
+  sceneRaf = 0;
+  if (!sceneVisible) return;
   const dt = Math.min(.1, (now - last) / 1000); last = now;
-  if (sceneVisible) { clockT += dt / 2.2; if (clockT >= 23.5) clockT = 12; phase += dt * 60; drawScene(clockT); }
-  requestAnimationFrame(frame);
+  clockT += dt / 2.2; if (clockT >= 23.5) clockT = 12; phase += dt * 60; drawScene(clockT);
+  sceneRaf = requestAnimationFrame(frame);
 }
-if (reduced) drawScene(19); else requestAnimationFrame(frame);
+function kickScene() { if (!reduced && !sceneRaf && sceneVisible) { last = performance.now(); sceneRaf = requestAnimationFrame(frame); } }
+if (reduced) drawScene(19); else kickScene();
 
 // ---------- charts: hand-built SVG sized to the container ----------
 function lineChart(el, { series, yMin = 0, yMax, unit, h = 220, band, ref, labels = true }) {
@@ -773,7 +789,7 @@ function drawCharts() {
 }
 drawCharts();
 // charts are sized from their box: redraw once the width settles (ignores height-only resizes from mobile toolbars)
-let rw = innerWidth, rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { if (innerWidth !== rw) { rw = innerWidth; drawCharts(); } }, 150); });
+let rw = innerWidth, rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { if (innerWidth !== rw) { rw = innerWidth; drawCharts(); } }, 150); }, { passive: true });
 
 // ---------- stage 2: plan cells and the crew log ----------
 function renderPlan(draft) {
@@ -879,32 +895,33 @@ function layRoute() {
 }
 function placeToken() { const p = track.getPointAtLength(Math.min(routeD, routeLen)); token.setAttribute('transform', `translate(20 ${Math.round(p.y / 4) * 4})`); }
 new ResizeObserver(layRoute).observe(route);
-let rLast = performance.now();
+// the loop stops while paused or off screen (and the browser stops it in a hidden tab); kickRoute() restarts it
+let rLast = performance.now(), routeRaf = 0;
 function routeFrame(now) {
+  routeRaf = 0;
+  if (!routeVisible || routePaused || reduced) return;
   const dt = Math.min(.1, (now - rLast) / 1000); rLast = now;
-  if (routeVisible && !routePaused && !reduced) {
-    if (hold > 0) hold -= dt;
-    else {
-      routeD += 160 * dt;
-      const next = stops.findIndex((s, i) => i > at && routeD >= s);
-      if (next >= 0) { at = next; routeD = stops[next]; hold = 1.5; items.forEach((li, i) => { li.classList.toggle('on', i === at); li.classList.toggle('done', i < at); }); }
-      if (routeD > routeLen + 1 || (at === items.length - 1 && hold <= 0 && routeD >= routeLen)) { routeD = 0; at = -1; items.forEach(li => li.classList.remove('on', 'done')); }
-    }
-    placeToken();
+  if (hold > 0) hold -= dt;
+  else {
+    routeD += 160 * dt;
+    const next = stops.findIndex((s, i) => i > at && routeD >= s);
+    if (next >= 0) { at = next; routeD = stops[next]; hold = 1.5; items.forEach((li, i) => { li.classList.toggle('on', i === at); li.classList.toggle('done', i < at); }); }
+    if (routeD > routeLen + 1 || (at === items.length - 1 && hold <= 0 && routeD >= routeLen)) { routeD = 0; at = -1; items.forEach(li => li.classList.remove('on', 'done')); }
   }
-  requestAnimationFrame(routeFrame);
+  placeToken();
+  routeRaf = requestAnimationFrame(routeFrame);
 }
+function kickRoute() { if (!routeRaf && routeVisible && !routePaused && !reduced) { rLast = performance.now(); routeRaf = requestAnimationFrame(routeFrame); } }
 if (reduced) { items[0].classList.add('on'); ['routePause', 'routeReset'].forEach(b => { $(b).disabled = true; $(b).title = 'Animation is off because your system asks for reduced motion'; }); }
-else requestAnimationFrame(routeFrame);
-$('routePause').addEventListener('click', e => { routePaused = !routePaused; e.currentTarget.textContent = routePaused ? 'Play' : 'Pause'; });
+$('routePause').addEventListener('click', e => { routePaused = !routePaused; e.currentTarget.textContent = routePaused ? 'Play' : 'Pause'; kickRoute(); });
 $('routeReset').addEventListener('click', () => { routeD = 0; at = -1; hold = 0; items.forEach(li => li.classList.remove('on', 'done')); placeToken(); });
 if (reduced) document.querySelectorAll('[data-play]').forEach(b => { b.title = 'Runs as quick steps because your system asks for reduced motion'; });
 
 // ---------- pause everything off screen ----------
 const io = new IntersectionObserver(es => es.forEach(e => {
   e.target.classList.toggle('is-off', !e.isIntersecting);
-  if (e.target.id === 'hero') sceneVisible = e.isIntersecting;
-  if (e.target.id === 'route') routeVisible = e.isIntersecting;
+  if (e.target.id === 'hero') { sceneVisible = e.isIntersecting; kickScene(); }
+  if (e.target.id === 'route') { routeVisible = e.isIntersecting; kickRoute(); }
 }), { rootMargin: '100px 0px' });
 document.querySelectorAll('#hero, .stage, #route, .arch, .feed').forEach(el => io.observe(el));
 </script>

@@ -1,6 +1,6 @@
 # Themes
 
-Six themes share one grammar. Glass and Apron come from shipped projects; Picnic, Riso Club, Lantern Night and Toy Box were designed from the reference survey in `docs/INSPIRATION.md`. Copy the matching file from `assets/` and build on its variables. To make a new theme, keep the variable *roles* and swap the values.
+Six themes share one grammar. Glass and Apron come from shipped projects, and Picnic, Riso Club, Lantern Night and Toy Box were designed from the reference survey in `docs/INSPIRATION.md`. Copy the matching file from `assets/` and build on its variables. To make a new theme, keep the variable *roles* and swap the values.
 
 | Theme | Light/dark | Backdrop | Shadow language | Display voice | Suits |
 |---|---|---|---|---|---|
@@ -11,7 +11,7 @@ Six themes share one grammar. Glass and Apron come from shipped projects; Picnic
 | Lantern Night | dark | dusk sky, stars, dither skyline | warm glow, stepped pixel border | Jersey 10 | night, sleep, games, markets |
 | Toy Box | light | graph paper + isometric floor | bottom ledge that presses | Dela Gothic One | kids, learning, building, progress |
 
-Pick by the product's mood, then pick a backdrop from `references/backgrounds.md` that belongs to the product (a theme's default backdrop is a starting point, not a rule).
+Pick by the product's mood, then pick a backdrop from `references/backgrounds.md` that belongs to the product. A theme's default backdrop is only a starting point.
 
 ## Contents
 - Glass (light)
@@ -24,8 +24,6 @@ Pick by the product's mood, then pick a backdrop from `references/backgrounds.md
 - Fonts and privacy
 - Making a new theme
 
----
-
 ## Glass (light)
 
 A sunny outdoor scene fixed behind the page, frosted white glass panels on top, pixel-game accents.
@@ -37,20 +35,20 @@ A sunny outdoor scene fixed behind the page, frosted white glass panels on top, 
 | `--sky` / `--sky-soft` | `#8fd0f0` / `#d9f0fb` | Sky in scenes, page fallback, popup header strip |
 | `--water` / `--water-deep` | `#3bb4d6` / `#1b86a8` | Rivers, selected-card ring, scrollbar thumb |
 | `--grass`, `--leaf`, `--leaf-deep` | `#7cc65a`, `#3f9e57`, `#2d7d46` | Meadow fills, success |
-| `--link` | `#0f6a88` | Links on glass (6:1 on white); hover goes coral |
-| `--ink` / `--ink-soft` | `#1f2430` / `#3a4955` | All text and outlines on glass; focus ring |
+| `--link` | `#0f6a88` | Links on glass (6:1 on white), coral on hover |
+| `--ink` / `--ink-soft` | `#1f2430` / `#3a4955` | All text and outlines on glass, and the focus ring |
 | `--teal` / `--teal-dark` | `#1fa98a` / `#167a66` | "Stage n" pills, switch track. White text only on `--teal-dark` |
 | `--orange` / `--orange-dark` | `#e8912d` / `#b9651a` | Primary buttons, tags, active tab. Ink text on orange |
 | `--lime` | `#dbe86a` | Highlighter mark, number badges, walked trail |
 | `--coral` | `#c93a25` | Gaps, errors, link hover |
-| pastel softs | `--teal-soft #d7eff2`, `--mint-soft #dbf2e5`, `--coral-soft #fde4de`, `--yellow-soft #fcefc2` | One per character; status pills (mint done, yellow working, coral gap) |
+| pastel softs | `--teal-soft #d7eff2`, `--mint-soft #dbf2e5`, `--coral-soft #fde4de`, `--yellow-soft #fcefc2` | One per character, and status pills (mint done, yellow working, coral gap) |
 
 Character hues for a four-member cast: teal `#8fd6df`, mint `#a8e2bd`, coral `#f6b5a6`, yellow `#f6d877`.
 
 ### Type
-- Display: **Pixelify Sans** 600 for h1/h2, logo, badges, tooltip titles (`letter-spacing: .01em`). Fallback `"Trebuchet MS"`.
-- Body: **Atkinson Hyperlegible** 400/700, 17px (`1.0625rem/1.6`), minimum 16px. Use it for nav tabs and small titles too, because the pixel font misreads at small sizes.
-- Hero h1 `clamp(1.8rem, 3.2vw, 2.5rem)/1.1`; stage title `clamp(1.3rem, 2.3vw, 1.7rem)` 800 in the body font; tags `.78rem` 700 uppercase `.04em`.
+- Display: Pixelify Sans 600 for h1/h2, logo, badges, tooltip titles (`letter-spacing: .01em`). Fallback `"Trebuchet MS"`.
+- Body: Atkinson Hyperlegible 400/700, 17px (`1.0625rem/1.6`), minimum 16px. Use it for nav tabs and small titles too, because the pixel font misreads at small sizes.
+- Sizes: hero h1 `clamp(1.8rem, 3.2vw, 2.5rem)/1.1`, stage title `clamp(1.3rem, 2.3vw, 1.7rem)` 800 in the body font, tags `.78rem` 700 uppercase `.04em`.
 - In Next.js load both with `next/font/google` (self-hosted, no runtime request). In plain HTML use the Google Fonts link in `assets/glass.css`.
 
 ### Surfaces
@@ -73,15 +71,13 @@ html { background: #a9d8e8; }
 body::before { content: ""; position: fixed; inset: 0; height: 100lvh; z-index: -1; pointer-events: none;
   transform: translateZ(0); background: url('scenes/landscape.svg') center bottom / cover no-repeat, #a9d8e8; }
 ```
-Each stage can carry its own sticky scene (`.stage::before { position: sticky; top: 0; height: 100svh; margin-bottom: -100svh; background: var(--stage-scene) center / cover; }`). Clouds drift as one tiled layer moved by `transform` (cheap) rather than `background-position` (repaints).
+Each stage can carry its own sticky scene (`.stage::before { position: sticky; top: 0; height: 100svh; margin-bottom: -100svh; background: var(--stage-scene) center / cover; }`). Clouds drift as one tiled layer moved by `transform`, which is cheap. Moving `background-position` instead would repaint.
 
 ### Signature details
-- Lime highlighter on one key phrase per line: `background: linear-gradient(transparent 55%, var(--lime) 55%, var(--lime) 92%, transparent 92%)`. Use lime, not red, on a hero word so nothing reads as an error.
+- Lime highlighter on one key phrase per line: `background: linear-gradient(transparent 55%, var(--lime) 55%, var(--lime) 92%, transparent 92%)`. Use lime on a hero word, because red would read as an error.
 - Number badges: lime, 4px radius, 2px ink border, `2px 2px 0` hard shadow, pixel font.
 - Radii: 18px panels, 22px dialogs, 14px tooltips and icon tiles, 12px buttons, 999px pills, 4px badges and meters (deliberately boxy).
 - Outdoor props as UI: a hanging wooden sign for a map title, wooden-plank scrollbars, a torch, a flag.
-
----
 
 ## Apron (dark)
 
@@ -94,8 +90,8 @@ Night airfield signage: a dark dot grid, yellow taxiway lines, hi-vis orange, ch
 | `--bg` | `#121315` | Page background |
 | `--panel` / `--panel-2` | `#1b1c1f` / `#232428` | Panels / raised cards, inputs, menus, KPI tiles |
 | `--line` | `#ffd400` | Taxiway yellow. Accent: primary buttons, key words, active state, focus ring, step numbers, routes |
-| `--vis` | `#ff6b1a` | Hi-vis orange. Tagline, **AI** chips, constraints, exhaust glow, backup path |
-| `--chalk` | `#f2f0ea` | Main text; light fills (tooltips, bubbles, planes) |
+| `--vis` | `#ff6b1a` | Hi-vis orange. Tagline, AI chips, constraints, exhaust glow, backup path |
+| `--chalk` | `#f2f0ea` | Main text, and light fills (tooltips, bubbles, planes) |
 | `--dim` | `#8d9097` | Secondary text and mono labels |
 | `--ok` / `--bad` | `#5ccf8a` / `#ff5a4e` | Pass / fail |
 | cast colours | `#6aa8ff` blue, `#b98cff` violet, `#ff9a4a` orange | One per actor |
@@ -103,8 +99,8 @@ Night airfield signage: a dark dot grid, yellow taxiway lines, hi-vis orange, ch
 Body grey `#cfd0d3`, sub-copy `#b9bbc0`. Dark text on bright fills `#1e1f22`. Hairlines are white with alpha: `#ffffff14` borders, `#ffffff22` dashed rules, `#ffffff40` button outlines. Tints are role colour plus alpha (`#ffd4001f`, `#5ccf8a22`).
 
 ### Type
-- Display: **Anybody** (variable, width 50 to 150, weight 400 to 900) at 800 to 900 with `font-stretch: 105%` to `125%`, uppercase, for wide airport-signage titles. Hero h1 `900 112px/.86`, stretch 118%, `letter-spacing: -.02em`, second word in `--line`.
-- Labels: **Spline Sans Mono** 500/700. The recurring pairing is a heavy wide title next to a tiny mono label: `500 12px`, `letter-spacing: .14em`, uppercase, `--dim`. Micro labels `700 10px`, `.1em`.
+- Display: Anybody (variable, width 50 to 150, weight 400 to 900) at 800 to 900 with `font-stretch: 105%` to `125%`, uppercase, for wide airport-signage titles. Hero h1 `900 112px/.86`, stretch 118%, `letter-spacing: -.02em`, second word in `--line`.
+- Labels: Spline Sans Mono 500/700. The recurring pairing is a heavy wide title next to a tiny mono label: `500 12px`, `letter-spacing: .14em`, uppercase, `--dim`. Micro labels `700 10px`, `.1em`.
 - Body: Anybody 400 to 600 at normal width, 14 to 19px.
 
 ### Surfaces
@@ -114,12 +110,12 @@ Body grey `#cfd0d3`, sub-copy `#b9bbc0`. Dark text on bright fills `#1e1f22`. Ha
 ```
 A 14px grid of faint dots over a 135° gradient. Inner cards use flat `--panel-2` with no dots. Accent edges: `border-top: 3px solid <role>` on KPI tiles and forms, `border-left: 3px solid` on rule rows. The active-state ring is the same everywhere: `border-color: var(--line); box-shadow: 0 0 0 4px #ffd40022`.
 
-Shadows are hard and blurless (`0 6px 0 #00000055`); soft shadows only on menus (`0 10px 30px #000a`) and modals. Glows: `filter: blur(4px)` on orange exhaust ellipses, `drop-shadow(0 0 6px #ffd400)` on lights.
+Shadows are hard and blurless (`0 6px 0 #00000055`). Only menus (`0 10px 30px #000a`) and modals get soft shadows. Glows: `filter: blur(4px)` on orange exhaust ellipses, `drop-shadow(0 0 6px #ffd400)` on lights.
 
 Radii: 4px default (buttons, inputs, chips), 6px panels and tooltips, 8px hero and modal, 10px speech bubbles.
 
 ### Chart palette
-Checked for colour-blind separation against `#232428`: before `#e04438`, after `#3f8ee6`; categories `#9b6be0`, `#a98a00`, `#d94f8a`. Use these in charts instead of `--bad`/`--ok`, and direct-label lines as well as giving a legend.
+Checked for colour-blind separation against `#232428`: before `#e04438`, after `#3f8ee6`, and categories `#9b6be0`, `#a98a00`, `#d94f8a`. Use these in charts instead of `--bad`/`--ok`, and direct-label lines as well as giving a legend.
 
 ### Signature details
 - Kind chips: AI = `--vis` orange, Code = `--line` yellow, You = `--chalk`, dark text on all three.
@@ -127,17 +123,17 @@ Checked for colour-blind separation against `#232428`: before `#e04438`, after `
 - Dashed yellow connectors that flow (`3px dashed #ffd40055` or animated gradient dashes).
 - Aviation micro-copy only when the product is about aviation. Otherwise borrow the *signage* feel (wide caps, mono codes) and keep the words plain.
 
----
-
 ## Picnic (light)
 
 A cosy picnic: gingham under cream napkin cards, rounded Fredoka, jam-jar-lid numbers. File: `assets/picnic.css`.
 
-- **Backdrop:** translucent red gingham over napkin cream, with riso grain at half strength.
-- **Surfaces:** cream cards with 14px radius and a 2px cocoa border; an optional scalloped top edge.
-- **Shadow:** a soft offset, `3px 4px 0 rgb(58 46 42 / .25)`. Softer than a sticker: a blanket, not a decal.
-- **Signature:** stage numbers on round butter-yellow "jar lid" badges; tooltips as paper tags tied with a dotted string.
-- **Type:** Fredoka 600 display, Nunito body, DM Mono for data.
+| Part | Picnic |
+|---|---|
+| Backdrop | translucent red gingham over napkin cream, with riso grain at half strength |
+| Surfaces | cream cards with 14px radius and a 2px cocoa border, and an optional scalloped top edge |
+| Shadow | a soft offset, `3px 4px 0 rgb(58 46 42 / .25)`, softer than a sticker, like a blanket |
+| Signature | stage numbers on round butter-yellow "jar lid" badges, and tooltips as paper tags tied with a dotted string |
+| Type | Fredoka 600 display, Nunito body, DM Mono for data |
 
 | Variable | Value | Role |
 |---|---|---|
@@ -154,11 +150,13 @@ Gingham red `#E5484D` is decoration only (3.85:1 on napkin).
 
 A riso-printed zine: newsprint, flat white cards with sharp corners, and shadows that look like a slipped print plate. File: `assets/riso.css`.
 
-- **Backdrop:** newsprint `#F6F1E7` with grain, and a pink halftone fading from the hero corner.
-- **Surfaces:** flat white, 2px radius, 2px ink border.
-- **Shadow:** misregistered double offset, `-3px -2px 0 #FF48B0, 4px 3px 0 #0078BF`. No blur.
-- **Signature:** headings with a 2px blue ghost (`text-shadow: 2px 1px 0 rgb(0 120 191 / .55)`); big outlined stage numbers; pink over blue overlaps with `mix-blend-mode: multiply` turn purple.
-- **Type:** Bricolage Grotesque 700 display, Rethink Sans body, Space Mono tags.
+| Part | Riso Club |
+|---|---|
+| Backdrop | newsprint `#F6F1E7` with grain, and a pink halftone fading from the hero corner |
+| Surfaces | flat white, 2px radius, 2px ink border |
+| Shadow | a misregistered double offset with no blur, `-3px -2px 0 #FF48B0, 4px 3px 0 #0078BF` |
+| Signature | headings with a 2px blue ghost (`text-shadow: 2px 1px 0 rgb(0 120 191 / .55)`), big outlined stage numbers, and pink over blue overlaps that turn purple with `mix-blend-mode: multiply` |
+| Type | Bricolage Grotesque 700 display, Rethink Sans body, Space Mono tags |
 
 | Variable | Value | Role |
 |---|---|---|
@@ -173,11 +171,13 @@ A riso-printed zine: newsprint, flat white cards with sharp corners, and shadows
 
 A night market in pixels: a dusk sky with stars, a dithered skyline, glowing lantern borders. File: `assets/lantern.css`.
 
-- **Backdrop:** a dusk-to-night gradient with scattered stars, and a 1-bit dither band rising from the bottom like a skyline.
-- **Surfaces:** awning-purple panels with no rounding and a 2px stepped pixel border; a string of lantern dots along the top.
-- **Shadow:** a lantern glow, `0 0 0 2px #FF9F43, 0 0 24px rgb(255 159 67 / .25)`. This is the one theme where the light source replaces the hard offset.
-- **Signature:** pixel lanterns above stage numbers that sway gently; the active stage's lantern lights up. Motion uses `steps()`.
-- **Type:** Jersey 10 headings, Silkscreen tags, Lexend body, Sometype Mono data.
+| Part | Lantern Night |
+|---|---|
+| Backdrop | a dusk-to-night gradient with scattered stars, and a 1-bit dither band rising from the bottom like a skyline |
+| Surfaces | awning-purple panels with no rounding, a 2px stepped pixel border and a string of lantern dots along the top |
+| Shadow | a lantern glow, `0 0 0 2px #FF9F43, 0 0 24px rgb(255 159 67 / .25)`. This is the one theme where the light source replaces the hard offset |
+| Signature | pixel lanterns above stage numbers that sway gently, with the active stage's lantern lit. Motion uses `steps()` |
+| Type | Jersey 10 headings, Silkscreen tags, Lexend body, Sometype Mono data |
 
 | Variable | Value | Role |
 |---|---|---|
@@ -192,11 +192,13 @@ A night market in pixels: a dusk sky with stars, a dithered skyline, glowing lan
 
 Plastic toys on graph paper: white cards, primary bricks, buttons with a ledge that presses down. File: `assets/toybox.css`.
 
-- **Backdrop:** graph paper on a play-mat colour; an isometric floor under the hero character only.
-- **Surfaces:** white cards, 18px radius, no border; brick chips with two small "studs" on top.
-- **Shadow:** a ledge, `0 5px 0` in a darker shade of the surface, which collapses when pressed (`translateY(5px)`, ledge gone). It replaces the sticker offset.
-- **Signature:** stage numbers as stacked bricks; each finished stage adds a brick to a little tower in the corner.
-- **Type:** Dela Gothic One display, Outfit body, JetBrains Mono data.
+| Part | Toy Box |
+|---|---|
+| Backdrop | graph paper on a play-mat colour, with an isometric floor under the hero character only |
+| Surfaces | white cards with 18px radius and no border, and brick chips with two small "studs" on top |
+| Shadow | a ledge, `0 5px 0` in a darker shade of the surface, which collapses when pressed (`translateY(5px)`, ledge gone). It replaces the sticker offset |
+| Signature | stage numbers as stacked bricks, and each finished stage adds a brick to a little tower in the corner |
+| Type | Dela Gothic One display, Outfit body, JetBrains Mono data |
 
 | Variable | Value | Role |
 |---|---|---|
@@ -207,9 +209,7 @@ Plastic toys on graph paper: white cards, primary bricks, buttons with a ledge t
 | `--accent-2` / ledge | `#FFC93C` / `#C99412` | yellow brick, ink text 11.33:1 |
 | `--ok` / `--bad` | `#1F7A47` / `#C1121F` | dark green / dark red |
 
-Red brick `#E63946` fails 4.5:1 with both white and black text; use it for big bold labels only, or use `#C1121F`.
-
----
+Red brick `#E63946` fails 4.5:1 with both white and black text. Use it for big bold labels only, or use `#C1121F`.
 
 ## Palettes
 
@@ -217,25 +217,23 @@ Spare palettes for reskinning any theme. Ratios are WCAG 2.x contrast, calculate
 
 | Palette | Colours | Text that passes 4.5:1 |
 |---|---|---|
-| Strawberry Milk | `#FFF1F3` `#FFFFFF` `#FFD6E0` `#FF8FAB` `#D6336C` `#B0245A` `#4A2030` `#7BC67E` | cocoa `#4A2030` and berry `#B0245A` on milk; cocoa on strawberry fills. Leaf and strawberry are decoration only |
-| Matcha Latte | `#F3F1E4` `#FFFDF5` `#E6EBD0` `#8DB360` `#5E7F3A` `#3F5A2A` `#8B5E3C` `#2B2A22` | ink, deep tea and bean on foam; ink on matcha fills |
-| Bubblegum Arcade (dark) | `#1E1B3A` `#2C2858` `#FF5FA2` `#3DE0FF` `#FFE45E` `#FFF6FB` | everything on the cabinet colour; cabinet colour as text on pink, cyan and yellow fills |
-| Night Market (dark) | `#14132B` `#221F45` `#FF9F43` `#E8505B` `#FF7A82` `#2EC4A0` `#F7EBD9` | all on night; use `#FF7A82` for small red text on awning |
-| Riso Blue / Pink | `#F6F1E7` `#FFFFFF` `#FFE800` `#FF48B0` `#D9258F` `#0078BF` `#3D2E8C` `#1D1D3B` | ink and purple on newsprint; riso blue only on white |
-| Toy Primaries | `#FAF7F0` `#FFC93C` `#E63946` `#2B59C3` `#2A9D5C` `#C1121F` `#1F7A47` `#1A1A1A` | ink, blue, dark red, dark green on the mat; white on blue |
-| Picnic Gingham | `#FFFDF8` `#FFF4E0` `#FFD86E` `#E5484D` `#C2272D` `#5DAA68` `#3E7D48` `#3A2E2A` | ink, jam red, clover on napkin; ink on butter |
-| Sleepy Dusk (dark) | `#2B2545` `#3A3260` `#B8A6FF` `#FFB8A0` `#FFF3B0` `#F4F0FF` | every listed text colour on dusk and cloud; dusk as text on lavender and peach |
+| Strawberry Milk | `#FFF1F3` `#FFFFFF` `#FFD6E0` `#FF8FAB` `#D6336C` `#B0245A` `#4A2030` `#7BC67E` | cocoa `#4A2030` and berry `#B0245A` on milk, and cocoa on strawberry fills. Leaf and strawberry are decoration only |
+| Matcha Latte | `#F3F1E4` `#FFFDF5` `#E6EBD0` `#8DB360` `#5E7F3A` `#3F5A2A` `#8B5E3C` `#2B2A22` | ink, deep tea and bean on foam, and ink on matcha fills |
+| Bubblegum Arcade (dark) | `#1E1B3A` `#2C2858` `#FF5FA2` `#3DE0FF` `#FFE45E` `#FFF6FB` | everything on the cabinet colour, and cabinet colour as text on pink, cyan and yellow fills |
+| Night Market (dark) | `#14132B` `#221F45` `#FF9F43` `#E8505B` `#FF7A82` `#2EC4A0` `#F7EBD9` | all on night, and use `#FF7A82` for small red text on awning |
+| Riso Blue / Pink | `#F6F1E7` `#FFFFFF` `#FFE800` `#FF48B0` `#D9258F` `#0078BF` `#3D2E8C` `#1D1D3B` | ink and purple on newsprint, and riso blue only on white |
+| Toy Primaries | `#FAF7F0` `#FFC93C` `#E63946` `#2B59C3` `#2A9D5C` `#C1121F` `#1F7A47` `#1A1A1A` | ink, blue, dark red, dark green on the mat, and white on blue |
+| Picnic Gingham | `#FFFDF8` `#FFF4E0` `#FFD86E` `#E5484D` `#C2272D` `#5DAA68` `#3E7D48` `#3A2E2A` | ink, jam red, clover on napkin, and ink on butter |
+| Sleepy Dusk (dark) | `#2B2545` `#3A3260` `#B8A6FF` `#FFB8A0` `#FFF3B0` `#F4F0FF` | every listed text colour on dusk and cloud, and dusk as text on lavender and peach |
 
-Common traps: riso blue (4.20:1), toy red (3.90:1) and gingham red (3.85:1) on their light backgrounds; white text on pink, cyan or yellow fills.
-
----
+Common traps: riso blue (4.20:1), toy red (3.90:1) and gingham red (3.85:1) on their light backgrounds, and white text on pink, cyan or yellow fills.
 
 ## Fonts and privacy
 
-Both theme files load their fonts from Google Fonts with an `@import`, which is the quickest way to start. It also means every visitor's browser contacts Google's servers and shares its IP address. For sites with users in the EU, or anywhere you'd rather not involve a third party, self-host the fonts:
+Every theme file loads its fonts from Google Fonts with an `@import`, which is the quickest way to start. It also means every visitor's browser contacts Google's servers and shares its IP address. For sites with users in the EU, or anywhere you'd rather not involve a third party, self-host the fonts:
 
-- **Next.js**: `next/font/google` downloads the fonts at build time and serves them from your own domain, so no request goes to Google at runtime.
-- **Plain HTML**: download the `.woff2` files (for example from the google/fonts repository or a font helper tool), put them next to your CSS, declare them with `@font-face`, and delete the `@import` line.
+- In Next.js, `next/font/google` downloads the fonts at build time and serves them from your own domain, so no request goes to Google at runtime.
+- In plain HTML, download the `.woff2` files (for example from the google/fonts repository or a font helper tool), put them next to your CSS, declare them with `@font-face`, and delete the `@import` line.
 - Every font used here is under the SIL Open Font License 1.1. When you bundle the files, keep each family's `OFL.txt` alongside them.
 
 ## Making a new theme

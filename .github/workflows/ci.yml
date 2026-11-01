@@ -23,3 +23,5 @@ jobs:
         working-directory: tools
       - run: npm run check
         working-directory: tools
+      - name: Validate the Claude Code plugin
+        run: npx -y @anthropic-ai/claude-code plugin validate --strict .

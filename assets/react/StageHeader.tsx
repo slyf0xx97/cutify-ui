@@ -1,4 +1,4 @@
-// cutify-ui: numbered stage header with a pill, a title, an emoji-led line and an optional aside. MIT.
+// cutify-ui: numbered stage header with a pill, a title, a one-line description and an optional aside. MIT.
 // Styles: .stage-plate, .stage-top, .stage-tab, .stage-title, .stage-line in assets/glass.css.
 import type { ReactNode } from "react";
 
@@ -7,7 +7,7 @@ type Props = {
   tab?: string;
   title: string;              // short imperative: "Add your résumé"
   line?: string;              // one plain sentence
-  icon?: string;              // emoji or glyph for the line
+  icon?: ReactNode;           // a <PixelIcon> (not an emoji) to lead the line
   titleId?: string;
   heading?: "h2" | "h3";
   aside?: ReactNode;          // e.g. a toggle or a status pill

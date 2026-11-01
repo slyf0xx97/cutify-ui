@@ -4,6 +4,7 @@ import { CAST, chefPlan, DAYS, FOODS, recipe, shopperList } from "./data";
 import { KindChip } from "./KindChip";
 import { PixelSprite } from "./PixelSprite";
 import { Popup } from "./Popup";
+import { PxIcon } from "./PxIcon";
 import { StageHeader } from "./StageHeader";
 import { useOffscreenPause } from "./useOffscreenPause";
 import { WordTip } from "./WordTip";
@@ -76,7 +77,7 @@ export function Planner() {
     <div className="journey wrap">
       {/* Stage 1 */}
       <section className="stage" id="fridge" aria-labelledby="s1-title">
-        <StageHeader n={1} titleId="s1-title" title="Fill your fridge" icon="🧊" line="Tap what you have. The Chef plans around it."
+        <StageHeader n={1} titleId="s1-title" title="Fill your fridge" icon="fridge" line="Tap what you have. The Chef plans around it."
           aside={<><KindChip kind="you" /><Tip about="filling your fridge" title="Why start with the fridge" lines={[
             "Each tile is one thing in your fridge.",
             "Tap to add or remove it.",
@@ -95,7 +96,7 @@ export function Planner() {
               return (
                 <li key={f.id}>
                   <button type="button" className="food" aria-pressed={on} onClick={() => toggle(f.id)}>
-                    <span className="ico" aria-hidden="true">{f.icon}</span>
+                    <span className="ico" aria-hidden="true"><PxIcon name={f.icon} /></span>
                     <span><b>{f.name}</b><small>{on ? "✓ In fridge" : "＋ Not in fridge"}</small></span>
                   </button>
                 </li>
@@ -109,7 +110,7 @@ export function Planner() {
 
       {/* Stage 2 */}
       <section className="stage" id="chef" aria-labelledby="s2-title">
-        <StageHeader n={2} titleId="s2-title" title="Let the Chef plan your week" icon="🍳" line="Seven dinners, picked to use up your fridge first."
+        <StageHeader n={2} titleId="s2-title" title="Let the Chef plan your week" icon="pan" line="Seven dinners, picked to use up your fridge first."
           aside={<><KindChip kind="ai" /><Tip about="the Chef" title="What the Chef does" tone="var(--chef-bar)" lines={[
             "Reads what’s in your fridge.",
             "Picks seven dinners that use the most of it.",
@@ -138,7 +139,7 @@ export function Planner() {
                   const r = recipe(id), have = r.needs.filter((n) => fridge.has(n)).length;
                   return (
                     <li className="day fade-up" key={DAYS[i]} style={{ animationDelay: `${i * 60}ms` }}>
-                      <div className="day-top"><span className="day-name">{DAYS[i]}</span><span className="day-ico" aria-hidden="true">{r.icon}</span></div>
+                      <div className="day-top"><span className="day-name">{DAYS[i]}</span><span className="day-ico" aria-hidden="true"><PxIcon name={r.icon} /></span></div>
                       <h4>{r.name}</h4>
                       <div className="uses">
                         <span className="mono">{have} of {r.needs.length}</span> from your fridge
@@ -162,7 +163,7 @@ export function Planner() {
 
       {/* Stage 3 */}
       <section className="stage" id="shopper" aria-labelledby="s3-title">
-        <StageHeader n={3} titleId="s3-title" title="Let the Shopper build your list" icon="🧺" line="Only what the plan needs and your fridge doesn’t have."
+        <StageHeader n={3} titleId="s3-title" title="Let the Shopper build your list" icon="basket" line="Only what the plan needs and your fridge doesn’t have."
           aside={<><KindChip kind="ai" /><Tip about="the Shopper" title="What the Shopper does" tone="var(--shopper-bar)" lines={[
             "Reads the Chef’s plan and your fridge.",
             "Lists every missing ingredient once.",
@@ -207,7 +208,7 @@ export function Planner() {
 
       {/* Stage 4 */}
       <section className="stage" id="approve" aria-labelledby="s4-title">
-        <StageHeader n={4} titleId="s4-title" title="Approve your week" icon="✅" line="Nothing’s final until you say so."
+        <StageHeader n={4} titleId="s4-title" title="Approve your week" icon="check" line="Nothing’s final until you say so."
           aside={<><KindChip kind="you" /><Tip about="approving your week" title="Why you approve" tone="var(--you-bar)" lines={[
             "The helpers suggest. You decide.",
             "Review the seven dinners and the list together.",
@@ -234,7 +235,7 @@ export function Planner() {
         <div className="review">
           <div>
             <h3><span className="glyph chef" aria-hidden="true" />Chef’s dinners <KindChip kind="ai" /></h3>
-            <ol>{plan?.map((id, i) => <li key={DAYS[i]}><span className="mono">{DAYS[i]}</span>{recipe(id).icon} {recipe(id).name}</li>)}</ol>
+            <ol>{plan?.map((id, i) => <li key={DAYS[i]}><span className="mono">{DAYS[i]}</span><span><PxIcon name={recipe(id).icon} /> {recipe(id).name}</span></li>)}</ol>
           </div>
           <div>
             <h3><span className="glyph shopper" aria-hidden="true" />Shopper’s list <KindChip kind="ai" /></h3>

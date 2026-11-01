@@ -9,11 +9,9 @@ Characters and icons are drawn as tiny grids and rendered as crisp SVG, so they 
 - Designing a cast
 - Idle behaviours
 
----
-
 ## Sprites from string grids
 
-A sprite is 16 rows of 16 characters. Each character is a palette key; `.` is empty. `assets/pixel-sprites.js` turns a set of grids into `<symbol>`s you can `<use>` anywhere:
+A sprite is 16 rows of 16 characters. Each character is a palette key, and `.` is empty. `assets/pixel-sprites.js` turns a set of grids into `<symbol>`s you can `<use>` anywhere:
 
 ```html
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs id="pixdefs"></defs></svg>
@@ -36,7 +34,7 @@ Why it works:
 - `shape-rendering="crispEdges"` on the symbol keeps edges hard.
 - Palette keys can carry classes, so one letter can blink (a beacon) or wave (a wand) with CSS alone. Use `steps()` timing so it moves in frames.
 
-`assets/pixel-sprites.js` ships four example characters (tower, pilot, marshal, reader diamond) drawn for SkyQueue. Use them as models; draw a new cast for each product.
+`assets/pixel-sprites.js` ships four example characters (tower, pilot, marshal, reader diamond) drawn for SkyQueue. Use them as models, and draw a new cast for each product.
 
 In React, use `assets/react/PixelSprite.tsx`, which does the same from props.
 
@@ -50,7 +48,7 @@ const path = (rects: Rect[]) => rects.map(([x, y, w, h]) => `M${x} ${y}h${w}v${h
 const signals: Rect[] = [[1, 11, 2, 3], [5, 8, 2, 6], [9, 5, 2, 9], [13, 2, 2, 12]];
 // <svg viewBox="0 0 16 16" shape-rendering="crispEdges" fill="currentColor" aria-hidden="true"><path d={path(signals)}/></svg>
 ```
-`assets/react/PixelIcon.tsx` has this with a starter set (signals, search, check, cross, gear, book, plug, compass). Line icons from a library (for example lucide-react, ISC licence) are fine for small UI glyphs like Info, Play, Pause, Check; keep pixel icons for anything that belongs to the story.
+`assets/react/PixelIcon.tsx` has this with a starter set (signals, search, check, cross, gear, book, plug, compass). Line icons from a library (for example lucide-react, ISC licence) are fine for small UI glyphs like Info, Play, Pause and Check. Keep pixel icons for anything that belongs to the story.
 
 ## Sprite sheets (PNG)
 
@@ -65,7 +63,7 @@ Inside SVG, crop the same sheet with a nested `<svg viewBox="x y w h">` around a
 
 ## Designing a cast
 
-- One sprite per actor the brief describes (the AI helpers, the user, a mascot). Two to four is the sweet spot; don't add actors to fill a scene.
+- One sprite per actor the brief describes (the AI helpers, the user, a mascot). Two to four works best. Don't add actors to fill a scene.
 - Give each a silhouette you can tell apart at 24px: a hat shape, a held prop (binoculars, clipboard, wands), a body shape. A non-person actor (a parser, a reader) can be an object, like a diamond or a scroll, so it reads as a tool.
 - Outline every sprite with the same near-black (`#16171a`), then two or three fills. Keep one accent pixel group for animation.
 - Pair each sprite with its theme colour and a geometric glyph (square, circle, hexagon via `clip-path`) for places too small for the sprite.

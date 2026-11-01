@@ -1,0 +1,14 @@
+# Keeps the dev tools in tools/ and the GitHub Actions versions current. The skill itself has no dependencies.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /tools
+    schedule:
+      interval: monthly
+    groups:
+      dev-tools:
+        patterns: ["*"]
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly

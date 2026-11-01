@@ -21,10 +21,10 @@ Claude was given this brief with the cutify-ui skill installed:
 - A bedroom window at night, with the Night Owl on the sill and Mochi curled on a cushion
 - Mochi blinks when you slept 7 hours or more, goes drowsy between 6 and 7, and falls asleep under 6, changing as you type your times
 - A week chart of hours slept with a tooltip per night, and stage numbers drawn as moons that wax from stage 1 to 4
-- The Night Owl reads the six sample notes one by one and suggests one change; you try it in a native dialog or skip it
+- The Night Owl reads the six sample notes one by one and suggests one change, which you can try in a native dialog or skip
 
 ## Run it
 
-Open `index.html` in a browser. It's one self-contained file; only the fonts load from Google Fonts.
+Open `index.html` in a browser. It's one self-contained file, and only the fonts load from Google Fonts.
 
 Checked in Chromium at 1280px, 768px and 375px wide: no overlaps, no sideways scroll, no console errors.

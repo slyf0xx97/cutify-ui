@@ -177,6 +177,8 @@ button { font: inherit; cursor: pointer; }
 .step.done:not(.on) .n { box-shadow: 0 0 0 2px var(--jade); }
 @media (prefers-reduced-motion: no-preference) { .step .n { animation: sway 3s steps(4, end) infinite alternate; transform-origin: 50% -1.4rem; } }
 .step h2 { margin: 0; font-size: clamp(2.1rem, 4.4vw, 2.9rem); }
+/* phones: the heading keeps the line beside its lantern, the info button and chip drop below */
+@media (max-width: 560px) { .step { flex-wrap: wrap; row-gap: .9rem; } .step h2 { max-width: calc(100% - 3.7rem); text-wrap: balance; } }
 .step .state { margin-left: auto; font: 400 .7rem var(--label); text-transform: uppercase; color: var(--ink-muted); }
 .explain { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; margin: 0 0 1.1rem; }
 .explain > span { padding: .3rem .6rem; background: #ffffff10; font-size: .9rem; display: inline-flex; gap: .4rem; align-items: center; }
@@ -202,6 +204,7 @@ button { font: inherit; cursor: pointer; }
 .times input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
 .times label:has(input:checked) { background: var(--lantern); color: var(--lantern-ink); box-shadow: var(--glow); }
 .times label:has(input:checked)::before { content: "✓"; }
+.times + .btn { margin-top: .6rem; }
 .times label:has(input:focus-visible) { outline: 3px solid var(--lantern); outline-offset: 3px; }
 .hint { font-size: .9rem; color: var(--ink-muted); margin: .5rem 0 0; }
 
@@ -275,13 +278,19 @@ button { font: inherit; cursor: pointer; }
 @media (max-width: 560px) { .arch { grid-template-columns: 1fr; } .arch .down.half { display: none; } }
 
 /* ---- footer ---- */
-footer { margin: 4rem auto 1.5rem; }
+footer.wrap { margin: 4rem auto 1.5rem; }   /* footer.wrap: .wrap's margin would otherwise zero the gap above */
 .foot-grid { display: grid; gap: 1.4rem; }
 @media (min-width: 700px) { .foot-grid { grid-template-columns: 1fr 1fr; } }
 @media (min-width: 1100px) { .foot-grid { grid-template-columns: 1.4fr 1fr 1fr 1fr; } }
 .foot-grid h5 { margin: 0 0 .4rem; font: 400 .72rem var(--label); text-transform: uppercase; color: var(--ink-muted); }
 .foot-grid p, .foot-grid ul { margin: 0; font-size: .95rem; } .foot-grid ul { padding: 0; list-style: none; display: grid; gap: .2rem; }
-.copy { margin-top: 1.1rem; padding-top: .8rem; border-top: 2px dashed #ffffff26; font: 400 .82rem var(--mono); color: var(--ink-muted); }
+.copy { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .8rem 1.5rem; margin-top: 1.1rem; padding-top: 1rem; border-top: 2px dashed #ffffff26; font: 400 .82rem var(--mono); color: var(--ink-muted); }
+.donate { display: inline-flex; align-items: center; gap: .4rem; min-height: 2.75rem; padding: .2rem .9rem; border: 2px solid var(--ink); border-radius: 0;
+  background: rgb(255 159 67 / .14); color: var(--ink); font: 400 .78rem var(--label); text-transform: uppercase; text-decoration: none; white-space: nowrap; }
+.donate svg { flex: none; color: var(--lantern); }
+.donate:hover { background: rgb(255 159 67 / .22); box-shadow: 0 0 18px rgb(255 159 67 / .35); }
+@media (prefers-reduced-motion: no-preference) { .donate { transition: transform .12s steps(2, end), background-color .12s; } .donate:hover { transform: translateY(-2px); } }
+.donate:focus-visible { outline: 3px solid var(--lantern); outline-offset: 3px; }
 
 /* ---- dialog ---- */
 dialog.pop { width: min(520px, calc(100vw - 1.5rem)); max-height: 94dvh; padding: 0; border: 0; color: var(--ink); background: var(--surface); box-shadow: var(--glow), 0 20px 60px #000a; overflow: auto; }
@@ -457,7 +466,7 @@ dialog.pop::backdrop { background: rgb(8 7 20 / .72); }
       <div><h5>Built with</h5><ul><li>Plain HTML, CSS and SVG</li><li>cutify-ui, Lantern Night theme</li><li>Jersey 10, Silkscreen, Lexend, Sometype Mono</li></ul></div>
       <div><h5>Project</h5><ul><li>Example page for cutify-ui</li><li>Not a real product</li></ul></div>
     </div>
-    <div class="copy">© 2026 cutify-ui example. Every stall, price and crowd on this page is a sample.</div>
+    <div class="copy"><span>© 2026 cutify-ui example. Every stall, price and crowd on this page is a sample.</span><a class="donate" href="https://donate.stripe.com/3cIcMX8ee5oufGWd5n18c00" target="_blank" rel="noopener noreferrer"><svg aria-hidden="true" focusable="false" viewBox="0 0 16 16" width="16" height="16" shape-rendering="crispEdges"><path fill="currentColor" d="M3 3h3v1h1v1h2V4h1V3h3v1h1v4h-1v1h-1v1h-1v1h-1v1H9v1H7v-1H6v-1H5V9H4V8H3V7H2V4h1z"/></svg>Support cutify-ui<span class="sr-only"> (opens Stripe in a new tab)</span></a></div>
   </div>
 </footer>
 
@@ -665,7 +674,7 @@ drawRoute('h', HERO_ROUTE);
 (async function heroLoop() {
   if (reduced) return walk('h', HERO_ROUTE, () => true);
   for (;;) {
-    while (!heroVisible) await pause(400);
+    while (!heroVisible || document.hidden) await pause(400);
     await walk('h', HERO_ROUTE, () => true);
     await pause(900);
   }
@@ -763,7 +772,7 @@ $('confirmBtn').addEventListener('click', () => {
 /* ---------- how it works: the lit lantern number steps down the route ---------- */
 const howItems = [...$('howRoute').children]; let howAt = 0, howTimer = null;
 function howShow(k) { howAt = k; howItems.forEach((li, j) => li.classList.toggle('on', j === k)); }
-function howPlay() { clearInterval(howTimer); howTimer = setInterval(() => howShow((howAt + 1) % howItems.length), 2000); $('howPause').textContent = '❚❚ Pause'; }
+function howPlay() { clearInterval(howTimer); howTimer = setInterval(() => document.hidden || howShow((howAt + 1) % howItems.length), 2000); $('howPause').textContent = '❚❚ Pause'; }
 $('howPause').addEventListener('click', () => { if (howTimer) { clearInterval(howTimer); howTimer = null; $('howPause').textContent = '▶ Play'; } else howPlay(); });
 $('howReset').addEventListener('click', () => { howShow(0); if (howTimer) howPlay(); });
 howShow(0);

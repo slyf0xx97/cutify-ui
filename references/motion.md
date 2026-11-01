@@ -14,11 +14,14 @@ Motion in cutify-ui shows what the product does. Each animation should answer "w
 - Off-screen pause and reduced motion
 - Micro-interactions
 
----
-
 ## Rules
 
-- Animate only `transform` and `opacity` (and `offset-distance`, `stroke-dashoffset`, `background-position` on small elements). Never animate layout.
+- Animate only `transform` and `opacity` (plus `offset-distance` and `stroke-dashoffset` on small elements). The browser moves these on the graphics card without repainting. Never animate layout (`top`, `left`, `width`, `height`, `margin`).
+- In a loop, never animate `box-shadow`, `filter` or `background-position`, because each frame repaints. Put the glow, ring or pattern on a pseudo-element and move that layer with `transform` and `opacity` instead.
+- Don't put `backdrop-filter` on anything that moves, and don't stack blurred panels inside each other.
+- Add `will-change: transform` only to elements that animate all the time, such as a sprite on a route. Leave it off everything else, because each one costs memory.
+- In JavaScript, drive motion with `requestAnimationFrame`, stop the loop when `IntersectionObserver` says the scene is off screen, and stop it when `document.hidden` is true.
+- On long pages, give sections below the fold `content-visibility: auto` with a `contain-intrinsic-size`, so the browser skips drawing them until they're near.
 - Pixel things use `steps(n)` timing so they move in frames. Vector scenery and UI use eases: entrances `cubic-bezier(.2, .8, .2, 1)`, springy sprites `cubic-bezier(.34, 1.56, .64, 1)`, travel `cubic-bezier(.5, 0, .3, 1)`.
 - Gate animations behind `@media (prefers-reduced-motion: no-preference)` and keep a global kill switch:
 ```css
@@ -47,7 +50,7 @@ Motion in cutify-ui shows what the product does. Each animation should answer "w
 | `shake` | Rejected shield / gate | `.5s` once |
 | `stamp` | Verdict stamp `scale(2.2) → 1` | `.22s cubic-bezier(.5, 1.8, .6, 1)` |
 | `drift` | Clouds: one tiled layer `translate3d(-1100px, 0, 0)` | `160s linear infinite` |
-| `lights` | Runway lights: dotted gradients scroll `background-position` | `.6 to 1.1s linear infinite` |
+| `lights` | Runway lights: a dotted-gradient layer one dot-step wider than the runway slides with `translateX` | `.6 to 1.1s linear infinite` |
 
 Button feel (all themes): hover `translateY(-2px)` with a bigger hard shadow, active `translateY(1px)` with a smaller one, `.14s ease`. Put it on `:where(button, .btn)` so specificity stays zero.
 
@@ -72,7 +75,7 @@ Any product can use this: a parcel along a delivery route, a document along a pi
 
 ## Engine 1: scripted story with cancellable sleeps
 
-For a "Play sample" that walks through stages in order. Each run bumps an id; every `await` checks it, so pressing Play again cancels the old run cleanly.
+For a "Play sample" that walks through stages in order. Each run bumps an id, and every `await` checks it, so pressing Play again cancels the old run cleanly.
 ```js
 let timers = [], runId = 0;
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -131,11 +134,11 @@ const y = y0 + (y1 - y0) * Math.pow(t, 1.3) + amp * Math.sin(t * Math.PI * 2 * w
 cur[k] = c + (target - c) * (1 - Math.pow(1 - SMOOTH * (1 - LAG * k), dt));   // SMOOTH .12, LAG .1
 el.style.transform = `translate3d(${x}px, ${yy - lift}px, 0) rotate(${tilt}deg)`;
 ```
-Scroll handlers only queue a frame; read layout on resize, never on scroll. Draw the walked part with `stroke-dashoffset`. Hide the strip over the hero.
+Scroll handlers only queue a frame. Read layout on resize, never on scroll. Draw the walked part with `stroke-dashoffset`. Hide the strip over the hero.
 
 ## Engine 5: route with stops
 
-For a vertical "How it works" route: a path runs down beside numbered cards and a token moves with `path.getPointAtLength(d)` at about 160px/s, stops 1.5s at each card (card gets `.on`), marks passed cards `.done`, then loops. Offer Pause and Reset buttons. Re-lay the path with a `ResizeObserver`. For a map built in SVG, a single SMIL clock (`<animateMotion calcMode="spline">`) also works; pause it with `svg.pauseAnimations()` off screen and don't mount it under reduced motion.
+For a vertical "How it works" route: a path runs down beside numbered cards and a token moves with `path.getPointAtLength(d)` at about 160px/s, stops 1.5s at each card (card gets `.on`), marks passed cards `.done`, then loops. Offer Pause and Reset buttons. Re-lay the path with a `ResizeObserver`. For a map built in SVG, a single SMIL clock (`<animateMotion calcMode="spline">`) also works. Pause it with `svg.pauseAnimations()` off screen and don't mount it under reduced motion.
 
 ## Off-screen pause and reduced motion
 
@@ -147,24 +150,24 @@ document.querySelectorAll('.hero, .stage, #how').forEach(el => io.observe(el));
 ```css
 .is-off, .is-off *, .is-off *::before, .is-off *::after { animation-play-state: paused !important; }
 ```
-Stop rAF loops too when their section is off screen. Under reduced motion, show the final state of every animation, keep Play/Reset controls but disable them with a `title` explaining why.
+Stop rAF loops too when their section is off screen. Under reduced motion, show the final state of every animation. Keep the Play and Reset controls, but disable them with a `title` that explains why.
 
 ## Micro-interactions
 
-Small reactions to what the visitor does. Each one sits inside `@media (prefers-reduced-motion: no-preference)`; the fallback is what reduced-motion users get.
+Small reactions to what the visitor does. Each one sits inside `@media (prefers-reduced-motion: no-preference)`, and reduced-motion users get the fallback.
 
 | Name | Sketch | Use it for | Fallback |
 |---|---|---|---|
 | Squash press | `:active { animation: squash .28s cubic-bezier(.3,1.6,.5,1) }` with `30% { scale(1.08, .9) } 60% { scale(.96, 1.04) }` | soft, round buttons (Picnic) | instant colour change |
-| Ledge press | `box-shadow: 0 5px 0 <ledge>`; `:active { translateY(5px); ledge gone }` | toy and game buttons (Toy Box) | keep it; it's instant |
+| Ledge press | `box-shadow: 0 5px 0 <ledge>` and `:active { translateY(5px); ledge gone }` | toy and game buttons (Toy Box) | keep it, since it's instant |
 | Sticker wobble | hover `rotate(-4deg)`, then `3deg`, then `-1deg` over .5s | collectable cards, badges | a static `rotate(-2deg)` and a stronger outline |
 | Peel corner | a `::after` corner fold grows from 0 to 28px on hover or focus | "more detail here" hints | a static 16px fold |
 | Typing dots | three dots hop in turn, `steps(2)` for pixel themes | an agent thinking, a live wait | a static "…" plus `aria-live` text ("The Chef is thinking") |
-| Bouncy toggle | knob `transition: transform .35s cubic-bezier(.34,1.56,.64,1)` | on/off switches | no transition; state also shown by ✓/✕ |
+| Bouncy toggle | knob `transition: transform .35s cubic-bezier(.34,1.56,.64,1)` | on/off switches | no transition, with the state also shown by ✓/✕ |
 | Confetti burst | 24 small `position: fixed` pieces animated with the Web Animations API, removed on finish | approve, complete, success | a one-off glow ring and an "Approved" badge |
 | Stage pop-in | `popin .45s` with `animation-delay: calc(var(--i) * 80ms)` | stages arriving in reading order | a 150ms fade or nothing |
 | Self-drawing line | `stroke-dasharray` and `stroke-dashoffset` set from `getTotalLength()`, animated to 0 | connecting agent, rule and result | the line already drawn, end node highlighted |
-| Idle pet blink | the mascot's eye `scaleY(.1)` for 2% of a 5s loop | a persistent mascot or pet | no blink; expression changes only on real events |
+| Idle pet blink | the mascot's eye `scaleY(.1)` for 2% of a 5s loop | a persistent mascot or pet | no blink, and the expression changes only on real events |
 
 Confetti without a library:
 ```js

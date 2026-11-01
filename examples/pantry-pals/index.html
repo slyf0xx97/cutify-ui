@@ -204,9 +204,9 @@ dialog.pop::backdrop { background: rgb(14 43 36 / 62%); }
   background: rgb(217 240 251 / 82%); border: 1.5px solid rgb(255 255 255 / 70%); border-radius: var(--radius); box-shadow: var(--glass-shadow), var(--glass-ring); }
 .stage-plate { margin: .75rem; padding: .85rem 1rem; background: rgb(255 255 255 / 76%); border-radius: 14px; backdrop-filter: blur(10px); }
 .stage-top { display: flex; align-items: center; gap: .75rem; flex-wrap: wrap; }
-.stage-title { margin: 0; font: 800 clamp(1.3rem, 2.3vw, 1.7rem)/1.2 var(--body); }
+.stage-title { margin: 0; font: 800 clamp(1.3rem, 2.3vw, 1.7rem)/1.2 var(--body); text-wrap: balance; }
 .stage-aside { margin-left: auto; display: flex; align-items: center; gap: .5rem; }
-.stage-line { margin: .4rem 0 0; font-weight: 700; font-size: 1.1rem; }
+.stage-line { margin: .4rem 0 0; font-weight: 700; font-size: 1.1rem; text-wrap: balance; }
 .explain { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem; margin: 0 .75rem .25rem; padding: 0 .25rem; }
 .explain span { display: inline-flex; align-items: center; gap: .35rem; padding: .25rem .6rem; background: rgb(255 255 255 / 70%); border-radius: 999px; font-size: .92rem; font-weight: 700; }
 .explain i { font-style: normal; font-weight: 900; color: var(--orange-dark); }
@@ -214,20 +214,21 @@ dialog.pop::backdrop { background: rgb(14 43 36 / 62%); }
 .note-gap { margin: 0 0 .7rem; padding: .45rem .8rem; border-radius: 12px; background: var(--coral-soft); color: #7a1f10; font-weight: 700; }
 .prov { margin: .75rem 0 0; font-size: .92rem; color: var(--ink-soft); }
 .feed { position: relative; height: 3rem; display: flex; justify-content: center; }
-.feed::before { content: ""; width: 4px; height: 100%; background-image: linear-gradient(var(--orange-dark) 50%, transparent 50%); background-size: 4px 12px; }
+/* the dashes slide as one layer; the clip moves the other way so the visible line stays put (the arrow pokes out, so .feed can't clip) */
+.feed::before { content: ""; position: absolute; left: 50%; top: -12px; bottom: 0; width: 4px; margin-left: -2px; background-image: linear-gradient(var(--orange-dark) 50%, transparent 50%); background-size: 4px 12px; clip-path: inset(12px 0 0); }
 .feed::after { content: ""; position: absolute; bottom: -2px; left: 50%; transform: translateX(-50%); border: 7px solid transparent; border-top: 8px solid var(--orange-dark); border-bottom: 0; }
 @media (prefers-reduced-motion: no-preference) { .feed::before { animation: flowd .7s linear infinite; } }
-@keyframes flowd { to { background-position: 0 12px; } }
+@keyframes flowd { to { transform: translateY(12px); clip-path: inset(0 0 12px); } }
 
 /* stage 1: fridge */
 .fridge-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .5rem; margin-bottom: .75rem; }
-.fridge-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr)); gap: .6rem; margin: 0; padding: 0; }
+.fridge-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(10.5rem, calc(50% - .3rem)), 1fr)); gap: .6rem; margin: 0; padding: 0; }
 .fridge-grid li { list-style: none; }
 .food { display: grid; grid-template-columns: 2.6rem 1fr; align-items: center; gap: .6rem; width: 100%; padding: .5rem .6rem; text-align: left;
   border: 2px dashed rgb(31 36 48 / 35%); border-radius: 12px; background: rgb(255 255 255 / 55%); }
 .food .ico { display: grid; place-items: center; width: 2.6rem; height: 2.6rem; border-radius: 10px; background: #fff; font-size: 1.5rem; filter: grayscale(1); opacity: .6; }
 .food b { display: block; font-size: 1rem; }
-.food small { display: block; font-size: .82rem; color: var(--ink-soft); }
+.food small { display: block; font-size: .82rem; color: var(--ink-soft); text-wrap: balance; }
 .food[aria-pressed="true"] { border: 2px solid var(--ink); background: #fff; box-shadow: 0 3px 0 rgb(16 70 100 / 30%); }
 .food[aria-pressed="true"] .ico { background: var(--lime); filter: none; opacity: 1; }
 .food[aria-pressed="true"] small { color: var(--ok); font-weight: 700; }
@@ -305,7 +306,9 @@ dialog.pop::backdrop { background: rgb(14 43 36 / 62%); }
 .route { position: relative; display: grid; grid-auto-rows: 1fr; gap: .7rem; margin: 0; padding: 0 0 0 3rem; }
 .route::before { content: ""; position: absolute; left: 1.15rem; top: 1.5rem; bottom: 1.5rem; width: 4px; background-image: linear-gradient(var(--teal-dark) 50%, transparent 50%); background-size: 4px 12px; }
 .route li { list-style: none; position: relative; display: grid; grid-template-columns: auto 1fr; gap: .2rem .7rem; align-content: center; padding: .75rem .9rem;
-  background: rgb(255 255 255 / 85%); border: 2px solid transparent; border-radius: 14px; box-shadow: 0 0 0 1px rgb(31 36 48 / 12%); }
+  background: rgb(255 255 255 / 85%); border: 2px solid transparent; border-radius: 14px; box-shadow: 0 0 0 1px rgb(31 36 48 / 12%); isolation: isolate; }
+/* the lit card sits on its own layer and only fades, so the walk-through never repaints */
+.route li::before { content: ""; position: absolute; z-index: -1; inset: -2px; border: 2px solid var(--ink); border-radius: 14px; background: #fff; box-shadow: 0 3px 0 rgb(16 70 100 / 30%); opacity: 0; }
 .route li .num { grid-row: span 2; align-self: center; }
 .route li b { display: flex; align-items: center; gap: .45rem; flex-wrap: wrap; }
 .route li span { font-size: .95rem; }
@@ -315,10 +318,10 @@ dialog.pop::backdrop { background: rgb(14 43 36 / 62%); }
 .runner svg { display: block; width: 1.6rem; height: 1.6rem; margin-top: -.8rem; }
 @media (prefers-reduced-motion: no-preference) {
   .runner i { animation: run 10s infinite; }
-  .route li { animation: lit 10s infinite; } .route li:nth-child(2) { animation-delay: -7.5s; } .route li:nth-child(3) { animation-delay: -5s; } .route li:nth-child(4) { animation-delay: -2.5s; } }
+  .route li::before { animation: lit 10s infinite; } .route li:nth-child(2)::before { animation-delay: -7.5s; } .route li:nth-child(3)::before { animation-delay: -5s; } .route li:nth-child(4)::before { animation-delay: -2.5s; } }
 @keyframes run { 0%, 15% { transform: translateY(12.5%); animation-timing-function: steps(8); } 25%, 40% { transform: translateY(37.5%); animation-timing-function: steps(8); }
   50%, 65% { transform: translateY(62.5%); animation-timing-function: steps(8); } 75%, 92% { transform: translateY(87.5%); opacity: 1; } 96% { transform: translateY(87.5%); opacity: 0; } 97% { transform: translateY(12.5%); opacity: 0; } 100% { transform: translateY(12.5%); opacity: 1; } }
-@keyframes lit { 0%, 16% { border-color: var(--ink); background: #fff; box-shadow: 0 3px 0 rgb(16 70 100 / 30%); } 20%, 100% { border-color: transparent; } }
+@keyframes lit { 0%, 16% { opacity: 1; } 20%, 100% { opacity: 0; } }
 .diagram { padding: 1.1rem; }
 .diagram h3 { margin: 0 0 .8rem; font-size: 1.15rem; }
 .flow { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; grid-template-areas: "a x1 b x2 c" ". . . . d" "g x4 f x3 e"; align-items: center; gap: .45rem; margin: 0; padding: 0; }
@@ -343,9 +346,18 @@ dialog.pop::backdrop { background: rgb(14 43 36 / 62%); }
 .footer h5 { margin: 0 0 .4rem; font: 700 .78rem var(--body); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-soft); }
 .footer p, .footer ul { margin: 0; padding: 0; font-size: .95rem; }
 .footer li { list-style: none; }
-.footer .copy { grid-column: 1 / -1; padding-top: .8rem; border-top: 1.5px dashed rgb(31 36 48 / 18%); font-size: .88rem; color: var(--ink-soft); }
+.footer .copy { grid-column: 1 / -1; padding-top: .8rem; border-top: 1.5px dashed rgb(31 36 48 / 18%); font-size: .88rem; color: var(--ink-soft); display: flex; align-items: center; justify-content: space-between; gap: .75rem 1.5rem; flex-wrap: wrap; }
+.footer .copy p { margin: 0; }
+.donate { display: inline-flex; align-items: center; gap: .4rem; min-height: 2.75rem; padding: .2rem .9rem; border: 2px solid var(--ink); border-radius: 999px; background: var(--yellow-soft); color: var(--ink); font: 700 .92rem var(--body); text-decoration: none; white-space: nowrap; transition: transform .15s ease, box-shadow .15s ease; }
+.donate svg { flex: none; color: var(--coral); }
+.donate:hover { box-shadow: 0 3px 0 rgb(16 70 100 / 30%); }
+.donate:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+@media (prefers-reduced-motion: no-preference) { .donate:hover { transform: translateY(-1px); } }
 @media (max-width: 1100px) { .footer { grid-template-columns: 1fr 1fr; } }
 @media (max-width: 560px) { .footer { grid-template-columns: 1fr; } }
+/* pixel icons in place of emoji, sized like the emoji they replaced */
+.sprite.pxi { display: inline-block; width: 1.15em; height: 1.15em; vertical-align: -.2em; }
+.node .ico { display: grid; place-items: center; }
 </style>
 </head>
 <body>
@@ -400,9 +412,9 @@ dialog.pop::backdrop { background: rgb(14 43 36 / 62%); }
       <div class="actor" style="--x:17cqw;--y:38cqw;--w:24cqw"><div class="hopper h1"><svg data-sprite="chef" data-size="96" class="bob"></svg></div></div>
       <div class="actor" style="--x:83cqw;--y:38cqw;--w:24cqw"><div class="hopper h2"><svg data-sprite="shopper" data-size="96" class="bob d1"></svg></div></div>
       <div class="actor" style="--x:50cqw;--y:42cqw;--w:20cqw"><div class="hopper h3"><svg data-sprite="you" data-size="80" class="bob d2"></svg></div></div>
-      <span class="fly f1" aria-hidden="true">🍅</span>
-      <span class="fly f2" aria-hidden="true">📋</span>
-      <span class="fly f3" aria-hidden="true">🧾</span>
+      <span class="fly f1" aria-hidden="true"><svg data-icon="tomato"></svg></span>
+      <span class="fly f2" aria-hidden="true"><svg data-icon="plan"></svg></span>
+      <span class="fly f3" aria-hidden="true"><svg data-icon="receipt"></svg></span>
       <span class="alab" style="--x:17cqw;--y:68.5cqw" aria-hidden="true"><span class="glyph chef"></span>Chef <span class="kind ai">AI</span></span>
       <span class="alab" style="--x:50cqw;--y:68.5cqw" aria-hidden="true"><span class="glyph you"></span><span class="kind you">You</span> approve</span>
       <span class="alab" style="--x:83cqw;--y:68.5cqw" aria-hidden="true"><span class="glyph shopper"></span>Shopper <span class="kind ai">AI</span></span>
@@ -421,7 +433,7 @@ dialog.pop::backdrop { background: rgb(14 43 36 / 62%); }
       <div class="stage-top"><span class="stage-tab">Stage 1</span><h2 id="s1-title" class="stage-title">Fill your fridge</h2>
         <div class="stage-aside"><span class="kind you">You</span><span data-tip="filling your fridge" data-title="Why start with the fridge"
           data-lines="Each tile is one thing in your fridge.|Tap to add or remove it.|The Chef ranks recipes by how much they use from here.|Why: cooking what you have means less waste and a shorter list."></span></div></div>
-      <p class="stage-line"><span aria-hidden="true">🧊 </span><span>Tap what you have. The Chef plans around it.</span></p>
+      <p class="stage-line"><span aria-hidden="true"><svg data-icon="fridge"></svg> </span><span>Tap what you have. The Chef plans around it.</span></p>
     </div></div>
     <p class="explain"><span>You tick what’s inside</span><i aria-hidden="true">→</i><span>The Chef reads the list</span><i aria-hidden="true">→</i><span>Fewer things to buy</span></p>
     <div class="stage-body">
@@ -437,7 +449,7 @@ dialog.pop::backdrop { background: rgb(14 43 36 / 62%); }
       <div class="stage-top"><span class="stage-tab">Stage 2</span><h2 id="s2-title" class="stage-title">Let the Chef plan your week</h2>
         <div class="stage-aside"><span class="kind ai">AI</span><span data-tip="the Chef" data-title="What the Chef does" data-tone="var(--chef-bar)"
           data-lines="Reads what’s in your fridge.|Picks seven dinners that use the most of it.|Shows how much of each dinner you already have.|Swap any day you don’t fancy.|Why an AI helper: it can weigh what you have against many recipes at once."></span></div></div>
-      <p class="stage-line"><span aria-hidden="true">🍳 </span><span>Seven dinners, picked to use up your fridge first.</span></p>
+      <p class="stage-line"><span aria-hidden="true"><svg data-icon="pan"></svg> </span><span>Seven dinners, picked to use up your fridge first.</span></p>
     </div></div>
     <p class="explain"><span><span class="glyph chef"></span>Chef reads your fridge</span><i aria-hidden="true">→</i><span>Ranks recipes</span><i aria-hidden="true">→</i><span>Fills Mon to Sun</span></p>
     <div class="stage-body agent-row">
@@ -463,7 +475,7 @@ dialog.pop::backdrop { background: rgb(14 43 36 / 62%); }
       <div class="stage-top"><span class="stage-tab">Stage 3</span><h2 id="s3-title" class="stage-title">Let the Shopper build your list</h2>
         <div class="stage-aside"><span class="kind ai">AI</span><span data-tip="the Shopper" data-title="What the Shopper does" data-tone="var(--shopper-bar)"
           data-lines="Reads the Chef’s plan and your fridge.|Lists every missing ingredient once.|Says how many dinners need each one.|Updates the list when you swap a day.|Why: one list means one trip to the shop."></span></div></div>
-      <p class="stage-line"><span aria-hidden="true">🧺 </span><span>Only what the plan needs and your fridge doesn’t have.</span></p>
+      <p class="stage-line"><span aria-hidden="true"><svg data-icon="basket"></svg> </span><span>Only what the plan needs and your fridge doesn’t have.</span></p>
     </div></div>
     <p class="explain"><span><span class="glyph shopper"></span>Shopper reads the plan</span><i aria-hidden="true">→</i><span>Checks your fridge</span><i aria-hidden="true">→</i><span>Writes one list</span></p>
     <div class="stage-body agent-row">
@@ -484,7 +496,7 @@ dialog.pop::backdrop { background: rgb(14 43 36 / 62%); }
       <div class="stage-top"><span class="stage-tab">Stage 4</span><h2 id="s4-title" class="stage-title">Approve your week</h2>
         <div class="stage-aside"><span class="kind you">You</span><span data-tip="approving your week" data-title="Why you approve" data-tone="var(--you-bar)"
           data-lines="The helpers suggest. You decide.|Review the seven dinners and the list together.|Change anything first: swap a day or edit your fridge.|Any change after approving asks you again."></span></div></div>
-      <p class="stage-line"><span aria-hidden="true">✅ </span><span>Nothing’s final until you say so.</span></p>
+      <p class="stage-line"><span aria-hidden="true"><svg data-icon="check"></svg> </span><span>Nothing’s final until you say so.</span></p>
     </div></div>
     <div class="stage-body">
       <div class="card agent you decide">
@@ -512,15 +524,15 @@ dialog.pop::backdrop { background: rgb(14 43 36 / 62%); }
     <div class="glass diagram">
       <h3>Who sees what</h3>
       <ol class="flow">
-        <li><div class="node"><span class="ico" aria-hidden="true">🧊</span>Your fridge<span class="kind you">You</span></div></li>
+        <li><div class="node"><span class="ico" aria-hidden="true"><svg data-icon="fridge"></svg></span>Your fridge<span class="kind you">You</span></div></li>
         <li class="arrow" aria-hidden="true">→</li>
         <li><div class="node"><svg data-sprite="chef" data-size="40"></svg>Chef<span class="kind ai">AI</span></div></li>
         <li class="arrow" aria-hidden="true">→</li>
-        <li><div class="node"><span class="ico" aria-hidden="true">📋</span>Week plan</div></li>
+        <li><div class="node"><span class="ico" aria-hidden="true"><svg data-icon="plan"></svg></span>Week plan</div></li>
         <li class="arrow down" aria-hidden="true">→</li>
         <li><div class="node"><svg data-sprite="shopper" data-size="40"></svg>Shopper<span class="kind ai">AI</span></div></li>
         <li class="arrow back" aria-hidden="true">→</li>
-        <li><div class="node"><span class="ico" aria-hidden="true">🧾</span>Grocery list</div></li>
+        <li><div class="node"><span class="ico" aria-hidden="true"><svg data-icon="receipt"></svg></span>Grocery list</div></li>
         <li class="arrow back" aria-hidden="true">→</li>
         <li><div class="node"><svg data-sprite="you" data-size="40"></svg>Your approval<span class="kind you">You</span></div></li>
       </ol>
@@ -535,7 +547,7 @@ dialog.pop::backdrop { background: rgb(14 43 36 / 62%); }
   <div><h5>Data</h5><ul><li>Sample fridge, made-up</li><li>10 made-up recipes</li></ul></div>
   <div><h5>Built with</h5><ul><li>Next.js and React 19</li><li>Plain CSS, no Tailwind</li><li>cutify-ui Glass theme</li></ul></div>
   <div><h5>Project</h5><ul><li>An example for the cutify-ui skill</li></ul></div>
-  <p class="copy">Sample page. The helpers here follow a script, not a live AI model.</p>
+  <div class="copy"><p>Sample page. The helpers here follow a script, not a live AI model.</p><a class="donate" href="https://donate.stripe.com/3cIcMX8ee5oufGWd5n18c00" target="_blank" rel="noopener noreferrer"><svg aria-hidden="true" focusable="false" viewBox="0 0 16 16" width="16" height="16" shape-rendering="crispEdges"><path fill="currentColor" d="M3 3h3v1h1v1h2V4h1V3h3v1h1v4h-1v1h-1v1h-1v1h-1v1H9v1H7v-1H6v-1H5V9H4V8H3V7H2V4h1z"/></svg>Support cutify-ui<span class="sr-only"> (opens Stripe in a new tab)</span></a></div>
 </footer>
 
 <dialog class="pop" id="review" aria-labelledby="reviewTitle" style="--pop-hue:var(--you-soft);--pop-bar:var(--you-bar)">
@@ -559,20 +571,20 @@ dialog.pop::backdrop { background: rgb(14 43 36 / 62%); }
 
 <script>
 // Same data and logic as components/data.ts and components/Planner.tsx, in plain JS.
-const FOODS = [["eggs","Eggs","🥚",1],["spinach","Spinach","🥬",1],["cheese","Cheese","🧀",1],["onion","Onion","🧅",1],["tomatoes","Tomatoes","🍅",1],["garlic","Garlic","🧄",1],
-  ["rice","Rice","🍚",1],["chicken","Chicken","🍗",1],["peppers","Peppers","🫑",0],["milk","Milk","🥛",0],["pasta","Pasta","🍝",0],["yogurt","Yogurt","🥣",0]]
+const FOODS = [["eggs","Eggs","egg",1],["spinach","Spinach","greens",1],["cheese","Cheese","cheese",1],["onion","Onion","onion",1],["tomatoes","Tomatoes","tomato",1],["garlic","Garlic","garlic",1],
+  ["rice","Rice","rice",1],["chicken","Chicken","chicken",1],["peppers","Peppers","pepper",0],["milk","Milk","milk",0],["pasta","Pasta","pasta",0],["yogurt","Yogurt","bowl",0]]
   .map(([id, name, icon, inFridge]) => ({ id, name, icon, inFridge: !!inFridge }));
 const RECIPES = [
-  ["omelette","Spinach omelette","🍳",["eggs","spinach","cheese","onion"]],
-  ["tomato-pasta","Tomato pasta","🍝",["pasta","tomatoes","garlic","onion","basil"]],
-  ["fried-rice","Chicken fried rice","🍚",["rice","chicken","eggs","peppers","onion","soy sauce"]],
-  ["stuffed-peppers","Stuffed peppers","🫑",["peppers","rice","cheese","tomatoes"]],
-  ["curry","Chicken curry","🍛",["chicken","onion","garlic","yogurt","rice","curry paste"]],
-  ["pasta-bake","Cheesy pasta bake","🧀",["pasta","cheese","milk","tomatoes"]],
-  ["shakshuka","Shakshuka","🍅",["eggs","tomatoes","peppers","onion","bread"]],
-  ["stir-fry","Veggie stir-fry","🥬",["peppers","spinach","garlic","noodles","soy sauce"]],
-  ["wraps","Chicken wraps","🌯",["chicken","tortillas","peppers","yogurt","lettuce"]],
-  ["soup","Tomato soup","🥣",["tomatoes","onion","garlic","milk","bread"]],
+  ["omelette","Spinach omelette","pan",["eggs","spinach","cheese","onion"]],
+  ["tomato-pasta","Tomato pasta","pasta",["pasta","tomatoes","garlic","onion","basil"]],
+  ["fried-rice","Chicken fried rice","rice",["rice","chicken","eggs","peppers","onion","soy sauce"]],
+  ["stuffed-peppers","Stuffed peppers","pepper",["peppers","rice","cheese","tomatoes"]],
+  ["curry","Chicken curry","curry",["chicken","onion","garlic","yogurt","rice","curry paste"]],
+  ["pasta-bake","Cheesy pasta bake","cheese",["pasta","cheese","milk","tomatoes"]],
+  ["shakshuka","Shakshuka","tomato",["eggs","tomatoes","peppers","onion","bread"]],
+  ["stir-fry","Veggie stir-fry","greens",["peppers","spinach","garlic","noodles","soy sauce"]],
+  ["wraps","Chicken wraps","wrap",["chicken","tortillas","peppers","yogurt","lettuce"]],
+  ["soup","Tomato soup","soup",["tomatoes","onion","garlic","milk","bread"]],
 ].map(([id, name, icon, needs]) => ({ id, name, icon, needs }));
 const DAYS = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
 const recipe = id => RECIPES.find(r => r.id === id);
@@ -622,6 +634,34 @@ document.querySelectorAll("svg[data-sprite]").forEach(el => {
   el.innerHTML = rects(c.grid, c.palette, c.animate);
 });
 
+// pixel icons (12 x 12) for food and stage marks; same grids as components/PxIcon.tsx
+const ICON_PAL = {"k": "#16171a", "r": "#e0533c", "g": "#3f9e57", "G": "#7cc65a", "w": "#ffffff", "c": "#f3e3c3", "y": "#f6d877", "Y": "#e0a92e", "o": "#c9772a", "b": "#d9a066", "B": "#a8693a", "n": "#3a4955", "s": "#d9f0fb", "S": "#8fd0f0", "t": "#1fa98a", "P": "#c08ad6", "p": "#7d4a96", "l": "#c8ced6"};
+const ICONS = {
+  tomato: ["............", ".....gg.....", "...gggggg...", "..kkkggkkk..", ".krrrrrrrrk.", "krrwrrrrrrrk", "krwrrrrrrrrk", "krrrrrrrrrrk", "krrrrrrrrrrk", ".krrrrrrrrk.", "..kkkkkkkk..", "............"],
+  plan: ["....kkkk....", ".kkkyyyykkk.", ".kbkkkkkkbk.", ".kbwwwwwwbk.", ".kbwkkkkwbk.", ".kbwwwwwwbk.", ".kbwkkkwwbk.", ".kbwwwwwwbk.", ".kbwkkkkwbk.", ".kbwwwwwwbk.", ".kbbbbbbbbk.", ".kkkkkkkkkk."],
+  receipt: [".kkkkkkkkkk.", ".kwwwwwwwwk.", ".kwkkkwwkwk.", ".kwwwwwwwwk.", ".kwkkkkwkwk.", ".kwwwwwwwwk.", ".kwkkwwwkwk.", ".kwwwwwwwwk.", ".kwwwwkkkwk.", ".kwwwwwwwwk.", ".kwwwwwwwwk.", ".kk.kk.kk.k."],
+  fridge: ["..kkkkkkkk..", "..kssssssk..", "..kssssnsk..", "..kssssnsk..", "..kssssssk..", "..kkkkkkkk..", "..kssssssk..", "..kssssnsk..", "..kssssnsk..", "..kssssssk..", "..kkkkkkkk..", "...k....k..."],
+  pan: ["............", "............", "..kkkkkk....", ".knnnnnnk...", "knnwwwwnnk..", "knwwyywwnk..", "knwwyywwnkkk", "knwwwwwwnnnk", "knnwwwwnnkkk", ".knnnnnnk...", "..kkkkkk....", "............"],
+  basket: ["............", "....kkkk....", "...k....k...", "..k......k..", "kkkkkkkkkkkk", "kbbbbbbbbbbk", "kbBbBbBbBbbk", ".kbbbbbbbbk.", ".kbBbBbBbBk.", ".kbbbbbbbbk.", "..kkkkkkkk..", "............"],
+  check: [".kkkkkkkkkk.", "kggggggggggk", "kggggggggwgk", "kgggggggwwgk", "kggggggwwggk", "kgwgggwwgggk", "kgwwgwwggggk", "kggwwwgggggk", "kgggwggggggk", "kggggggggggk", ".kkkkkkkkkk.", "............"],
+  egg: ["............", "....kkkk....", "...kwwwwk...", "..kwwwwwwk..", "..kwwwwwwk..", ".kwwwwwwwwk.", ".kwwwwwwwwk.", ".kwwwwwwwwk.", ".kcwwwwwwck.", "..kcwwwwck..", "...kkkkkk...", "............"],
+  greens: ["............", "...kk..kk...", "..kGGkkGGk..", ".kGGgGGgGGk.", ".kGgGGGGgGk.", "kGGGgGGgGGGk", "kGgGGgGGGgGk", ".kGGGggGGGk.", "..kGGggGGk..", "...kkwwkk...", "....kwwk....", ".....kk....."],
+  cheese: ["............", ".........kk.", "......kkkYk.", "...kkkyyyYk.", ".kkyyyyyyYk.", "kkkkkkkkkkk.", "kyyyyYyyyyk.", "kyYyyyyyYyk.", "kyyyyyyyyyk.", "kyyyYyyyyyk.", "kkkkkkkkkkk.", "............"],
+  onion: [".....gg.....", ".....gg.....", "....kPPk....", "...kPpPPk...", "..kPPpPPPk..", ".kPPPpPPPPk.", ".kPPpPPpPPk.", ".kPPpPPpPPk.", "..kPPpPpPk..", "...kPPPPk...", "....kkkk....", "....k..k...."],
+  garlic: [".....kk.....", ".....kk.....", "....kwwk....", "...kwwwwk...", "..kwwlwwwk..", ".kwwlwwlwwk.", ".kwwlwwlwwk.", ".kwwlwwlwwk.", "..kwwlwwwk..", "...kkkkkk...", "....k.k.k...", "............"],
+  rice: ["............", "............", "...kkkkkk...", "..kwwwwwwk..", ".kwwwwwwwwk.", "kkkkkkkkkkkk", "kttttttttttk", "kttttttttttk", ".kttttttttk.", "..kttttttk..", "...kkkkkk...", "............"],
+  chicken: ["............", ".....kkkk...", "....kbbbbk..", "...kbbBbbbk.", "...kbbbbbBk.", "...kbBbbbbk.", "....kbbbbk..", "...kwkkkk...", "..kwk.......", "kkwk........", "kwwk........", ".kk........."],
+  pepper: [".....kk.....", ".....gk.....", "..kkkgkkkk..", ".kGGGkGGGGk.", "kGwGGGGGGGGk", "kGwGGkGGGGGk", "kGGGGkGGGGGk", "kGGGGkGGGGgk", "kGGGGkGGGggk", ".kGGGkGGGgk.", "..kkk.kkkk..", "............"],
+  milk: ["....kkkk....", "...kSSSSk...", "..kkkkkkkk..", "..kwwwwwwk..", "..kwSSSSwk..", "..kwSwwSwk..", "..kwSSSSwk..", "..kwwwwwwk..", "..kwwwwwwk..", "..kwwwwwwk..", "..kkkkkkkk..", "............"],
+  pasta: ["............", "............", "....kkkk....", "..kkyyyykk..", ".kyyrrrryyk.", ".kyrryrrryk.", "kkyyyyyyyykk", "kwkkkkkkkkwk", ".kwwwwwwwwk.", "..kkkkkkkk..", "............", "............"],
+  bowl: [".........kk.", "........kk..", ".......kk...", ".kkkkkkkkkk.", "kwwwwwwkwwwk", "kkkkkkkkkkkk", "kSSSSSSSSSSk", "kSwSSSSSSSSk", ".kSSSSSSSSk.", "..kSSSSSSk..", "...kkkkkk...", "............"],
+  soup: [".........kk.", "........kk..", ".......kk...", ".kkkkkkkkkk.", "krrrrrrkrrrk", "kkkkkkkkkkkk", "kSSSSSSSSSSk", "kSwSSSSSSSSk", ".kSSSSSSSSk.", "..kSSSSSSk..", "...kkkkkk...", "............"],
+  curry: ["............", "............", "....kkkk....", "..kkwwookk..", ".kwwwoooook.", ".kwwwwoBook.", "kkwwwoooookk", "kwkkkkkkkkwk", ".kwwwwwwwwk.", "..kkkkkkkk..", "............", "............"],
+  wrap: ["............", "............", "..kkkkkkkk..", ".kbbbbBbbkk.", "kbbBbbbbbkgk", "kbbbbbBbbkrk", "kbBbbbbbbkck", ".kbbbBbbbkk.", "..kkkkkkkk..", "............", "............", "............"]
+};
+const icon = n => `<svg class="sprite pxi" viewBox="0 0 12 12" width="16" height="16" shape-rendering="crispEdges" aria-hidden="true" focusable="false">${rects(ICONS[n], ICON_PAL)}</svg>`;
+document.querySelectorAll("svg[data-icon]").forEach(el => { el.outerHTML = icon(el.dataset.icon); });
+
 // Tooltips: same markup and behaviour as WordTip.tsx (Popover API, hover + focus + tap to toggle, Escape, flips above)
 let tipN = 0;
 document.querySelectorAll("[data-tip]").forEach(host => {
@@ -641,10 +681,11 @@ document.querySelectorAll("[data-wrap]").forEach(wrap => {
     tip.style.top = (flip ? r.top - 10 - Math.min(b.height, roomAbove) : below) + "px";
     tip.dataset.side = flip ? "above" : "below";
   };
+  let raf = 0; const queue = () => { raf ||= requestAnimationFrame(() => { raf = 0; place(); }); };   // re-place at most once a frame
   const show = () => { if (open) return; open = true; tip.hidden = false; try { tip.showPopover(); } catch {} place();
-    addEventListener("scroll", place, true); addEventListener("resize", place); };
+    addEventListener("scroll", queue, { capture: true, passive: true }); addEventListener("resize", queue, { passive: true }); };
   const hide = () => { if (!open) return; open = pinned = false; try { tip.hidePopover(); } catch {} tip.hidden = true;
-    removeEventListener("scroll", place, true); removeEventListener("resize", place); };
+    removeEventListener("scroll", queue, true); removeEventListener("resize", queue); cancelAnimationFrame(raf); raf = 0; };
   wrap.addEventListener("pointerenter", e => { if (e.pointerType === "mouse") show(); });
   wrap.addEventListener("pointerleave", e => { if (e.pointerType === "mouse" && !pinned) hide(); });
   btn.addEventListener("focus", () => { if (btn.matches(":focus-visible")) show(); });
@@ -665,7 +706,7 @@ const wait = ms => new Promise(r => setTimeout(r, matchMedia("(prefers-reduced-m
 const pill = (cls, text) => `<span class="pill ${cls}">${text}</span>`;
 const working = pill("working", 'Working<span class="dots"></span>');
 
-$("fridgeGrid").innerHTML = FOODS.map(f => `<li><button type="button" class="food" data-food="${f.id}"><span class="ico" aria-hidden="true">${f.icon}</span><span><b>${f.name}</b><small></small></span></button></li>`).join("");
+$("fridgeGrid").innerHTML = FOODS.map(f => `<li><button type="button" class="food" data-food="${f.id}"><span class="ico" aria-hidden="true">${icon(f.icon)}</span><span><b>${f.name}</b><small></small></span></button></li>`).join("");
 $("fridgeGrid").addEventListener("click", e => {
   const b = e.target.closest("[data-food]"); if (!b) return;
   const id = b.dataset.food; if (!S.fridge.delete(id)) S.fridge.add(id);
@@ -705,7 +746,7 @@ function render(fresh) {
   if (plan) {
     if (fresh || !week.querySelector(".week")) week.innerHTML = `<ol class="week" aria-label="Your week">${plan.map((id, i) => {
       const r = recipe(id), have = r.needs.filter(n => fridge.has(n)).length;
-      return `<li class="day fade-up" style="animation-delay:${i * 60}ms"><div class="day-top"><span class="day-name">${DAYS[i]}</span><span class="day-ico" aria-hidden="true">${r.icon}</span></div>
+      return `<li class="day fade-up" style="animation-delay:${i * 60}ms"><div class="day-top"><span class="day-name">${DAYS[i]}</span><span class="day-ico" aria-hidden="true">${icon(r.icon)}</span></div>
         <h4>${r.name}</h4><div class="uses"><span class="mono">${have} of ${r.needs.length}</span> from your fridge<span class="meter" aria-hidden="true"><i style="width:${have / r.needs.length * 100}%"></i></span></div>
         <button type="button" class="btn small" data-swap="${i}" aria-label="Swap ${DAYS[i]}: ${r.name}"${phase !== "ready" ? " disabled" : ""}>↻ Swap</button></li>`; }).join("")}</ol>`;
     else week.querySelectorAll(".day").forEach((li, i) => {  // fridge changed: update counts in place, no re-entrance
@@ -734,7 +775,7 @@ function render(fresh) {
     + `<p>${S.approved ? "Your week is set. Take the list to the shop." : "You’ll see every dinner and every item before you agree."}</p>`;
   $("reviewBtn").disabled = phase !== "ready";
   $("reviewBtn").textContent = S.approved ? "Review again" : "Review and approve";
-  $("reviewPlan").innerHTML = (plan || []).map((id, i) => `<li><span class="mono">${DAYS[i]}</span>${recipe(id).icon} ${recipe(id).name}</li>`).join("");
+  $("reviewPlan").innerHTML = (plan || []).map((id, i) => `<li><span class="mono">${DAYS[i]}</span><span>${icon(recipe(id).icon)} ${recipe(id).name}</span></li>`).join("");
   $("reviewList").innerHTML = list.length ? list.map(it => `<li><span class="mono">×${it.meals}</span>${it.name}</li>`).join("") : "<li>Nothing to buy</li>";
 }
 

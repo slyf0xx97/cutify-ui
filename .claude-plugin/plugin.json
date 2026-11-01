@@ -1,0 +1,22 @@
+{
+  "name": "cutify-ui",
+  "version": "0.3.0",
+  "description": "Cute, game-like web pages with pixel-art characters, numbered story stages and motion that shows the product at work. Six themes, in React, Next.js or plain HTML.",
+  "author": {
+    "name": "Ghernie Encinas",
+    "url": "https://www.linkedin.com/in/ghernie"
+  },
+  "homepage": "https://slyf0xx97.github.io/cutify-ui/",
+  "repository": "https://github.com/slyf0xx97/cutify-ui",
+  "license": "MIT",
+  "keywords": [
+    "design",
+    "ui",
+    "pixel-art",
+    "react",
+    "nextjs",
+    "landing-page",
+    "animation",
+    "frontend"
+  ]
+}

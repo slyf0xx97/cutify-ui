@@ -1,6 +1,7 @@
 import { CAST } from "./data";
 import { KindChip } from "./KindChip";
 import { PixelSprite } from "./PixelSprite";
+import { PxIcon } from "./PxIcon";
 
 const STEPS = [
   { who: "you", name: "You", title: "Fill your fridge", text: "Tap what you have at home." },
@@ -41,15 +42,15 @@ export function HowItWorks() {
         <div className="glass diagram">
           <h3>Who sees what</h3>
           <ol className="flow">
-            <li><div className="node"><span className="ico" aria-hidden="true">🧊</span>Your fridge<KindChip kind="you" /></div></li>
+            <li><div className="node"><span className="ico" aria-hidden="true"><PxIcon name="fridge" /></span>Your fridge<KindChip kind="you" /></div></li>
             <li className="arrow" aria-hidden="true">→</li>
             <li><div className="node"><PixelSprite {...CAST.chef} size={40} />Chef<KindChip kind="ai" /></div></li>
             <li className="arrow" aria-hidden="true">→</li>
-            <li><div className="node"><span className="ico" aria-hidden="true">📋</span>Week plan</div></li>
+            <li><div className="node"><span className="ico" aria-hidden="true"><PxIcon name="plan" /></span>Week plan</div></li>
             <li className="arrow down" aria-hidden="true">→</li>
             <li><div className="node"><PixelSprite {...CAST.shopper} size={40} />Shopper<KindChip kind="ai" /></div></li>
             <li className="arrow back" aria-hidden="true">→</li>
-            <li><div className="node"><span className="ico" aria-hidden="true">🧾</span>Grocery list</div></li>
+            <li><div className="node"><span className="ico" aria-hidden="true"><PxIcon name="receipt" /></span>Grocery list</div></li>
             <li className="arrow back" aria-hidden="true">→</li>
             <li><div className="node"><PixelSprite {...CAST.you} size={40} />Your approval<KindChip kind="you" /></div></li>
           </ol>

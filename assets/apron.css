@@ -94,8 +94,10 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .rule.hit { background: #ff5a4e30; border-left-color: var(--bad); } .rule.hit .mono { color: var(--bad); }
 
 /* live badge */
-.live-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: var(--ok); animation: live 1.6s infinite; }
-@keyframes live { from { box-shadow: 0 0 0 0 #5ccf8aaa; } to { box-shadow: 0 0 0 12px #5ccf8a00; } }
+.live-dot { position: relative; display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: var(--ok); }
+/* the ring scales on its own layer, so the pulse never repaints */
+.live-dot::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: #5ccf8a; animation: live 1.6s ease-out infinite; }
+@keyframes live { from { transform: scale(1); opacity: .65; } to { transform: scale(3.4); opacity: 0; } }
 
 /* pixel art */
 .sprite { image-rendering: pixelated; display: block; }
@@ -112,12 +114,15 @@ button { font: inherit; color: inherit; cursor: pointer; }
 
 /* loading screen */
 .load { position: fixed; inset: 0; z-index: 9999; background: #121315f2; display: flex; align-items: center; justify-content: center; text-align: center; }
-.load-rwy { position: relative; height: 44px; width: min(560px, 90vw); margin: 0 auto 16px; border-radius: 4px; overflow: hidden; animation: lights .6s linear infinite; background:
-  radial-gradient(circle, #ffd400 0 3px, transparent 4px) 0 4px / 26px 10px repeat-x, radial-gradient(circle, #ffd400 0 3px, transparent 4px) 0 34px / 26px 10px repeat-x,
-  linear-gradient(#ffffffaa, #ffffffaa) 0 21px / 100% 2px no-repeat, #0b0c0d; }
-@keyframes lights { to { background-position: 26px 4px, 26px 34px, 0 21px, 0 0; } }
-.load-plane { position: absolute; top: 4px; left: -40px; font-size: 30px; animation: taxi 2.2s cubic-bezier(.5,0,.4,1) infinite; text-shadow: -10px 0 14px #ff6b1a; }
-@keyframes taxi { to { left: 105%; } }
+.load-rwy { --w: min(560px, 90vw); position: relative; height: 44px; width: var(--w); margin: 0 auto 16px; border-radius: 4px; overflow: hidden;
+  background: linear-gradient(#ffffffaa, #ffffffaa) 0 21px / 100% 2px no-repeat, #0b0c0d; }
+/* the lights slide as one layer one dot-step wide, so the loop is seamless and never repaints */
+.load-rwy::before { content: ""; position: absolute; top: 0; bottom: 0; left: -26px; width: calc(100% + 26px); animation: lights .6s linear infinite;
+  background: radial-gradient(circle, #ffd400 0 3px, transparent 4px) 0 4px / 26px 10px repeat-x, radial-gradient(circle, #ffd400 0 3px, transparent 4px) 0 34px / 26px 10px repeat-x; }
+@keyframes lights { to { transform: translateX(26px); } }
+.load-plane { position: absolute; top: 4px; left: 0; font-size: 30px; transform: translateX(-40px); animation: taxi 2.2s cubic-bezier(.5,0,.4,1) infinite; text-shadow: -10px 0 14px #ff6b1a; }
+@keyframes taxi { to { transform: translateX(calc(var(--w) + 10px)); } }
+@media (prefers-reduced-motion: reduce) { .live-dot::after, .load-rwy::before, .load-plane { animation: none; } .load-plane { transform: translateX(calc(var(--w) / 2 - 15px)); } }
 
 /* footer */
 .foot { margin-top: 26px; padding: 26px 28px 18px; border-top: 4px solid var(--line); }

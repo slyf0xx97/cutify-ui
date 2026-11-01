@@ -13,8 +13,6 @@ The Apron theme was built as plain HTML/CSS/SVG pages hosted inside a Streamlit 
 - Instant feedback before Python reruns
 - Deploying
 
----
-
 ## Plain HTML structure
 
 One self-contained file per page section, with placeholders a build step (or Python) fills:
@@ -54,7 +52,7 @@ If something deliberately overflows the page (flying sprites), measure the main 
 
 ## Iframe → Python: the hidden input bridge
 
-Send JSON from the page to Python through a hidden `st.text_input`. The native value setter is needed so React (Streamlit's frontend) sees the change; Enter commits it.
+Send JSON from the page to Python through a hidden `st.text_input`. The native value setter is needed so React (Streamlit's frontend) sees the change, and Enter commits it.
 ```python
 with st.container(key="bridge"):
     raw = st.text_input("bridge", key="bridge_in", label_visibility="collapsed")
@@ -128,7 +126,7 @@ if (!P.__fitHook) { P.__fitHook = true; P.addEventListener('resize', () => P.__f
 ```css
 .block-container { zoom: var(--z, 1); }
 ```
-Zoom the content block, not `<html>`: zooming the root shrinks Streamlit's full-height scroll area and cuts off the page. Widths written with `100vw` need dividing by `var(--z)`. Show a "needs a bigger screen" notice only below about 760px.
+Zoom the content block. Zooming `<html>` shrinks Streamlit's full-height scroll area and cuts off the page. Widths written with `100vw` need dividing by `var(--z)`. Show a "needs a bigger screen" notice only below about 760px.
 
 ## Instant feedback before Python reruns
 
@@ -136,4 +134,4 @@ Python only renders after a rerun starts, so anything slow (switching a dataset)
 
 ## Deploying
 
-Streamlit needs a long-running server with websockets. Options that work: Streamlit Community Cloud, Render, Railway, Hugging Face Spaces, or Vercel with a container (`Dockerfile.vercel` running `streamlit run app.py --server.port=${PORT:-80} --server.address=0.0.0.0`). Keep large datasets out of the image: ship a small extract with the original row ids and fall back to it when the full file is missing. Keep secrets out of uploads with `.vercelignore` / `.dockerignore`.
+Streamlit needs a long-running server with websockets. Options that work: Streamlit Community Cloud, Render, Railway, Hugging Face Spaces, or Vercel with a container (`Dockerfile.vercel` running `streamlit run app.py --server.port=${PORT:-80} --server.address=0.0.0.0`). Keep large datasets out of the image: ship a small extract with the original row ids and fall back to it when the full file is missing. Keep secrets out of uploads with `.vercelignore` or `.dockerignore`.

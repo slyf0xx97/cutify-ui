@@ -32,7 +32,7 @@ html { background: #a9d8e8; scroll-padding-top: 5rem; scroll-behavior: smooth; }
 body { margin: 0; color: var(--ink); font: 400 1.0625rem/1.6 var(--body); }
 body::before { content: ""; position: fixed; inset: 0; height: 100lvh; z-index: -1; pointer-events: none; transform: translateZ(0);
   background: var(--scene, linear-gradient(#bfe6f6, #d9f0fb 55%, #a8dc8a 56%, #7cc65a)) center bottom / cover no-repeat, #a9d8e8; }
-h1, h2 { font-family: var(--display); font-weight: 600; letter-spacing: .01em; line-height: 1.15; }
+h1, h2 { font-family: var(--display); font-weight: 600; letter-spacing: .01em; line-height: 1.15; text-wrap: balance; }
 h3, h4 { font-weight: 700; line-height: 1.15; }
 a { color: var(--link); } a:hover { color: var(--coral); }
 :focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; border-radius: 6px; }
@@ -122,10 +122,12 @@ body { overflow-x: clip; }
 .play-btn .tri { grid-row: span 2; display: grid; place-items: center; width: 2rem; height: 2rem; border-radius: 8px; background: var(--ink); color: var(--orange); font-size: .85rem; }
 .play-btn b { font-size: 1.08rem; line-height: 1.2; }
 .play-btn small { font-weight: 400; font-size: .85rem; line-height: 1.2; }
-.live { display: inline-flex; align-items: center; gap: .45rem; font-size: .9rem; font-weight: 700; }
-.live::before { content: ""; width: .6rem; height: .6rem; border-radius: 50%; background: var(--orange); box-shadow: 0 0 0 0 rgb(232 145 45 / 60%); }
-@media (prefers-reduced-motion: no-preference) { .live::before { animation: live 1.6s infinite; } }
-@keyframes live { to { box-shadow: 0 0 0 10px rgb(232 145 45 / 0%); } }
+.live { position: relative; isolation: isolate; display: inline-flex; align-items: center; gap: .45rem; font-size: .9rem; font-weight: 700; }
+.live::before { content: ""; width: .6rem; height: .6rem; border-radius: 50%; background: var(--orange); }
+/* the ring scales on its own layer, so the pulse never repaints */
+.live::after { content: ""; position: absolute; z-index: -1; left: 0; top: 50%; width: .6rem; height: .6rem; margin-top: -.3rem; border-radius: 50%; background: var(--orange); opacity: 0; }
+@media (prefers-reduced-motion: no-preference) { .live::after { animation: live 1.6s infinite; } }
+@keyframes live { from { transform: scale(1); opacity: .6; } to { transform: scale(3.1); opacity: 0; } }
 
 /* hero scene */
 .scene-card { padding: .75rem; }
@@ -190,9 +192,11 @@ body { overflow-x: clip; }
 .stage-sprite .sprite { width: 96px; height: 96px; }
 @media (prefers-reduced-motion: no-preference) { .stage-sprite .sprite { animation: bob 3.6s ease-in-out infinite; } }
 .feed { position: relative; height: 3.2rem; display: flex; justify-content: center; }
-.feed i { width: 4px; height: 100%; background-image: linear-gradient(var(--teal-dark) 50%, transparent 50%); background-size: 4px 12px; }
-@media (prefers-reduced-motion: no-preference) { .feed i { animation: flowd .7s linear infinite; } }
-@keyframes flowd { to { background-position: 0 12px; } }
+.feed i { position: relative; overflow: hidden; width: 4px; height: 100%; }
+/* the dashes slide as one layer a dash-period taller, so the loop is seamless and never repaints */
+.feed i::before { content: ""; position: absolute; left: 0; right: 0; top: -12px; bottom: 0; background-image: linear-gradient(var(--teal-dark) 50%, transparent 50%); background-size: 4px 12px; }
+@media (prefers-reduced-motion: no-preference) { .feed i::before { animation: flowd .7s linear infinite; } }
+@keyframes flowd { to { transform: translateY(12px); } }
 .feed b { position: absolute; bottom: -2px; left: 50%; transform: translateX(-50%); border: 8px solid transparent; border-top: 10px solid var(--teal-dark); border-bottom: 0; }
 .feed small { position: absolute; left: calc(50% + 14px); top: 50%; transform: translateY(-50%); font-size: .8rem; font-weight: 700; padding: .05rem .5rem; background: rgb(255 255 255 / 85%); border-radius: 999px; white-space: nowrap; }
 
@@ -247,8 +251,10 @@ body { overflow-x: clip; }
 .approve-row { display: flex; align-items: center; gap: .8rem; flex-wrap: wrap; margin-top: 1rem; }
 .approve-row .btn { font-size: 1.05rem; }
 .stage.approved { box-shadow: var(--glass-shadow), 0 0 0 3px var(--leaf), inset 0 1px 0 rgb(255 255 255 / 90%); }
-@media (prefers-reduced-motion: no-preference) { .stage.nudge { animation: nudge .6s ease-in-out 2; } }
-@keyframes nudge { 50% { box-shadow: var(--glass-shadow), 0 0 0 5px var(--orange); } }
+/* the orange ring sits on its own layer and only fades, so the nudge never repaints */
+.stage::after { content: ""; position: absolute; inset: -1.5px; border-radius: var(--radius); box-shadow: 0 0 0 5px var(--orange); opacity: 0; pointer-events: none; }
+@media (prefers-reduced-motion: no-preference) { .stage.nudge::after { animation: nudge .6s ease-in-out 2; } }
+@keyframes nudge { 50% { opacity: 1; } }
 .summary { list-style: none; margin: 0 0 1rem; padding: 0; display: grid; gap: .45rem; }
 .summary li { display: grid; grid-template-columns: 1.6rem 1fr auto; gap: .55rem; align-items: center; padding: .45rem .6rem; background: var(--sky-soft); border-radius: 10px; }
 .pop-actions { display: flex; justify-content: flex-end; gap: .6rem; flex-wrap: wrap; }
@@ -263,7 +269,7 @@ body { overflow-x: clip; }
 .route { position: relative; list-style: none; margin: 0; padding: 0 0 0 3.4rem; display: grid; gap: .8rem; }
 .route svg.path { position: absolute; left: 0; top: 0; width: 3.4rem; height: 100%; overflow: visible; pointer-events: none; }
 .route path { fill: none; stroke: var(--ink); stroke-width: 3; stroke-dasharray: 2 8; stroke-linecap: round; opacity: .45; }
-.token { position: absolute; left: 0; top: 0; width: 34px; height: 34px; z-index: 3; pointer-events: none; transform: translate(-50%, -50%); }
+.token { position: absolute; left: 0; top: 0; width: 34px; height: 34px; z-index: 3; pointer-events: none; transform: translate(-50%, -50%); will-change: transform; }
 .rcard { display: grid; grid-template-columns: auto 1fr; gap: .2rem .7rem; padding: .7rem .85rem; background: rgb(255 255 255 / 80%); border: 2px solid rgb(31 36 48 / 16%); border-radius: 14px; transition: border-color .2s, background-color .2s, transform .2s; }
 .rcard .num { grid-row: span 2; }
 .rcard h4 { margin: 0; font-size: 1.05rem; display: flex; align-items: center; gap: .4rem; flex-wrap: wrap; }
@@ -290,7 +296,13 @@ footer .glass { border-top: 4px solid var(--orange); display: grid; grid-templat
 footer h5 { margin: 0 0 .4rem; font: 700 .75rem var(--body); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-soft); }
 footer p, footer ul { margin: 0; font-size: .95rem; }
 footer ul { padding: 0; list-style: none; display: grid; gap: .2rem; }
-footer .copy { grid-column: 1 / -1; border-top: 1.5px dashed rgb(31 36 48 / 18%); padding-top: .8rem; font-size: .88rem; color: var(--ink-soft); display: flex; justify-content: space-between; gap: .5rem; flex-wrap: wrap; }
+footer .copy { grid-column: 1 / -1; border-top: 1.5px dashed rgb(31 36 48 / 18%); padding-top: .8rem; font-size: .88rem; color: var(--ink-soft); display: flex; align-items: center; justify-content: space-between; gap: .75rem 1.5rem; flex-wrap: wrap; }
+footer .copy .donate { margin-left: auto; }
+.donate { display: inline-flex; align-items: center; gap: .4rem; min-height: 2.75rem; padding: .2rem .9rem; border: 2px solid var(--ink); border-radius: 999px; background: var(--yellow-soft); color: var(--ink); font: 700 .92rem var(--body); text-decoration: none; white-space: nowrap; transition: transform .15s ease, box-shadow .15s ease; }
+.donate svg { flex: none; color: var(--coral); }
+.donate:hover { box-shadow: 0 3px 0 rgb(16 70 100 / 30%); }
+.donate:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+@media (prefers-reduced-motion: no-preference) { .donate:hover { transform: translateY(-1px); } }
 
 /* responsive */
 /* seven day columns get too narrow below ~1100px: stack the days */
@@ -593,7 +605,7 @@ footer .copy { grid-column: 1 / -1; border-top: 1.5px dashed rgb(31 36 48 / 18%)
     <div><h5>Data</h5><p>Every subject, time, mood reply and question on this page is a made-up sample.</p></div>
     <div><h5>Built with</h5><ul><li>cutify-ui, Glass theme</li><li>Pixelify Sans</li><li>Atkinson Hyperlegible</li><li>Plain HTML, CSS and SVG</li></ul></div>
     <div><h5>Project</h5><p>A showcase example for the cutify-ui Claude skill.</p></div>
-    <div class="copy"><span>© 2026 StudyBuddy example</span><span>Sample data only</span></div>
+    <div class="copy"><span>© 2026 StudyBuddy example</span><span>Sample data only</span><a class="donate" href="https://donate.stripe.com/3cIcMX8ee5oufGWd5n18c00" target="_blank" rel="noopener noreferrer"><svg aria-hidden="true" focusable="false" viewBox="0 0 16 16" width="16" height="16" shape-rendering="crispEdges"><path fill="currentColor" d="M3 3h3v1h1v1h2V4h1V3h3v1h1v4h-1v1h-1v1h-1v1h-1v1H9v1H7v-1H6v-1H5V9H4V8H3V7H2V4h1z"/></svg>Support cutify-ui<span class="sr-only"> (opens Stripe in a new tab)</span></a></div>
   </div>
 </footer>
 
@@ -817,7 +829,7 @@ async function play() {
   const st = $('#approve'); st.classList.remove('nudge'); void st.offsetWidth; st.classList.add('nudge');
 }
 $('#playBtn').addEventListener('click', play);
-addEventListener('resize', () => { if (bubble.classList.contains('on')) bubble.classList.remove('on'); });
+addEventListener('resize', () => { if (bubble.classList.contains('on')) bubble.classList.remove('on'); }, { passive: true });
 
 // ---- how it works: route with stops ----
 const route = $('#route'), cards = [...route.querySelectorAll('.rcard')];
@@ -826,7 +838,7 @@ const pathSvg = document.createElementNS(NS, 'svg'); pathSvg.classList.add('path
 const path = document.createElementNS(NS, 'path'); pathSvg.appendChild(path); route.prepend(pathSvg);
 const token = document.createElementNS(NS, 'svg'); token.setAttribute('viewBox', '0 0 16 16'); token.setAttribute('class', 'token sprite'); token.setAttribute('aria-hidden', 'true');
 token.innerHTML = '<use href="#paper"/>'; route.appendChild(token);
-let stops = [], total = 0, dist = 0, stopIdx = 0, holdUntil = 0, paused = false, last = performance.now();
+let stops = [], total = 0, dist = 0, stopIdx = 0, holdUntil = 0, paused = false, last = performance.now(), raf = 0, howVisible = true;
 function layoutRoute() {
   const rr = route.getBoundingClientRect();
   const pts = cards.map((c, i) => { const r = c.getBoundingClientRect(); return [i % 2 ? 30 : 18, r.top - rr.top + r.height / 2]; });
@@ -836,26 +848,31 @@ function layoutRoute() {
   stops = pts.map(p => { let best = 0, bd = 1e9; for (let l = 0; l <= total; l += 2) { const q = path.getPointAtLength(l), dd = Math.abs(q.y - p[1]); if (dd < bd) { bd = dd; best = l; } } return best; });
   placeToken();
 }
-function placeToken() { const p = path.getPointAtLength(Math.min(dist, total)); token.style.left = p.x + 'px'; token.style.top = p.y + 'px'; }
+// transform, not left/top, so each frame only composites
+function placeToken() { const p = path.getPointAtLength(Math.min(dist, total)); token.style.transform = `translate(${p.x}px, ${p.y}px) translate(-50%, -50%)`; }
 function mark() { cards.forEach((c, i) => { c.classList.toggle('on', i === stopIdx); c.classList.toggle('done', i < stopIdx); }); }
 function resetRoute() { dist = 0; stopIdx = 0; holdUntil = performance.now() + 1500; mark(); placeToken(); }
+// the loop stops while paused or off screen (and the browser stops it in a hidden tab); kick() restarts it
 function tick(now) {
+  raf = 0;
+  if (paused || !howVisible) return;
   const dt = Math.min(.1, (now - last) / 1000); last = now;
-  if (!paused && !$('#how').classList.contains('is-off') && now >= holdUntil) {
+  if (now >= holdUntil) {
     const next = stops[stopIdx + 1];
     if (next === undefined) { resetRoute(); }
     else { dist = Math.min(next, dist + 160 * dt); placeToken(); if (dist >= next) { stopIdx++; mark(); holdUntil = now + 1500; } }
   }
-  requestAnimationFrame(tick);
+  raf = requestAnimationFrame(tick);
 }
+function kick() { if (!raf && !reduced && !paused && howVisible) { last = performance.now(); raf = requestAnimationFrame(tick); } }
 new ResizeObserver(layoutRoute).observe(route);
 layoutRoute();
 if (reduced) {
   stopIdx = cards.length - 1; dist = total; mark(); cards.forEach(c => c.classList.add('done')); placeToken();
   ['#routePause', '#routeReset'].forEach(s => { const b = $(s); b.disabled = true; b.title = 'Motion is off because your system asks for reduced motion'; });
 } else {
-  resetRoute(); requestAnimationFrame(tick);
-  $('#routePause').addEventListener('click', e => { paused = !paused; e.currentTarget.setAttribute('aria-pressed', paused); e.currentTarget.textContent = paused ? '▶ Play' : '❚❚ Pause'; });
+  resetRoute(); kick();
+  $('#routePause').addEventListener('click', e => { paused = !paused; e.currentTarget.setAttribute('aria-pressed', paused); e.currentTarget.textContent = paused ? '▶ Play' : '❚❚ Pause'; kick(); });
   $('#routeReset').addEventListener('click', resetRoute);
 }
 
@@ -869,10 +886,13 @@ function fitTip(e) {
 }
 ['mouseover', 'focusin', 'click'].forEach(t => document.addEventListener(t, fitTip));
 // focusing a trigger scrolls it into view after focusin: re-fit the open tip once it has moved
-addEventListener('scroll', () => fitTip({ target: document.activeElement }), { passive: true });
+let fitRaf = 0; addEventListener('scroll', () => { fitRaf ||= requestAnimationFrame(() => { fitRaf = 0; fitTip({ target: document.activeElement }); }); }, { passive: true });
 
 // ---- pause loops off screen ----
-const io = new IntersectionObserver(es => es.forEach(e => e.target.classList.toggle('is-off', !e.isIntersecting)), { rootMargin: '100% 0px' });
+const io = new IntersectionObserver(es => es.forEach(e => {
+  e.target.classList.toggle('is-off', !e.isIntersecting);
+  if (e.target.id === 'how') { howVisible = e.isIntersecting; kick(); }
+}), { rootMargin: '100% 0px' });
 document.querySelectorAll('.hero, .stage, #how').forEach(el => io.observe(el));
 // ---------- tooltips for screen readers, tap and Escape ----------
 // each (i) is described by a visually hidden role="tooltip" copy of its text; the visible tip is the ::after

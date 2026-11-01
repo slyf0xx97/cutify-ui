@@ -1,7 +1,7 @@
 // cutify-ui: a 16 x 16 pixel sprite from a string grid, rendered as crisp SVG. MIT.
 import type { CSSProperties, ReactElement } from "react";
 
-export type SpriteGrid = readonly string[];          // 16 strings of 16 characters, '.' = empty
+export type SpriteGrid = readonly string[];          // equal-length strings (16 x 16 for the cast), '.' = empty
 export type Palette = Record<string, string>;         // character → colour
 export type Animate = Record<string, string | readonly [left: string, right: string]>;
 
@@ -29,7 +29,7 @@ export function PixelSprite({ grid, palette, animate = {}, size = 96, label, cla
   );
   return (
     <svg
-      viewBox="0 0 16 16" width={size} height={size} shapeRendering="crispEdges"
+      viewBox={`0 0 ${grid[0].length} ${grid.length}`} width={size} height={size} shapeRendering="crispEdges"
       className={"sprite" + (className ? " " + className : "")} style={style}
       {...(label ? { role: "img", "aria-label": label } : { "aria-hidden": true, focusable: false })}
     >

@@ -2,7 +2,7 @@
 
 # 🧸 cutify-ui
 
-**Give Claude a taste for cute. Pixel characters, story stages and motion that explains your product.**
+**A Claude skill for cute, game-like web pages with pixel characters, story stages and motion that shows your product at work.**
 
 [![Live gallery](https://img.shields.io/badge/gallery-slyf0xx97.github.io%2Fcutify--ui-ff8fab?style=flat-square)](https://slyf0xx97.github.io/cutify-ui/)
 [![Release](https://img.shields.io/github/v/release/slyf0xx97/cutify-ui?style=flat-square&color=e8912d)](https://github.com/slyf0xx97/cutify-ui/releases/latest)
@@ -11,56 +11,95 @@
 ![React 19](https://img.shields.io/badge/React-19-1f2430?style=flat-square)
 ![Plain HTML](https://img.shields.io/badge/plain-HTML%2FCSS%2FSVG-2b8fb3?style=flat-square)
 [![CI](https://img.shields.io/github/actions/workflow/status/slyf0xx97/cutify-ui/ci.yml?style=flat-square&label=checks)](https://github.com/slyf0xx97/cutify-ui/actions)
+[![Support](https://img.shields.io/badge/support-Stripe-635bff?style=flat-square)](https://donate.stripe.com/3cIcMX8ee5oufGWd5n18c00)
 
-cutify-ui is an open-source [Claude skill](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/overview) for building playful, game-like web interfaces. Ask Claude for a landing page, a product demo or a dashboard, and the skill gives it a design system, ready components and animation patterns so the result has characters, a story and a personality.
+cutify-ui is an open-source [Claude skill](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/overview). Ask Claude for a landing page, a product demo or a portfolio, and the skill gives it six themes, ready components and animation patterns to build from. It works in Claude Code, Claude.ai and the Claude API, and builds in React and Next.js or in plain HTML, CSS and SVG.
 
-It works in Claude Code, Claude.ai and the Claude API, and it builds in React / Next.js or in plain HTML, CSS and SVG (including pages hosted inside Streamlit).
+🌐 See all twelve examples in the [live gallery](https://slyf0xx97.github.io/cutify-ui/).
 
-🌐 Live gallery: https://slyf0xx97.github.io/cutify-ui/
+<p align="center"><img src="docs/gallery/demo.gif" alt="The Fleet Queue example page: three pixel robots move along their routes on a warehouse floor while the page explains who plans and who approves" width="800"><br><sub>Fleet Queue, one of the twelve examples, at 1280px. Every animation stops for visitors who ask for reduced motion.</sub></p>
 
-The design language was conceived by [Ghernie Encinas](https://sg.linkedin.com/in/ghernie) across two shipped projects: [itsa10but](https://ghernie.com/projects/itsa10but), a résumé reviewer, and [SkyQueue](https://skyqueue.ghernie.com), a multi-agent airport queue planner built for Autonomous SG 2026. Judges asked how to get the same look, so here it is as a skill.
+## Contents
 
-## 🎯 Problem
+- [Install](#%EF%B8%8F-install)
+- [Why it doesn't look AI-made](#-why-it-doesnt-look-ai-made)
+- [Features](#-features)
+- [Gallery](#%EF%B8%8F-gallery)
+- [Themes](#-themes)
+- [Use it](#-use-it)
+- [What's inside](#-whats-inside)
+- [Testing and validation](#-testing-and-validation)
+- [Privacy and limits](#%EF%B8%8F-privacy-and-limits)
+- [Contributing](#-contributing)
+- [Support](#-support)
+- [License](#-license)
 
-Ask an AI model for a "cute" or "playful" page and you usually get the same thing: rounded cards, a pastel gradient, an emoji or two and a bouncing button. Nothing on the page explains the product, the characters (if any) are clip art, and the motion is decoration. For AI products it's worse, because visitors can't tell what the AI does, what the code does and what they decide.
+## 🛠️ Install
 
-## 💡 Solution
+In Claude Code, paste this one line into the chat:
 
-cutify-ui teaches Claude one design grammar and lets the look change around it. Every page gets a cast of pixel-art characters for the actors in the product, a numbered path of stages, tooltips that explain why, sticker-style depth and motion that shows the system at work. Each block says who does it (AI, code or you), and made-up data says it's made up.
+```
+/plugin install cutify-ui --marketplace slyf0xx97/cutify-ui
+```
 
-The skill ships with six themes, 19 pure-CSS backdrops and ten font pairings, so a study app, a night market and a warehouse control room each get their own look. Claude reads only the parts a request needs, then builds from real, tested components.
+For Cursor, Codex, Gemini CLI or another coding agent, run this one line in your terminal and pick your agent:
 
-## ✨ Key features
+```bash
+npx skills add slyf0xx97/cutify-ui
+```
+
+That's all. Ask for a cute landing page and your agent uses the skill on its own.
+
+<details>
+<summary>Claude.ai, the Claude API and older versions of Claude Code</summary>
+
+- Claude.ai: download `cutify-ui.zip` from the [latest release](https://github.com/slyf0xx97/cutify-ui/releases/latest) and upload it under Settings → Capabilities → Skills.
+- Claude API: upload the same zip with the Skills API and attach it to your requests.
+- Claude Code older than 2.1.275: run `/plugin marketplace add slyf0xx97/cutify-ui`, then `/plugin install cutify-ui@cutify-ui`.
+
+</details>
+
+## 🙅 Why it doesn't look AI-made
+
+Pages that Claude designs on its own often look alike, because it falls back on the safest choice for every font, colour and layout. cutify-ui makes those choices before Claude writes any CSS:
+
+- Each theme fixes exact fonts, hex colours and one kind of depth, so Claude never has to guess at "modern".
+- The skill names the usual tells and tells Claude to avoid them: purple-to-blue gradients, soft-shadowed rounded cards everywhere, emoji as icons, a centred hero over three feature boxes, Inter as the headline font and lorem ipsum.
+- Claude writes the real copy from your brief before the layout, and labels anything made up as "sample".
+- If your project has a `taste.md` file of things you like and dislike, Claude reads it first and offers to add your reactions to it.
+- Before showing you a page, Claude checks the draft against your brief and the list of tells, then screenshots it at 1440px and 390px.
+
+## ✨ Features
 
 Look and feel
 
-- 🎨 Six themes with their own shadow language: Glass, Apron, Picnic, Riso Club, Lantern Night and Toy Box.
-- 🧺 19 backdrops in pure CSS or inline SVG (gingham, riso grain, dusk with stars, 1-bit dither, graph paper and more), with a guide for choosing one per product.
-- 🔤 Ten font pairings, every font checked as SIL OFL, with readability rules for pixel and handwritten faces.
+- 🎨 Six themes, each with its own fonts, palette and kind of depth: Glass, Apron, Picnic, Riso Club, Lantern Night and Toy Box.
+- 🧺 19 backdrops in pure CSS or inline SVG, from gingham and riso grain to a starry dusk and 1-bit dither, with a guide for picking one that fits the product.
+- 🔤 Ten font pairings. Every font is under the SIL Open Font License, and the guide says which faces stay readable at small sizes.
 
 Characters and story
 
-- 👾 String-grid pixel sprites that render as crisp SVG at any size, with pixels that can blink or wave on their own.
-- 🗺️ Numbered story stages with an explain strip, so a visitor follows the product step by step.
-- 🏷️ AI / Code / You tags and shape cues, so identity and responsibility never rest on colour alone.
+- 👾 Pixel sprites drawn as text grids that render as crisp SVG at any size. Single pixels can blink or wave.
+- 🗺️ Numbered stages that walk a visitor through the product in order.
+- 🏷️ AI and You tags with a shape for each character, so nobody has to tell characters apart by colour alone.
 
-Motion that explains
+Motion
 
-- ✈️ Vehicles that follow the real drawn route with CSS `offset-path`.
-- ⏯️ Five animation engines: a cancellable scripted story, a simulation clock, arc hand-offs with the Web Animations API, a scroll-linked journey and a route with stops.
-- 🍬 Ten micro-interactions: squash and ledge presses, sticker wobble, peel corners, typing dots, bouncy toggles, confetti, stage pop-in, self-drawing lines and an idle pet blink.
-- 🧘 Reduced-motion support and off-screen pausing everywhere.
+- ✈️ Sprites that follow a real drawn route, using CSS `offset-path`.
+- ⏯️ Five ways to animate a product at work, such as a story you can replay, a clock-driven simulation and a journey that follows your scroll.
+- 🍬 Ten small interactions, including a ledge press, a peel corner, typing dots and confetti.
+- 🧘 Every animation stops for visitors who ask for reduced motion, and pauses when it's off screen.
 
 Components
 
-- 💬 Tooltips that work on hover, focus and tap, including a Popover API version for React.
-- 🎮 Game buttons that lift and sink, sticker shadows, pills, meters, KPI tiles, hand-built SVG charts, native `<dialog>` modals, split buttons and loading screens.
-- ⚛️ Typed React 19 components (`PixelSprite`, `PixelIcon`, `Popup`, `WordTip`, `StageHeader`, `KindChip`) that pass strict type-checking.
-- 🐍 Streamlit helpers: same-origin iframe pages, a hidden-input bridge to Python, small-laptop scaling and an instant loader.
+- 💬 Tooltips that open on hover, keyboard focus and tap, with labels that screen readers can read.
+- 🎮 Buttons, pills, meters, number tiles, small SVG charts, native `<dialog>` modals and loading screens.
+- ⚛️ Typed React 19 components (`PixelSprite`, `PixelIcon`, `Popup`, `WordTip`, `StageHeader` and `KindChip`) that pass strict type-checking.
+- 🐍 Helpers for hosting the pages inside Streamlit.
 
 ## 🖼️ Gallery
 
-Every example below was built by Claude with this skill from a brief of a few sentences, then checked in a browser at 375px to 1440px. The first six briefs described only the product and the cast; the newer six also named the theme or palette and a few details, to show each theme. Click one to open it live, or open its folder to read the exact brief.
+Claude built each example with the skill from a brief of a few sentences, then checked it in a browser at widths from 375px to 1440px. The first six briefs described only the product and its characters. The newer six also named a theme or palette, to show each one. Click a picture to open the page, or open its folder to read the exact brief.
 
 <!-- GALLERY:START -->
 <table>
@@ -73,83 +112,143 @@ Every example below was built by Claude with this skill from a brief of a few se
 </table>
 <!-- GALLERY:END -->
 
-## 🧭 How it works
+## 🎨 Themes
 
-```mermaid
-flowchart LR
-    A["💬 Your brief"] --> B["🧸 cutify-ui loads"]
-    B --> C["🎨 Pick a theme"]
-    C --> D["👾 Name the cast<br/>only actors in the brief"]
-    D --> E["🗺️ Lay out the journey<br/>hero, stages, how it works"]
-    E --> F["📚 Read only the<br/>references needed"]
-    F --> G["🧱 Build from the<br/>assets and recipes"]
-    G --> H["✅ Final checklist<br/>and a browser look"]
-```
-
-Six themes, one grammar:
-
-| Theme | Feel | Display type | Shadow language | Suits |
+| Theme | Look | Display font | Depth | Good for |
 |---|---|---|---|---|
-| 🪟 Glass | Frosted glass over painted scenery | Pixelify Sans | Hard sticker offset | Consumer apps, careers, outdoors |
-| 🛫 Apron | Airfield signage on a dark dot grid | Anybody, heavy and wide | Hard sticker offset | Operations, control rooms, data |
-| 🧺 Picnic | Gingham under napkin cards | Fredoka | Soft blanket offset | Food, weekends, family |
-| 🖨️ Riso Club | Newsprint and halftone | Bricolage Grotesque | Slipped pink/blue print plate | Events, zines, portfolios |
-| 🏮 Lantern Night | Dusk sky and a dithered skyline | Jersey 10 | Lantern glow, stepped pixel border | Night, sleep, games |
-| 🧱 Toy Box | Plastic on graph paper | Dela Gothic One | Ledge that presses down | Kids, learning, building |
+| 🪟 Glass | Frosted glass over painted scenery | Pixelify Sans | Hard sticker shadow | Consumer apps, careers, outdoors |
+| 🛫 Apron | Airfield signage on a dark dot grid | Anybody | Hard sticker shadow | Operations, control rooms, data |
+| 🧺 Picnic | Gingham under napkin cards | Fredoka | Soft blanket shadow | Food, weekends, family |
+| 🖨️ Riso Club | Newsprint and halftone | Bricolage Grotesque | A pink and blue shadow like a slipped print | Events, zines, portfolios |
+| 🏮 Lantern Night | Dusk sky over a dithered skyline | Jersey 10 | Lantern glow and stepped pixel borders | Night, sleep, games |
+| 🧱 Toy Box | Plastic cards on graph paper | Dela Gothic One | A ledge that presses down | Kids, learning, building |
 
-Glass and Apron come from itsa10but and SkyQueue. The other four were designed from a survey of playful sites, games and type; see the [inspiration library](docs/INSPIRATION.md) for every source and what was taken from it.
+Glass and Apron come from [itsa10but](https://ghernie.com/projects/itsa10but), a résumé reviewer, and [SkyQueue](https://skyqueue.ghernie.com), a multi-agent airport queue planner. The other four came from a survey of playful sites, games and type, and the [inspiration library](docs/INSPIRATION.md) lists every source and what each one taught us.
 
-## 🛠️ Install
+All six themes share the same variable and class names, so a component written for one works in the others.
 
-**Claude Code**
+## 💬 Use it
 
-Download `cutify-ui.zip` from the [latest release](https://github.com/slyf0xx97/cutify-ui/releases/latest) and unzip it into your skills folder, so you get `~/.claude/skills/cutify-ui/SKILL.md`:
+Claude loads the skill when a request fits, so you can ask in plain words:
 
-```bash
-curl -L -o cutify-ui.zip https://github.com/slyf0xx97/cutify-ui/releases/latest/download/cutify-ui.zip
-unzip cutify-ui.zip -d ~/.claude/skills/
-```
+- "Make a cute landing page for my study app with three AI tutors."
+- "Build a dark control-room demo for our warehouse robots, with sample numbers."
+- "I need a playful Next.js page for a meal planner with two AI helpers."
+- "Just a Toy Box pricing card for my budgeting app, please."
 
-The zip holds only the skill (about 50 KB). Cloning the whole repository into the skills folder also works, but it brings the examples, screenshots and tools with it.
+Claude picks a theme that fits the product and tells you which one it chose. Name a theme in your request if you want a particular look, or ask for three directions to choose from. A screenshot of a site you like also helps, because Claude carries over its spacing and type sizes.
 
-Then ask for something like "make a cute landing page for my study app with three AI tutors". Claude loads the skill when a request fits.
+To steer every page the same way, keep a `taste.md` file in your project with notes like "too busy", "love this spacing" or a link to a site you like.
 
-**Claude.ai**
-
-Download `cutify-ui.zip` from the [latest release](https://github.com/slyf0xx97/cutify-ui/releases/latest) and upload it under Settings → Capabilities → Skills.
-
-**Claude API**
-
-Upload the same zip with the Skills API and attach it to your requests.
-
-### 📁 What's inside
+## 📁 What's inside
 
 ```
-SKILL.md                 when to use it, the grammar, the workflow and a final checklist
+SKILL.md                 when to use the skill, the design rules, the workflow and a final checklist
 references/
-  themes.md              six themes' tokens, surfaces and palettes, and how to make your own
-  backgrounds.md         19 pure-CSS backdrops and how to choose one
-  fonts.md               SIL OFL font pairings and readability rules
-  pixel-art.md           string-grid sprites, pixel icons, sprite sheets, designing a cast
-  motion.md              motion rules, keyframes and five animation engines
-  components.md          tooltips, buttons, chips, stage headers, KPI tiles, charts, dialogs, loaders
-  react.md               Next.js / React 19 patterns
-  streamlit.md           plain HTML pages, and hosting them inside Streamlit
-  voice.md               copy and labels
+  themes.md              the six themes, their palettes, and how to make your own
+  backgrounds.md         19 backdrops and how to choose one
+  fonts.md               font pairings and readability rules
+  pixel-art.md           sprites, pixel icons and designing characters
+  motion.md              motion rules, animation patterns and small interactions
+  components.md          tooltips, buttons, stage headers, number tiles, charts, dialogs and loaders
+  react.md               React 19 and Next.js patterns
+  streamlit.md           plain HTML pages and hosting them in Streamlit
+  voice.md               how labels and copy should read
+scripts/
+  lint_page.py           checks a finished page for the problems the skill rules out
 assets/
-  glass.css, apron.css, picnic.css, riso.css, lantern.css, toybox.css
-                         theme tokens and base components, with shared class names
-  pixel-sprites.js       turns string grids into crisp SVG symbols, with an example cast
-  react/                 typed React 19 components and hooks
-  streamlit/             page builder, iframe bridge, scaling and loader helpers
-examples/                the gallery, each a working page with its brief
-docs/INSPIRATION.md      the sources behind the themes, and what was taken from each
-evals/                   test prompts used to check the skill
+  <theme>.css            one stylesheet per theme, all with the same class names
+  pixel-sprites.js       turns text grids into crisp SVG sprites
+  react/                 typed React 19 components and their stylesheet
+  streamlit/             helpers for hosting pages in Streamlit
+examples/                the twelve gallery pages, each with its brief
+docs/INSPIRATION.md      the sources behind the themes
+evals/                   test prompts and graders for the skill
+tools/                   repo checks, layout QA and gallery screenshot scripts
 ```
 
-## 🧪 Testing
+## 🧪 Testing and validation
 
-The skill was checked the way Anthropic's skill-creator recommends: the same three prompts were run with and without the skill, and each page was graded on objective checks (crisp pixel art, reduced motion, AI/You tags, numbered stages, keyboard tooltips, hard shadows, plus case-specific ones).
+### Automatic checks
+
+Every push runs these checks on GitHub Actions, and you can run them yourself with `cd tools && npm install && npm run check`.
+
+| Area | What's checked | How |
+|---|---|---|
+| Skill file | `SKILL.md` has the right name, a description under 1,024 characters, fewer than 500 lines, and every file it mentions exists | [`check.mjs`](tools/check.mjs) |
+| Themes | All six theme stylesheets define the same 14 variables and 11 classes, so a component works in any theme | [`check.mjs`](tools/check.mjs) |
+| CSS | Every stylesheet and every `<style>` block in the gallery and examples is valid CSS | [csstree-validator](https://github.com/csstree/validator) |
+| Smooth motion | No animation loop changes `box-shadow`, `filter`, `background-position` or layout properties, which make the browser repaint every frame | [`check.mjs`](tools/check.mjs) |
+| Page linter | [`lint_page.py`](scripts/lint_page.py), the script the skill has Claude run on each page it builds, passes on every example and the gallery | Python, no packages |
+| React types | The React 19 components pass TypeScript in strict mode | `tsc --strict` |
+| React rendering | Each component renders, and its markup is accessible: sprites have `role="img"` and a label, tooltip triggers are labelled buttons that point at a tip that exists, and modals use a native `<dialog>` | [`react-test.mjs`](tools/react-test.mjs) |
+| JavaScript and Python | Every `.js`, `.mjs` and `.py` file parses | `node --check`, `py_compile` |
+| Examples | Each example has its page, README and screenshot, stops moving for reduced motion, labels made-up data as "sample", and loads nothing from outside except fonts | [`check.mjs`](tools/check.mjs) |
+| Page weight | Each example page is under 150 KB before fonts | [`check.mjs`](tools/check.mjs) |
+| Plugin | The Claude Code plugin and marketplace files pass strict validation, their names match, and the version matches the changelog | `claude plugin validate --strict` |
+
+<details>
+<summary>Output of the last <code>npm run check</code></summary>
+
+```
+SKILL.md
+  ✓ name is cutify-ui
+  ✓ description is 930 characters
+  ✓ 159 lines (under 500)
+  ✓ every path SKILL.md mentions exists
+  ✓ all six themes define the shared contract variables and classes
+TypeScript (strict)
+  ✓ assets/react type-checks
+React render test
+  ✓ PixelSprite renders
+  ✓ PixelSprite (decorative) renders
+  ✓ PixelIcon renders
+  ✓ KindChip renders
+  ✓ StageHeader renders
+  ✓ WordTip renders
+  ✓ Popup renders
+JavaScript and Python syntax
+  ✓ all .js files parse
+  ✓ 5 Python files compile
+Examples
+  ✓ beep-and-build has its page, README and screenshot
+  ✓ fleet-queue has its page, README and screenshot
+  ✓ gridline has its page, README and screenshot
+  ✓ moonlit-market has its page, README and screenshot
+  ✓ pantry-pals has its page, README and screenshot
+  ✓ penpal-post has its page, README and screenshot
+  ✓ portfolio has its page, README and screenshot
+  ✓ snooze-log has its page, README and screenshot
+  ✓ sprout has its page, README and screenshot
+  ✓ studybuddy has its page, README and screenshot
+  ✓ sunday-spread has its page, README and screenshot
+  ✓ zine-night has its page, README and screenshot
+CSS
+  ✓ 21 stylesheets and <style> blocks are valid CSS
+Smooth motion
+  ✓ every @keyframes animates only transform, opacity or other cheap properties
+Page linter
+  ✓ scripts/lint_page.py passes on 13 pages
+Page weight
+  ✓ every example page is under 150 KB before fonts
+Plugin manifest
+  ✓ plugin and marketplace names match
+  ✓ plugin version 0.3.0 matches the changelog
+  ✓ plugin icon exists
+Copy
+  ✓ no middle-dot separators in the main copy
+All checks passed.
+```
+
+</details>
+
+### Layout checks
+
+[`qa.mjs`](tools/qa.mjs) opens every example in Chromium at 375px, 768px, 1280px and 1440px. It reports sideways scrolling, overlapping or clipped text, tooltips that leave the screen or get covered, dialogs that don't fit, console errors, fonts that didn't load and low contrast. [CONTRIBUTING.md](CONTRIBUTING.md#layout-qa) explains how to read its report.
+
+### Prompt tests
+
+The skill was tested the way Anthropic's skill-creator suggests. The same prompts ran with and without the skill, and each page was graded on checks such as crisp pixel art, reduced motion, AI and You tags, numbered stages and keyboard tooltips.
 
 | Test prompt | With cutify-ui | Without |
 |---|---|---|
@@ -157,39 +256,46 @@ The skill was checked the way Anthropic's skill-creator recommends: the same thr
 | Warehouse robot demo, dark (HTML) | 9 / 9 | 3 / 9 |
 | Pantry Pals meal planner (Next.js) | 6 / 7 | 3 / 7 |
 
-That's a 95% pass rate with the skill and 36% without, on 3 prompts with one run each. Treat it as a direction, not a benchmark.
-
-Two more cases were added in v0.2 to check scope and theme choice, run once with the skill:
+Two later tests checked how the skill picks a theme and how much it builds:
 
 | Test prompt | Result |
 |---|---|
-| A bakery pre-order page with one AI helper, no theme named | Picked Picnic, said why, kept to the two characters in the brief, accessible tooltips (4 / 4) |
-| Just a Toy Box pricing card | Built only the card, with Toy Box fonts and a ledge button (3 / 3) |
+| A bakery pre-order page with one AI helper, no theme named | Picked Picnic, said why, and kept to the two characters in the brief (4 / 4) |
+| Just a Toy Box pricing card | Built only the card, in Toy Box fonts with a ledge button (3 / 3) |
 
-The prompts and graders are in [`evals/`](evals).
+Each prompt ran once, so read these numbers as a direction, not a benchmark. The prompts and graders are in [`evals/`](evals).
 
-## 🛡️ Safety and limitations
+## 🛡️ Privacy and limits
 
-✅ What the skill does and doesn't do:
+What the skill does
 
-- It's instructions, CSS, and small JS, TypeScript and Python files. It holds no keys and sends no data anywhere.
-- The theme stylesheets and the examples load fonts from Google Fonts, so a page built with the skill asks Google's servers for the font files and shares the visitor's IP address with Google. If that matters for your users (for example under the GDPR), self-host the fonts as described in [`references/themes.md`](references/themes.md).
-- Characters, icons, scenes and example data were drawn or written for this project. Third-party logos are deliberately left out, and the skill tells Claude not to copy them in.
-- Example data is made up and labelled as sample data on every page.
+- It's instructions plus CSS and small JavaScript, TypeScript and Python files. It holds no keys and sends no data anywhere.
+- The theme stylesheets load fonts from Google Fonts, so every visitor's browser asks Google for the font files and shares its IP address with Google. If that matters for your users, for example under the GDPR, host the fonts yourself as `references/themes.md` describes.
+- The characters, icons, scenes and example data were drawn or written for this project. The skill leaves out third-party logos and tells Claude not to add them.
 
-⚠️ Limitations:
+What to expect
 
-- Claude still decides the final design, so results vary by prompt and model.
-- Pages with heavy animation took Claude about 5 to 10 minutes to build and check, much longer than a plain page.
-- Examples were checked in Chromium at 1280px and 375px. Safari, Firefox and screen readers weren't tested.
-- Some charts in the examples are sized when the page loads, so resizing the window afterwards can leave them too wide until you reload.
+- Claude still makes the final design decisions, so results vary with the prompt and the model.
+- A page with a lot of animation took Claude about 5 to 10 minutes to build and check.
+- The examples were checked in Chromium. They weren't tested in Safari or Firefox, or with a screen reader.
 
 ## 🤝 Contributing
 
-New themes, components and examples are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md). To report a security problem, see [SECURITY.md](SECURITY.md).
+New themes, components and examples are welcome. [CONTRIBUTING.md](CONTRIBUTING.md) explains how to add each one and how to run the checks.
+
+- Issues labelled [good first issue](https://github.com/slyf0xx97/cutify-ui/labels/good%20first%20issue) are small and well described, such as testing the examples in Safari or with a screen reader.
+- Ask questions or share a page you built in [Discussions](https://github.com/slyf0xx97/cutify-ui/discussions).
+- Everyone taking part follows the [code of conduct](CODE_OF_CONDUCT.md).
+- Report security problems privately, as [SECURITY.md](SECURITY.md) describes.
+
+## 💖 Support
+
+If cutify-ui saves you time, you can [support it through Stripe](https://donate.stripe.com/3cIcMX8ee5oufGWd5n18c00). You choose the amount on Stripe's own checkout page, and the gallery and every example page have the same link in their footer.
 
 ## 📄 License
 
-MIT, copyright 2026 Ghernie Encinas. See [LICENSE](LICENSE). Every font the skill uses is loaded from Google Fonts under the SIL Open Font License 1.1 (listed with links in [`references/fonts.md`](references/fonts.md)). If you self-host them, keep each font's `OFL.txt` with the files. The sites in the [inspiration library](docs/INSPIRATION.md) are described, not copied.
+MIT, copyright 2026 [Ghernie Encinas](https://www.linkedin.com/in/ghernie). See [LICENSE](LICENSE).
 
-cutify-ui is an independent project. It isn't affiliated with or endorsed by Anthropic. Claude is a trademark of Anthropic. Example product and character names (StudyBuddy, Fleet Queue, Sprout, Gridline, Pantry Pals, Sunday Spread, Zine Night, Moonlit Market, Beep & Build, Snooze Log, Penpal Post and Sam Sample) are made up for the demos and don't refer to real products or people.
+Every font the skill uses comes from Google Fonts under the SIL Open Font License 1.1, and [`references/fonts.md`](references/fonts.md) lists them with links. If you host the fonts yourself, keep each font's `OFL.txt` file with them.
+
+cutify-ui is an independent project and isn't affiliated with or endorsed by Anthropic. Claude is a trademark of Anthropic. The product and character names in the examples (StudyBuddy, Fleet Queue, Sprout, Gridline, Pantry Pals, Sunday Spread, Zine Night, Moonlit Market, Beep & Build, Snooze Log, Penpal Post and Sam Sample) are made up and don't refer to real products or people.

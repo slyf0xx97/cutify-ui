@@ -5,7 +5,7 @@ import zipfile
 root = pathlib.Path(__file__).resolve().parent.parent
 dist = root / "dist"
 dist.mkdir(exist_ok=True)
-keep = ["SKILL.md", "LICENSE", "references", "assets"]
+keep = ["SKILL.md", "LICENSE", "references", "assets", "scripts"]
 out = dist / "cutify-ui.zip"
 with zipfile.ZipFile(out, "w", zipfile.ZIP_DEFLATED) as z:
     for item in keep:

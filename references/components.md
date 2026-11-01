@@ -1,6 +1,6 @@
 # Components
 
-Recipes in plain HTML/CSS. They use the shared contract variables that every theme file defines (`--bg`, `--surface`, `--surface-2`, `--ink`, `--ink-muted`, `--accent`, `--accent-ink`, `--accent-2`, `--accent-2-ink`, `--ok`, `--bad`, `--display`, `--body`, `--mono`), so they work in any of the six themes. Each theme file also ships its own styled versions of the base classes; prefer those, and use these recipes for the pieces a theme file doesn't have. React versions of the starred ones are in `assets/react/`.
+Recipes in plain HTML/CSS. They use the shared contract variables that every theme file defines (`--bg`, `--surface`, `--surface-2`, `--ink`, `--ink-muted`, `--accent`, `--accent-ink`, `--accent-2`, `--accent-2-ink`, `--ok`, `--bad`, `--display`, `--body`, `--mono`), so they work in any of the six themes. Each theme file also ships its own styled versions of the base classes. Use those first, and use these recipes for the pieces a theme file doesn't have. React versions of the starred ones are in `assets/react/`.
 
 ## Contents
 - Tooltip (★ `WordTip`)
@@ -18,11 +18,9 @@ Recipes in plain HTML/CSS. They use the shared contract variables that every the
 - Toggle switch
 - Footer
 
----
-
 ## Tooltip
 
-Small and dependency-free. The trigger is a real button with an `aria-label`; the tip text lives in a visually hidden `role="tooltip"` element that screen readers reach through `aria-describedby`; the visible bubble is drawn by `::after` from `data-tip`. `&#10;` in the attribute plus `white-space: pre-line` gives multi-line tips.
+This tooltip is small and has no dependencies. The trigger is a real button with an `aria-label`. The tip text lives in a visually hidden `role="tooltip"` element that screen readers reach through `aria-describedby`, and `::after` draws the visible bubble from `data-tip`. `&#10;` in the attribute plus `white-space: pre-line` gives multi-line tips.
 ```html
 <button type="button" class="i" aria-label="About the Scout" aria-describedby="tip-scout"
   data-tip="Finds stalls that match your cravings&#10;• Reads the sample stall list&#10;Why: you name a craving, not a stall">i</button>
@@ -66,7 +64,7 @@ Game button (all themes, put it on `:where()` so it never fights other selectors
 ```
 Glass button: white or orange fill, `2px solid var(--ink)`, 12px radius, 700 weight, `box-shadow: 0 3px 0 rgb(16 70 100 / 30%), 0 6px 14px rgb(16 70 100 / 14%)`, min-height 44px.
 
-Apron primary `.go`: yellow fill, dark text, `800 18px Anybody`, `font-stretch: 110%`, uppercase, radius 4, padding `13px 24px`, `:disabled { opacity: .35; cursor: not-allowed }`. Secondary `.btn`: transparent, `2px solid #ffffff40`, `700 13px` mono, `.08em`, uppercase; hover turns border and text yellow.
+Apron primary `.go`: yellow fill, dark text, `800 18px Anybody`, `font-stretch: 110%`, uppercase, radius 4, padding `13px 24px`, `:disabled { opacity: .35; cursor: not-allowed }`. Secondary `.btn`: transparent, `2px solid #ffffff40`, `700 13px` mono, `.08em`, uppercase. On hover the border and text turn yellow.
 
 Split button with a menu that opens upward (for a primary action near the bottom of the hero):
 ```html
@@ -157,15 +155,15 @@ A dashboard row under the tiles: `grid-template-columns: 1.25fr 1.25fr .8fr` (ch
 ## Charts
 
 Hand-built SVG, no library, sized from the container:
-- **Line chart**: three gridlines (0, half, max), mono axis labels, `stroke-width: 2` lines, end-of-line direct labels ("Before", "After") nudged apart if they collide, plus a small legend. A transparent hit `<rect>` over the plot moves a vertical crosshair, two ringed dots and an HTML tooltip.
-- **Dumbbell**: one thin row per item, a grey connector between a before dot and an after dot, sorted by improvement; each row is a hover target and clickable.
-- **Stacked bar**: plain HTML flex, `display: flex; gap: 2px; height: 16px; border-radius: 4px; overflow: hidden` with `<span style="flex:N; background:C">`, plus a legend of swatch, label and bold count.
-- Dots get a 2px ring in the card colour so they lift off lines. Tooltip: dark, `1px #ffffff30` border, bold mono title, rows of swatch + label + right-aligned mono value.
+- A line chart has three gridlines (0, half, max), mono axis labels, `stroke-width: 2` lines, end-of-line direct labels ("Before", "After") nudged apart if they collide, plus a small legend. A transparent hit `<rect>` over the plot moves a vertical crosshair, two ringed dots and an HTML tooltip.
+- A dumbbell chart has one thin row per item, with a grey connector between a before dot and an after dot, sorted by improvement. Each row is a hover target and clickable.
+- A stacked bar is plain HTML flex, `display: flex; gap: 2px; height: 16px; border-radius: 4px; overflow: hidden` with `<span style="flex:N; background:C">`, plus a legend of swatch, label and bold count.
+- Dots get a 2px ring in the card colour so they lift off lines. The chart tooltip is dark, with a `1px #ffffff30` border, a bold mono title and rows of swatch + label + right-aligned mono value.
 - Text stays in ink colours, never in the series colour. Use the checked palette in `references/themes.md`.
 
 ## Dialog
 
-Use native `<dialog>`: Escape, focus trap and backdrop come free. Close on backdrop click, return focus to the opener. Card radius 22px (Glass) or 8px with a `2px solid var(--accent)` border (Apron); header strip with an icon tile, title and a Close pill (`Close ✕`). Entrance `pop-in .18s`. On phones make it a near full-width sheet (`calc(100vw - .75rem)`, `94dvh`).
+Use native `<dialog>`: Escape, focus trap and backdrop come free. Close on backdrop click, return focus to the opener. The card radius is 22px (Glass), or 8px with a `2px solid var(--accent)` border (Apron). The header strip has an icon tile, the title and a Close pill (`Close ✕`). Entrance `pop-in .18s`. On phones make it a near full-width sheet (`calc(100vw - .75rem)`, `94dvh`).
 
 ## Chat box
 
@@ -204,16 +202,19 @@ End with a CSS triangle arrowhead and a tiny mono label ("rules feed the agents"
 
 ## Loading screen and runway lights
 
-A full-screen loader that shows immediately on click (inject it from JS; don't wait for the server):
+A full-screen loader that shows immediately on click. Inject it from JS so it doesn't wait for the server:
 ```css
 .load { position: fixed; inset: 0; z-index: 9999; background: var(--bg); display: flex; align-items: center; justify-content: center; }
-.load-rwy { position: relative; height: 44px; width: min(560px, 90vw); border-radius: 4px; overflow: hidden; animation: lights .6s linear infinite; background:
-  radial-gradient(circle, #ffd400 0 3px, transparent 4px) 0 4px / 26px 10px repeat-x,
-  radial-gradient(circle, #ffd400 0 3px, transparent 4px) 0 34px / 26px 10px repeat-x,
-  linear-gradient(#ffffffaa, #ffffffaa) 0 21px / 100% 2px no-repeat, #0b0c0d; }
-@keyframes lights { to { background-position: 26px 4px, 26px 34px, 0 21px, 0 0; } }
-.load-plane { position: absolute; top: 4px; left: -40px; font-size: 30px; animation: taxi 2.2s cubic-bezier(.5,0,.4,1) infinite; text-shadow: -10px 0 14px #ff6b1a; }
-@keyframes taxi { to { left: 105%; } }
+.load-rwy { --w: min(560px, 90vw); position: relative; height: 44px; width: var(--w); border-radius: 4px; overflow: hidden;
+  background: linear-gradient(#ffffffaa, #ffffffaa) 0 21px / 100% 2px no-repeat, #0b0c0d; }
+/* slide the lights as one layer one dot-step wide: seamless, and nothing repaints */
+.load-rwy::before { content: ""; position: absolute; top: 0; bottom: 0; left: -26px; width: calc(100% + 26px); animation: lights .6s linear infinite;
+  background: radial-gradient(circle, #ffd400 0 3px, transparent 4px) 0 4px / 26px 10px repeat-x,
+              radial-gradient(circle, #ffd400 0 3px, transparent 4px) 0 34px / 26px 10px repeat-x; }
+@keyframes lights { to { transform: translateX(26px); } }
+.load-plane { position: absolute; top: 4px; left: 0; font-size: 30px; transform: translateX(-40px); animation: taxi 2.2s cubic-bezier(.5,0,.4,1) infinite; text-shadow: -10px 0 14px #ff6b1a; }
+@keyframes taxi { to { transform: translateX(calc(var(--w) + 10px)); } }
+@media (prefers-reduced-motion: reduce) { .load-rwy::before, .load-plane { animation: none; } }
 ```
 Above the runway: brand, a mono "Loading" label, the destination in huge display type, and one plain line saying what's loading. The same dotted-gradient trick makes edge lights down both sides of the viewport (`position: fixed; width: 12px; background: radial-gradient(...) 0 0 / 12px 40px`).
 

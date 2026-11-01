@@ -105,10 +105,12 @@ button { font: inherit; cursor: pointer; color: inherit; }
 .ticks { list-style: none; padding: 0; margin: 0 0 1.6rem; display: grid; gap: .45rem; }
 .ticks li { display: flex; gap: .6rem; align-items: center; font-weight: 600; }
 .ticks li::before { content: "✓"; display: inline-grid; place-items: center; width: 1.5rem; height: 1.5rem; flex: none; background: var(--surface-2); border: 2px solid var(--border); font: 700 .85rem var(--mono); }
-.live { display: inline-flex; align-items: center; gap: .5rem; padding: .2rem .6rem; border: 2px solid var(--border); background: var(--surface); font: 700 .72rem var(--mono); text-transform: uppercase; letter-spacing: .08em; }
-.live i { width: 9px; height: 9px; border-radius: 50%; background: var(--pink-deep); }
-@media (prefers-reduced-motion: no-preference) { .live i { animation: live 1.6s infinite; } }
-@keyframes live { 0% { box-shadow: 0 0 0 0 rgb(217 37 143 / .6); } 100% { box-shadow: 0 0 0 9px transparent; } }
+.live { position: relative; isolation: isolate; display: inline-flex; align-items: center; gap: .5rem; padding: .2rem .6rem; border: 2px solid var(--border); background: var(--surface); font: 700 .72rem var(--mono); text-transform: uppercase; letter-spacing: .08em; }
+.live i { position: relative; width: 9px; height: 9px; border-radius: 50%; background: var(--pink-deep); }
+/* the ring scales on its own layer behind the dot (dot + 9px each side), so the pulse never repaints */
+.live i::after { content: ""; position: absolute; z-index: -1; inset: 0; border-radius: 50%; background: var(--pink-deep); opacity: 0; }
+@media (prefers-reduced-motion: no-preference) { .live i::after { animation: live 1.6s infinite; } }
+@keyframes live { 0% { transform: scale(1); opacity: .6; } 100% { transform: scale(3); opacity: 0; } }
 
 /* split primary button with a menu that opens upward */
 .play { display: inline-flex; position: relative; max-width: 100%; }
@@ -240,8 +242,9 @@ main { padding-bottom: 2rem; }
 .sheet { position: relative; background: var(--surface); border: 2px solid var(--border); box-shadow: var(--shadow); padding: 1.2rem; }
 .sheet.locked > :not(.lock) { filter: grayscale(1); opacity: .6; }
 .sheet .lock { position: absolute; inset: 0; display: grid; place-items: center; z-index: 3; }
-.sheet .lock p { margin: 0; padding: .6rem 1rem; background: var(--surface); border: 2px solid var(--border); font: 700 .9rem var(--mono); text-transform: uppercase; box-shadow: var(--shadow); max-width: calc(100% - 2rem); text-align: center; }
+.sheet .lock p { margin: 0; padding: .6rem 1rem; background: var(--surface); border: 2px solid var(--border); font: 700 .9rem var(--mono); text-transform: uppercase; box-shadow: var(--shadow); max-width: calc(100% - 2rem); text-align: center; text-wrap: balance; }
 .sheet:not(.locked) .lock { display: none; }
+.sheet .lock .px-ic { display: inline; width: 1em; height: 1em; vertical-align: -.125em; margin: 0; }   /* pixel lock sized like the text; beats the sheet's map svg rule */
 .sheet-top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: .5rem; border-bottom: 3px solid var(--ink); padding-bottom: .5rem; margin-bottom: .9rem; }
 .sheet-top h3 { margin: 0; font-size: clamp(1.8rem, 4vw, 2.6rem); }
 .sheet-grid { display: grid; grid-template-columns: 1.7fr 1fr; gap: 1.2rem; }
@@ -285,7 +288,13 @@ footer { margin-top: 4rem; border-top: 2px solid var(--border); background: var(
 .foot h4 { margin: 0 0 .5rem; font: 700 .75rem var(--mono); text-transform: uppercase; letter-spacing: .1em; color: var(--ink-muted); text-shadow: none; }
 .foot ul { list-style: none; margin: 0; padding: 0; font-size: .95rem; } .foot li { margin: .2rem 0; }
 .foot p { margin: .4rem 0 0; font-size: .95rem; }
-.copy { border-top: 2px dashed var(--border); padding: .9rem 0 1.4rem; font: 400 .8rem var(--mono); }
+.copy { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .8rem 1.5rem; border-top: 2px dashed var(--border); padding: 1rem 0 1.6rem; font: 400 .8rem var(--mono); }
+.donate { display: inline-flex; align-items: center; gap: .4rem; min-height: 2.75rem; padding: .2rem .9rem; border: 2px solid var(--ink); border-radius: var(--radius);
+  background: #FFE0F1; color: var(--ink); font: 700 .85rem var(--mono); text-transform: uppercase; letter-spacing: .04em; text-decoration: none; white-space: nowrap; box-shadow: var(--shadow); transition: transform .12s ease, box-shadow .12s ease; }
+.donate svg { flex: none; color: var(--pink-deep); }
+.donate:hover { box-shadow: var(--shadow-hover); }
+@media (prefers-reduced-motion: no-preference) { .donate:hover { transform: translate(-1px, -2px); } }
+.donate:focus-visible { outline: 3px solid var(--blue); outline-offset: 4px; }
 
 /* ---- dialog ---- */
 dialog.pop { width: min(520px, calc(100vw - 1.5rem)); max-height: 92dvh; padding: 0; border: 2px solid var(--border); border-radius: var(--radius); background: var(--surface); color: var(--ink); box-shadow: var(--shadow), 0 20px 50px rgb(29 29 59 / .3); overflow: auto; }
@@ -481,7 +490,7 @@ dialog.pop::backdrop { background: rgb(29 29 59 / .45); }
       <button class="i" type="button" aria-label="About stage 4" data-tip="A map for your pocket|Opens after you approve|Shows the floor, the walk and each stop in order|Prints on one page; the rest of this site is left out|Why paper: halls are loud and phones run flat">i</button></div>
     <div class="explain"><span>Approved route</span><i>→</i><span>One-page map</span><i>→</i><span>Print or save as PDF</span></div>
     <div class="sheet locked" id="sheet">
-      <div class="lock"><p>🔒 Approve your route in stage 3 first</p></div>
+      <div class="lock"><p><svg class="px-ic" aria-hidden="true" focusable="false" viewBox="0 0 16 16" width="16" height="16" shape-rendering="crispEdges"><path fill="currentColor" fill-rule="evenodd" d="M5 1h6v1h1v5h-2V3H6v4H4V2h1zM3 7h10v8H3zM7 9v3h2V9z"/></svg> Approve your route in stage 3 first</p></div>
       <div class="sheet-top"><div><span class="lab">Zine Night, your route</span><h3>Walk sheet</h3></div><span class="stamp">Sample fair</span></div>
       <div class="sheet-grid">
         <svg id="sheetMap" viewBox="0 0 810 525" role="img" aria-label="Your approved route on the fair floor"></svg>
@@ -530,7 +539,7 @@ dialog.pop::backdrop { background: rgb(29 29 59 / .45); }
       <div><h4>Built with</h4><ul><li>Plain HTML, CSS and SVG</li><li>cutify-ui, Riso Club theme</li><li>Bricolage Grotesque, Rethink Sans, Space Mono</li></ul></div>
       <div><h4>Project</h4><ul><li>Example page for cutify-ui</li><li>Not a real event</li></ul></div>
     </div>
-    <div class="copy">© 2026 cutify-ui example. Every table, name and number on this page is a sample.</div>
+    <div class="copy"><span>© 2026 cutify-ui example. Every table, name and number on this page is a sample.</span><a class="donate" href="https://donate.stripe.com/3cIcMX8ee5oufGWd5n18c00" target="_blank" rel="noopener noreferrer"><svg aria-hidden="true" focusable="false" viewBox="0 0 16 16" width="16" height="16" shape-rendering="crispEdges"><path fill="currentColor" d="M3 3h3v1h1v1h2V4h1V3h3v1h1v4h-1v1h-1v1h-1v1h-1v1H9v1H7v-1H6v-1H5V9H4V8H3V7H2V4h1z"/></svg>Support cutify-ui<span class="sr-only"> (opens Stripe in a new tab)</span></a></div>
   </div>
 </footer>
 
@@ -673,10 +682,11 @@ function renderLive(restart = true) {
 function placeVisitor() {
   const pt = parts.main.getPointAtLength(walk.d), ahead = parts.main.getPointAtLength(Math.min(plan.len, walk.d + 2));
   const flip = ahead.x < pt.x - .5 ? -1 : 1;
+  const ms = $('#mapscroll'), sw = ms.scrollWidth, cw = ms.clientWidth;   // read layout before the writes below, so frames never force a reflow
   vis.setAttribute('transform', `translate(${pt.x.toFixed(1)} ${pt.y.toFixed(1)}) scale(${flip} 1)`);
   for (const p of [parts.ghost, parts.main]) p.style.strokeDashoffset = plan.len - walk.d;
-  const ms = $('#mapscroll');   // narrow screens: keep the walker in view while the walk plays
-  if (!walk.done && walk.d > 0 && ms.scrollWidth > ms.clientWidth + 1) ms.scrollLeft = pt.x / 810 * ms.scrollWidth - ms.clientWidth / 2;
+  // narrow screens: keep the walker in view while the walk plays
+  if (!walk.done && walk.d > 0 && sw > cw + 1) ms.scrollLeft = pt.x / 810 * sw - cw / 2;
 }
 function reach(i) {
   parts.badges.querySelector(`[data-stop="${i}"]`)?.classList.add('hit');
@@ -840,7 +850,7 @@ function howGo() {
   cards.forEach((c, i) => c.classList.toggle('on', i === howStep));
   const c = cards[howStep]; token.style.transform = `translate(0, ${c.offsetTop + c.offsetHeight / 2 - 19}px)`;
 }
-function howTick() { howStep = (howStep + 1) % cards.length; howGo(); }
+function howTick() { if (document.hidden) return; howStep = (howStep + 1) % cards.length; howGo(); }
 
 // ---- marquee ----
 const mq = Object.values(TOPICS).map(x => x + ' <b>✶</b>').join(' ') + ' 40 tables <b>✶</b> one Curator <b>✶</b> sample fair <b>✶</b> ';
@@ -854,7 +864,7 @@ const io = new IntersectionObserver(es => es.forEach(e => {
   if (e.target.id === 'diagPanel' && e.isIntersecting) e.target.classList.add('in');
 }), { rootMargin: '0px' });
 ['.hero', '.marquee', '#mapscroll', '#how', '#diagPanel'].forEach(s => io.observe($(s)));
-addEventListener('resize', howGo);
+let rz = 0; addEventListener('resize', () => { rz ||= requestAnimationFrame(() => { rz = 0; howGo(); }); });
 
 topicHint(); renderLive(true); setState(false); howGo();
 </script>

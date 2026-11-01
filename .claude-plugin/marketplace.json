@@ -1,0 +1,24 @@
+{
+  "name": "cutify-ui",
+  "owner": {
+    "name": "Ghernie Encinas",
+    "url": "https://github.com/slyf0xx97"
+  },
+  "description": "The cutify-ui skill for cute, game-like web pages.",
+  "plugins": [
+    {
+      "name": "cutify-ui",
+      "source": "./",
+      "description": "Cute, game-like web pages with pixel-art characters, story stages and motion. Six themes, in React, Next.js or plain HTML.",
+      "category": "design",
+      "tags": [
+        "design",
+        "ui",
+        "pixel-art",
+        "react",
+        "frontend"
+      ],
+      "version": "0.3.0"
+    }
+  ]
+}
