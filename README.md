@@ -19,7 +19,7 @@ cutify-ui is an open-source [Claude skill](https://docs.claude.com/en/docs/agent
 
 <p align="center"><a href="https://cutify.ghernie.com/"><img src="docs/gallery-button.png" alt="Open the live gallery: see them move at cutify.ghernie.com" height="84"></a></p>
 
-<p align="center"><a href="https://donate.stripe.com/00w4gr2TU7wC52iaXf18c01"><img src="docs/support-button.png" alt="Support cutify-ui: donate with Stripe" height="68"></a>&nbsp;&nbsp;<a href="https://ko-fi.com/K6P629UOFQ"><img src="docs/kofi-button.png" alt="Support cutify-ui: tip on Ko-fi" height="68"></a></p>
+<p align="center"><a href="https://buy.stripe.com/00w4gr2TU7wC52iaXf18c01"><img src="docs/support-button.png" alt="Support cutify-ui: tip with Stripe" height="68"></a>&nbsp;&nbsp;<a href="https://ko-fi.com/K6P629UOFQ"><img src="docs/kofi-button.png" alt="Support cutify-ui: tip on Ko-fi" height="68"></a></p>
 
 ## Contents
 
@@ -82,7 +82,7 @@ Six themes come ready to use: Glass, Apron, Picnic, Riso Club, Lantern Night and
 
 ## 🖼️ Gallery
 
-Claude built each example with the skill from a brief of a few sentences, then checked it in a browser at widths from 375px to 1440px. The first six briefs described only the product and its characters. The newer six also named a theme or palette, to show each one. Click a picture to open the page. The brief Claude got sits under each one, with a copy button.
+Claude built each example with the skill from a brief of a few sentences, then checked it in a browser at widths from 375px to 1440px. The first six briefs described only the product and its characters, and the next six also named a theme or palette. The newest six cover other kinds of page: a phone prototype, a CI pipeline explainer, an approval workflow, a delivery map, an event site and a staff training flow. None of the six has AI in the product, and three use themes Claude made up from the brief. Click a picture to open the page, and copy any brief from the list under the gallery.
 
 <!-- GALLERY:START -->
 <table>
@@ -105,6 +105,16 @@ Claude built each example with the skill from a brief of a few sentences, then c
 <td width="33%" valign="top"><a href="https://cutify.ghernie.com/examples/penpal-post/"><img src="docs/gallery/penpal-post.gif" alt="Penpal Post"></a><br><b><a href="https://cutify.ghernie.com/examples/penpal-post/">Penpal Post</a></b> <sub>(<a href="examples/penpal-post">source</a>)</sub><br><sub>🍓 Custom: Strawberry Milk + Kawaii JP, HTML</sub></td>
 <td width="33%" valign="top"><a href="https://cutify.ghernie.com/examples/pantry-pals/"><img src="docs/gallery/pantry-pals.gif" alt="Pantry Pals"></a><br><b><a href="https://cutify.ghernie.com/examples/pantry-pals/">Pantry Pals</a></b> <sub>(<a href="examples/pantry-pals">source</a>)</sub><br><sub>🪟 Glass, Next.js + static copy</sub></td>
 <td width="33%" valign="top"><a href="https://cutify.ghernie.com/examples/portfolio/"><img src="docs/gallery/portfolio.gif" alt="Sam Sample, portfolio"></a><br><b><a href="https://cutify.ghernie.com/examples/portfolio/">Sam Sample, portfolio</a></b> <sub>(<a href="examples/portfolio">source</a>)</sub><br><sub>🪟 Glass, HTML, no AI</sub></td>
+</tr>
+<tr>
+<td width="33%" valign="top"><a href="https://cutify.ghernie.com/examples/pocket-money/"><img src="docs/gallery/pocket-money.gif" alt="Pocket Money"></a><br><b><a href="https://cutify.ghernie.com/examples/pocket-money/">Pocket Money</a></b> <sub>(<a href="examples/pocket-money">source</a>)</sub><br><sub>🧺 Picnic, HTML, phone prototype</sub></td>
+<td width="33%" valign="top"><a href="https://cutify.ghernie.com/examples/ship-it/"><img src="docs/gallery/ship-it.gif" alt="Ship It"></a><br><b><a href="https://cutify.ghernie.com/examples/ship-it/">Ship It</a></b> <sub>(<a href="examples/ship-it">source</a>)</sub><br><sub>💻 Custom: Terminal Candy, HTML, no AI</sub></td>
+<td width="33%" valign="top"><a href="https://cutify.ghernie.com/examples/tally/"><img src="docs/gallery/tally.gif" alt="Tally"></a><br><b><a href="https://cutify.ghernie.com/examples/tally/">Tally</a></b> <sub>(<a href="examples/tally">source</a>)</sub><br><sub>🪟 Glass dark, HTML, process flow</sub></td>
+</tr>
+<tr>
+<td width="33%" valign="top"><a href="https://cutify.ghernie.com/examples/parcel-pigeon/"><img src="docs/gallery/parcel-pigeon.gif" alt="Parcel Pigeon"></a><br><b><a href="https://cutify.ghernie.com/examples/parcel-pigeon/">Parcel Pigeon</a></b> <sub>(<a href="examples/parcel-pigeon">source</a>)</sub><br><sub>🖨️ Riso Club, HTML, no AI</sub></td>
+<td width="33%" valign="top"><a href="https://cutify.ghernie.com/examples/pixel-fest/"><img src="docs/gallery/pixel-fest.gif" alt="Pixel Fest"></a><br><b><a href="https://cutify.ghernie.com/examples/pixel-fest/">Pixel Fest</a></b> <sub>(<a href="examples/pixel-fest">source</a>)</sub><br><sub>🕹️ Custom: Arcade Night, HTML, playable, no AI</sub></td>
+<td width="33%" valign="top"><a href="https://cutify.ghernie.com/examples/ramen-route/"><img src="docs/gallery/ramen-route.gif" alt="Ramen Route"></a><br><b><a href="https://cutify.ghernie.com/examples/ramen-route/">Ramen Route</a></b> <sub>(<a href="examples/ramen-route">source</a>)</sub><br><sub>🍜 Custom: Noren, HTML, no AI</sub></td>
 </tr>
 </table>
 
@@ -180,6 +190,42 @@ Pantry Pals, a meal planner. Two AI helpers: a Chef that suggests recipes from w
 
 ```text
 A personal portfolio site for "Sam Sample" (a made-up interaction design student). No AI in this product: the cast is Sam's pixel-art avatar as a mascot, and the numbered stages are Sam's journey (About, three case studies, Skills, Contact). The avatar walks a trail as you scroll. Glass (light) theme. Each case study card opens a native <dialog> with details. Clearly mark it as a sample portfolio with made-up projects.
+```
+
+**Pocket Money**
+
+```text
+Pocket Money, a mobile app prototype that helps kids aged 8 to 12 save their allowance. Show it as a clickable phone prototype on the page: onboarding, setting a savings goal (a new bike), a weekly allowance coming in, and a jar that fills up. A parent approves spending requests. Picnic theme. Make it feel like a real app prototype a designer would show in a pitch, with the screens linked by a little flow diagram.
+```
+
+**Ship It**
+
+```text
+Ship It, an explainer page for our team's CI/CD pipeline, for new engineers in their first week. Show a commit travelling through lint, build, unit tests, a staging deploy and a production deploy, with a small pixel crew of bots running each step. Include one run where a failing test stops the deploy, and show how to read the logs. No AI agents, it's all plain automation. Make up a custom theme called Terminal Candy: dark, monospace, pastel neon.
+```
+
+**Tally**
+
+```text
+Tally, an expense approval tool for a 12-person design studio. Map the process flow from snapping a receipt, to an automatic policy check (meal limit, missing receipt, wrong project code), to the studio manager's approval, to the payout in the next pay run. Show three sample claims taking different paths, one approved, one sent back, one flagged. Glass theme in dark mode. It should look like a polished B2B product page that a finance lead would trust.
+```
+
+**Parcel Pigeon**
+
+```text
+Parcel Pigeon, order tracking for a small neighbourhood bakery that delivers by bike. The customer sees a hand-drawn map of the neighbourhood with the courier pedalling along the route, a status timeline (baked, boxed, out for delivery, at your door) and an ETA that updates. A route planner suggests the stop order and the baker can drag stops to reorder before the rider leaves. Riso Club theme.
+```
+
+**Pixel Fest**
+
+```text
+Pixel Fest, the website for a two-day indie game-dev meetup in Singapore. A schedule across three rooms where you can star talks and see clashes, speaker cards, a small venue map, and a playable mini-game in the hero while people wait. No AI in the product. Make up a custom theme called Arcade Night: a CRT screen glow, scanlines and chunky 8-bit type, but still easy to read.
+```
+
+**Ramen Route**
+
+```text
+Ramen Route, an animated process flow for training new staff at a small ramen shop. Follow one order from the ticket machine, to the noodle station, broth, toppings and the pass, to the customer's counter seat. Show the timing at each station, what happens when the shop is busy, and where orders usually go wrong. Make up a custom theme called Noren: indigo and cream like a shop curtain, warm and hand-made. No AI, it's a training page.
 ```
 
 </details>
@@ -377,9 +423,9 @@ New themes, components and examples are welcome. [CONTRIBUTING.md](CONTRIBUTING.
 
 ## 💖 Support
 
-<p><a href="https://donate.stripe.com/00w4gr2TU7wC52iaXf18c01"><img src="docs/support-button.png" alt="Support cutify-ui: donate with Stripe" height="68"></a>&nbsp;&nbsp;<a href="https://ko-fi.com/K6P629UOFQ"><img src="docs/kofi-button.png" alt="Support cutify-ui: tip on Ko-fi" height="68"></a></p>
+<p><a href="https://buy.stripe.com/00w4gr2TU7wC52iaXf18c01"><img src="docs/support-button.png" alt="Support cutify-ui: tip with Stripe" height="68"></a>&nbsp;&nbsp;<a href="https://ko-fi.com/K6P629UOFQ"><img src="docs/kofi-button.png" alt="Support cutify-ui: tip on Ko-fi" height="68"></a></p>
 
-If cutify-ui saves you time, you can support it through [Stripe](https://donate.stripe.com/00w4gr2TU7wC52iaXf18c01) or [Ko-fi](https://ko-fi.com/K6P629UOFQ). You choose the amount on either site. The gallery and every example page also have the Stripe link in their footer.
+If cutify-ui saves you time, you can leave a tip through [Stripe](https://buy.stripe.com/00w4gr2TU7wC52iaXf18c01) or [Ko-fi](https://ko-fi.com/K6P629UOFQ). You choose the amount on either site. Tips are voluntary and don't unlock anything, because the skill stays free for everyone. If you tipped by mistake, email ghernienienie@gmail.com within 30 days for a refund.
 
 ### ⭐ Star history
 
@@ -391,4 +437,4 @@ MIT, copyright 2026 [Ghernie Encinas](https://www.linkedin.com/in/ghernie). See 
 
 Every font the skill uses comes from Google Fonts under the SIL Open Font License 1.1, and [`references/fonts.md`](plugin/skills/cutify-ui/references/fonts.md) lists them with links. If you host the fonts yourself, keep each font's `OFL.txt` file with them.
 
-cutify-ui is an independent project and isn't affiliated with or endorsed by Anthropic. Claude is a trademark of Anthropic. The product and character names in the examples (StudyBuddy, Fleet Queue, Sprout, Gridline, Pantry Pals, Sunday Spread, Zine Night, Moonlit Market, Beep & Build, Snooze Log, Penpal Post and Sam Sample) are made up and don't refer to real products or people.
+cutify-ui is an independent project and isn't affiliated with or endorsed by Anthropic. Claude is a trademark of Anthropic. The product and character names in the examples (StudyBuddy, Fleet Queue, Sprout, Gridline, Pantry Pals, Sunday Spread, Zine Night, Moonlit Market, Beep & Build, Snooze Log, Penpal Post, Sam Sample, Pocket Money, Ship It, Tally, Parcel Pigeon, Pixel Fest and Ramen Route) are made up and don't refer to real products or people.

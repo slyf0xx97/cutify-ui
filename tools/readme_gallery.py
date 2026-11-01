@@ -24,6 +24,12 @@ ITEMS = [
     ("penpal-post", "Penpal Post", "Write to a penpal in Japan. A Translator and a Postie help, then the letter folds and flies off.", "🍓 Custom: Strawberry Milk + Kawaii JP, HTML"),
     ("pantry-pals", "Pantry Pals", "A Chef and a Shopper plan your week from what's in the fridge.", "🪟 Glass, Next.js + static copy"),
     ("portfolio", "Sam Sample, portfolio", "A sample designer portfolio where the avatar walks a trail as you scroll.", "🪟 Glass, HTML, no AI"),
+    ("pocket-money", "Pocket Money", "A clickable phone prototype that helps kids save their allowance. A parent approves each spend.", "🧺 Picnic, HTML, phone prototype"),
+    ("ship-it", "Ship It", "A CI/CD pipeline explainer for new engineers. A pixel bot crew runs each step and a failing test stops the deploy.", "💻 Custom: Terminal Candy, HTML, no AI"),
+    ("tally", "Tally", "An expense approval flow for a design studio. Three sample claims take different paths from receipt to payout.", "🪟 Glass dark, HTML, process flow"),
+    ("parcel-pigeon", "Parcel Pigeon", "Delivery tracking for a neighbourhood bakery. A rider pedals the map while the ETA counts down.", "🖨️ Riso Club, HTML, no AI"),
+    ("pixel-fest", "Pixel Fest", "A two-day indie game-dev meetup with a schedule, speaker cards, a venue map and a playable mini-game.", "🕹️ Custom: Arcade Night, HTML, playable, no AI"),
+    ("ramen-route", "Ramen Route", "A staff training flow that follows one ramen order through six stations, with busy-hour timings.", "🍜 Custom: Noren, HTML, no AI"),
 ]
 
 root = pathlib.Path(__file__).resolve().parent.parent

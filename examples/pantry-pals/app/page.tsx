@@ -30,7 +30,7 @@ export default function Page() {
         </div>
         <div className="copy">
           <p>Sample page. The helpers here follow a script, not a live AI model.</p>
-          <a className="donate" href="https://donate.stripe.com/00w4gr2TU7wC52iaXf18c01" target="_blank" rel="noopener noreferrer">
+          <a className="donate" href="https://buy.stripe.com/00w4gr2TU7wC52iaXf18c01" target="_blank" rel="noopener noreferrer">
             <svg aria-hidden="true" focusable="false" viewBox="0 0 16 16" width="16" height="16" shapeRendering="crispEdges"><path fill="currentColor" d="M3 3h3v1h1v1h2V4h1V3h3v1h1v4h-1v1h-1v1h-1v1h-1v1H9v1H7v-1H6v-1H5V9H4V8H3V7H2V4h1z" /></svg>
             Support cutify-ui<span className="sr-only"> (opens Stripe in a new tab)</span>
           </a>

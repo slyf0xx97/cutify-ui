@@ -120,7 +120,7 @@ button { font: inherit; cursor: pointer; }
 
 /* ---- hero ---- */
 .hero { display: grid; gap: 2.2rem; align-items: center; padding-block: 2.6rem 1.5rem; }
-@media (min-width: 980px) { .hero { grid-template-columns: .95fr 1.15fr; padding-block-start: 3.4rem; } }
+@media (min-width: 980px) { .hero { grid-template-columns: minmax(0, .95fr) minmax(0, 1.15fr); padding-block-start: 3.4rem; } }
 .hero h1 { font-size: clamp(3.6rem, 9vw, 6.4rem); margin: 0 0 .9rem; }
 .hero .tag { font-size: 1.12rem; margin: 0 0 1.1rem; max-width: 34rem; }
 .benefits { list-style: none; margin: 0 0 1.3rem; padding: 0; display: grid; gap: .45rem; }
@@ -186,7 +186,7 @@ button { font: inherit; cursor: pointer; }
 
 /* stage 1 */
 .pick { display: grid; gap: 1.4rem; }
-@media (min-width: 900px) { .pick { grid-template-columns: 1.3fr 1fr; } }
+@media (min-width: 900px) { .pick { grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); } }
 .pick h3 { font-size: 1.6rem; margin: 0 0 .7rem; display: flex; align-items: center; }
 .craves { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: .6rem; }
 .crave { display: flex; align-items: center; gap: .55rem; min-height: 3rem; padding: .45rem .7rem; border: 0; margin: 2px; background: var(--surface-2); color: var(--ink);
@@ -209,7 +209,7 @@ button { font: inherit; cursor: pointer; }
 .hint { font-size: .9rem; color: var(--ink-muted); margin: .5rem 0 0; }
 
 /* agent rows (stages 2 and 3) */
-.agent { display: grid; grid-template-columns: 72px 1fr; gap: 1rem; align-items: start; margin-bottom: 1.2rem; }
+.agent { display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: 1rem; align-items: start; margin-bottom: 1.2rem; }
 .agent .who { display: grid; justify-items: center; gap: .35rem; }
 .agent .who svg { width: 64px; height: 64px; }
 .bubble { position: relative; padding: .8rem 1rem; background: var(--surface-2); box-shadow: 0 -2px var(--c), 0 2px var(--c), -2px 0 var(--c), 2px 0 var(--c); min-height: 3.4rem; }
@@ -220,7 +220,7 @@ button { font: inherit; cursor: pointer; }
 .scout-c { --c: var(--c-scout); } .queue-c { --c: var(--c-queue); }
 
 .stalls { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr)); gap: .9rem; }
-.stall-card { display: grid; grid-template-columns: 40px 1fr; gap: .2rem .8rem; align-content: start; }
+.stall-card { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: .2rem .8rem; align-content: start; }
 .stall-card svg { width: 40px; height: 40px; grid-row: span 2; }
 .stall-card h4 { margin: 0; font: 600 1rem/1.3 var(--body); }
 .stall-card .meta { font-size: .88rem; color: var(--ink-muted); }
@@ -231,7 +231,7 @@ button { font: inherit; cursor: pointer; }
 
 /* stage 3 waits */
 .waits { list-style: none; margin: 0; padding: 0; display: grid; gap: .7rem; }
-.wait { display: grid; grid-template-columns: 2.2rem 1fr; gap: .2rem .9rem; align-items: start; }
+.wait { display: grid; grid-template-columns: 2.2rem minmax(0, 1fr); gap: .2rem .9rem; align-items: start; }
 .wait .num { display: grid; place-items: center; width: 2.2rem; height: 2.2rem; background: var(--lantern); color: var(--lantern-ink); font: 400 1.4rem var(--display); }
 .wait h4 { margin: 0; font: 600 1rem/1.3 var(--body); }
 .wait .row { display: flex; flex-wrap: wrap; align-items: flex-end; gap: .5rem 1.4rem; margin-top: .35rem; }
@@ -244,10 +244,10 @@ button { font: inherit; cursor: pointer; }
 
 /* stage 4 */
 .route-grid { display: grid; gap: 1.2rem; }
-@media (min-width: 980px) { .route-grid { grid-template-columns: 1.5fr 1fr; align-items: start; } }
-.kpis { display: grid; grid-template-columns: repeat(2, 1fr); gap: .7rem; margin-bottom: 1rem; }
+@media (min-width: 980px) { .route-grid { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); align-items: start; } }
+.kpis { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .7rem; margin-bottom: 1rem; }
 .stops { list-style: none; margin: 0 0 1rem; padding: 0; display: grid; gap: .45rem; }
-.stops li { display: grid; grid-template-columns: 1.8rem 1fr auto; gap: .6rem; align-items: center; padding: .4rem .55rem; background: #ffffff0d; }
+.stops li { display: grid; grid-template-columns: 1.8rem minmax(0, 1fr) auto; gap: .6rem; align-items: center; padding: .4rem .55rem; background: #ffffff0d; }
 .stops li b { display: grid; place-items: center; width: 1.8rem; height: 1.8rem; background: var(--lantern); color: var(--lantern-ink); font: 400 1.2rem var(--display); }
 .stops li .t { font: 600 .9rem var(--mono); }
 .stops li.here { box-shadow: 0 0 0 2px var(--lantern); }
@@ -257,7 +257,7 @@ button { font: inherit; cursor: pointer; }
 
 /* ---- how it works ---- */
 .how { display: grid; gap: 2rem; }
-@media (min-width: 980px) { .how { grid-template-columns: 1.1fr 1fr; } }
+@media (min-width: 980px) { .how { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); } }
 .how-route { position: relative; margin: 0; padding: 0 0 0 3.4rem; list-style: none; display: grid; gap: .9rem; }
 .how-route::before { content: ""; position: absolute; left: 1.2rem; top: .8rem; bottom: .8rem; width: 4px; background-image: linear-gradient(var(--lantern) 50%, transparent 50%); background-size: 4px 12px; opacity: .7; }
 .how-route li { position: relative; padding: .75rem .9rem; background: var(--surface); box-shadow: var(--soft-border); margin: 2px; }
@@ -267,7 +267,7 @@ button { font: inherit; cursor: pointer; }
 .how-route h3 { margin: 0 0 .2rem; font: 600 1.02rem/1.3 var(--body); display: flex; gap: .45rem; align-items: center; flex-wrap: wrap; }
 .how-route p { margin: 0; font-size: .95rem; color: var(--ink-muted); }
 .how-ctrl { display: flex; gap: .5rem; margin-top: 1rem; }
-.arch { display: grid; grid-template-columns: 1fr 1fr; gap: .55rem .8rem; align-content: start; }
+.arch { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: .55rem .8rem; align-content: start; }
 .arch .cap { grid-column: 1 / -1; }
 .arch .box { padding: .65rem .8rem; background: var(--surface); box-shadow: var(--soft-border); margin: 2px; display: flex; flex-direction: column; gap: .2rem; }
 .arch .box b { display: flex; align-items: center; gap: .45rem; flex-wrap: wrap; font-weight: 600; }
@@ -275,13 +275,13 @@ button { font: inherit; cursor: pointer; }
 .arch .box.scout { box-shadow: 0 0 0 2px var(--c-scout); } .arch .box.queue { box-shadow: 0 0 0 2px var(--c-queue); } .arch .box.you { box-shadow: 0 0 0 2px var(--c-you); }
 .arch .full { grid-column: 1 / -1; }
 .arch .down { text-align: center; font: 600 1.2rem/1 var(--mono); color: var(--lantern); }
-@media (max-width: 560px) { .arch { grid-template-columns: 1fr; } .arch .down.half { display: none; } }
+@media (max-width: 560px) { .arch { grid-template-columns: minmax(0, 1fr); } .arch .down.half { display: none; } }
 
 /* ---- footer ---- */
 footer.wrap { margin: 4rem auto 1.5rem; }   /* footer.wrap: .wrap's margin would otherwise zero the gap above */
 .foot-grid { display: grid; gap: 1.4rem; }
-@media (min-width: 700px) { .foot-grid { grid-template-columns: 1fr 1fr; } }
-@media (min-width: 1100px) { .foot-grid { grid-template-columns: 1.4fr 1fr 1fr 1fr; } }
+@media (min-width: 700px) { .foot-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
+@media (min-width: 1100px) { .foot-grid { grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr); } }
 .foot-grid h5 { margin: 0 0 .4rem; font: 400 .72rem var(--label); text-transform: uppercase; color: var(--ink-muted); }
 .foot-grid p, .foot-grid ul { margin: 0; font-size: .95rem; } .foot-grid ul { padding: 0; list-style: none; display: grid; gap: .2rem; }
 .copy { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .8rem 1.5rem; margin-top: 1.1rem; padding-top: 1rem; border-top: 2px dashed #ffffff26; font: 400 .82rem var(--mono); color: var(--ink-muted); }
@@ -466,7 +466,7 @@ dialog.pop::backdrop { background: rgb(8 7 20 / .72); }
       <div><h5>Built with</h5><ul><li>Plain HTML, CSS and SVG</li><li>cutify-ui, Lantern Night theme</li><li>Jersey 10, Silkscreen, Lexend, Sometype Mono</li></ul></div>
       <div><h5>Project</h5><ul><li>Example page for cutify-ui</li><li>Not a real product</li></ul></div>
     </div>
-    <div class="copy"><span>© 2026 cutify-ui example. Every stall, price and crowd on this page is a sample.</span><a class="donate" href="https://donate.stripe.com/00w4gr2TU7wC52iaXf18c01" target="_blank" rel="noopener noreferrer"><svg aria-hidden="true" focusable="false" viewBox="0 0 16 16" width="16" height="16" shape-rendering="crispEdges"><path fill="currentColor" d="M3 3h3v1h1v1h2V4h1V3h3v1h1v4h-1v1h-1v1h-1v1h-1v1H9v1H7v-1H6v-1H5V9H4V8H3V7H2V4h1z"/></svg>Support cutify-ui<span class="sr-only"> (opens Stripe in a new tab)</span></a></div>
+    <div class="copy"><span>© 2026 cutify-ui example. Every stall, price and crowd on this page is a sample.</span><a class="donate" href="https://buy.stripe.com/00w4gr2TU7wC52iaXf18c01" target="_blank" rel="noopener noreferrer"><svg aria-hidden="true" focusable="false" viewBox="0 0 16 16" width="16" height="16" shape-rendering="crispEdges"><path fill="currentColor" d="M3 3h3v1h1v1h2V4h1V3h3v1h1v4h-1v1h-1v1h-1v1h-1v1H9v1H7v-1H6v-1H5V9H4V8H3V7H2V4h1z"/></svg>Support cutify-ui<span class="sr-only"> (opens Stripe in a new tab)</span></a></div>
   </div>
 </footer>
 

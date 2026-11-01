@@ -2,10 +2,15 @@
 
 All notable changes to cutify-ui are listed here. The project uses [semantic versioning](https://semver.org).
 
-## [Unreleased]
+## [0.4.0] (2026-11-01)
+
+### Added
+
+- Six new gallery examples that go beyond AI-helper pages, and none of them has AI in the product: Pocket Money (a phone app prototype with a flow diagram), Ship It (a CI/CD pipeline explainer), Tally (an expense approval workflow), Parcel Pigeon (delivery tracking on a hand-drawn map), Pixel Fest (an event site with a playable mini-game) and Ramen Route (a staff training flow). Three use themes made up from the brief: Terminal Candy, Arcade Night and Noren.
 
 ### Changed
 
+- The Stripe link is now a tip, not a donation, with a new `buy.stripe.com` address. The old address still opens the same checkout. The gallery footer and README give a contact email and a 30-day refund rule for tips made by mistake.
 - The plugin now lives in `plugin/`, with the skill in `plugin/skills/cutify-ui/`. Installing it downloads about 350 KB of skill files and leaves out the gallery, examples and tooling. `plugin/README.md` lists what the plugin contains, runs and sends.
 
 ### Fixed

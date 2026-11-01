@@ -1,0 +1,639 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ship It</title>
+<meta name="description" content="Ship It: a first-week explainer of the team's CI/CD pipeline, with a pixel crew of bots running lint, build, unit tests, staging and production. A cutify-ui example in a custom theme, Terminal Candy. Every run, hash, time and log is sample data.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' shape-rendering='crispEdges'%3E%3Crect width='16' height='16' rx='3' fill='%2314111f'/%3E%3Cpath fill='%237ef9c8' d='M2 4h2v2H2zM4 6h2v2H4zM6 8h2v2H6zM4 10h2v2H4zM2 12h2v2H2z'/%3E%3Cpath fill='%23ff9ad5' d='M9 12h5v2H9z'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=VT323&family=JetBrains+Mono:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+/* Terminal Candy: a custom cutify-ui theme. Dark terminal, monospace, pastel neon.
+   Depth is a hard bubblegum offset (the "candy offset"); stage numbers are shell prompts. */
+:root {
+  --bg: #14111f; --surface: #1c1829; --surface-2: #262138; --line: #3a3354;
+  --ink: #f4effa; --ink-muted: #b8aecb;
+  --accent: #7ef9c8; --accent-ink: #0f0d18;     /* mint: actions, numbers, focus, the Code kind */
+  --accent-2: #ff9ad5; --accent-2-ink: #0f0d18; /* bubblegum: the candy offset, the You kind */
+  --lemon: #fff38a; --peach: #ffb38a; --lilac: #c4a8ff; --sky: #8fd8ff;
+  --ok: #7ef9a0; --bad: #ff7a93;
+  --candy: 4px 4px 0 var(--accent-2);
+  --display: 'VT323', ui-monospace, monospace; --body: 'JetBrains Mono', ui-monospace, monospace; --mono: var(--body);
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+html, body { margin: 0; background: var(--bg); color: var(--ink); font: 400 16px/1.6 var(--body); }
+body { background: radial-gradient(#c4a8ff17 1px, transparent 1.5px) 0 0 / 16px 16px, var(--bg); overflow-x: hidden; }
+a { color: var(--accent); }
+code, kbd { font: 700 .92em var(--mono); color: var(--lemon); }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { animation: none !important; transition: none !important; } }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.is-off, .is-off *, .is-off *::before, .is-off *::after { animation-play-state: paused !important; }
+.wrap { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+h1, h2, h3 { font-family: var(--display); font-weight: 400; margin: 0; line-height: 1; }
+h2 { font-size: 44px; }
+h3 { font-size: 30px; }
+p { margin: 0 0 12px; }
+
+/* labels and chips */
+.lab { font: 700 12px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-muted); }
+.sample { display: inline-block; font: 700 11px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-muted);
+  border: 1px dashed #b8aecb80; border-radius: 3px; padding: 1px 6px; white-space: nowrap; }
+.kind { display: inline-block; font: 800 11px var(--mono); letter-spacing: .1em; text-transform: uppercase; padding: 2px 6px; border-radius: 2px; vertical-align: 2px; }
+.kind.you { background: var(--accent-2); color: var(--accent-2-ink); }
+.kind.code { background: var(--accent); color: var(--accent-ink); }
+/* glyphs: one shape per bot so colour is never the only cue */
+.gl { display: inline-block; width: 12px; height: 12px; background: var(--c); flex: none; }
+.gl.sq { border-radius: 2px; } .gl.ci { border-radius: 50%; }
+.gl.tri { clip-path: polygon(50% 0, 100% 100%, 0 100%); }
+.gl.hex { clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%); }
+.gl.dia { clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); }
+
+/* surfaces */
+.panel { background: var(--surface); border: 1.5px solid var(--line); border-radius: 10px; padding: 18px 20px; position: relative; }
+.screen { background: #110e1b; border: 1.5px solid var(--line); border-radius: 12px; position: relative; isolation: isolate; }
+.screen:has(.i:is(:hover, :focus-visible, .open)) { z-index: 60; }
+.screen::before { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; border-radius: inherit;
+  background: repeating-linear-gradient(0deg, #ffffff06 0 1px, transparent 1px 3px); }
+.bar { display: flex; align-items: center; gap: 10px; padding: 9px 14px; border-bottom: 1.5px solid var(--line); background: #1a1626; flex-wrap: wrap; border-radius: 10px 10px 0 0; }
+.bar .dots { display: flex; gap: 5px; } .bar .dots i { width: 9px; height: 9px; background: var(--c); }
+.bar .path { font: 700 13px var(--mono); color: var(--ink-muted); flex: 1; min-width: 0; }
+
+/* buttons: the candy offset presses in */
+button { font: inherit; color: inherit; cursor: pointer; }
+:where(button, .btn) { transition: transform .14s ease, box-shadow .14s ease, filter .14s ease; }
+@media (prefers-reduced-motion: no-preference) {
+  :where(button, .btn):not(:disabled):not(.i):hover { transform: translate(-1px, -2px); filter: brightness(1.06); }
+  :where(button, .btn):not(:disabled):not(.i):active { transform: translate(2px, 2px); filter: brightness(.97); } }
+.go { background: var(--accent); color: var(--accent-ink); border: 2px solid var(--accent-ink); border-radius: 6px; padding: 12px 22px;
+  font: 800 17px var(--mono); text-align: left; box-shadow: var(--candy); text-decoration: none; display: inline-block; }
+.go:not(:disabled):hover { box-shadow: 6px 6px 0 var(--accent-2); }
+.go:not(:disabled):active { box-shadow: 1px 1px 0 var(--accent-2); }
+.go small { display: block; font: 400 13px var(--mono); }
+.go:disabled { opacity: .4; cursor: not-allowed; }
+.go.sm { padding: 8px 14px; font-size: 14px; }
+.btn { background: transparent; color: var(--ink); border: 1.5px solid #f4effa55; border-radius: 4px; padding: 7px 13px;
+  font: 700 13px var(--mono); box-shadow: 3px 3px 0 #ff9ad566; }
+.btn:hover { border-color: var(--accent); color: var(--accent); }
+
+/* tooltip: a little terminal popup */
+.i { display: inline-grid; place-items: center; width: 1.4rem; height: 1.4rem; padding: 0; border-radius: 50%; border: 1.5px solid currentColor;
+  background: none; font: 800 .75rem var(--mono); color: var(--ink-muted); cursor: help; position: relative; vertical-align: middle; flex: none; }
+.i:hover, .i:focus-visible, .i.open { color: var(--accent); }
+.i[data-tip]:is(:hover, :focus-visible, .open)::after { content: attr(data-tip); position: absolute; left: 50%; bottom: calc(100% + 10px);
+  transform: translateX(-50%); width: min(330px, 80vw); padding: 10px 12px; background: var(--surface-2); color: var(--ink);
+  border: 1.5px solid var(--accent); font: 400 .85rem/1.5 var(--body); border-radius: 6px; box-shadow: 4px 4px 0 #000a; z-index: 200;
+  white-space: pre-line; pointer-events: none; text-align: left; text-transform: none; letter-spacing: 0; }
+.i.down[data-tip]:is(:hover, :focus-visible, .open)::after { bottom: auto; top: calc(100% + 10px); }
+.i.right[data-tip]:is(:hover, :focus-visible, .open)::after { left: -10px; transform: none; }
+.i.left[data-tip]:is(:hover, :focus-visible, .open)::after { left: auto; right: -10px; transform: none; }
+:has(> .i:is(:hover, :focus-visible, .open)) { z-index: 60; }
+@media (max-width: 600px) {
+  .i[data-tip]:is(:hover, :focus-visible, .open)::after, .i.down[data-tip]:is(:hover, :focus-visible, .open)::after,
+  .i.right[data-tip]:is(:hover, :focus-visible, .open)::after, .i.left[data-tip]:is(:hover, :focus-visible, .open)::after {
+    position: fixed; left: 8px; right: 8px; bottom: 8px; top: auto; width: auto; transform: none; } }
+
+/* nav */
+nav { position: sticky; top: 0; z-index: 50; background: #14111fee; border-bottom: 1.5px solid var(--line); }
+nav .wrap { display: flex; align-items: center; gap: 20px; height: 60px; }
+.brand { display: flex; align-items: center; gap: 8px; font: 400 30px var(--display); color: var(--ink); text-decoration: none; }
+.brand svg { width: 24px; height: 24px; }
+nav .grow { flex: 1; }
+nav .navlink { font: 700 13px var(--mono); color: var(--ink-muted); text-decoration: none; }
+nav .navlink:hover { color: var(--accent); }
+
+/* hero */
+.hero { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.25fr); gap: 36px; align-items: center; padding: 44px 0 30px; }
+.eyebrow { display: inline-flex; gap: 8px; align-items: center; margin-bottom: 14px; }
+.hero h1 { font-size: clamp(76px, 10vw, 128px); line-height: .82; letter-spacing: .01em; color: var(--ink); text-shadow: 4px 4px 0 #ff9ad566; }
+.hero h1 .cur { display: inline-block; width: .42em; height: .1em; background: var(--accent); margin-left: .06em; vertical-align: .02em; }
+@media (prefers-reduced-motion: no-preference) { .hero h1 .cur { animation: px-blink 1.1s steps(1) infinite; } }
+.lede { font-size: 18px; margin: 18px 0 16px; max-width: 34ch; }
+.lede code { font-size: 17px; }
+.ticks { list-style: none; padding: 0; margin: 0 0 22px; display: grid; gap: 6px; }
+.ticks li { display: flex; gap: 10px; } .ticks li::before { content: "✓"; color: var(--ok); font-weight: 800; }
+.legend { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-top: 22px; font-size: 14px; color: var(--ink-muted); }
+.legend span { display: inline-flex; align-items: center; gap: 7px; }
+
+/* the pipeline track (used three times) */
+.track { --sp: 64px; --belt: 34px; position: relative; padding: 18px 10px 4px; container-type: inline-size; }
+.stns { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); position: relative; z-index: 1; }
+.stn { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 2px; min-width: 0; }
+.stn .sprite { width: var(--sp); height: var(--sp); image-rendering: pixelated; transition: opacity .3s; }
+.stn .slot { height: var(--belt); }
+.stn .bn { display: inline-flex; align-items: center; gap: 5px; font: 800 14px var(--mono); }
+.stn .sn { font: 400 12px var(--mono); color: var(--ink-muted); }
+.stn .chip { margin-top: 4px; font: 800 11px var(--mono); padding: 2px 6px; border-radius: 3px; white-space: nowrap; background: #ffffff10; color: var(--ink-muted); }
+.stn[data-s=run] .chip { background: var(--lemon); color: var(--accent-ink); }
+.stn[data-s=pass] .chip { background: var(--ok); color: var(--accent-ink); }
+.stn[data-s=fail] .chip { background: var(--bad); color: var(--accent-ink); }
+.stn[data-s=skip] .sprite { opacity: .3; }
+.track.running .stn:not([data-s=run]):not([data-s=pass]) .sprite { opacity: .5; }
+@media (prefers-reduced-motion: no-preference) {
+  .stn[data-s=run] .sprite { animation: hop .4s steps(2) infinite alternate; }
+  .stn[data-s=fail] .sprite { animation: shake .5s steps(5) 1; } }
+@keyframes hop { to { transform: translateY(-6px); } }
+@keyframes shake { 20% { transform: translateX(-4px); } 40% { transform: translateX(4px); } 60% { transform: translateX(-3px); } 80% { transform: translateX(2px); } }
+@keyframes px-blink { 50% { opacity: .15; } }
+.px-blink { animation: px-blink 1.2s steps(1) infinite; }
+.belt { position: absolute; left: 10px; right: 10px; top: calc(18px + var(--sp)); height: var(--belt); overflow: hidden;
+  border-top: 2px solid var(--line); border-bottom: 2px solid var(--line); background: #0c0a14; }
+.belt::before { content: ""; position: absolute; top: 50%; left: -16px; right: 0; height: 4px; margin-top: -2px;
+  background: linear-gradient(90deg, var(--line) 50%, transparent 50%) 0 0 / 16px 4px; }
+@media (prefers-reduced-motion: no-preference) { .track.running .belt::before { animation: belt .5s steps(4) infinite; } }
+@keyframes belt { to { transform: translateX(16px); } }
+.rider { position: absolute; left: 10px; right: 10px; top: calc(18px + var(--sp)); height: var(--belt); z-index: 2; pointer-events: none; }
+/* the token moves, not the full-width rider box, so nothing slides past the page edge. 1cqw is 1% of the track's content width, which the rider spans */
+.tok { position: absolute; left: 0; top: 50%; width: 30px; height: 30px; margin: -15px 0 0 -15px; image-rendering: pixelated; transform: translateX(calc(var(--x, 4) * 1cqw)); transition: transform .6s steps(6); }
+.rider.stop .tok { outline: 2px solid var(--bad); outline-offset: 1px; }
+.rider.done .tok { outline: 2px solid var(--ok); outline-offset: 1px; }
+.ticker { margin: 0; padding: 10px 14px 12px; border-top: 1.5px dashed var(--line); font: 400 14px/1.5 var(--mono); min-height: 3.3em; }
+.ticker b { color: var(--accent); }
+.ctrl { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; padding: 0 14px 14px; }
+
+/* stages */
+.stage { padding: 34px 0 8px; scroll-margin-top: 64px; }
+.step { display: flex; align-items: center; gap: 14px; margin-bottom: 10px; scroll-margin-top: 80px; flex-wrap: wrap; }
+.step .n { display: inline-flex; align-items: center; height: 38px; padding: 0 10px; background: var(--accent); color: var(--accent-ink);
+  font: 800 18px var(--mono); border-radius: 4px; box-shadow: 3px 3px 0 var(--accent-2); }
+.step .n::before { content: "$ " / ""; }
+.explain { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0 0 18px; }
+.explain span { padding: 5px 10px; background: var(--surface-2); border-radius: 4px; font-size: 14px; }
+.explain i { font-style: normal; font-weight: 800; color: var(--accent); }
+.cols { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+.term { font: 400 15px/1.7 var(--mono); padding: 14px 16px; margin: 0; white-space: pre-wrap; word-break: break-word; }
+.term .p { color: var(--accent-2); } .term .ok { color: var(--ok); } .term .dim { color: var(--ink-muted); }
+.rules { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
+.rules li { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 8px; }
+.rules li b { color: var(--accent); font-family: var(--mono); }
+
+/* crew */
+.crew { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.bot { display: grid; grid-template-columns: 96px minmax(0, 1.3fr) minmax(0, 1fr); gap: 20px; align-items: start;
+  background: var(--surface); border: 1.5px solid var(--line); border-left: 6px solid var(--c); border-radius: 8px; padding: 16px 18px; }
+.bot .sprite { width: 80px; height: 80px; image-rendering: pixelated; }
+.bot h3 { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.bot h3 small { font: 700 13px var(--mono); color: var(--ink-muted); letter-spacing: .06em; text-transform: uppercase; }
+.bot p { margin: 8px 0 0; }
+.bot .side { display: grid; gap: 10px; font-size: 15px; }
+.bot .side .lab { display: block; margin-bottom: 2px; }
+
+/* log viewer */
+.log { list-style: none; margin: 0; padding: 12px 0; font: 400 14.5px/1.65 var(--mono); }
+.log li { display: grid; grid-template-columns: 34px 30px minmax(0, 1fr); align-items: start; }
+.log .ln { color: #8a82a0; text-align: right; padding-right: 8px; font-size: 12px; line-height: 24px; user-select: none; }
+.log .an { display: flex; justify-content: center; padding-top: 1px; }
+.log .an .i { width: 1.35rem; height: 1.35rem; background: var(--accent-2); color: var(--accent-2-ink); border-color: var(--accent-2); font-size: .72rem; }
+.log .an .i:hover, .log .an .i:focus-visible, .log .an .i.open { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.log .tx { white-space: pre-wrap; word-break: break-word; padding-right: 12px; }
+.log .hd { color: var(--lilac); font-weight: 700; }
+.log .cmd { color: var(--accent-2); }
+.log .ok { color: var(--ok); }
+.log .bad { color: var(--bad); font-weight: 700; }
+.log .dim { color: var(--ink-muted); }
+.log li.hit { background: #ff7a9314; }
+.read { margin: 0; padding-left: 0; list-style: none; counter-reset: r; display: grid; gap: 12px; }
+.read li { counter-increment: r; display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 10px; }
+.read li::before { content: counter(r); display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--accent-2);
+  color: var(--accent-2-ink); font: 800 12px var(--mono); margin-top: 1px; }
+.read b { display: block; }
+
+/* diff */
+.diff { font: 400 14.5px/1.7 var(--mono); margin: 0; padding: 12px 16px; white-space: pre-wrap; word-break: break-word; }
+.diff .del { color: var(--bad); } .diff .add { color: var(--ok); } .diff .dim { color: var(--ink-muted); }
+
+/* how it works */
+#how { padding: 44px 0 30px; scroll-margin-top: 64px; }
+.how { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 22px; align-items: start; margin-top: 18px; }
+.route { list-style: none; margin: 0; padding: 0 0 0 26px; position: relative; display: grid; gap: 10px; }
+.route::before { content: ""; position: absolute; left: 9px; top: 12px; bottom: 12px; width: 3px;
+  background: linear-gradient(var(--line) 50%, transparent 50%) 0 0 / 3px 10px; }
+.route li { position: relative; display: grid; grid-template-columns: 34px minmax(0, 1fr) auto; gap: 12px; align-items: center;
+  background: var(--surface); border: 1.5px solid var(--line); border-radius: 8px; padding: 10px 14px; transition: border-color .2s, transform .2s; }
+.route li::before { content: ""; position: absolute; left: -23px; top: 50%; width: 12px; height: 12px; margin-top: -6px; background: var(--line); border-radius: 2px; }
+.route li.on { border-color: var(--accent); transform: translateX(4px); }
+.route li.on::before { background: var(--accent); }
+.route li.done::before { background: var(--accent-2); }
+.route .sprite { width: 34px; height: 34px; image-rendering: pixelated; }
+.route .t { font: 700 13px var(--mono); color: var(--ink-muted); white-space: nowrap; }
+.route .you { display: grid; place-items: center; width: 34px; height: 34px; }
+.who { display: grid; gap: 14px; }
+.who .row { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 12px; align-items: start; }
+
+/* footer */
+.foot { border-top: 1.5px solid var(--line); margin-top: 40px; padding: 30px 0 40px; font-size: 14px; color: var(--ink-muted); }
+.foot .wrap { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1.4fr); gap: 26px; }
+.foot h4 { margin: 0 0 8px; font: 700 12px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ink); }
+.foot ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 4px; }
+.foot a { color: var(--ink-muted); } .foot a:hover { color: var(--accent); }
+.foot .brand { font-size: 28px; margin-bottom: 6px; }
+
+@media (max-width: 980px) {
+  .hero { grid-template-columns: minmax(0, 1fr); gap: 26px; padding-top: 30px; }
+  .cols, .how { grid-template-columns: minmax(0, 1fr); }
+  .bot { grid-template-columns: 80px minmax(0, 1fr); }
+  .bot .side { grid-column: 1 / -1; }
+  .foot .wrap { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+}
+@media (max-width: 640px) {
+  .wrap { padding: 0 16px; }
+  nav .navlink { display: none; }
+  h2 { font-size: 38px; }
+  .track { --sp: 44px; --belt: 28px; padding: 14px 4px 4px; }
+  .belt, .rider { left: 4px; right: 4px; top: calc(14px + var(--sp)); }
+  .tok { width: 24px; height: 24px; margin: -12px 0 0 -12px; }
+  .stn .bn { font-size: 12px; gap: 3px; } .stn .bn .gl { width: 8px; height: 8px; }
+  .stn .sn { font-size: 11px; }
+  .stn .chip { font-size: 10.5px; padding: 2px 4px; }
+  .bot { grid-template-columns: minmax(0, 1fr); padding: 14px; }
+  .bot .sprite { width: 64px; height: 64px; }
+  .log li { grid-template-columns: 26px 28px minmax(0, 1fr); }
+  .log { font-size: 13.5px; }
+  .route li { grid-template-columns: 34px minmax(0, 1fr); }
+  .route .t { grid-column: 2; }
+  .foot .wrap { grid-template-columns: minmax(0, 1fr); }
+  .term, .diff { font-size: 14px; }
+}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs id="pixdefs"></defs></svg>
+
+<nav aria-label="Main">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="Ship It, back to top">
+      <svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path fill="#7ef9c8" d="M2 4h2v2H2zM4 6h2v2H4zM6 8h2v2H6zM4 10h2v2H4zM2 12h2v2H2z"/><path fill="#ff9ad5" d="M9 12h5v2H9z"/></svg>Ship It</a>
+    <span class="grow"></span>
+    <a class="navlink" href="#crew">The crew</a>
+    <a class="navlink" href="#logs">Read the log</a>
+    <a class="navlink" href="#how">How it works</a>
+    <button type="button" class="go sm" data-watch>▶ Watch a run</button>
+  </div>
+</nav>
+
+<main id="top">
+  <div class="wrap">
+    <header class="hero">
+      <div>
+        <div class="eyebrow"><span class="lab">Week one, CI/CD</span><span class="sample">Sample pipeline</span></div>
+        <h1>Ship It<span class="cur" aria-hidden="true"></span></h1>
+        <p class="lede">What happens to your commit between <code>git push</code> and production, and which bot checks it on the way.</p>
+        <ul class="ticks">
+          <li>Five steps, always in the same order</li>
+          <li>One red step stops the line before anything deploys</li>
+          <li>Every step leaves a log you can read</li>
+        </ul>
+        <button type="button" class="go" data-watch>▶ Watch a commit ship<small>Sample run on a made-up repo, about 15 seconds</small></button>
+        <div class="legend">
+          <span><b class="kind you">You</b> write, push, read the log, fix</span>
+          <span><b class="kind code">Code</b> the bots: plain scripts, no AI</span>
+        </div>
+      </div>
+      <div class="screen" aria-label="Pipeline view, sample run" role="group">
+        <div class="bar"><span class="dots" aria-hidden="true"><i style="--c:var(--accent-2)"></i><i style="--c:var(--lemon)"></i><i style="--c:var(--accent)"></i></span>
+          <span class="path">ci › shop-web › main</span><span class="sample">Sample run #1286</span></div>
+        <div class="track" id="trHero"></div>
+        <p class="ticker" id="tkHero" aria-live="polite">Press Watch a commit ship to send <b>c41e7a2</b> down the line.</p>
+      </div>
+    </header>
+  </div>
+
+  <div class="wrap">
+    <!-- STAGE 1 -->
+    <section class="stage" id="st1" aria-labelledby="h-st1">
+      <div class="step"><span class="n">01</span><h2 id="h-st1">Push your commit</h2>
+        <button type="button" class="i" aria-label="About stage 1: Push your commit" aria-describedby="tip1"
+          data-tip="A push is the only thing that starts the line&#10;CI notices the new commit within a few seconds&#10;It gives the run a number and a log page&#10;Branches get lint, build and tests&#10;Main also gets staging and production&#10;Why: every change takes the same road, so nobody ships by hand">i</button>
+        <span id="tip1" role="tooltip" class="sr-only">A push is the only thing that starts the line. CI notices the new commit within a few seconds and gives the run a number and a log page. Branches get lint, build and tests. Main also gets staging and production. Why: every change takes the same road, so nobody ships by hand.</span></div>
+      <div class="explain"><span><b class="kind you">You</b> push</span><i>→</i><span>CI starts a run</span><i>→</i><span>Fuzz takes the first look</span></div>
+      <div class="cols">
+        <div class="screen">
+          <div class="bar"><span class="path">~/shop-web</span><span class="sample">Sample terminal</span></div>
+<pre class="term"><span class="p">$</span> git commit -m "Round cart discounts to the cent"
+<span class="p">$</span> git push origin main
+<span class="dim">To ci.example.internal:shop-web.git
+   c41e7a2..9f3c2ab  main -> main</span>
+<span class="ok">→ run #1287 started for 9f3c2ab</span></pre>
+        </div>
+        <div class="panel">
+          <div class="lab" style="margin-bottom:10px">What starts a run <span class="sample">Sample team rules</span></div>
+          <ul class="rules">
+            <li><b>br</b><span>A push to any branch runs lint, build and unit tests. Nothing deploys.</span></li>
+            <li><b>mn</b><span>A push or merge to <code>main</code> runs all five steps, ending in production.</span></li>
+            <li><b>1x</b><span>One run per commit. Push twice quickly and the older run is cancelled.</span></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- STAGE 2 -->
+    <section class="stage" id="crew" aria-labelledby="h-st2">
+      <div class="step"><span class="n">02</span><h2 id="h-st2">Meet the crew</h2>
+        <button type="button" class="i" aria-label="About stage 2: Meet the crew" aria-describedby="tip2"
+          data-tip="Five bots, one per step, always in this order&#10;Each bot is a plain script with fixed rules&#10;None of them guess, learn or use AI&#10;Same commit in, same answer out&#10;Every step can be run on your laptop too&#10;Why bots: people forget a check on a Friday, scripts don't">i</button>
+        <span id="tip2" role="tooltip" class="sr-only">Five bots, one per step, always in this order. Each bot is a plain script with fixed rules. None of them guess, learn or use AI. Same commit in, same answer out. Every step can be run on your laptop too. Why bots: people forget a check on a Friday, scripts don't.</span></div>
+      <div class="explain"><span>Fuzz lints</span><i>→</i><span>Bolt builds</span><i>→</i><span>Tick tests</span><i>→</i><span>Hop deploys to staging</span><i>→</i><span>Ship deploys to production</span></div>
+      <ol class="crew" id="crewList"></ol>
+      <p class="lab" style="margin-top:12px">Bot names and typical times are sample data for this page</p>
+    </section>
+
+    <!-- STAGE 3 -->
+    <section class="stage" id="st3" aria-labelledby="h-st3">
+      <div class="step"><span class="n">03</span><h2 id="h-st3">Watch a red run</h2>
+        <button type="button" class="i" aria-label="About stage 3: Watch a red run" aria-describedby="tip3"
+          data-tip="Run #1287 failed one unit test&#10;Tick marks the step red and stops&#10;Hop and Ship never start&#10;Staging and production keep the last good image&#10;Your commit shows a red ✕ until a new push passes&#10;Why stop: a broken change on staging is cheap, on production it isn't">i</button>
+        <span id="tip3" role="tooltip" class="sr-only">Run 1287 failed one unit test. Tick marks the step red and stops. Hop and Ship never start. Staging and production keep the last good image. Your commit shows a red cross until a new push passes. Why stop: a broken change on staging is cheap, on production it isn't.</span></div>
+      <div class="explain"><span>Tick finds a failing test</span><i>→</i><span>the line stops</span><i>→</i><span>staging and production are skipped</span></div>
+      <div class="screen" role="group" aria-label="Red run, sample">
+        <div class="bar"><span class="dots" aria-hidden="true"><i style="--c:var(--accent-2)"></i><i style="--c:var(--lemon)"></i><i style="--c:var(--accent)"></i></span>
+          <span class="path">ci › shop-web › main</span><span class="sample">Sample run #1287</span></div>
+        <div class="track" id="trRed"></div>
+        <p class="ticker" id="tkRed" aria-live="polite"></p>
+        <div class="ctrl"><button type="button" class="btn" id="playRed">▶ Replay the red run</button>
+          <a class="btn" href="#logs" style="text-decoration:none">Open its log ↓</a></div>
+      </div>
+    </section>
+
+    <!-- STAGE 4 -->
+    <section class="stage" id="logs" aria-labelledby="h-st4">
+      <div class="step"><span class="n">04</span><h2 id="h-st4">Read the log</h2>
+        <button type="button" class="i" aria-label="About stage 4: Read the log" aria-describedby="tip4"
+          data-tip="This is the log for run #1287, trimmed&#10;Pink numbers mark the lines worth reading&#10;Hover, focus or tap a number to see why&#10;Most logs are long, but you only need five lines&#10;Why learn this: the answer is almost always in the log, not in chat">i</button>
+        <span id="tip4" role="tooltip" class="sr-only">This is the log for run 1287, trimmed. Pink numbers mark the lines worth reading. Hover, focus or tap a number to see why. Most logs are long, but you only need five lines. Why learn this: the answer is almost always in the log, not in chat.</span></div>
+      <div class="explain"><span>Find the red step</span><i>→</i><span>first ✕ FAIL</span><i>→</i><span>expected against got</span><i>→</i><span>run it locally</span></div>
+      <div class="cols">
+        <div class="screen">
+          <div class="bar"><span class="path">run #1287 › log</span><span class="sample">Sample log, trimmed</span></div>
+          <ol class="log" aria-label="Log for run 1287, sample">
+            <li><span class="ln">1</span><span class="an"></span><span class="tx dim">run #1287  commit 9f3c2ab  branch main</span></li>
+            <li><span class="ln">2</span><span class="an"></span><span class="tx hd">── lint ── ✓ 0:38</span></li>
+            <li><span class="ln">3</span><span class="an"></span><span class="tx ok">✓ 214 files checked, 0 problems</span></li>
+            <li><span class="ln">4</span><span class="an"></span><span class="tx hd">── build ── ✓ 1:52</span></li>
+            <li><span class="ln">5</span><span class="an"></span><span class="tx ok">✓ image shop-web:9f3c2ab built</span></li>
+            <li class="hit"><span class="ln">6</span><span class="an"><button type="button" class="i right" aria-label="Note 1: the step header" data-tip="The step header&#10;Name, result and how long it took&#10;Scan these first: the red one is your step&#10;Lint and build passed, so the code compiles and reads clean">1</button></span><span class="tx bad">── unit tests ── ✕ 2:41</span></li>
+            <li><span class="ln">7</span><span class="an"><button type="button" class="i right" aria-label="Note 2: the command" data-tip="The command the bot ran&#10;Copy it and run it on your laptop&#10;Same command, same tests, same result&#10;Add TEST=&lt;file&gt; to run one file only">2</button></span><span class="tx cmd">$ make test</span></li>
+            <li><span class="ln">8</span><span class="an"></span><span class="tx dim">  cart/total_test.py ........✕</span></li>
+            <li class="hit"><span class="ln">9</span><span class="an"><button type="button" class="i right" aria-label="Note 3: the first failure" data-tip="The first ✕ FAIL&#10;It names the test, the file and the line&#10;Start here, even if more errors follow&#10;Later errors often come from this one">3</button></span><span class="tx bad">✕ FAIL test_discount_rounds_down
+  cart/total_test.py:42</span></li>
+            <li class="hit"><span class="ln">10</span><span class="an"><button type="button" class="i right" aria-label="Note 4: expected against got" data-tip="Expected against got&#10;The test wanted 19.99 and the code gave 20.00&#10;So the discount rounds up when it should round down&#10;That's the whole bug, in two lines">4</button></span><span class="tx">    expected 19.99
+    got      20.00</span></li>
+            <li><span class="ln">11</span><span class="an"></span><span class="tx dim">  411 passed, 1 failed</span></li>
+            <li class="hit"><span class="ln">12</span><span class="an"><button type="button" class="i right" aria-label="Note 5: the exit code" data-tip="The exit code&#10;0 means the step passed&#10;Anything else turns the step red&#10;A red step stops every step after it">5</button></span><span class="tx bad">✕ make: *** [test] Error 1
+process exited with code 1</span></li>
+            <li><span class="ln">13</span><span class="an"></span><span class="tx dim">── staging deploy ── ↷ skipped</span></li>
+            <li><span class="ln">14</span><span class="an"></span><span class="tx dim">── production deploy ── ↷ skipped</span></li>
+          </ol>
+        </div>
+        <div class="panel">
+          <div class="lab" style="margin-bottom:12px">How to read any run, in five moves</div>
+          <ol class="read">
+            <li><span><b>Find the red step</b>Step headers show the name, a mark and the time. Skipped steps never ran, so ignore them.</span></li>
+            <li><span><b>Copy the command</b>The <code>$</code> line is exactly what the bot ran. Run it yourself.</span></li>
+            <li><span><b>Go to the first ✕ FAIL</b>It names the test, the file and the line. Fix that one first.</span></li>
+            <li><span><b>Read expected against got</b>The gap between the two lines is the bug.</span></li>
+            <li><span><b>Check the exit code</b>Anything but 0 stops the line. That's why Hop and Ship were skipped.</span></li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- STAGE 5 -->
+    <section class="stage" id="st5" aria-labelledby="h-st5">
+      <div class="step"><span class="n">05</span><h2 id="h-st5">Fix it and push again</h2>
+        <button type="button" class="i" aria-label="About stage 5: Fix it and push again" aria-describedby="tip5"
+          data-tip="Fix the code, not the test, unless the test is wrong&#10;Run the failing test on your laptop first&#10;Then push: a new commit gets a new run&#10;Don't press re-run on a red run and hope&#10;If a test fails only sometimes, tell the team: it's flaky&#10;Why: a green run is the only way into production">i</button>
+        <span id="tip5" role="tooltip" class="sr-only">Fix the code, not the test, unless the test is wrong. Run the failing test on your laptop first. Then push: a new commit gets a new run. Don't press re-run on a red run and hope. If a test fails only sometimes, tell the team: it's flaky. Why: a green run is the only way into production.</span></div>
+      <div class="explain"><span><b class="kind you">You</b> fix one line</span><i>→</i><span>run the test locally</span><i>→</i><span>push</span><i>→</i><span>all five go green</span></div>
+      <div class="cols" style="margin-bottom:18px">
+        <div class="screen">
+          <div class="bar"><span class="path">cart/total.py</span><span class="sample">Sample diff</span></div>
+<pre class="diff"><span class="dim">@@ line 18 @@ def discounted(price, rate):</span>
+<span class="del">-    return round(price * (1 - rate), 2)</span>
+<span class="add">+    return floor_cents(price * (1 - rate))</span></pre>
+        </div>
+        <div class="screen">
+          <div class="bar"><span class="path">~/shop-web</span><span class="sample">Sample terminal</span></div>
+<pre class="term"><span class="p">$</span> make test TEST=cart/total_test.py
+<span class="ok">✓ 9 passed</span>
+<span class="p">$</span> git commit -am "Round discounts down, not up"
+<span class="p">$</span> git push origin main
+<span class="ok">→ run #1288 started for 4f81d0e</span></pre>
+        </div>
+      </div>
+      <div class="screen" role="group" aria-label="Green run after the fix, sample">
+        <div class="bar"><span class="dots" aria-hidden="true"><i style="--c:var(--accent-2)"></i><i style="--c:var(--lemon)"></i><i style="--c:var(--accent)"></i></span>
+          <span class="path">ci › shop-web › main</span><span class="sample">Sample run #1288</span></div>
+        <div class="track" id="trFix"></div>
+        <p class="ticker" id="tkFix" aria-live="polite">The fix is ready. Push it to start run <b>#1288</b>.</p>
+        <div class="ctrl"><button type="button" class="go sm" id="playFix">▶ Push the fix</button></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- HOW IT WORKS -->
+  <section id="how" aria-labelledby="h-how">
+    <div class="wrap">
+      <div class="step"><h2 id="h-how">How it works</h2>
+        <button type="button" class="i" aria-label="About how it works" aria-describedby="tipH"
+          data-tip="One push, start to finish&#10;About eight minutes on a normal day&#10;Times are typical, not promises&#10;Why it matters: if a run takes much longer, check the log of the slow step">i</button>
+        <span id="tipH" role="tooltip" class="sr-only">One push, start to finish. About eight minutes on a normal day. Times are typical, not promises. Why it matters: if a run takes much longer, check the log of the slow step.</span>
+        <span class="sample">Typical times, sample</span></div>
+      <div class="how">
+        <div>
+          <ol class="route" id="route"></ol>
+          <div class="ctrl" style="padding:12px 0 0 26px"><button type="button" class="btn" id="routePause">Pause</button>
+            <span class="lab">Push to live, about 8:16, sample</span></div>
+        </div>
+        <div class="who">
+          <div class="panel">
+            <div class="lab" style="margin-bottom:12px">Who does what</div>
+            <div class="row"><b class="kind you">You</b><span>Write the change, run the tests on your laptop, push, read the log when a step goes red, and fix it.</span></div>
+            <div class="row" style="margin-top:12px"><b class="kind code">Code</b><span>Five bots run the checks in a fixed order, stop the line on red, and deploy on green. No AI anywhere in the pipeline.</span></div>
+          </div>
+          <div class="panel">
+            <div class="lab" style="margin-bottom:12px">Rules of the line <span class="sample">Sample team rules</span></div>
+            <ul class="rules">
+              <li><b>R1</b><span>Steps run in order. A step starts only when the one before it is green.</span></li>
+              <li><b>R2</b><span>One red step stops every step after it.</span></li>
+              <li><b>R3</b><span>The image Bolt builds is the one Ship deploys. Nothing is rebuilt on the way.</span></li>
+              <li><b>R4</b><span>Only <code>main</code> reaches staging and production.</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <div><div class="brand" aria-hidden="true">Ship It</div><p>A first-week guide to how code gets from your laptop to production.</p></div>
+    <div><h4>On this page</h4><ul><li><a href="#st1">Push your commit</a></li><li><a href="#crew">Meet the crew</a></li><li><a href="#st3">Watch a red run</a></li><li><a href="#logs">Read the log</a></li><li><a href="#st5">Fix it and push again</a></li></ul></div>
+    <div><h4>Data</h4><ul><li>The repo, commits, run numbers, logs and times are made up for this page.</li><li>Bot names are sample names.</li><li>The pipeline is plain automation. No AI.</li></ul></div>
+  </div>
+</footer>
+
+<script>
+// ---------- the crew (sample names and typical times) ----------
+const BOTS = [
+  { id: 'b-lint',  name: 'Fuzz', step: 'Lint',              short: 'lint',    col: '#fff38a', shape: 'sq',  cmd: 'make lint',  time: '0:38',
+    what: 'Reads every changed file for style slips and likely bugs: unused imports, shadowed names, a missing await.',
+    red: 'Run make lint on your laptop. Most problems are one-line fixes.' },
+  { id: 'b-build', name: 'Bolt', step: 'Build',             short: 'build',   col: '#ffb38a', shape: 'tri', cmd: 'make build', time: '1:52',
+    what: 'Compiles the app and packs it into one container image, tagged with your commit hash. Every later step uses this image.',
+    red: 'Usually a missing dependency or a type error. The log names the file.' },
+  { id: 'b-test',  name: 'Tick', step: 'Unit tests',        short: 'test',    col: '#c4a8ff', shape: 'ci',  cmd: 'make test',  time: '2:41',
+    what: 'Runs all 412 unit tests against the image Bolt built. One failing test is enough to stop the line.',
+    red: 'Find the first ✕ FAIL in the log and run that test locally.' },
+  { id: 'b-stage', name: 'Hop',  step: 'Staging deploy',    short: 'staging', col: '#8fd8ff', shape: 'hex', cmd: 'deploy staging', time: '1:20',
+    what: 'Puts the image on staging, a copy of production with fake customers, then opens the five main pages to check they load.',
+    red: 'Staging keeps the last good image. Read the smoke check lines in the log.' },
+  { id: 'b-prod',  name: 'Ship', step: 'Production deploy', short: 'prod',    col: '#7ef9c8', shape: 'dia', cmd: 'deploy production', time: '1:45',
+    what: 'Rolls the same image out to production. It only starts after staging is green, and only for main.',
+    red: 'Production keeps the last good image. Tell the team in the deploy channel.' },
+];
+
+// ---------- pixel sprites (from assets/pixel-sprites.js) ----------
+function pixelSprites({ palette, sprites, animate = {}, defsId = 'pixdefs' }) {
+  const defs = document.getElementById(defsId);
+  for (const [id, rows] of Object.entries(sprites)) {
+    console.assert(rows.length === 16 && rows.every(r => r.length === 16), `sprite ${id} is not 16x16`);
+    let out = `<symbol id="${id}" viewBox="0 0 16 16" shape-rendering="crispEdges">`;
+    rows.forEach((row, y) => [...row].forEach((ch, x) => {
+      if (ch === '.' || !palette[ch]) return;
+      const a = animate[ch], cls = !a ? '' : ` class="${Array.isArray(a) ? a[x < 8 ? 0 : 1] : a}"`;
+      out += `<rect x="${x}" y="${y}" width="1.02" height="1.02" fill="${palette[ch]}"${cls}/>`;
+    }));
+    defs.insertAdjacentHTML('beforeend', out + '</symbol>');
+  }
+}
+const HEAD = ['..kcccccccccck..', '..kcnnnnnnnnck..', '..kcnEnnnnEnck..', '..kcnnnEEnnnck..', '..kcccccccccck..', '...kkkkkkkkkk...'];
+const TOP = '...kkkkkkkkkk...', BODY = ['....kcccccck....', '...kcccWWccck...', '.kgkcccccccckgk.', '..kkcccccccckk..'];
+const LEGS = ['....kgk..kgk....', '...kkkk..kkkk...'];
+const GRIDS = {
+  'b-lint':  ['................', '.......AA.......', '.......kk.......', TOP, ...HEAD,          // magnifying glass
+    '....kcccccck.kk.', '...kcccWWccckLLk', '.kgkcccccccckLLk', '..kkcccccccckkk.', '....kgk..kgk.kg.', LEGS[1]],
+  'b-build': ['................', '.....kkkkkk.....', '....kYYYYYYk....', '..kkkkkkkkkkkk..', ...HEAD,  // hard hat and wrench
+    'kgk.kcccccck....', 'kgkkcccWWccck...', '.gkkcccccccckgk.', '.gkkcccccccckk..', ...LEGS],
+  'b-test':  ['................', '...Ak......kA...', '....k......k....', TOP, ...HEAD,          // two antennae and a clipboard
+    '....kcccccckkkkk', '...kcccWWccckOWk', '.kgkcccccccckWOk', '..kkcccccccckkkk', ...LEGS],
+  'b-stage': ['.....kkkkkk.....', '.....kPPPPk.....', '.....kkkkkk.....', TOP, ...HEAD,          // a parcel on its head, wheels
+    ...BODY, '..kkkkkkkkkkkk..', '..kgk.kgk..kgk..'],
+  'b-prod':  ['.......kPPP.....', '.......kPP......', '.......k........', TOP, ...HEAD,          // a flag and jet feet
+    ...BODY, LEGS[0], '....kFk..kFk....'],
+};
+const BASE = { k: '#0d0b16', n: '#2a2540', E: '#7ef9c8', A: '#ff9ad5', W: '#f4effa', g: '#8a83a3', Y: '#fff38a', P: '#ff9ad5', O: '#4fd88a', L: '#8fd8ff', F: '#ffb38a' };
+BOTS.forEach(b => pixelSprites({ palette: { ...BASE, c: b.col }, sprites: { [b.id]: GRIDS[b.id] }, animate: { A: 'px-blink', F: 'px-blink' } }));
+pixelSprites({ palette: BASE, sprites: { tok: ['................', '................', '................', '....kkkkkkkk....', '...kPPPPPPPPk...',
+  '..kPPPPPPPPPPk..', '..kkkkkkkkkkkk..', '..kWWWWkkWWWWk..', '..kWWWWkkWWWWk..', '..kWWWWWWWWWWk..', '..kWWWWWWWWWWk..', '..kWWWWWWWWWWk..',
+  '..kkkkkkkkkkkk..', '................', '................', '................'] } });
+
+const $ = id => document.getElementById(id);
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const spr = (b, cls = 'sprite', label = `${b.name}, the ${b.step.toLowerCase()} bot`) =>
+  `<svg class="${cls}" viewBox="0 0 16 16" role="img" aria-label="${label}"><use href="#${b.id}"/></svg>`;
+const glyph = b => `<i class="gl ${b.shape}" style="--c:${b.col}" aria-hidden="true"></i>`;
+
+// ---------- crew cards ----------
+$('crewList').innerHTML = BOTS.map((b, i) => `<li class="bot" style="--c:${b.col}">
+  ${spr(b)}
+  <div><h3>${glyph(b)}${b.name} <small>Step ${i + 1}, ${b.step}</small> <b class="kind code">Code</b></h3><p>${b.what}</p></div>
+  <div class="side"><div><span class="lab">Runs</span><code>${b.cmd}</code></div>
+    <div><span class="lab">Typical time, sample</span><span>${b.time}</span></div>
+    <div><span class="lab">If it goes red</span>${b.red}</div></div></li>`).join('');
+
+// ---------- pipeline tracks: one engine, three copies ----------
+const STATUS = { wait: '○ Wait', run: '… Run', pass: '✓ Pass', fail: '✕ Fail', skip: '↷ Skip' };
+function makeTrack(el, ticker) {
+  el.innerHTML = `<div class="belt" aria-hidden="true"></div>
+    <div class="rider" aria-hidden="true"><svg class="tok" viewBox="0 0 16 16"><use href="#tok"/></svg></div>
+    <ol class="stns">${BOTS.map(b => `<li class="stn" data-s="wait">${spr(b)}<span class="slot"></span>
+      <span class="bn">${glyph(b)}${b.name}</span><span class="sn">${b.short}</span><span class="chip">${STATUS.wait}</span></li>`).join('')}</ol>`;
+  return { el, ticker, rider: el.querySelector('.rider'), stns: [...el.querySelectorAll('.stn')], id: 0, timers: [] };
+}
+const setS = (li, s) => { li.dataset.s = s; li.querySelector('.chip').textContent = STATUS[s]; };
+const move = (T, pct) => T.rider.style.setProperty('--x', pct);
+const say = (T, html) => { T.ticker.innerHTML = html; };
+const sleep = (T, ms) => new Promise(r => T.timers.push(setTimeout(r, reduced ? Math.min(ms, 120) : ms)));
+const at = i => 10 + 20 * i;   // station centres, in % of the track
+
+// plan: { hash, start, fail (station index or null), failMsg, okMsg }
+async function run(T, plan) {
+  T.timers.forEach(clearTimeout); T.timers = []; const id = ++T.id;
+  T.stns.forEach(s => setS(s, 'wait')); T.rider.classList.remove('stop', 'done'); move(T, 4);
+  T.el.classList.add('running'); say(T, plan.start);
+  for (let i = 0; i < BOTS.length; i++) {
+    await sleep(T, 500); if (id !== T.id) return;
+    move(T, at(i)); await sleep(T, 650); if (id !== T.id) return;
+    setS(T.stns[i], 'run'); say(T, `<b>${BOTS[i].name}</b> is running <code>${BOTS[i].cmd}</code> on ${plan.hash}…`);
+    await sleep(T, 1300); if (id !== T.id) return;
+    if (plan.fail === i) return end(T, plan, i);
+    setS(T.stns[i], 'pass');
+  }
+  await sleep(T, 400); if (id !== T.id) return;
+  end(T, plan, null);
+}
+function end(T, plan, failAt) {   // also draws the final state directly
+  T.el.classList.remove('running');
+  T.stns.forEach((s, i) => setS(s, failAt === null || i < failAt ? 'pass' : i === failAt ? 'fail' : 'skip'));
+  move(T, failAt === null ? 96 : at(failAt));
+  T.rider.classList.toggle('stop', failAt !== null); T.rider.classList.toggle('done', failAt === null);
+  say(T, failAt === null ? plan.okMsg : plan.failMsg);
+}
+const GREEN = { hash: 'c41e7a2', fail: null, start: 'You pushed <b>c41e7a2</b> to main. CI started sample run #1286.',
+  okMsg: '✓ <b>c41e7a2</b> is live on production. Five green steps, 8:16 from push to live, sample.' };
+const RED = { hash: '9f3c2ab', fail: 2, start: 'You pushed <b>9f3c2ab</b> to main. CI started sample run #1287.',
+  failMsg: '✕ <b>Tick</b>: 1 of 412 tests failed. Staging and production were skipped, so nothing shipped. Sample run #1287.' };
+const FIX = { hash: '4f81d0e', fail: null, start: 'You pushed the fix, <b>4f81d0e</b>. CI started sample run #1288.',
+  okMsg: '✓ <b>4f81d0e</b> is live on production. 412 of 412 tests passed. Sample run #1288.' };
+
+const hero = makeTrack($('trHero'), $('tkHero'));
+const red = makeTrack($('trRed'), $('tkRed'));
+const fix = makeTrack($('trFix'), $('tkFix'));
+console.assert(at(0) === 10 && at(4) === 90, 'station centres drifted from the 5-column grid');
+end(red, RED, RED.fail);                       // the red run reads correctly before anyone presses play
+if (reduced) end(hero, GREEN, null); else setTimeout(() => run(hero, GREEN), 700);
+document.querySelectorAll('[data-watch]').forEach(b => b.addEventListener('click', () => {
+  $('top').scrollIntoView({ behavior: reduced ? 'auto' : 'smooth' }); run(hero, GREEN); }));
+$('playRed').addEventListener('click', () => run(red, RED));
+$('playFix').addEventListener('click', () => run(fix, FIX));
+
+// ---------- how it works: a token walks the route ----------
+$('route').innerHTML = `<li><span class="you"><b class="kind you">You</b></span><span>Push a commit</span><span class="t">0:05</span></li>` +
+  BOTS.map(b => `<li>${spr(b)}<span>${b.name} runs ${b.step.toLowerCase()}</span><span class="t">${b.time}</span></li>`).join('');
+const stops = [...$('route').children];
+let rStep = 0, rPaused = reduced, rOn = true;
+function routeTick() {
+  if (rPaused || !rOn) return;
+  stops.forEach((s, i) => { s.classList.toggle('on', i === rStep); s.classList.toggle('done', i < rStep); });
+  rStep = (rStep + 1) % stops.length;
+}
+setInterval(routeTick, 1400);
+if (reduced) { $('routePause').disabled = true; $('routePause').title = 'Paused because your system asks for reduced motion'; stops.forEach(s => s.classList.add('done')); }
+$('routePause').addEventListener('click', e => { rPaused = !rPaused; e.currentTarget.textContent = rPaused ? 'Play' : 'Pause'; });
+
+// ---------- tooltips: tap toggles, Escape or a tap elsewhere closes ----------
+// log notes carry their text only in data-tip, so give each a hidden description for screen readers
+document.querySelectorAll('.i[data-tip]:not([aria-describedby])').forEach((b, n) => {
+  const s = document.createElement('span'); s.id = 'tipx' + n; s.className = 'sr-only'; s.setAttribute('role', 'tooltip');
+  s.textContent = b.dataset.tip.split(String.fromCharCode(10)).join('. ') + '.'; b.after(s); b.setAttribute('aria-describedby', s.id);
+});
+document.addEventListener('click', e => {
+  const t = e.target.closest('.i[data-tip]');
+  document.querySelectorAll('.i.open').forEach(o => o !== t && o.classList.remove('open'));
+  if (t) t.classList.toggle('open');
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') document.querySelectorAll('.i.open').forEach(o => o.classList.remove('open')); });
+
+// ---------- pause loops off screen ----------
+const io = new IntersectionObserver(es => es.forEach(e => {
+  e.target.classList.toggle('is-off', !e.isIntersecting);
+  if (e.target.id === 'how') rOn = e.isIntersecting;
+}), { rootMargin: '100% 0px' });
+document.querySelectorAll('.hero, .stage, #how').forEach(el => io.observe(el));
+</script>
+</body>
+</html>

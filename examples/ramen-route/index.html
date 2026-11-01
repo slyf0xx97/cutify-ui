@@ -1,0 +1,751 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ramen Route, staff training for a small ramen shop</title>
+<meta name="description" content="A cutify-ui example with a custom Noren theme: follow one sample order from the ticket machine to the counter seat, with the time at each station, what changes when the shop is busy, and where orders go wrong.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Yusei+Magic&family=Zen+Maru+Gothic:wght@500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' shape-rendering='crispEdges'%3E%3Cpath fill='%239A6234' d='M0 1h16v2H0z'/%3E%3Cpath fill='%232B3A6B' d='M1 3h6v11H1zM9 3h6v11H9z'/%3E%3Cpath fill='%23FBF6EA' d='M3 6h2v2H3zM11 6h2v2h-2z'/%3E%3C/svg%3E">
+<style>
+/* ---- tokens: Noren, a custom cutify-ui theme. Indigo and cream like a shop curtain, warm and hand-made ----
+   depth: cloth panels with a sashiko running stitch inside and a soft hanging shadow; buttons press down onto their ledge
+   signature: stage numbers hang as small noren on a wooden rod, and the current one sways */
+:root {
+  --bg: #F5EEDC; --surface: #FBF6EA; --surface-2: #FFFDF7;
+  --ink: #1C2340; --ink-muted: #4A5272;             /* 13.9:1 and 6.5:1 on --bg */
+  --accent: #2B3A6B; --accent-ink: #FBF6EA;          /* indigo, cream text 9.9:1 */
+  --accent-2: #E8B04A; --accent-2-ink: #1C2340;      /* egg yolk, ink text 7.9:1 */
+  --indigo-2: #4C5F9E;                               /* cream text 5.9:1 */
+  --ok: #2F6B3E; --bad: #A8322A;                     /* 5.4:1 and 5.7:1 on --bg */
+  --wood: #9A6234; --steel: #8E96A8;                 /* decoration only */
+  --c-order: #E8B04A; --c-you: #2B3A6B; --c-cust: #A8322A;
+  --stitch: 1.5px dashed rgb(43 58 107 / .38);
+  --hang: 5px 6px 0 rgb(28 35 64 / .15);
+  --display: 'Yusei Magic', 'Zen Maru Gothic', sans-serif;
+  --body: 'Zen Maru Gothic', ui-rounded, sans-serif;
+  --mono: 'DM Mono', ui-monospace, monospace;
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { overflow-x: clip; scroll-behavior: smooth; scroll-padding-top: 5.5rem; }
+/* unbleached cotton: riso grain over cream, with a faint indigo dot weave */
+body { margin: 0; color: var(--ink); font: 500 1.0625rem/1.65 var(--body); overflow-x: clip;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .14 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+    radial-gradient(circle, rgb(43 58 107 / .07) 1.2px, transparent 1.6px) 0 0 / 18px 18px,
+    var(--bg); }
+h1, h2, h3 { font-family: var(--display); font-weight: 400; line-height: 1.1; margin: 0; }
+p { margin: 0 0 .6rem; }
+a { color: var(--accent); }
+:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { animation: none !important; transition: none !important; } }
+.is-off, .is-off *, .is-off *::before, .is-off *::after { animation-play-state: paused !important; }
+.mono { font-family: var(--mono); }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.wrap { width: min(1180px, 100%); margin: 0 auto; padding: 0 16px; }
+@media (min-width: 700px) { .wrap { padding: 0 24px; } }
+
+/* cloth panels with a running stitch */
+.panel { position: relative; background: var(--surface); border: 2px solid var(--accent); border-radius: 14px 14px 10px 10px; box-shadow: var(--hang); padding: 1.3rem 1.25rem 1.1rem; }
+.panel::before { content: ""; position: absolute; inset: 6px; border: var(--stitch); border-radius: 9px 9px 6px 6px; pointer-events: none; }
+.card { position: relative; background: var(--surface-2); border: 1.5px solid rgb(43 58 107 / .4); border-radius: 8px; padding: .85rem 1rem; }
+.lab { font: 500 .72rem/1.4 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-muted); }
+.hl { background: linear-gradient(transparent 58%, rgb(232 176 74 / .6) 58% 92%, transparent 92%); padding: 0 .1em; }
+
+/* buttons: cloth on a ledge, pressing down */
+button { font: inherit; cursor: pointer; }
+.btn { position: relative; display: inline-flex; align-items: center; justify-content: center; gap: .5rem; min-height: 2.75rem; padding: .55rem 1.1rem;
+  border: 2px solid var(--accent); border-radius: 10px; background: var(--surface-2); color: var(--accent); font: 700 1rem var(--body); text-decoration: none; box-shadow: 0 4px 0 var(--accent); }
+.btn.primary { background: var(--accent); color: var(--accent-ink); box-shadow: 0 4px 0 #141A33; padding: .7rem 1.4rem; text-align: left; }
+.btn.primary::after { content: ""; position: absolute; inset: 4px; border: 1.5px dashed rgb(251 246 234 / .55); border-radius: 7px; pointer-events: none; }
+.btn.primary small { display: block; font: 500 .78rem var(--mono); letter-spacing: .02em; opacity: .92; }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+@media (prefers-reduced-motion: no-preference) {
+  :where(.btn) { transition: transform .14s ease, box-shadow .14s ease; }
+  :where(.btn):not(:disabled):hover { transform: translateY(-2px); box-shadow: 0 6px 0 var(--accent); }
+  :where(.btn.primary):not(:disabled):hover { box-shadow: 0 6px 0 #141A33; }
+  :where(.btn):not(:disabled):active { transform: translateY(3px); box-shadow: 0 1px 0 var(--accent); } }
+
+/* who-does-what chips */
+.kind { display: inline-block; padding: .1rem .5rem; border-radius: 3px; font: 500 .7rem/1.5 var(--mono); letter-spacing: .1em; text-transform: uppercase; white-space: nowrap; vertical-align: middle; }
+.kind.you { background: var(--c-you); color: var(--accent-ink); }
+.kind.cust { background: var(--c-cust); color: #fff; }
+.kind.order { background: var(--c-order); color: var(--accent-2-ink); }
+.kind.sample { background: transparent; color: var(--ink-muted); border: 1.5px dashed var(--ink-muted); }
+.glyph { display: inline-grid; place-items: center; width: 1.3rem; height: 1.3rem; flex: none; font: 500 .7rem var(--mono); }
+.glyph.order { background: var(--c-order); color: var(--ink); border-radius: 3px; }
+.glyph.you { background: var(--c-you); color: var(--accent-ink); border-radius: 50%; }
+.glyph.cust { background: var(--c-cust); color: #fff; clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%); }
+
+/* tooltip: a paper order ticket */
+.i { display: inline-grid; place-items: center; flex: none; width: 1.4rem; height: 1.4rem; padding: 0; border-radius: 50%; border: 2px solid currentColor; background: var(--surface-2);
+  font: 500 .75rem var(--mono); color: var(--accent); cursor: help; position: relative; margin-left: .4rem; vertical-align: middle; }
+.i:hover, .i:focus-visible, .i.open { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.i[data-tip]:is(:hover, :focus-visible, .open):not(.shut)::after { content: attr(data-tip); position: absolute; left: 50%; top: calc(100% + 10px); transform: translateX(calc(-50% + var(--dx, 0px)));
+  width: min(300px, calc(100vw - 32px)); padding: .7rem .85rem .8rem; background: var(--surface-2); color: var(--ink); border: 2px solid var(--accent); border-top-width: 6px; border-radius: 2px 2px 8px 8px;
+  box-shadow: var(--hang); font: 500 .92rem/1.5 var(--body); text-align: left; text-transform: none; letter-spacing: 0; white-space: pre-line; z-index: 200; pointer-events: none; }
+.i.up[data-tip]:is(:hover, :focus-visible, .open):not(.shut)::after { top: auto; bottom: calc(100% + 10px); }
+:has(> .i:hover), :has(> .i:focus-visible), :has(> .i.open) { z-index: 60; }
+
+.pill { display: inline-block; padding: .05rem .5rem; border-radius: 3px; font: 500 .72rem/1.6 var(--mono); letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; color: #fff; }
+.pill.ok { background: var(--ok); } .pill.bad { background: var(--bad); }
+
+/* pixel sprites */
+.sprite { display: block; image-rendering: pixelated; }
+@media (prefers-reduced-motion: no-preference) {
+  .px-steam { animation: px-steam 1.4s steps(2, end) infinite; }
+  .talking { animation: hop .4s steps(2) infinite alternate; } }
+@keyframes px-steam { 50% { opacity: .15; transform: translateY(-1px); } }
+@keyframes hop { to { transform: translateY(-5px); } }
+
+/* ---- nav ---- */
+.nav { position: sticky; top: 0; z-index: 100; background: rgb(245 238 220 / .96); border-bottom: 2px solid var(--accent); }
+.nav .wrap { display: flex; align-items: center; gap: 1rem; min-height: 4rem; }
+.brand { display: inline-flex; align-items: center; gap: .5rem; font: 400 1.5rem var(--display); color: var(--ink); text-decoration: none; }
+.brand .sprite { width: 32px; height: 32px; }
+.links { display: none; gap: 1.1rem; margin-left: auto; }
+.links a { color: var(--ink); font-weight: 700; text-decoration: none; padding: .3rem 0; border-bottom: 2px dashed transparent; }
+.links a:hover { border-bottom-color: var(--accent); }
+@media (min-width: 860px) { .links { display: flex; } }
+/* quiet or busy: native radios behind a two-panel curtain switch */
+.mode { display: flex; margin: 0 0 0 auto; padding: 0; border: 0; }
+@media (min-width: 860px) { .mode { margin-left: 1rem; } }
+.mode label { position: relative; cursor: pointer; }
+.mode input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.mode span { display: block; padding: .4rem .8rem; min-height: 2.5rem; line-height: 1.6rem; border: 2px solid var(--accent); font: 700 .95rem var(--body); color: var(--accent); background: var(--surface-2); }
+.mode label:first-of-type span { border-radius: 9px 0 0 9px; border-right-width: 1px; }
+.mode label:last-of-type span { border-radius: 0 9px 9px 0; border-left-width: 1px; }
+.mode input:checked + span { background: var(--accent); color: var(--accent-ink); }
+.mode input:checked + span::before { content: "✓ "; }
+.mode input:focus-visible + span { outline: 3px solid var(--ink); outline-offset: 3px; }
+
+/* ---- hero ---- */
+.hero { padding-top: 0; }
+.noren { display: flex; gap: 6px; height: clamp(84px, 13vw, 128px); padding: 0 6%; position: relative; margin-bottom: 1.4rem; }
+.noren::before { content: ""; position: absolute; left: 2%; right: 2%; top: 0; height: 12px; background: var(--wood); border-radius: 0 0 6px 6px; z-index: 2; box-shadow: 0 3px 0 rgb(28 35 64 / .2); }
+.noren i { flex: 1; display: grid; place-items: center; padding-top: 10px; background: var(--accent); color: var(--accent-ink); font: 400 clamp(1.8rem, 5vw, 3.2rem) var(--display); font-style: normal;
+  border-radius: 0 0 6px 6px; transform-origin: 50% 0; position: relative; }
+.noren i::after { content: ""; position: absolute; inset: 16px 8px 8px; border: 1.5px dashed rgb(251 246 234 / .4); border-radius: 0 0 4px 4px; }
+@media (prefers-reduced-motion: no-preference) {
+  .noren i { animation: sway 5.5s ease-in-out infinite alternate; }
+  .noren i:nth-child(2) { animation-delay: -1.2s; } .noren i:nth-child(3) { animation-delay: -2.6s; } .noren i:nth-child(4) { animation-delay: -3.9s; } }
+@keyframes sway { from { transform: rotate(-1.2deg); } to { transform: rotate(1.2deg); } }
+
+.hero-grid { display: grid; gap: 1.4rem; }
+@media (min-width: 900px) { .hero-grid { grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); align-items: end; } }
+.hero h1 { font-size: clamp(2.6rem, 7vw, 4.4rem); }
+.hero .lead { font-size: 1.15rem; max-width: 36rem; margin: .7rem 0 .9rem; }
+.benefits { list-style: none; padding: 0; margin: 0 0 1.2rem; display: grid; gap: .35rem; }
+.benefits li::before { content: "✓"; display: inline-grid; place-items: center; width: 1.4rem; height: 1.4rem; margin-right: .55rem; background: var(--accent-2); color: var(--accent-2-ink); border-radius: 50%; font: 500 .8rem var(--mono); }
+.play-row { display: flex; flex-wrap: wrap; align-items: center; gap: .8rem 1rem; }
+.cast { display: grid; gap: .6rem; }
+.cast li { display: flex; align-items: center; gap: .7rem; }
+.cast ul { list-style: none; padding: 0; margin: .4rem 0 0; display: grid; gap: .55rem; }
+.cast .sprite { width: 48px; height: 48px; flex: none; }
+.cast b { display: block; font-weight: 700; }
+.cast small { color: var(--ink-muted); font-size: .92rem; }
+
+/* the counter scene */
+.scene { margin-top: 1.4rem; padding: 1rem .6rem .9rem; }
+@media (min-width: 700px) { .scene { padding: 1.2rem 1.2rem 1rem; } }
+.scene-head { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem .8rem; margin: 0 .3rem .7rem; position: relative; z-index: 1; }
+.scene-head h2 { font-size: 1.35rem; margin-right: auto; }
+.chip { display: inline-flex; align-items: center; gap: .35rem; padding: .15rem .55rem; border: 1.5px solid var(--accent); border-radius: 4px; background: var(--surface-2); font: 500 .8rem var(--mono); }
+.chip b { font-weight: 500; color: var(--ink-muted); font-size: .7rem; letter-spacing: .08em; text-transform: uppercase; }
+/* the order rail: tickets clipped in order */
+.rail { position: relative; display: flex; flex-wrap: wrap; gap: 6px; padding: 0 .3rem; margin: 0 0 .5rem; min-height: 2.6rem; }
+.rail::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 4px; background: var(--steel); border-radius: 2px; }
+.tk { position: relative; margin-top: 4px; padding: .3rem .35rem .45rem; background: var(--surface-2); border: 1.5px solid var(--ink-muted); border-top: 0; border-radius: 0 0 3px 3px; font: 500 .72rem/1 var(--mono); }
+.tk.me { background: var(--accent-2); border-color: var(--ink); }
+body[data-mode="quiet"] .tk:not(.me) { display: none; }
+.track { position: relative; padding: 0 .3rem; z-index: 1; }
+.lane { position: relative; height: clamp(40px, 6vw, 60px); }
+.walker { position: absolute; left: 0; bottom: 0; width: clamp(36px, 5.4vw, 56px); will-change: transform; }
+.walker .sprite { width: 100%; height: auto; aspect-ratio: 1; }
+@media (prefers-reduced-motion: no-preference) { .walker { transition: transform .7s steps(7, end); } }
+.counter { height: 12px; background: var(--wood); border-radius: 3px; margin: 0 -.3rem; border-bottom: 3px solid #6E4322; }
+.stations { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); }
+.stations a { display: flex; flex-direction: column; align-items: center; gap: .25rem; padding: .5rem 2px .4rem; text-decoration: none; color: var(--ink); border-radius: 0 0 8px 8px; border: 2px solid transparent; border-top: 0; }
+.stations a:hover { background: rgb(43 58 107 / .08); }
+.stations .sprite { width: clamp(36px, 7vw, 72px); height: auto; aspect-ratio: 1; }
+.stations .nm { font: 500 .78rem/1.2 var(--mono); text-align: center; }
+.stations .nm b { display: block; font-weight: 500; color: var(--ink-muted); }
+.stations li.on a { background: rgb(232 176 74 / .35); border-color: var(--accent); }
+.stations li.done .nm b::after { content: " ✓"; color: var(--ok); }
+@media (max-width: 520px) { .stations .nm { font-size: .64rem; letter-spacing: 0; } }
+.status { margin: .8rem .3rem 0; padding: .6rem .8rem; min-height: 4.2rem; background: var(--surface-2); border-left: 5px solid var(--accent-2); border-radius: 0 6px 6px 0; }
+.scene-foot { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .4rem 1rem; margin: .6rem .3rem 0; font-size: .92rem; color: var(--ink-muted); }
+
+/* ---- stages ---- */
+.stage { padding-top: 2.6rem; }
+.step { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem .8rem; margin: 0 0 .8rem; }
+.step h2 { font-size: clamp(1.7rem, 3.6vw, 2.3rem); }
+/* a stage number hangs as a small noren on a wooden rod */
+.step .n { position: relative; display: grid; place-items: start center; width: 46px; height: 52px; margin: 8px 6px 0; padding-top: 6px; background: var(--accent); color: var(--accent-ink);
+  font: 400 1.6rem/1 var(--display); border-radius: 0 0 5px 5px; transform-origin: 50% -8px; flex: none; }
+.step .n::before { content: ""; position: absolute; left: -7px; right: -7px; top: -8px; height: 8px; background: var(--wood); border-radius: 4px; }
+.step .n::after { content: ""; position: absolute; left: 50%; bottom: 0; width: 4px; height: 16px; margin-left: -2px; background: var(--bg); }
+.step.on .n { background: var(--accent-2); color: var(--accent-2-ink); }
+@media (prefers-reduced-motion: no-preference) { .step.on .n { animation: sway-n 1.8s ease-in-out infinite alternate; } }
+@keyframes sway-n { from { transform: rotate(-4deg); } to { transform: rotate(4deg); } }
+.explain { display: flex; flex-wrap: wrap; align-items: center; gap: .45rem; margin: 0 0 1rem; }
+.explain span { padding: .3rem .7rem; background: var(--surface-2); border: 1.5px dashed rgb(43 58 107 / .45); border-radius: 4px; font-size: .95rem; }
+.explain i { font-style: normal; font-weight: 700; color: var(--accent); }
+.sbody { display: grid; gap: 1.1rem; }
+@media (min-width: 860px) { .sbody { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); } }
+.sbody .col { display: grid; gap: 1rem; align-content: start; position: relative; }
+.sbody h3 { font-size: 1.3rem; margin-bottom: .4rem; }
+.do-head { display: flex; align-items: center; gap: .8rem; }
+.do-head .sprite { width: 56px; height: 56px; flex: none; }
+.todo { margin: .3rem 0 0; padding-left: 1.4rem; }
+.todo li { margin-bottom: .35rem; }
+.todo li::marker { font-family: var(--mono); color: var(--accent); }
+.wrong p { margin-bottom: .5rem; }
+.wrong .pill { margin-right: .4rem; }
+.busy { border-style: dashed; }
+/* timing rows: the row for the shop's current mode is marked "now" */
+.trow { display: grid; grid-template-columns: 3.4rem minmax(0, 1fr) 3rem 2.6rem; align-items: center; gap: .6rem; padding: .3rem .4rem; border-radius: 4px; }
+.trow > span:first-child { font-weight: 700; }
+.trow .bar { height: 12px; background: rgb(43 58 107 / .12); border-radius: 2px; overflow: hidden; }
+.trow .bar i { display: block; height: 100%; background: var(--indigo-2); }
+.trow.b .bar i { background: repeating-linear-gradient(135deg, var(--accent) 0 5px, var(--indigo-2) 5px 10px); }
+.trow b { font-weight: 500; text-align: right; }
+.trow .now { font: 500 .7rem var(--mono); letter-spacing: .08em; text-transform: uppercase; visibility: hidden; }
+body[data-mode="quiet"] .trow.q, body[data-mode="busy"] .trow.b { background: rgb(232 176 74 / .35); }
+body[data-mode="quiet"] .trow.q .now, body[data-mode="busy"] .trow.b .now { visibility: visible; }
+
+/* ---- where orders go wrong ---- */
+.wrongs { list-style: none; margin: 0; padding: 0; display: grid; gap: .5rem; }
+.wrongs a { display: grid; grid-template-columns: 7.2rem minmax(0, 1fr) 2rem; grid-template-areas: "nm bar ct" "why why why"; align-items: center; gap: .2rem .8rem; padding: .55rem .7rem; color: var(--ink); text-decoration: none; border-radius: 6px; border: 1.5px solid transparent; }
+@media (min-width: 760px) { .wrongs a { grid-template-columns: 8rem minmax(120px, 1fr) 2rem minmax(0, 1.4fr); grid-template-areas: "nm bar ct why"; } }
+.wrongs a:hover { border-color: var(--accent); background: var(--surface-2); }
+.wrongs .nm { grid-area: nm; font-weight: 700; }
+.wrongs .nm b { font: 500 .8rem var(--mono); color: var(--ink-muted); margin-right: .3rem; }
+.wrongs .bar { grid-area: bar; height: 14px; background: rgb(43 58 107 / .1); border-radius: 2px; overflow: hidden; }
+.wrongs .bar i { display: block; height: 100%; background: var(--bad); }
+.wrongs .ct { grid-area: ct; font: 500 .95rem var(--mono); text-align: right; }
+.wrongs .why { grid-area: why; color: var(--ink-muted); font-size: .95rem; }
+
+/* ---- the whole route (how it works) ---- */
+.rrow { display: grid; grid-template-columns: 4rem minmax(0, 1fr); gap: .4rem .8rem; align-items: center; margin-bottom: .8rem; }
+.rrow > b { font-weight: 700; }
+.rbar { display: flex; height: 40px; border: 2px solid var(--accent); border-radius: 6px; overflow: hidden; }
+.rbar > span { display: grid; place-items: center; min-width: 0; font: 500 .8rem var(--mono); color: var(--accent-ink); background: var(--accent); border-right: 2px dashed rgb(251 246 234 / .5); }
+.rbar > span:nth-child(even) { background: var(--indigo-2); }
+.rbar > span:last-child { border-right: 0; }
+.rtot { grid-column: 2; font: 500 .9rem var(--mono); color: var(--ink-muted); margin-top: -.2rem; }
+.rlegend { list-style: none; padding: 0; margin: 1rem 0 0; display: flex; flex-wrap: wrap; gap: .4rem 1.1rem; font-size: .95rem; }
+.rlegend b { font: 500 .8rem var(--mono); color: var(--accent); margin-right: .3rem; }
+.who { display: grid; gap: .8rem; margin-top: 1rem; }
+@media (min-width: 760px) { .who { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.who .card { display: flex; gap: .7rem; align-items: flex-start; }
+.who .sprite { width: 44px; height: 44px; flex: none; }
+.who p { margin: .2rem 0 0; font-size: .95rem; }
+
+/* ---- footer ---- */
+footer { margin: 3.5rem auto 2rem; }
+.foot-grid { display: grid; gap: 1.2rem; }
+@media (min-width: 760px) { .foot-grid { grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr); } }
+footer h5 { margin: 0 0 .4rem; font: 500 .75rem var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-muted); }
+footer ul { list-style: none; padding: 0; margin: 0; font-size: .95rem; }
+footer .copy { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .6rem 1rem; margin-top: 1.2rem; padding-top: .9rem; border-top: var(--stitch); font-size: .92rem; color: var(--ink-muted); }
+.donate { display: inline-flex; align-items: center; gap: .4rem; font-weight: 700; }
+</style>
+</head>
+<body data-mode="quiet">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs id="pixdefs"></defs></svg>
+
+<header class="nav" id="top">
+  <div class="wrap">
+    <a class="brand" href="#top"><svg class="sprite" viewBox="0 0 16 16" aria-hidden="true"><use href="#sp-bowl3"/></svg>Ramen Route</a>
+    <nav class="links" aria-label="Page">
+      <a href="#s1">Stations</a><a href="#wrong">Common mistakes</a><a href="#route">Whole route</a>
+    </nav>
+    <fieldset class="mode">
+      <legend class="sr-only">How busy is the shop</legend>
+      <label><input type="radio" name="mode" value="quiet" checked><span>Quiet</span></label>
+      <label><input type="radio" name="mode" value="busy"><span>Busy</span></label>
+    </fieldset>
+  </div>
+</header>
+
+<main>
+  <section class="wrap hero" id="hero" aria-labelledby="heroT">
+    <div class="noren" aria-hidden="true"><i>ら</i><i>ー</i><i>め</i><i>ん</i></div>
+    <div class="hero-grid">
+      <div>
+        <p class="lab">Staff training <span class="kind sample">Sample shop</span></p>
+        <h1 id="heroT">Ramen <span class="hl">Route</span></h1>
+        <p class="lead">Follow one bowl from the ticket machine to the counter seat. Six stations, the time each one takes, and where orders go wrong.</p>
+        <ul class="benefits">
+          <li>The time at every station</li>
+          <li>What changes when the shop is busy</li>
+          <li>The mistakes we see most, and the fix</li>
+        </ul>
+        <div class="play-row">
+          <button class="btn primary" type="button" id="playBtn"><span><span id="playTxt">▶ Follow order 42</span><small>Sample order: shoyu, extra egg, seat 5</small></span></button>
+        </div>
+      </div>
+      <div class="panel cast">
+        <p class="lab">Who's on the route</p>
+        <ul>
+          <li><svg class="sprite" viewBox="0 0 16 16" role="img" aria-label="Order 42, a ticket that becomes a bowl"><use href="#sp-ticket"/></svg>
+            <div><b><i class="glyph order" aria-hidden="true">#</i> Order 42 <span class="kind order">Order</span></b><small>A ticket at the door, a bowl by the end</small></div></li>
+          <li><svg class="sprite" viewBox="0 0 16 16" role="img" aria-label="You, new staff in an indigo apron"><use href="#sp-you"/></svg>
+            <div><b><i class="glyph you" aria-hidden="true">Y</i> You <span class="kind you">You</span></b><small>New staff, working stations 2 to 6</small></div></li>
+          <li><svg class="sprite" viewBox="0 0 16 16" role="img" aria-label="Customer on a counter stool"><use href="#sp-seat"/></svg>
+            <div><b><i class="glyph cust" aria-hidden="true">C</i> Customer <span class="kind cust">Customer</span></b><small>Buys the ticket, eats at the counter</small></div></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="panel scene" id="scene">
+      <div class="scene-head">
+        <h2>The route</h2>
+        <span class="chip"><b>Station</b><span id="clkSt">1 of 6</span></span>
+        <span class="chip"><b>Order 42</b><span id="clk">0:00</span></span>
+        <button type="button" class="i" aria-label="About the route" data-tip="The route
+One order walks the counter from left to right.
+The yellow ticket on the rail is order 42.
+Switch to Busy to see the queue it joins.
+Tap a station to jump to its card.
+Why: every station hands off to the next one.">i</button>
+      </div>
+      <div class="rail" aria-label="Order rail">
+        <span class="tk">38</span><span class="tk">39</span><span class="tk">40</span><span class="tk">41</span><span class="tk me">42</span><span class="tk">43</span><span class="tk">44</span>
+      </div>
+      <div class="track" id="track">
+        <div class="lane">
+          <div class="walker" id="you"><svg class="sprite" viewBox="0 0 16 16" role="img" aria-label="You"><use href="#sp-you"/></svg></div>
+        </div>
+        <div class="lane">
+          <div class="walker" id="bowl"><svg class="sprite" viewBox="0 0 16 16" role="img" aria-label="Order 42" id="bowlSvg"><use href="#sp-ticket" id="bowlUse"/></svg></div>
+        </div>
+        <div class="counter" aria-hidden="true"></div>
+        <ol class="stations" id="stations">
+          <li><a href="#s1" aria-label="Station 1, ticket machine"><svg class="sprite" viewBox="0 0 16 16" aria-hidden="true"><use href="#sp-machine"/></svg><span class="nm"><b>1</b>Ticket</span></a></li>
+          <li><a href="#s2" aria-label="Station 2, noodles"><svg class="sprite" viewBox="0 0 16 16" aria-hidden="true"><use href="#sp-pot"/></svg><span class="nm"><b>2</b>Noodles</span></a></li>
+          <li><a href="#s3" aria-label="Station 3, broth"><svg class="sprite" viewBox="0 0 16 16" aria-hidden="true"><use href="#sp-broth"/></svg><span class="nm"><b>3</b>Broth</span></a></li>
+          <li><a href="#s4" aria-label="Station 4, toppings"><svg class="sprite" viewBox="0 0 16 16" aria-hidden="true"><use href="#sp-board"/></svg><span class="nm"><b>4</b>Toppings</span></a></li>
+          <li><a href="#s5" aria-label="Station 5, the pass"><svg class="sprite" viewBox="0 0 16 16" aria-hidden="true"><use href="#sp-pass"/></svg><span class="nm"><b>5</b>Pass</span></a></li>
+          <li><a href="#s6" aria-label="Station 6, counter seat"><svg class="sprite" viewBox="0 0 16 16" aria-hidden="true"><use href="#sp-seat" id="custUse"/></svg><span class="nm"><b>6</b>Seat</span></a></li>
+        </ol>
+      </div>
+      <p class="status" id="status" aria-live="polite">Press Follow order 42 to walk the route.</p>
+      <div class="scene-foot"><span>Order 42, the shop and every time on this page are made up for training. Times are estimates.</span><span id="modeNote">Showing a quiet shop.</span></div>
+    </div>
+  </section>
+
+  <!-- station 1 -->
+  <section class="wrap stage" id="s1" aria-labelledby="st1h">
+    <div class="step" id="st1"><span class="n" aria-hidden="true">1</span><h2 id="st1h"><span class="sr-only">Station 1: </span>Take the ticket</h2>
+      <span class="kind cust">Customer</span><span class="kind you">You</span>
+      <button type="button" class="i" aria-label="About the ticket machine" data-tip="The ticket machine
+The customer picks a bowl and pays at the machine.
+The ticket it prints is the order.
+Every station reads it, and it rides with the bowl to the seat.
+Why: if it isn't on the ticket, the kitchen can't know it.">i</button></div>
+    <div class="explain"><span>Customer pays at the machine</span><i aria-hidden="true">→</i><span>You write firmness and seat</span><i aria-hidden="true">→</i><span>Ticket goes on the rail</span></div>
+    <div class="panel sbody">
+      <div class="col">
+        <div class="do-head"><svg class="sprite" viewBox="0 0 16 16" aria-hidden="true"><use href="#sp-machine"/></svg><h3>What you do</h3></div>
+        <ol class="todo">
+          <li>Greet the customer and take the ticket from their hand.</li>
+          <li>Ask "Noodles firm, normal or soft?" and write the answer on the ticket.</li>
+          <li>Write the seat number, then clip the ticket to the end of the rail.</li>
+        </ol>
+        <div class="card time" data-k="0"></div>
+      </div>
+      <div class="col">
+        <div class="card wrong"><h3>Where it goes wrong</h3>
+          <p><span class="pill bad">✕ Mistake</span>You ask about firmness but don't write it down, so the noodle station guesses.</p>
+          <p><span class="pill ok">✓ Fix</span>Write it on the ticket before the ticket leaves your hand.</p>
+          <p class="lab">Sample tally: 3 remade bowls</p></div>
+        <div class="card busy"><h3>When it's busy</h3>
+          <p>A line forms at the door. Take tickets while people wait, so the kitchen starts sooner. Seat people in ticket order, not in the order they reach the counter.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- station 2 -->
+  <section class="wrap stage" id="s2" aria-labelledby="st2h">
+    <div class="step" id="st2"><span class="n" aria-hidden="true">2</span><h2 id="st2h"><span class="sr-only">Station 2: </span>Cook the noodles</h2>
+      <span class="kind you">You</span>
+      <button type="button" class="i" aria-label="About the noodle station" data-tip="The noodle station
+Noodles boil in a basket in one big pot.
+Each portion has its own basket and its own timer.
+Firm is 30 seconds less, soft is 30 seconds more (sample).
+Why: noodles keep cooking in the broth, so seconds count.">i</button></div>
+    <div class="explain"><span>Next ticket off the rail</span><i aria-hidden="true">→</i><span>One basket, one timer</span><i aria-hidden="true">→</i><span>Drain hard</span></div>
+    <div class="panel sbody">
+      <div class="col">
+        <div class="do-head"><svg class="sprite" viewBox="0 0 16 16" aria-hidden="true"><use href="#sp-pot"/></svg><h3>What you do</h3></div>
+        <ol class="todo">
+          <li>Take the oldest ticket from the rail and clip it to a basket handle.</li>
+          <li>Loosen one portion (140 g, sample) into the basket and start that basket's timer.</li>
+          <li>When it beeps, lift and shake hard five times so no water goes in the bowl.</li>
+        </ol>
+        <div class="card time" data-k="1"></div>
+      </div>
+      <div class="col">
+        <div class="card wrong"><h3>Where it goes wrong</h3>
+          <p><span class="pill bad">✕ Mistake</span>One timer for several baskets, so the ones that went in later come out soft.</p>
+          <p><span class="pill ok">✓ Fix</span>One timer per basket, with the ticket on the handle.</p>
+          <p class="lab">Sample tally: 9 remade bowls</p></div>
+        <div class="card busy"><h3>When it's busy</h3>
+          <p>Up to six baskets go in together. The water cools, so the same noodles take about 30 seconds longer. Wait for the boil to come back before the next basket goes in.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- station 3 -->
+  <section class="wrap stage" id="s3" aria-labelledby="st3h">
+    <div class="step" id="st3"><span class="n" aria-hidden="true">3</span><h2 id="st3h"><span class="sr-only">Station 3: </span>Pour the broth</h2>
+      <span class="kind you">You</span>
+      <button type="button" class="i" aria-label="About the broth station" data-tip="The broth station
+Tare is the seasoning that goes in the bowl first.
+Shoyu and shio look alike in a ladle.
+The bowl sits on its own ticket the whole time.
+Why: a bowl with the wrong tare can't be fixed, only remade.">i</button></div>
+    <div class="explain"><span>Warm the bowl</span><i aria-hidden="true">→</i><span>Tare, then broth</span><i aria-hidden="true">→</i><span>Noodles in, fold once</span></div>
+    <div class="panel sbody">
+      <div class="col">
+        <div class="do-head"><svg class="sprite" viewBox="0 0 16 16" aria-hidden="true"><use href="#sp-broth"/></svg><h3>What you do</h3></div>
+        <ol class="todo">
+          <li>Fill the bowl with hot water to warm it, then tip it out.</li>
+          <li>Read the ticket, add one ladle of the right tare (30 ml, sample), then the broth.</li>
+          <li>Slide the drained noodles in and fold them once so they don't clump.</li>
+        </ol>
+        <div class="card time" data-k="2"></div>
+      </div>
+      <div class="col">
+        <div class="card wrong"><h3>Where it goes wrong</h3>
+          <p><span class="pill bad">✕ Mistake</span>Shoyu tare goes into a shio bowl when bowls are lined up.</p>
+          <p><span class="pill ok">✓ Fix</span>Each bowl sits on its own ticket from the moment it comes off the shelf.</p>
+          <p class="lab">Sample tally: 4 remade bowls</p></div>
+        <div class="card busy"><h3>When it's busy</h3>
+          <p>Put tare in the bowls while the noodles boil, so the broth is ready when the timer goes. Keep the bowls in ticket order, left to right.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- station 4 -->
+  <section class="wrap stage" id="s4" aria-labelledby="st4h">
+    <div class="step" id="st4"><span class="n" aria-hidden="true">4</span><h2 id="st4h"><span class="sr-only">Station 4: </span>Add the toppings</h2>
+      <span class="kind you">You</span>
+      <button type="button" class="i" aria-label="About the toppings station" data-tip="The toppings station
+Every bowl gets the same toppings in the same order.
+Extras come last, so they sit on top where the pass can see them.
+Why: this is where most remakes start in our sample tally.">i</button></div>
+    <div class="explain"><span>Read the ticket again</span><i aria-hidden="true">→</i><span>Same order every time</span><i aria-hidden="true">→</i><span>Extras last, on top</span></div>
+    <div class="panel sbody">
+      <div class="col">
+        <div class="do-head"><svg class="sprite" viewBox="0 0 16 16" aria-hidden="true"><use href="#sp-board"/></svg><h3>What you do</h3></div>
+        <ol class="todo">
+          <li>Read the ticket out loud: "Shoyu, extra egg."</li>
+          <li>Go clockwise from the top: chashu, egg, scallion, naruto.</li>
+          <li>Put any extra on last, on top, so it's the first thing the pass sees.</li>
+        </ol>
+        <div class="card time" data-k="3"></div>
+      </div>
+      <div class="col">
+        <div class="card wrong"><h3>Where it goes wrong</h3>
+          <p><span class="pill bad">✕ Mistake</span>The customer paid for an extra egg and it never goes on.</p>
+          <p><span class="pill ok">✓ Fix</span>Read the ticket out loud before the first topping, and add extras last.</p>
+          <p class="lab">Sample tally: 11 remade bowls</p></div>
+        <div class="card busy"><h3>When it's busy</h3>
+          <p>Several bowls arrive at once and you start working from memory. Don't. Look at each ticket, even when the last five were the same.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- station 5 -->
+  <section class="wrap stage" id="s5" aria-labelledby="st5h">
+    <div class="step" id="st5"><span class="n" aria-hidden="true">5</span><h2 id="st5h"><span class="sr-only">Station 5: </span>Check at the pass</h2>
+      <span class="kind you">You</span>
+      <button type="button" class="i" aria-label="About the pass" data-tip="The pass
+The shelf under the heat lamp where finished bowls wait.
+The last check happens here: bowl against ticket.
+Ring the bell and call the seat number.
+Why: a bowl that waits keeps cooking, so the pass is a clock.">i</button></div>
+    <div class="explain"><span>Bowl against ticket</span><i aria-hidden="true">→</i><span>Wipe the rim</span><i aria-hidden="true">→</i><span>Ring and call the seat</span></div>
+    <div class="panel sbody">
+      <div class="col">
+        <div class="do-head"><svg class="sprite" viewBox="0 0 16 16" aria-hidden="true"><use href="#sp-pass"/></svg><h3>What you do</h3></div>
+        <ol class="todo">
+          <li>Check tare, firmness and extras against the ticket.</li>
+          <li>Wipe the rim with a clean cloth.</li>
+          <li>Ring the bell once and call "Seat 5, shoyu, extra egg."</li>
+        </ol>
+        <div class="card time" data-k="4"></div>
+      </div>
+      <div class="col">
+        <div class="card wrong"><h3>Where it goes wrong</h3>
+          <p><span class="pill bad">✕ Mistake</span>A bowl waits under the lamp and the noodles go soft.</p>
+          <p><span class="pill ok">✓ Fix</span>If a bowl has waited 30 seconds (sample), whoever is nearest carries it.</p>
+          <p class="lab">Sample tally: 6 remade bowls</p></div>
+        <div class="card busy"><h3>When it's busy</h3>
+          <p>This is where bowls back up. Two or three can wait at once. Send the oldest first, and say the seat number every time, even if it feels obvious.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- station 6 -->
+  <section class="wrap stage" id="s6" aria-labelledby="st6h">
+    <div class="step" id="st6"><span class="n" aria-hidden="true">6</span><h2 id="st6h"><span class="sr-only">Station 6: </span>Serve the counter seat</h2>
+      <span class="kind you">You</span><span class="kind cust">Customer</span>
+      <button type="button" class="i" aria-label="About serving the seat" data-tip="The counter seat
+The bowl goes over the counter to the seat on the ticket.
+Say the order back as you set it down.
+Take the ticket away, so the seat reads as served.
+Why: the customer hears the order and can stop a mistake before eating.">i</button></div>
+    <div class="explain"><span>Two hands, over the counter</span><i aria-hidden="true">→</i><span>Say the order back</span><i aria-hidden="true">→</i><span>Take the ticket</span></div>
+    <div class="panel sbody">
+      <div class="col">
+        <div class="do-head"><svg class="sprite" viewBox="0 0 16 16" aria-hidden="true"><use href="#sp-seat"/></svg><h3>What you do</h3></div>
+        <ol class="todo">
+          <li>Carry the bowl with two hands to the seat on the ticket.</li>
+          <li>Set it down and say "Shoyu with extra egg."</li>
+          <li>Take the ticket off the counter and drop it in the done box.</li>
+        </ol>
+        <div class="card time" data-k="5"></div>
+      </div>
+      <div class="col">
+        <div class="card wrong"><h3>Where it goes wrong</h3>
+          <p><span class="pill bad">✕ Mistake</span>The right bowl goes to the wrong seat.</p>
+          <p><span class="pill ok">✓ Fix</span>Serve by the seat number on the ticket, never by who looks like they've waited longest.</p>
+          <p class="lab">Sample tally: 5 remade bowls</p></div>
+        <div class="card busy"><h3>When it's busy</h3>
+          <p>Seats fill and empty out of order. Check the seat number twice: once at the pass and once at the counter.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- where orders go wrong -->
+  <section class="wrap stage" id="wrong" aria-labelledby="wrongT">
+    <div class="step"><h2 id="wrongT">Where orders go wrong</h2>
+      <button type="button" class="i" aria-label="About the remake tally" data-tip="The remake tally
+Each line counts bowls remade because of that station.
+The numbers are made up for this training page.
+Tap a line to jump to its station.
+Why: watch hardest where the count is highest.">i</button></div>
+    <div class="panel">
+      <p class="lab">Sample tally: 38 remade bowls in a made-up month</p>
+      <ol class="wrongs" id="wrongs"></ol>
+    </div>
+  </section>
+
+  <!-- how it works: the whole route -->
+  <section class="wrap stage" id="route" aria-labelledby="routeT">
+    <div class="step"><h2 id="routeT">See the whole route</h2>
+      <button type="button" class="i" aria-label="About the whole route" data-tip="The whole route
+Each block is one station, sized by its time.
+Quiet and busy use the same six stations.
+Busy adds time mostly at the door and at the noodle pot.
+Why: knowing where time goes tells you where to help.">i</button></div>
+    <div class="panel">
+      <div class="rrow"><b>Quiet</b><div class="rbar" id="rq"></div><span class="rtot" id="rqT"></span></div>
+      <div class="rrow"><b>Busy</b><div class="rbar" id="rb"></div><span class="rtot" id="rbT"></span></div>
+      <p id="rsum"></p>
+      <ol class="rlegend">
+        <li><b>1</b>Ticket machine</li><li><b>2</b>Noodles</li><li><b>3</b>Broth</li><li><b>4</b>Toppings</li><li><b>5</b>The pass</li><li><b>6</b>Counter seat</li>
+      </ol>
+      <div class="who">
+        <div class="card"><svg class="sprite" viewBox="0 0 16 16" aria-hidden="true"><use href="#sp-seat"/></svg><div><span class="kind cust">Customer</span><p>Buys the ticket at station 1 and eats at station 6.</p></div></div>
+        <div class="card"><svg class="sprite" viewBox="0 0 16 16" aria-hidden="true"><use href="#sp-you"/></svg><div><span class="kind you">You</span><p>Take the ticket, then cook, build, check and serve the bowl.</p></div></div>
+        <div class="card"><svg class="sprite" viewBox="0 0 16 16" aria-hidden="true"><use href="#sp-ticket"/></svg><div><span class="kind order">Order</span><p>The ticket travels with the bowl the whole way.</p></div></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="wrap">
+  <div class="panel">
+    <div class="foot-grid">
+      <div><a class="brand" href="#top"><svg class="sprite" viewBox="0 0 16 16" aria-hidden="true"><use href="#sp-bowl3"/></svg>Ramen Route</a><p style="margin-top:.5rem">A training page for new staff at a small ramen shop. Follow one order from the ticket machine to the counter seat.</p></div>
+      <div><h5>Data</h5><ul><li>One made-up order</li><li>Sample times, as estimates</li><li>Sample remake tally</li></ul></div>
+      <div><h5>Built with</h5><ul><li>Plain HTML, CSS and SVG</li><li>cutify-ui, custom Noren theme</li><li>Yusei Magic, Zen Maru Gothic, DM Mono</li></ul></div>
+      <div><h5>Project</h5><ul><li>Example page for cutify-ui</li><li>Not a real shop</li></ul></div>
+    </div>
+    <div class="copy"><span>© 2026 cutify-ui example. The shop, the order, every time and every count on this page is a sample.</span><a class="donate" href="https://buy.stripe.com/00w4gr2TU7wC52iaXf18c01" target="_blank" rel="noopener noreferrer"><svg aria-hidden="true" focusable="false" viewBox="0 0 16 16" width="16" height="16" shape-rendering="crispEdges"><path fill="currentColor" d="M3 3h3v1h1v1h2V4h1V3h3v1h1v4h-1v1h-1v1h-1v1h-1v1H9v1H7v-1H6v-1H5V9H4V8H3V7H2V4h1z"/></svg>Support cutify-ui<span class="sr-only"> (opens Stripe in a new tab)</span></a></div>
+  </div>
+</footer>
+
+<script>
+/* ---------- pixel sprites (from assets/pixel-sprites.js) ---------- */
+function pixelSprites({ palette, sprites, animate = {} }) {
+  const defs = document.getElementById('pixdefs');
+  for (const [id, rows] of Object.entries(sprites)) {
+    console.assert(rows.length === 16 && rows.every(r => r.length === 16), 'sprite is not 16 x 16: ' + id);
+    let out = `<symbol id="${id}" viewBox="0 0 16 16" shape-rendering="crispEdges">`;
+    rows.forEach((row, y) => [...row].forEach((ch, x) => {
+      if (ch === '.' || !palette[ch]) return;
+      const a = animate[ch];
+      out += `<rect x="${x}" y="${y}" width="1.02" height="1.02" fill="${palette[ch]}"${a ? ` class="${a}"` : ''}/>`;
+    }));
+    defs.insertAdjacentHTML('beforeend', out + '</symbol>');
+  }
+}
+const PAL = { k: '#1C1A22', i: '#2B3A6B', I: '#4C5F9E', c: '#FBF6EA', w: '#FFFFFF', a: '#BFD4E6', g: '#B9BFCC', G: '#7C8496',
+  r: '#B23A2A', y: '#E8B04A', n: '#F2D47A', b: '#C98A3E', B: '#9A6234', p: '#F3A7B5', s: '#6DAA45', m: '#B5654A',
+  o: '#2E3B2A', f: '#F1C7A3', h: '#3A2A22', e: '#E9DFC8', v: '#9AA3B5' };
+// one bowl, four fillings: the order builds as it walks the counter
+const bowl = (a, b, steam) => [
+  '................', steam ? '.....v....v.....' : '................', steam ? '......v....v....' : '................',
+  steam ? '.....v....v.....' : '................', steam ? '......v....v....' : '................', '................',
+  '.kkkkkkkkkkkkkk.', '.k' + a + 'k.', '.k' + b + 'k.', '.kiiiiiiiiiiiik.', '..kcccccccccck..', '...kcciccicck...',
+  '....kcccccck....', '.....kkkkkk.....', '................', '................'];
+pixelSprites({ palette: PAL, animate: { v: 'px-steam' }, sprites: {
+  'sp-bowl1': bowl('nnennenneenn', 'ennennennenn'),
+  'sp-bowl2': bowl('bbnbbbnbbnbb', 'bbbbbbbbbbbb'),
+  'sp-bowl3': bowl('ommbwyywbsps', 'ommbwwwwbsbp'),
+  'sp-bowl4': bowl('ommbwyywbsps', 'ommbwwwwbsbp', true),
+  'sp-ticket': ['................', '................', '...kkkkkkkkkk...', '...kcccccccck...', '...kciiiiiick...', '...kcccccccck...',
+    '...kcikkcikck...', '...kcccccccck...', '...kcrrrrrrck...', '...kcccccccck...', '...kckckckcck...', '...kkkkkkkkkk...',
+    '................', '................', '................', '................'],
+  'sp-machine': ['..kkkkkkkkkkkk..', '..kiiiiiiiiiik..', '..kiccccccccik..', '..kiiiiiiiiiik..', '..kiwrwywrwyik..', '..kiIIIIIIIIik..',
+    '..kiwywrwywrik..', '..kiIIIIIIIIik..', '..kiiiGGGGiiik..', '..kiiiiiiiiiik..', '..kiikkkkkkiik..', '..kiikcccckiik..',
+    '..kiikkkkkkiik..', '..kiiiiiiiiiik..', '..kkkkkkkkkkkk..', '..kk........kk..'],
+  'sp-pot': ['................', '........kk......', '........k.......', '.......kk.......', '...v...k....v...', '.kkkkkkkkkkkkkk.',
+    '.kaaaaknnnkaaak.', 'kkggggknnnkgggkk', '.kggggkkkkkgggk.', '.kggggggggggggk.', '.kGGGGGGGGGGGGk.', '.kggggggggggggk.',
+    '.kkkkkkkkkkkkkk.', '..ry..ry..ry....', '.kkkkkkkkkkkkkk.', '................'],
+  'sp-broth': ['..v.......k.....', '..........k.....', '....v....k......', '.........k......', '.kkkkkkkkkkkkkk.', '.kbbbbbbbkbbbbk.',
+    'kkGGGGGGGGGGGGkk', '.kggggggggggggk.', '.kggggggggggggk.', '.kgiiiiiiiiiigk.', '.kggggggggggggk.', '.kggggggggggggk.',
+    '.kGGGGGGGGGGGGk.', '.kkkkkkkkkkkkkk.', '..ry..ry..ry....', '.kkkkkkkkkkkkkk.'],
+  'sp-board': ['................', '................', '................', '..kkkk....kkk...', '.kwyywk..kmmmk..', '.kwyywk..kmcmk..',
+    '.kwwwwk..kmmmk..', '..kkkk....kkk...', '.ss.s.ss.pp.pp..', 'kkkkkkkkkkkkkkkk', 'kBBBBBBBBBBBBBBk', 'kBBBBBBBBBBBBBBk',
+    'kkkkkkkkkkkkkkkk', '................', '................', '................'],
+  'sp-pass': ['..kkkkkkkkkkkk..', '.kGGGGGGGGGGGGk.', '..kkkkkkkkkkkk..', '...y..y..y..y...', '................', '................',
+    '.......kk.......', '......kyyk......', '.....kyyyyk.....', '.....kyywyk.....', '....kyyyyyyk....', '....kkkkkkkk....',
+    'kkkkkkkkkkkkkkkk', 'kggggggggggggggk', 'kkkkkkkkkkkkkkkk', '.k............k.'],
+  'sp-seat': ['................', '......kkkk......', '.....khhhhk.....', '....khhhhhhk....', '....khffffhk....', '....kfkffkfk....',
+    '....kffffffk....', '.....kffffk.....', '....kkrrrrkk....', '...krrrrrrrrk...', '...krkrrrrkrk...', '...kfkrrrrkfk...',
+    '....kGGGGGGk....', '...kBBBBBBBBk...', '.....kBkkkBk....', '.....kBk.kBk....'],
+  'sp-you': ['................', '......kkkk......', '.....khhhhk.....', '....kwwwwwwk....', '....khffffhk....', '....kfkffkfk....',
+    '....kffffffk....', '.....kffffk.....', '....kkiiiikk....', '...kiicccciik...', '...kikcccckik...', '...kfkcccckfk...',
+    '....kiiiiiik....', '....kiik.kiik...', '....kiik.kiik...', '....kkkk.kkkk...'],
+} });
+
+/* ---------- sample data: one station per row. q = quiet, b = busy, in seconds (made up, estimates) ---------- */
+const ST = [
+  { name: 'Ticket machine', short: 'Ticket', q: 40, b: 90, remakes: 3, why: 'Firmness asked but not written down', sprite: 'sp-ticket',
+    say: { q: 'Order 42 prints at the machine. You write "normal" and seat 5 on it and clip it to the rail.', b: 'Four tickets are ahead of order 42 on the rail. Take tickets at the door while people wait.' } },
+  { name: 'Noodles', short: 'Noodles', q: 120, b: 150, remakes: 9, why: 'One timer shared by several baskets', sprite: 'sp-bowl1',
+    say: { q: 'One basket, one timer. Order 42 boils for 2:00 and drains with five hard shakes.', b: 'Six baskets share the pot and the water cools, so order 42 takes 2:30. Its ticket rides on the handle.' } },
+  { name: 'Broth', short: 'Broth', q: 30, b: 45, remakes: 4, why: 'Wrong tare in a lined-up bowl', sprite: 'sp-bowl2',
+    say: { q: 'Warm bowl, shoyu tare, then broth. The noodles slide in and get one fold.', b: 'Bowls wait in a line, each on its own ticket, so the shoyu tare lands in the right one.' } },
+  { name: 'Toppings', short: 'Toppings', q: 40, b: 60, remakes: 11, why: 'Paid-for extra egg left off', sprite: 'sp-bowl3',
+    say: { q: 'You read "shoyu, extra egg" out loud. Chashu, egg, scallion, naruto, then the extra egg on top.', b: 'Bowls arrive together. You still read the ticket for each one, because the extra egg is what gets missed.' } },
+  { name: 'The pass', short: 'Pass', q: 15, b: 40, remakes: 6, why: 'Bowl waits under the lamp, noodles go soft', sprite: 'sp-bowl3',
+    say: { q: 'Bowl against ticket: shoyu, normal, extra egg. Wipe the rim, ring once, call seat 5.', b: 'Two bowls are already waiting at the pass. The oldest goes first, so order 42 waits 0:40.' } },
+  { name: 'Counter seat', short: 'Seat', q: 20, b: 30, remakes: 5, why: 'Right bowl, wrong seat', sprite: 'sp-bowl4',
+    say: { q: 'Two hands over the counter to seat 5. "Shoyu with extra egg." The ticket goes in the done box.', b: 'Seats turned over out of order, so you check seat 5 on the ticket twice before setting the bowl down.' } },
+];
+const fmt = s => `${Math.floor(s / 60)}:${String(Math.round(s % 60)).padStart(2, '0')}`;
+const total = m => ST.reduce((t, s) => t + s[m], 0);
+console.assert(total('q') === 265 && total('b') === 415, 'sample totals changed: update the copy');
+const $ = id => document.getElementById(id);
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let mode = 'quiet';
+const M = () => mode === 'quiet' ? 'q' : 'b';
+
+/* timing card in each station */
+const MAX = Math.max(...ST.map(s => s.b));
+document.querySelectorAll('.time').forEach(el => {
+  const s = ST[+el.dataset.k];
+  el.innerHTML = `<p class="lab">Time at this station, sample estimate</p>` + [['q', 'Quiet'], ['b', 'Busy']].map(([m, label]) =>
+    `<div class="trow ${m}"><span>${label}</span><span class="bar" aria-hidden="true"><i style="width:${(s[m] / MAX * 100).toFixed(1)}%"></i></span><b class="mono">${fmt(s[m])}</b><span class="now">Now</span></div>`).join('');
+});
+
+/* remake tally, highest first */
+const SUM = ST.reduce((t, s) => t + s.remakes, 0), TOP = Math.max(...ST.map(s => s.remakes));
+console.assert(SUM === 38, 'sample tally changed: update the copy');
+$('wrongs').innerHTML = ST.map((s, k) => ({ ...s, k })).sort((a, b) => b.remakes - a.remakes).map(s =>
+  `<li><a href="#s${s.k + 1}"><span class="nm"><b>${s.k + 1}</b>${s.name}</span><span class="bar" aria-hidden="true"><i style="width:${(s.remakes / TOP * 100).toFixed(0)}%"></i></span><span class="ct">${s.remakes}</span><span class="why">${s.why}</span></a></li>`).join('');
+
+/* the whole route */
+['q', 'b'].forEach(m => {
+  const t = total(m);
+  $('r' + m).innerHTML = ST.map((s, k) => `<span style="flex:${s[m]}" title="${s.name}, ${fmt(s[m])}">${k + 1}<span class="sr-only"> ${s.name}, ${fmt(s[m])}</span></span>`).join('');
+  $('r' + m + 'T').textContent = `${fmt(t)} from ticket to seat (sample estimate)`;
+});
+const diff = ST.map((s, k) => ({ k, d: s.b - s.q })).sort((a, b) => b.d - a.d);
+$('rsum').textContent = `A busy shop adds ${fmt(total('b') - total('q'))} to every order. The biggest jumps are at the ${ST[diff[0].k].name.toLowerCase()} (+${fmt(diff[0].d)}) and ${ST[diff[1].k].name.toLowerCase()} (+${fmt(diff[1].d)}). Help there first.`;
+
+/* ---------- the route animation: scripted story with cancellable sleeps ---------- */
+let timers = [], runId = 0, at = 0, heroVisible = true;
+const sleep = ms => new Promise(r => timers.push(setTimeout(r, reduced ? Math.min(ms, 120) : ms)));
+const lis = [...$('stations').children];
+const centre = (k, el) => lis[k].offsetLeft + lis[k].offsetWidth / 2 - el.offsetWidth / 2;
+function place(k) {
+  at = k;
+  $('bowl').style.transform = `translateX(${centre(k, $('bowl'))}px)`;
+  // you work stations 2 to 6; at the ticket machine you wait at the start of the noodle station
+  $('you').style.transform = `translateX(${centre(Math.max(k, 1), $('you'))}px)`;
+  $('you').querySelector('svg').classList.toggle('talking', k > 0 && runId > 0);
+  $('bowlUse').setAttribute('href', '#' + ST[k].sprite);
+  lis.forEach((li, j) => { li.classList.toggle('on', j === k); li.classList.toggle('done', j < k); });
+  for (let j = 1; j <= 6; j++) $('st' + j).classList.toggle('on', j === k + 1);
+  $('clkSt').textContent = `${k + 1} of 6`;
+}
+async function gate() { while (!heroVisible || document.hidden) await new Promise(r => setTimeout(r, 250)); }
+async function play() {
+  timers.forEach(clearTimeout); timers = []; const id = ++runId, m = M();
+  $('playTxt').textContent = '▶ Following order 42…';
+  let elapsed = 0; $('clk').textContent = fmt(0);
+  for (let k = 0; k < ST.length; k++) {
+    await gate(); if (id !== runId) return;
+    place(k);
+    $('status').textContent = `Station ${k + 1}, ${ST[k].name.toLowerCase()}, ${fmt(ST[k][m])}. ${ST[k].say[m]}`;
+    await sleep(k ? 700 : 300);
+    const t = ST[k][m], dwell = 900 + t * 9;
+    for (let s = 1; s <= 10; s++) { await sleep(dwell / 10); if (id !== runId) return; $('clk').textContent = fmt(elapsed + t * s / 10); }
+    elapsed += t;
+  }
+  $('you').querySelector('svg').classList.remove('talking');
+  $('st6').classList.remove('on');
+  $('status').textContent = `✓ Order 42 served at seat 5 in ${fmt(elapsed)} on a ${mode} day (sample estimate). ${mode === 'quiet' ? 'Switch to Busy to see the rush.' : 'Switch to Quiet to compare.'}`;
+  $('playTxt').textContent = '↺ Follow order 42 again';
+}
+$('playBtn').addEventListener('click', play);
+
+/* quiet or busy */
+document.querySelectorAll('input[name="mode"]').forEach(r => r.addEventListener('change', () => {
+  mode = r.value; document.body.dataset.mode = mode;
+  $('modeNote').textContent = mode === 'quiet' ? 'Showing a quiet shop.' : 'Showing a busy shop: four orders ahead of 42.';
+  if (runId) play();
+}));
+addEventListener('resize', () => place(at));
+
+/* ---------- tooltips stay on screen ---------- */
+function fitTip(el) {
+  const r = el.getBoundingClientRect(), w = Math.min(300, innerWidth - 32), mid = r.left + r.width / 2;
+  const dx = Math.min(0, innerWidth - 16 - (mid + w / 2)) + Math.max(0, 16 - (mid - w / 2));
+  el.style.setProperty('--dx', dx + 'px'); el.classList.toggle('up', r.bottom + 240 > innerHeight && r.top > 260);
+}
+const tips = [...document.querySelectorAll('.i[data-tip]')];
+tips.forEach((el, k) => {
+  const sr = document.createElement('span');  // the text screen readers hear, linked by aria-describedby
+  sr.id = 'tip-' + k; sr.className = 'sr-only'; sr.setAttribute('role', 'tooltip'); sr.textContent = el.dataset.tip;
+  el.after(sr); el.setAttribute('aria-describedby', sr.id);
+  ['mouseenter', 'focus'].forEach(ev => el.addEventListener(ev, () => fitTip(el)));
+  ['mouseleave', 'blur'].forEach(ev => el.addEventListener(ev, () => el.classList.remove('shut')));
+  el.addEventListener('blur', () => el.classList.remove('open'));
+  el.addEventListener('click', () => { const open = el.classList.contains('open'); el.classList.toggle('open', !open); el.classList.toggle('shut', open); });
+});
+addEventListener('pointerdown', e => tips.forEach(el => !el.contains(e.target) && el.classList.remove('open')));
+addEventListener('keydown', e => { if (e.key === 'Escape') tips.forEach(el => { el.classList.remove('open'); if (el.matches(':hover, :focus')) el.classList.add('shut'); }); });
+
+/* ---------- pause off screen, play once when the hero is first seen ---------- */
+let started = false;
+const io = new IntersectionObserver(es => es.forEach(e => {
+  e.target.classList.toggle('is-off', !e.isIntersecting);
+  if (e.target.id === 'hero') { heroVisible = e.isIntersecting; if (heroVisible && !started && !reduced) { started = true; play(); } }
+}), { rootMargin: '0px' });
+document.querySelectorAll('#hero, .stage').forEach(el => io.observe(el));
+place(0);
+</script>
+</body>
+</html>

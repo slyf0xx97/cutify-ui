@@ -104,7 +104,7 @@ button { font: inherit; cursor: pointer; color: inherit; }
 @media (max-width: 420px) { .nav .btn { padding-inline: .8rem; } .brand { font-size: 1.1rem; } .brand svg { width: 1.6rem; } }
 
 /* ---- hero ---- */
-.hero { display: grid; grid-template-columns: 1.02fr .98fr; gap: 2.4rem; align-items: center; padding: 3rem 0 2.2rem; }
+.hero { display: grid; grid-template-columns: minmax(0, 1.02fr) minmax(0, .98fr); gap: 2.4rem; align-items: center; padding: 3rem 0 2.2rem; }
 .hero h1 { font-size: clamp(2.7rem, 6.4vw, 4.6rem); margin: .8rem 0 .9rem; letter-spacing: -.01em; }
 .hero h1 em { font-style: normal; color: var(--blue); }
 .hero .tag { font-size: clamp(1.1rem, 1.8vw, 1.3rem); max-width: 34rem; margin: 0 0 1.1rem; }
@@ -117,7 +117,7 @@ button { font: inherit; cursor: pointer; color: inherit; }
 .badge-row { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; }
 
 .scene { position: relative; aspect-ratio: 6 / 5; border-radius: 22px; box-shadow: 0 6px 0 var(--surface-ledge); overflow: hidden; container-type: inline-size; }
-.scene .tiles { position: absolute; left: 8%; right: 8%; top: 44%; height: 22%; display: grid; grid-template-columns: repeat(4, 1fr); gap: 2%; }
+.scene .tiles { position: absolute; left: 8%; right: 8%; top: 44%; height: 22%; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 2%; }
 .scene .tiles i { background: #FFFFFFB8; border-radius: 10px; box-shadow: 0 4px 0 #0000001a; }
 .scene .walker { position: absolute; left: 9%; top: 26%; width: 18%; }
 .scene .battery { position: absolute; left: 73%; top: 30%; width: 16%; }
@@ -146,7 +146,7 @@ button { font: inherit; cursor: pointer; color: inherit; }
 @keyframes glow { 0%, 61% { opacity: 0; } 62%, 66% { opacity: 1; } 70%, 74% { opacity: 1; } 67%, 69%, 75%, 100% { opacity: 0; } }
 .legend { display: flex; flex-wrap: wrap; gap: .4rem 1rem; margin-top: .9rem; font-size: .92rem; color: var(--ink-muted); }
 .legend span { display: inline-flex; align-items: center; gap: .4rem; }
-@media (max-width: 900px) { .hero { grid-template-columns: 1fr; gap: 1.6rem; padding-top: 2rem; } }
+@media (max-width: 900px) { .hero { grid-template-columns: minmax(0, 1fr); gap: 1.6rem; padding-top: 2rem; } }
 
 /* ---- stages ---- */
 .step { display: flex; align-items: center; gap: .9rem; margin: 2.6rem 0 .7rem; scroll-margin-top: 5.5rem; flex-wrap: wrap; }
@@ -158,9 +158,9 @@ button { font: inherit; cursor: pointer; color: inherit; }
 .explain i { font-style: normal; font-weight: 900; color: var(--blue); }
 
 /* stage 1: levels */
-.levels { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; list-style: none; padding: 0; margin: 0; }
+.levels { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; list-style: none; padding: 0; margin: 0; }
 .lvl { --c: var(--surface); width: 100%; text-align: left; padding: 1rem 1.1rem .9rem; border: 0; border-radius: 16px; background: var(--surface); box-shadow: 0 var(--ledge) 0 var(--surface-ledge);
-  display: grid; grid-template-columns: auto 1fr; gap: .2rem .8rem; align-items: center; margin-top: 8px; }
+  display: grid; grid-template-columns: auto minmax(0, 1fr); gap: .2rem .8rem; align-items: center; margin-top: 8px; }
 .lvl .num { --c: var(--lc); grid-row: span 2; display: grid; place-items: center; width: 2.6rem; height: 2.2rem; border-radius: 7px; background: var(--lc); color: var(--lt); font: 400 1.1rem var(--display); box-shadow: 0 3px 0 var(--ll); }
 .lvl b { font: 400 1.1rem var(--display); }
 .lvl .state { font: 700 .72rem var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--ink-muted); }
@@ -168,7 +168,7 @@ button { font: inherit; cursor: pointer; color: inherit; }
 .lvl.done .state { color: var(--ok); }
 .lvl:disabled { opacity: .55; cursor: not-allowed; }
 .l1 { --lc: var(--blue); --ll: var(--blue-ledge); --lt: #fff; } .l2 { --lc: var(--yellow); --ll: var(--yellow-ledge); --lt: var(--ink); } .l3 { --lc: var(--green); --ll: var(--green-ledge); --lt: #fff; }
-@media (max-width: 900px) { .levels { grid-template-columns: 1fr; } }   /* three across squeezes the titles to one word a line at tablet width */
+@media (max-width: 900px) { .levels { grid-template-columns: minmax(0, 1fr); } }   /* three across squeezes the titles to one word a line at tablet width */
 
 /* stage 2: the play board */
 .board { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); gap: 1.4rem; align-items: start; }
@@ -176,7 +176,7 @@ button { font: inherit; cursor: pointer; color: inherit; }
 .goal { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem .7rem; margin: 0 0 .9rem; }
 .goal b { font: 400 1.15rem var(--display); }
 .gridwrap { position: relative; width: min(100%, 440px); margin-inline: auto; aspect-ratio: 1; }
-.cells { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(5, 1fr); grid-template-rows: repeat(5, 1fr); gap: 4px; }
+.cells { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); grid-template-rows: repeat(5, 1fr); gap: 4px; }
 .cells i { position: relative; background: #FFFFFFD9; border-radius: 8px; box-shadow: 0 3px 0 #0000001f; }
 .cells i.start { background: #E3EBFB; }
 .cells i.trail::after { content: ""; position: absolute; inset: 40%; border-radius: 3px; background: var(--blue); opacity: .55; }
@@ -189,7 +189,7 @@ button { font: inherit; cursor: pointer; color: inherit; }
 .piece.bat .got { transform: scale(1.2); filter: drop-shadow(0 0 10px #3DBE6E); transition: transform .2s steps(2); }
 .dir-legend { text-align: center; margin: .7rem 0 0; font-size: .9rem; color: var(--ink-muted); }
 
-.speech { display: grid; grid-template-columns: 4.2rem 1fr; gap: .8rem; align-items: start; margin-top: 1.1rem; }
+.speech { display: grid; grid-template-columns: 4.2rem minmax(0, 1fr); gap: .8rem; align-items: start; margin-top: 1.1rem; }
 .speech .who { text-align: center; }
 .speech .who .lab { display: block; margin-top: .2rem; }
 .bubble { position: relative; background: var(--surface); border-radius: 14px; padding: .7rem .9rem; box-shadow: 0 4px 0 var(--surface-ledge); min-height: 4.4rem; }
@@ -200,7 +200,7 @@ button { font: inherit; cursor: pointer; color: inherit; }
 
 .side h3 { font-size: 1.15rem; margin: 0 0 .25rem; }
 .side .sub { margin: 0 0 .8rem; color: var(--ink-muted); font-size: .95rem; }
-.palette { display: grid; grid-template-columns: repeat(2, 1fr); gap: .9rem .7rem; margin-bottom: 1.2rem; }
+.palette { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .9rem .7rem; margin-bottom: 1.2rem; }
 .blk-btn, .blk { --c: var(--bc); background: var(--bc); color: var(--bt); box-shadow: 0 var(--ledge) 0 var(--bl); border: 0; border-radius: 10px; }
 .blk-btn { display: flex; align-items: center; gap: .55rem; min-height: 3rem; padding: .5rem .8rem; font: 700 1.02rem var(--body); margin-top: 7px; margin-bottom: var(--ledge); text-align: left; }
 .blk-btn .ic, .blk .ic { display: inline-grid; place-items: center; width: 1.7rem; height: 1.7rem; border-radius: 6px; background: #FFFFFF33; font: 700 1.05rem var(--mono); flex: none; }
@@ -232,10 +232,10 @@ button { font: inherit; cursor: pointer; color: inherit; }
 .result { margin-top: .6rem; }
 .result[hidden] { display: none; }
 .result .btn { margin-top: .4rem; }
-@media (max-width: 900px) { .board { grid-template-columns: 1fr; } }
+@media (max-width: 900px) { .board { grid-template-columns: minmax(0, 1fr); } }
 
 /* stage 3: tower */
-.grow { display: grid; grid-template-columns: auto 1fr; gap: 1.6rem; align-items: end; }
+.grow { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 1.6rem; align-items: end; }
 .tower { display: flex; flex-direction: column-reverse; gap: 12px; width: 13rem; padding: 1.2rem 1rem 1rem; }
 .tower .slot { --c: var(--tc); position: relative; height: 3rem; border-radius: 8px; display: flex; align-items: center; justify-content: center; font: 700 .8rem var(--mono); letter-spacing: .06em; text-transform: uppercase; }
 .tower .slot:not(.on) { border: 2px dashed #B9B2A2; color: var(--ink-muted); }
@@ -249,10 +249,10 @@ button { font: inherit; cursor: pointer; color: inherit; }
 .kpi b { display: block; font: 400 1.9rem/1.2 var(--display); }
 .kpi span { font-size: .9rem; color: var(--ink-muted); }
 .grow-note { margin: 1rem 0 0; color: var(--ink-muted); }
-@media (max-width: 760px) { .grow { grid-template-columns: 1fr; } .tower { margin-inline: auto; } .kpis { grid-template-columns: 1fr; } }
+@media (max-width: 760px) { .grow { grid-template-columns: minmax(0, 1fr); } .tower { margin-inline: auto; } .kpis { grid-template-columns: minmax(0, 1fr); } }
 
 /* how it works */
-.how { display: grid; grid-template-columns: 1.1fr .9fr; gap: 1.4rem; align-items: start; }
+.how { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: 1.4rem; align-items: start; }
 .route { list-style: none; margin: 0; padding: 0 0 0 2.6rem; position: relative; display: grid; gap: .9rem; }
 .route::before { content: ""; position: absolute; left: 1.05rem; top: calc(1rem - 12px); bottom: 1rem; width: 4px; background-image: linear-gradient(var(--blue) 50%, transparent 50%); background-size: 4px 12px; clip-path: inset(12px 0 0); }
 /* the line is one dash period longer and slides down one period while the clip slides back up, so the visible line stays put and the loop is seamless */
@@ -265,14 +265,14 @@ button { font: inherit; cursor: pointer; color: inherit; }
 .route li p { margin: .15rem 0 0; color: var(--ink-muted); font-size: .97rem; }
 .route .tags { display: flex; gap: .35rem; margin-top: .35rem; flex-wrap: wrap; }
 .cast { display: grid; gap: 1rem; }
-.who-card { display: grid; grid-template-columns: 4.6rem 1fr; gap: 1rem; align-items: center; }
+.who-card { display: grid; grid-template-columns: 4.6rem minmax(0, 1fr); gap: 1rem; align-items: center; }
 .who-card h3 { margin: 0 0 .2rem; font-size: 1.2rem; display: flex; gap: .45rem; align-items: center; flex-wrap: wrap; }
 .who-card p { margin: 0; }
-@media (max-width: 900px) { .how { grid-template-columns: 1fr; } }
+@media (max-width: 900px) { .how { grid-template-columns: minmax(0, 1fr); } }
 
 /* footer */
 footer { margin: 3.5rem auto 2rem; }
-.foot { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 1.4rem; }
+.foot { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr); gap: 1.4rem; }
 .foot h4 { margin: 0 0 .4rem; font: 700 .75rem var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-muted); }
 .foot ul { list-style: none; margin: 0; padding: 0; font-size: .95rem; }
 .foot p { margin: .4rem 0 0; }
@@ -285,8 +285,8 @@ footer { margin: 3.5rem auto 2rem; }
 .donate:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; border-radius: 14px; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .px-ic { width: 1em; height: 1em; flex: none; vertical-align: -.125em; }   /* pixel icons sized like the text beside them */
-@media (max-width: 900px) { .foot { grid-template-columns: 1fr 1fr; } }
-@media (max-width: 520px) { .foot { grid-template-columns: 1fr; } }
+@media (max-width: 900px) { .foot { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
+@media (max-width: 520px) { .foot { grid-template-columns: minmax(0, 1fr); } }
 
 /* dialog */
 dialog { border: 0; border-radius: 22px; padding: 0; width: min(460px, calc(100vw - 24px)); box-shadow: 0 6px 0 var(--surface-ledge), 0 24px 60px #0004; color: var(--ink); }
@@ -455,7 +455,7 @@ dialog::backdrop { background: #1A1A1A66; }
     <div><h4>Built with</h4><ul><li>Plain HTML, CSS and SVG</li><li>cutify-ui, Toy Box theme</li><li>Dela Gothic One, Outfit, JetBrains Mono</li></ul></div>
     <div><h4>Project</h4><ul><li>Example page for cutify-ui</li><li>Not a real product</li></ul></div>
   </div>
-  <div class="copy"><span>© 2026 cutify-ui example. Levels, hints and counts on this page are samples.</span><a class="donate" href="https://donate.stripe.com/00w4gr2TU7wC52iaXf18c01" target="_blank" rel="noopener noreferrer"><svg aria-hidden="true" focusable="false" viewBox="0 0 16 16" width="16" height="16" shape-rendering="crispEdges"><path fill="currentColor" d="M3 3h3v1h1v1h2V4h1V3h3v1h1v4h-1v1h-1v1h-1v1h-1v1H9v1H7v-1H6v-1H5V9H4V8H3V7H2V4h1z"/></svg>Support cutify-ui<span class="sr-only"> (opens Stripe in a new tab)</span></a></div>
+  <div class="copy"><span>© 2026 cutify-ui example. Levels, hints and counts on this page are samples.</span><a class="donate" href="https://buy.stripe.com/00w4gr2TU7wC52iaXf18c01" target="_blank" rel="noopener noreferrer"><svg aria-hidden="true" focusable="false" viewBox="0 0 16 16" width="16" height="16" shape-rendering="crispEdges"><path fill="currentColor" d="M3 3h3v1h1v1h2V4h1V3h3v1h1v4h-1v1h-1v1h-1v1h-1v1H9v1H7v-1H6v-1H5V9H4V8H3V7H2V4h1z"/></svg>Support cutify-ui<span class="sr-only"> (opens Stripe in a new tab)</span></a></div>
 </footer>
 
 <dialog id="dlg" aria-labelledby="dlgT">

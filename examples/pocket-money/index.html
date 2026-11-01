@@ -1,0 +1,804 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pocket Money, a savings app prototype for kids</title>
+<meta name="description" content="A cutify-ui Picnic example: a clickable phone prototype for Pocket Money, where kids aged 8 to 12 save their allowance in a jar and a parent approves each spend.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sour+Gummy:wght@600;700&family=Nunito:wght@400;700;800&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' shape-rendering='crispEdges'%3E%3Cpath fill='%2316171a' d='M4 1h8v4H4zM3 5h10v1H3zM2 6h12v9H2z'/%3E%3Cpath fill='%23FFD86E' d='M5 2h6v2H5z'/%3E%3Cpath fill='%23e3f4ff' d='M3 6h10v3H3z'/%3E%3Cpath fill='%23F2B33D' d='M3 9h10v5H3z'/%3E%3C/svg%3E">
+<style>
+/* ---- tokens: cutify-ui Picnic (assets/picnic.css), clover gingham and Sour Gummy for a kids' money app ---- */
+:root {
+  --bg: #FFFDF8; --gingham: rgb(123 198 126 / .2);
+  --surface: #FFF4E0; --surface-2: #FFFFFF; --border: #3A2E2A;
+  --ink: #3A2E2A; --ink-muted: #6B5A52;
+  --accent: #C2272D; --accent-ink: #FFFFFF;
+  --accent-2: #FFD86E; --accent-2-ink: #3A2E2A;
+  --ok: #3E7D48; --bad: #C2272D; --warn: #B45309;
+  --c-kid: #FFD86E; --c-parent: #9EC5FF; --c-app: #FFB3C6;
+  --coin: #F2B33D; --coin-dark: #B7791F; --glass: #E3F4FF;
+  --radius: 14px; --shadow: 3px 4px 0 rgb(58 46 42 / .25); --shadow-hover: 4px 7px 0 rgb(58 46 42 / .25);
+  --ease-pop: cubic-bezier(.34, 1.56, .64, 1);
+  --display: 'Sour Gummy', 'Trebuchet MS', sans-serif; --body: 'Nunito', ui-sans-serif, sans-serif; --mono: 'DM Mono', ui-monospace, monospace;
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { background: var(--bg); scroll-padding-top: 5rem; scroll-behavior: smooth; overflow-x: clip; }
+body { margin: 0; color: var(--ink); font: 400 1.0625rem/1.6 var(--body); overflow-x: clip;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+    repeating-linear-gradient(0deg, var(--gingham) 0 16px, transparent 16px 32px),
+    repeating-linear-gradient(90deg, var(--gingham) 0 16px, transparent 16px 32px), var(--bg); }
+h1, h2, h3 { font-family: var(--display); font-weight: 700; line-height: 1.1; }
+a { color: var(--accent); }
+p { margin: 0 0 .8rem; }
+:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; border-radius: 8px; }
+[hidden] { display: none !important; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { animation: none !important; transition: none !important; } }
+.is-off, .is-off *, .is-off *::before, .is-off *::after { animation-play-state: paused !important; }
+.wrap { width: min(1200px, 100% - 2rem); margin-inline: auto; }
+.mono { font-family: var(--mono); }
+
+/* napkin cards */
+.panel { background: var(--surface); border: 2px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); padding: 1.1rem 1.25rem; min-width: 0; }
+.card { background: var(--surface-2); border: 2px solid var(--border); border-radius: 10px; padding: .9rem 1rem; min-width: 0; }
+.scallop { --s: 10px; padding-top: calc(1.1rem + var(--s));
+  mask: radial-gradient(var(--s) at 50% 0, #0000 98%, #000) 50% / calc(2 * var(--s)) 100% repeat-x; }
+.lab { font: 500 .78rem var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-muted); }
+.hl { background: linear-gradient(transparent 55%, var(--accent-2) 55%, var(--accent-2) 92%, transparent 92%); }
+
+/* buttons */
+button { font: inherit; cursor: pointer; color: inherit; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; min-height: 2.75rem; padding: .5rem 1.1rem; border: 2px solid var(--border); border-radius: 999px;
+  background: var(--surface-2); color: var(--ink); font: 800 1rem var(--body); text-decoration: none; box-shadow: var(--shadow); text-align: center; }
+.btn.primary { background: var(--accent); color: var(--accent-ink); }
+.btn.butter { background: var(--accent-2); color: var(--accent-2-ink); }
+.btn.small { min-height: 2.5rem; padding: .3rem .9rem; font-size: .95rem; }
+.btn:disabled { opacity: .55; cursor: not-allowed; box-shadow: none; }
+:where(.btn, button) { transition: transform .16s var(--ease-pop), box-shadow .16s ease; }
+@media (prefers-reduced-motion: no-preference) {
+  :where(.btn, button):not(:disabled):hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); }
+  :where(.btn, button):not(:disabled):active { animation: squash .28s cubic-bezier(.3, 1.6, .5, 1); } }
+@keyframes squash { 30% { transform: scale(1.08, .9); } 60% { transform: scale(.96, 1.04); } }
+
+/* who-does-what chips, each with a shape */
+.who { display: inline-flex; align-items: center; gap: .3rem; padding: .05rem .5rem; border: 1.5px solid var(--border); border-radius: 999px;
+  font: 500 .7rem var(--mono); letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; color: var(--ink); }
+.who::before { content: ""; width: .55rem; height: .55rem; background: var(--ink); }
+.who.kid { background: var(--c-kid); } .who.kid::before { border-radius: 50%; }
+.who.parent { background: var(--c-parent); } .who.parent::before { border-radius: 1px; }
+.who.app { background: var(--c-app); } .who.app::before { clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%); }
+
+/* info trigger; the visible tip is one floating paper tag (#tip) */
+.i { display: inline-grid; place-items: center; flex: none; width: 1.5rem; height: 1.5rem; padding: 0; border-radius: 50%; border: 2px solid currentColor; background: var(--surface-2);
+  font: 700 .8rem var(--body); color: var(--accent); cursor: help; margin-left: .35rem; vertical-align: middle; box-shadow: none; }
+#tip { position: fixed; z-index: 300; width: min(300px, calc(100vw - 16px)); padding: .7rem .85rem .75rem 1.5rem; background: var(--surface-2); color: var(--ink);
+  border: 2px solid var(--border); border-radius: 4px 12px 12px 4px; box-shadow: var(--shadow); font: 400 .95rem/1.45 var(--body); pointer-events: none;
+  background-image: radial-gradient(circle at .75rem .95rem, var(--bg) 0 4px, var(--border) 4px 5.5px, transparent 6px); }
+#tip b { display: block; font: 700 1.05rem var(--display); margin-bottom: .2rem; }
+#tip ul { margin: 0; padding-left: 1rem; } #tip li:last-child { list-style: none; margin-left: -1rem; margin-top: .25rem; font-weight: 700; }
+#tip.sheet { left: 8px !important; right: 8px; top: auto !important; bottom: 8px; width: auto; }
+@media (prefers-reduced-motion: no-preference) { #tip:not([hidden]) { animation: tip-in .15s ease-out; } }
+@keyframes tip-in { from { opacity: 0; transform: translateY(4px); } }
+
+/* pixel art */
+.sprite { image-rendering: pixelated; display: block; }
+@media (prefers-reduced-motion: no-preference) { .bob { animation: bob 3.4s ease-in-out infinite; } }
+@keyframes bob { 50% { transform: translateY(-4px); } }
+
+/* nav */
+.nav { position: sticky; top: .6rem; z-index: 50; display: flex; align-items: center; gap: 1rem; margin-top: .6rem; padding: .45rem .55rem .45rem 1rem;
+  background: var(--surface-2); border: 2px solid var(--border); border-radius: 999px; box-shadow: var(--shadow); }
+.brand { display: inline-flex; align-items: center; gap: .5rem; font: 700 1.35rem var(--display); color: var(--ink); text-decoration: none; }
+.brand svg { width: 28px; height: 28px; }
+.nav nav { display: flex; gap: 1.1rem; margin-left: auto; }
+.nav nav a { color: var(--ink); text-decoration: none; font-weight: 700; padding: .3rem .1rem; border-bottom: 2px dotted transparent; }
+.nav nav a:hover { border-bottom-color: var(--accent); }
+@media (max-width: 760px) { .nav nav { display: none; } .nav .btn { margin-left: auto; } .nav .long { display: none; } }
+
+/* hero */
+.hero { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 2rem; align-items: center; padding: 3rem 0 2rem; }
+.hero h1 { font-size: clamp(2.8rem, 7vw, 4.6rem); margin: .4rem 0 .6rem; letter-spacing: -.01em; }
+.hero .lede { font-size: 1.2rem; max-width: 34rem; }
+.benefits { list-style: none; padding: 0; margin: 1rem 0 1.4rem; display: grid; gap: .35rem; font-weight: 700; }
+.benefits li::before { content: "✓"; display: inline-grid; place-items: center; width: 1.4rem; height: 1.4rem; margin-right: .55rem; border: 2px solid var(--border);
+  border-radius: 50%; background: #DDF1DF; color: var(--ok); font-size: .8rem; }
+.cta { display: inline-flex; flex-direction: column; align-items: flex-start; gap: .35rem; }
+.cta .btn { font-size: 1.1rem; padding: .7rem 1.4rem; }
+.cta small { font: 500 .8rem var(--mono); color: var(--ink-muted); }
+.scene { container-type: inline-size; position: relative; padding: 2.2rem 1rem 1rem; }
+.scene .lab { position: absolute; top: .55rem; left: 1rem; right: 1rem; display: flex; align-items: center; gap: .3rem; }
+.cast { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .5rem; align-items: end; padding-top: 3.5rem; position: relative; }
+.actor { display: grid; justify-items: center; gap: .35rem; text-align: center; }
+.actor .sprite { width: clamp(64px, 18cqw, 104px); height: auto; aspect-ratio: 1; }
+.actor b { font: 700 1.15rem var(--display); line-height: 1; }
+.blanket { height: 18px; margin: .2rem -1rem 0; border-top: 2px solid var(--border);
+  background: repeating-linear-gradient(90deg, rgb(194 39 45 / .35) 0 12px, transparent 12px 24px), repeating-linear-gradient(0deg, rgb(194 39 45 / .35) 0 6px, transparent 6px 12px), #FFF; }
+.hcoin { position: absolute; left: 0; top: 0; width: 32px; height: 32px; opacity: 0; }
+.scene .note { margin: .8rem 0 0; font-size: .95rem; color: var(--ink-muted); }
+@media (prefers-reduced-motion: no-preference) {
+  .hcoin { animation: hcoin 6s cubic-bezier(.5, 0, .3, 1) infinite; }
+  .actor.jar .sprite { animation: gulp 6s steps(2) infinite; } }
+@keyframes hcoin {
+  0% { transform: translate(calc(16.6cqw - 16px), 40px); opacity: 0; } 6% { opacity: 1; transform: translate(calc(16.6cqw - 16px), 30px); }
+  22% { transform: translate(calc(33cqw - 16px), -18px); } 38% { transform: translate(calc(50cqw - 16px), 30px); } 52% { transform: translate(calc(50cqw - 16px), 30px); }
+  68% { transform: translate(calc(66cqw - 16px), -18px); } 82% { transform: translate(calc(83.4cqw - 16px), 40px); opacity: 1; } 86%, 100% { transform: translate(calc(83.4cqw - 16px), 56px); opacity: 0; } }
+@keyframes gulp { 0%, 84%, 92%, 100% { transform: none; } 86% { transform: translateY(-6px); } }
+
+/* section heads and stage headers */
+.sec { margin: 3rem 0 1rem; }
+.sec h2 { font-size: clamp(1.8rem, 4vw, 2.5rem); margin: .2rem 0 .4rem; display: flex; align-items: center; flex-wrap: wrap; }
+.sec p { max-width: 46rem; }
+.step { display: flex; align-items: center; gap: .7rem; margin: 0 0 .5rem; }
+.step .n, .lid { display: grid; place-items: center; flex: none; width: 2.5rem; height: 2.5rem; border-radius: 50%; background: var(--accent-2); color: var(--ink);
+  border: 2px solid var(--border); box-shadow: inset 0 -4px 0 rgb(58 46 42 / .15), 0 3px 0 var(--border); font: 700 1.15rem var(--display); }
+.step h3 { margin: 0; font-size: clamp(1.3rem, 2.4vw, 1.6rem); }
+.explain { display: flex; flex-wrap: wrap; align-items: center; gap: .35rem; margin: .2rem 0 .7rem; }
+.explain span { padding: .15rem .55rem; background: var(--surface-2); border: 1.5px dashed var(--ink-muted); border-radius: 6px; font-size: .9rem; }
+.explain i { font-style: normal; font-weight: 800; color: var(--accent); }
+
+/* ---- the board: phone + flow ---- */
+.board { display: grid; grid-template-columns: 340px minmax(0, 1fr); gap: 2rem; align-items: start; padding: 1.4rem; }
+.phone-col { display: grid; justify-items: center; gap: .8rem; }
+.phone { position: relative; width: min(320px, 100%); aspect-ratio: 9 / 18.5; padding: 10px; background: #2B2320; border-radius: 42px; box-shadow: 5px 7px 0 rgb(58 46 42 / .3); }
+.phone::before { content: ""; position: absolute; top: 16px; left: 50%; width: 76px; height: 18px; margin-left: -38px; background: #2B2320; border-radius: 0 0 12px 12px; z-index: 3; }
+.glass { position: relative; height: 100%; border-radius: 32px; background: var(--bg); overflow: hidden; }
+.statusbar { position: absolute; inset: 0 0 auto; height: 34px; display: flex; align-items: center; justify-content: space-between; padding: 6px 22px 0; font: 500 .72rem var(--mono); z-index: 2; }
+.statusbar .who { font-size: .62rem; padding: 0 .35rem; } .statusbar .who::before { display: none; }
+.scr { position: absolute; inset: 34px 0 0; overflow-y: auto; padding: .6rem 1rem 1rem; display: flex; flex-direction: column; gap: .7rem; font-size: 1rem; line-height: 1.45; }
+.scr[hidden] { display: none; }
+.scr h3 { margin: .2rem 0 0; font-size: 1.55rem; }
+.scr p { margin: 0; }
+.scr .grow { flex: 1; }
+.scr .btn { width: 100%; }
+@media (prefers-reduced-motion: no-preference) { .scr.in { animation: scr-in .32s cubic-bezier(.2, .8, .2, 1); } }
+@keyframes scr-in { from { opacity: 0; transform: translateX(18px); } }
+.topline { display: flex; align-items: center; justify-content: space-between; gap: .5rem; }
+.dots { display: flex; gap: .3rem; } .dots i { width: .5rem; height: .5rem; border-radius: 50%; border: 1.5px solid var(--border); }
+.dots i.on { background: var(--accent); }
+.bubble { position: relative; background: var(--surface-2); border: 2px solid var(--border); border-radius: 14px 14px 14px 4px; padding: .6rem .8rem; }
+.goal { display: flex; align-items: center; gap: .8rem; background: var(--surface); border: 2px solid var(--border); border-radius: 12px; padding: .6rem .7rem; }
+.goal svg { width: 56px; height: 56px; flex: none; }
+.goal b { font: 700 1.2rem var(--display); display: block; }
+.goal small, .tiny { font: 500 .72rem var(--mono); color: var(--ink-muted); letter-spacing: .04em; }
+fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
+legend { font-weight: 800; margin-bottom: .4rem; padding: 0; }
+.opts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .4rem; }
+.opts.list { grid-template-columns: minmax(0, 1fr); }
+.opt { position: relative; display: flex; align-items: center; justify-content: center; gap: .4rem; min-height: 2.75rem; padding: .3rem .6rem; border: 2px solid var(--border);
+  border-radius: 10px; background: var(--surface-2); font: 500 1rem var(--mono); cursor: pointer; }
+.opts.list .opt { justify-content: space-between; font: 700 1rem var(--body); }
+.opts.list .opt span:last-child { font-family: var(--mono); font-weight: 500; }
+.opt input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.opt:has(input:checked) { background: var(--accent-2); box-shadow: 0 3px 0 var(--border); }
+.opt:has(input:checked)::after { content: "✓"; font-weight: 800; }
+.opts.list .opt:has(input:checked)::after { content: none; }
+.opt:has(input:focus-visible) { outline: 3px solid var(--ink); outline-offset: 2px; }
+.result { padding: .5rem .7rem; border-radius: 10px; background: #DDF1DF; border: 2px solid var(--ok); font-weight: 700; }
+.result.bad { background: #FDE0DE; border-color: var(--bad); }
+.result.warn { background: #FFF1C2; border-color: var(--warn); }
+.notif { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: .2rem .6rem; align-items: center; background: var(--surface-2); border: 2px solid var(--border); border-radius: 14px; padding: .6rem .7rem; box-shadow: 0 3px 0 rgb(58 46 42 / .2); }
+.notif svg { width: 36px; height: 36px; grid-row: span 2; }
+.pockets { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: .5rem; position: relative; }
+.pocket { position: relative; display: grid; gap: .1rem; justify-items: center; padding: 2.3rem .4rem .6rem; border: 2px solid var(--border); border-radius: 12px; background: var(--surface); text-align: center; overflow: hidden; }
+.pocket.jar { background: #FFF6D6; }
+.pocket b { font: 700 1.5rem var(--display); }
+.pocket .drop { position: absolute; top: .4rem; width: 24px; height: 24px; }
+.pocket .drop:nth-of-type(2) { margin-left: -28px; } .pocket .drop:nth-of-type(3) { margin-left: 28px; }
+@media (prefers-reduced-motion: no-preference) { .scr.in .drop { animation: drop .6s steps(6) both; } .scr.in .drop:nth-of-type(2) { animation-delay: .25s; } .scr.in .drop:nth-of-type(3) { animation-delay: .5s; } }
+@keyframes drop { from { transform: translateY(-40px); opacity: 0; } 30% { opacity: 1; } }
+.bigjar { display: grid; justify-items: center; gap: .2rem; }
+.bigjar svg { width: 150px; height: 175px; }
+.bigjar .fill { transition: transform .8s steps(8, end); }
+.bal { font: 700 2rem var(--display); line-height: 1; text-align: center; }
+.meter { position: relative; height: 14px; border: 2px solid var(--border); border-radius: 999px; background: var(--surface-2); overflow: hidden; }
+.meter i { position: absolute; inset: 0; background: repeating-linear-gradient(90deg, var(--coin) 0 10px, #E5A12A 10px 12px); transform-origin: left; transition: transform .8s cubic-bezier(.2, .8, .2, 1); }
+.row2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: .4rem; }
+.row2 .btn { padding-inline: .5rem; font-size: .95rem; }
+.toast { padding: .45rem .7rem; border-radius: 10px; border: 2px solid var(--border); font-weight: 700; font-size: .95rem; }
+.toast.ok { background: #DDF1DF; } .toast.no { background: #FDE0DE; }
+.toast:empty { display: none; }
+.pocketline { display: flex; justify-content: space-between; gap: .5rem; padding: .4rem .7rem; background: var(--surface); border: 2px dashed var(--ink-muted); border-radius: 10px; font-size: .95rem; }
+.pocketline b { font-family: var(--mono); font-weight: 500; }
+/* the parent's screen gets its own colour so the switch of phone is obvious */
+.scr.parent { background: #EEF5FF; }
+.scr.parent .banner { margin: -.6rem -1rem 0; padding: .5rem 1rem; background: var(--c-parent); border-bottom: 2px solid var(--border); font-weight: 800; display: flex; align-items: center; gap: .5rem; }
+.req { display: grid; gap: .5rem; background: var(--surface-2); border: 2px solid var(--border); border-radius: 14px; padding: .8rem; box-shadow: 0 3px 0 rgb(58 46 42 / .2); }
+.req .who-row { display: flex; align-items: center; gap: .5rem; }
+.req .who-row svg { width: 40px; height: 40px; }
+.req dl { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: .15rem .7rem; margin: 0; font-size: .95rem; }
+.req dt { color: var(--ink-muted); } .req dd { margin: 0; font-family: var(--mono); text-align: right; }
+.empty { text-align: center; color: var(--ink-muted); }
+/* fake tap ring for "Play the flow" */
+.tap { position: absolute; z-index: 5; width: 44px; height: 44px; margin: -22px 0 0 -22px; border-radius: 50%; border: 3px solid var(--accent); background: rgb(194 39 45 / .18); pointer-events: none; opacity: 0; }
+.tap.go { animation: tap .55s ease-out; }
+@keyframes tap { 0% { opacity: 0; transform: scale(1.6); } 40% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(.8); } }
+/* designer toggle: outline everything you can tap */
+.phone.taps .glass :is(button, .opt) { outline: 2px dashed #2F6FD6; outline-offset: 2px; }
+
+.caption { font: 500 .8rem var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--ink-muted); text-align: center; }
+.controls { display: flex; flex-wrap: wrap; justify-content: center; gap: .5rem; }
+.switch { display: inline-flex; align-items: center; gap: .5rem; min-height: 2.75rem; font-weight: 700; cursor: pointer; }
+.switch input { appearance: none; margin: 0; width: 46px; height: 26px; border: 2px solid var(--border); border-radius: 999px; background: var(--surface-2); position: relative; cursor: pointer; }
+.switch input::after { content: ""; position: absolute; top: 2px; left: 2px; width: 18px; height: 18px; border-radius: 50%; background: var(--ink-muted); transition: transform .3s var(--ease-pop); }
+.switch input:checked { background: #DCE8FF; } .switch input:checked::after { transform: translateX(20px); background: #2F6FD6; }
+.switch .state { font: 500 .75rem var(--mono); text-transform: uppercase; color: var(--ink-muted); }
+
+/* flow diagram */
+.flowwrap h3 { margin: 0 0 .3rem; font-size: 1.5rem; display: flex; align-items: center; }
+.flowwrap > p { font-size: 1rem; color: var(--ink-muted); }
+.flow { list-style: none; margin: 1rem 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: 2rem; row-gap: 2.6rem; }
+.flow li { position: relative; min-width: 0; }
+.flow li:nth-child(1) { grid-area: 1 / 1; } .flow li:nth-child(2) { grid-area: 1 / 2; } .flow li:nth-child(3) { grid-area: 1 / 3; }
+.flow li:nth-child(4) { grid-area: 2 / 3; } .flow li:nth-child(5) { grid-area: 2 / 2; } .flow li:nth-child(6) { grid-area: 2 / 1; }
+.flow li::after { position: absolute; font: 700 1.2rem var(--mono); color: var(--ink-muted); line-height: 1; }
+.flow li:nth-child(1)::after, .flow li:nth-child(2)::after { content: "→"; right: -1.55rem; top: 50%; margin-top: -.6rem; }
+.flow li:nth-child(4)::after, .flow li:nth-child(5)::after { content: "←"; left: -1.55rem; top: 50%; margin-top: -.6rem; }
+.flow li:nth-child(3)::after { content: "↓"; left: 50%; bottom: -2rem; margin-left: -.35rem; }
+.flow li.lit::after { color: var(--accent); }
+.node { display: grid; justify-items: center; gap: .3rem; width: 100%; padding: .7rem .3rem .6rem; background: var(--surface-2); border: 2px solid var(--border); border-radius: 12px; box-shadow: var(--shadow); text-align: center; }
+.node .lid { width: 2rem; height: 2rem; font-size: .95rem; }
+.node b { font: 700 1.05rem var(--display); line-height: 1.1; }
+.node .shot { width: 100%; max-width: 74px; height: 46px; border: 1.5px solid var(--ink-muted); border-radius: 6px; background: var(--bg); display: grid; place-items: center; }
+.node .shot svg { width: 30px; height: 30px; }
+.node[aria-current="step"] { background: var(--accent-2); box-shadow: 0 0 0 3px var(--surface), 0 0 0 5px var(--border), var(--shadow); }
+.node[aria-current="step"] .shot { background: var(--surface-2); }
+.loops { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: 1.1rem; }
+.loops span { display: inline-flex; align-items: center; gap: .35rem; padding: .2rem .6rem; border: 2px dashed var(--ink-muted); border-radius: 999px; font-size: .9rem; background: var(--surface-2); }
+.loops span.lit { border-color: var(--accent); border-style: solid; }
+.loops b { font-family: var(--mono); font-weight: 500; }
+.legend { display: flex; flex-wrap: wrap; gap: .5rem 1rem; align-items: center; margin-top: 1rem; font-size: .95rem; }
+.nowcard { margin-top: 1.2rem; }
+.nowcard .lab { display: block; margin-bottom: .2rem; }
+.nowcard p { margin: 0; }
+
+/* screen-by-screen stages */
+.stages { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 1.1rem; }
+.stages > li { display: flex; flex-direction: column; }
+.stages p { font-size: 1rem; }
+.stages .btn { margin-top: auto; align-self: flex-start; }
+.stages .meta { display: flex; gap: .4rem; flex-wrap: wrap; margin: 0 0 .4rem; }
+
+/* how it works route */
+.how { padding: 1.4rem; }
+.how .bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .6rem; }
+.how .bar h2 { margin: 0; }
+.route { position: relative; margin-top: 1.4rem; }
+.route ol { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 1rem; }
+.route li { position: relative; padding: 2.4rem .8rem .8rem; background: var(--surface-2); border: 2px solid var(--border); border-radius: 12px; transition: background .3s ease; min-width: 0; }
+.route li .lid { position: absolute; top: -1rem; left: .8rem; width: 2.2rem; height: 2.2rem; font-size: 1rem; }
+.route li .who { position: absolute; top: .55rem; right: .6rem; }
+.route li b { display: block; font: 700 1.15rem var(--display); margin-bottom: .2rem; }
+.route li p { margin: 0; font-size: 1rem; }
+.route li.on { background: #FFF6D6; }
+.route li.done { background: var(--surface); }
+.token { position: absolute; left: 0; top: 0; z-index: 2; width: 36px; height: 36px; transition: transform .7s cubic-bezier(.5, 0, .3, 1); pointer-events: none; }
+
+/* footer */
+footer { margin: 3rem auto 1.5rem; padding: 1.3rem 1.4rem; border-top: 4px solid var(--accent) !important; }
+.foot { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr); gap: 1.2rem; }
+.foot h5 { margin: 0 0 .4rem; font: 500 .74rem var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-muted); }
+.foot p, .foot ul { margin: 0; font-size: .95rem; } .foot ul { padding: 0; list-style: none; display: grid; gap: .2rem; }
+.copy { margin-top: 1.1rem; padding-top: .8rem; border-top: 1.5px dashed rgb(58 46 42 / .3); font: 500 .8rem var(--mono); color: var(--ink-muted); display: flex; align-items: center; justify-content: space-between; gap: .75rem 1.5rem; flex-wrap: wrap; }
+.donate { display: inline-flex; align-items: center; gap: .4rem; min-height: 2.75rem; padding: .2rem .9rem; border: 2px solid var(--border); border-radius: 999px; background: var(--accent-2); color: var(--ink); font: 700 .92rem var(--body); text-decoration: none; white-space: nowrap; }
+.donate svg { flex: none; color: var(--accent); }
+.donate:hover { box-shadow: var(--shadow); }
+
+/* dialog */
+dialog { width: min(420px, calc(100vw - 1.5rem)); padding: 0; border: 2px solid var(--border); border-radius: 18px; background: var(--surface-2); color: var(--ink); box-shadow: 0 18px 40px rgb(58 46 42 / .3); }
+dialog::backdrop { background: rgb(58 46 42 / .45); }
+@media (prefers-reduced-motion: no-preference) { dialog[open] { animation: pop-in .18s ease-out; } }
+@keyframes pop-in { from { opacity: 0; transform: translateY(10px) scale(.98); } }
+.dh { display: flex; align-items: center; gap: .6rem; padding: .7rem .9rem; background: var(--c-parent); border-bottom: 2px solid var(--border); border-radius: 16px 16px 0 0; }
+.dh h2 { margin: 0; font-size: 1.35rem; flex: 1; }
+.db { padding: 1rem 1.1rem 1.2rem; display: grid; gap: .8rem; }
+.db .row2 .btn { width: 100%; }
+
+/* widths */
+@media (max-width: 1100px) { .foot { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
+@media (max-width: 980px) {
+  .hero { grid-template-columns: minmax(0, 1fr); padding-top: 2rem; }
+  .board { grid-template-columns: minmax(0, 1fr); padding: 1rem; }
+  .route ol { grid-template-columns: minmax(0, 1fr); gap: 1.6rem; }
+  .route li { padding-left: 3.6rem; padding-top: .9rem; } .route li .lid { top: .8rem; left: .7rem; } .route li .who { position: static; margin-bottom: .3rem; }
+}
+@media (max-width: 720px) { .stages { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 560px) {
+  .wrap { width: calc(100% - 2rem); }
+  .foot { grid-template-columns: minmax(0, 1fr); }
+  .flow { column-gap: 1.3rem; row-gap: 2.4rem; }
+  .flow li:nth-child(1)::after, .flow li:nth-child(2)::after { right: -1.2rem; }
+  .flow li:nth-child(4)::after, .flow li:nth-child(5)::after { left: -1.2rem; }
+  .flow li::after { font-size: 1rem; }
+  .node b { font-size: .95rem; } .node .who { font-size: .62rem; padding: 0 .3rem; gap: .2rem; }
+  .node .shot { height: 38px; }
+  .panel, .board, .how { padding: 1rem .85rem; }
+  .scene { padding: 2.2rem .7rem .8rem; }
+}
+@media (max-width: 400px) { .flow { column-gap: 1rem; } .flow li:nth-child(1)::after, .flow li:nth-child(2)::after { right: -1rem; } .flow li:nth-child(4)::after, .flow li:nth-child(5)::after { left: -1rem; } .node .who::before { display: none; } }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs id="pixdefs"></defs></svg>
+
+<header class="nav wrap">
+  <a class="brand" href="#top" aria-label="Pocket Money, back to top">
+    <svg viewBox="0 0 16 16" aria-hidden="true"><use href="#px-jar"/></svg>Pocket Money</a>
+  <nav aria-label="Page"><a href="#proto">Prototype</a><a href="#screens">Screens</a><a href="#how">How it works</a></nav>
+  <a class="btn primary small" href="#proto" data-try>▶ Try<span class="long">&nbsp;the prototype</span></a>
+</header>
+
+<main id="top" class="wrap">
+  <section class="hero" aria-labelledby="heroT">
+    <div>
+      <span class="lab">App prototype for a pitch, sample data</span>
+      <h1 id="heroT">Pocket Money</h1>
+      <p class="lede">A savings app for kids aged 8 to 12. The weekly allowance lands, <span class="hl">the jar fills toward one goal</span>, and a parent says yes before any money gets spent.</p>
+      <ul class="benefits">
+        <li>Save for one real thing</li>
+        <li>Watch the jar fill every Friday</li>
+        <li>A parent approves each spend</li>
+      </ul>
+      <div class="cta">
+        <a class="btn primary" href="#proto" data-try>▶ Try the prototype</a>
+        <small>Six screens, about a minute, nothing is real money</small>
+      </div>
+    </div>
+    <div class="panel scallop scene" aria-label="The cast: Dad, Mia and the jar">
+      <span class="lab">Who's in the app <button type="button" class="i" aria-label="About the cast" data-tip="Three in the cast|Mia, 10, saves for a bike. She is the kid using the app|Dad sets the allowance and answers requests|The jar is the app itself, and it does the counting|Mia and Dad are sample people|Why a cast: a pitch is easier to follow when money moves between faces">i</button></span>
+      <div class="cast">
+        <svg class="hcoin" viewBox="0 0 16 16" aria-hidden="true"><use href="#px-coin"/></svg>
+        <div class="actor"><svg class="sprite bob" viewBox="0 0 16 16" role="img" aria-label="Dad, the parent" style="animation-delay:-1.1s"><use href="#px-dad"/></svg><b>Dad</b><span class="who parent">Parent</span></div>
+        <div class="actor"><svg class="sprite bob" viewBox="0 0 16 16" role="img" aria-label="Mia, the kid" style="animation-delay:-2.3s"><use href="#px-kid"/></svg><b>Mia, 10</b><span class="who kid">Kid</span></div>
+        <div class="actor jar"><svg class="sprite" viewBox="0 0 16 16" role="img" aria-label="The jar, the app"><use href="#px-jar"/></svg><b>The jar</b><span class="who app">App</span></div>
+      </div>
+      <div class="blanket" aria-hidden="true"></div>
+      <p class="note">Dad's $10 goes to Mia, and Mia drops her share in the jar. Amounts are sample.</p>
+    </div>
+  </section>
+
+  <!-- the board: a clickable phone next to the flow that links its screens -->
+  <section id="proto" class="sec" aria-labelledby="protoT">
+    <span class="lab">The prototype</span>
+    <h2 id="protoT">Tap through the app<button type="button" class="i" aria-label="About the prototype" data-tip="How to use this board|Tap the buttons on the phone like a real app|Or tap a box in the flow to jump to that screen|Play the flow taps through it for you|Show tap areas outlines everything you can press|Why: a pitch should let people try it, not just look">i</button></h2>
+    <p>Everything on the phone works. The flow on the right shows where each tap goes, and lights up the screen you're on.</p>
+    <div class="panel board">
+      <div class="phone-col">
+        <div class="phone" id="phone">
+          <div class="glass" role="region" aria-label="Phone prototype" aria-roledescription="prototype">
+            <div class="statusbar" aria-hidden="true"><span>09:41</span><span class="who app">Sample data</span></div>
+
+            <!-- 1 welcome -->
+            <section class="scr" data-scr="0" aria-label="Screen 1, Welcome">
+              <div class="topline"><span class="tiny">STEP 1 OF 2</span><span class="dots" aria-hidden="true"><i class="on"></i><i></i></span></div>
+              <div class="grow"></div>
+              <svg class="sprite bob" viewBox="0 0 16 16" width="112" height="112" style="margin-inline:auto" aria-hidden="true"><use href="#px-jar"/></svg>
+              <div class="bubble"><b>Hi Mia! I'm your jar.</b><br>I hold the money you save. Let's pick something to save for.</div>
+              <p class="tiny">Dad set up your account with a $10 weekly allowance.</p>
+              <div class="grow"></div>
+              <button type="button" class="btn primary" data-act="start">Let's start</button>
+            </section>
+
+            <!-- 2 goal -->
+            <section class="scr" data-scr="1" aria-label="Screen 2, Pick a goal" hidden>
+              <div class="topline"><button type="button" class="btn small" data-go="0" aria-label="Back to welcome">←</button><span class="dots" aria-hidden="true"><i class="on"></i><i class="on"></i></span></div>
+              <h3>What are you saving for?</h3>
+              <div class="goal"><svg class="sprite" viewBox="0 0 16 16" aria-hidden="true"><use href="#px-bike"/></svg><div><b>A new bike</b><small>$120, SAMPLE PRICE</small></div></div>
+              <fieldset>
+                <legend>How much of your $10 goes in the jar each week?</legend>
+                <div class="opts" id="saveOpts">
+                  <label class="opt"><input type="radio" name="save" value="4">$4</label>
+                  <label class="opt"><input type="radio" name="save" value="6" checked>$6</label>
+                  <label class="opt"><input type="radio" name="save" value="8">$8</label>
+                </div>
+              </fieldset>
+              <p class="result" aria-live="polite">Your bike in <span class="mono" data-weeks>20</span> Fridays. You keep <span class="mono" data-keep>$4</span> a week to spend.</p>
+              <div class="grow"></div>
+              <button type="button" class="btn primary" data-act="saveGoal">Save my goal</button>
+            </section>
+
+            <!-- 3 allowance day -->
+            <section class="scr" data-scr="2" aria-label="Screen 3, Allowance day" hidden>
+              <div class="topline"><span class="tiny">FRIDAY, 08:00</span><span class="tiny">WEEK <span data-weeknext>1</span></span></div>
+              <div class="notif"><svg class="sprite" viewBox="0 0 16 16" aria-hidden="true"><use href="#px-dad"/></svg><b>Your allowance is here</b><span>Dad sent you $10.</span></div>
+              <h3>Split it up</h3>
+              <div class="pockets">
+                <div class="pocket jar"><svg class="drop sprite" viewBox="0 0 16 16" aria-hidden="true"><use href="#px-coin"/></svg><svg class="drop sprite" viewBox="0 0 16 16" aria-hidden="true"><use href="#px-coin"/></svg><svg class="drop sprite" viewBox="0 0 16 16" aria-hidden="true"><use href="#px-coin"/></svg><span class="tiny">TO THE JAR</span><b data-save>+$6</b></div>
+                <div class="pocket"><svg class="drop sprite" viewBox="0 0 16 16" aria-hidden="true"><use href="#px-coin"/></svg><span class="tiny">TO SPEND</span><b data-keep>+$4</b></div>
+              </div>
+              <p>Your goal says <span class="mono" data-save>$6</span> goes in the jar. Tap to drop it in.</p>
+              <div class="grow"></div>
+              <button type="button" class="btn primary" data-act="putIn">Put <span data-save>$6</span> in the jar</button>
+            </section>
+
+            <!-- 4 the jar (home) -->
+            <section class="scr" data-scr="3" aria-label="Screen 4, Your jar" hidden>
+              <div class="topline"><span class="tiny">YOUR JAR</span><span class="tiny">WEEK <span data-week>0</span></span></div>
+              <p class="toast" data-toast aria-live="polite"></p>
+              <div class="bigjar">
+                <svg viewBox="0 0 24 28" shape-rendering="crispEdges" role="img" aria-label="Jar with coins" data-jarimg>
+                  <defs><clipPath id="jarIn"><rect x="5" y="7" width="14" height="19"/><rect x="4" y="8" width="16" height="17"/></clipPath></defs>
+                  <rect x="5" y="0" width="14" height="4" fill="#16171a"/><rect x="6" y="1" width="12" height="2" fill="#FFD86E"/>
+                  <rect x="6" y="4" width="12" height="2" fill="#16171a"/><rect x="7" y="4" width="10" height="2" fill="#E3F4FF"/>
+                  <rect x="4" y="6" width="16" height="21" fill="#16171a"/><rect x="3" y="7" width="18" height="19" fill="#16171a"/>
+                  <rect x="5" y="7" width="14" height="19" fill="#E3F4FF"/><rect x="4" y="8" width="16" height="17" fill="#E3F4FF"/>
+                  <g clip-path="url(#jarIn)"><g class="fill" data-fill style="transform:translate(0px,19px)">
+                    <rect x="3" y="7" width="18" height="20" fill="#F2B33D"/>
+                    <rect x="3" y="9" width="18" height="1" fill="#B7791F"/><rect x="3" y="13" width="18" height="1" fill="#B7791F"/><rect x="3" y="17" width="18" height="1" fill="#B7791F"/><rect x="3" y="21" width="18" height="1" fill="#B7791F"/>
+                    <rect x="7" y="7" width="3" height="1" fill="#FFE7A8"/><rect x="13" y="11" width="3" height="1" fill="#FFE7A8"/><rect x="6" y="15" width="3" height="1" fill="#FFE7A8"/><rect x="14" y="19" width="3" height="1" fill="#FFE7A8"/>
+                  </g></g>
+                  <rect x="6" y="9" width="1" height="5" fill="#FFFFFF"/>
+                  <rect x="9" y="11" width="1" height="2" fill="#16171a"/><rect x="14" y="11" width="1" height="2" fill="#16171a"/>
+                  <rect x="10" y="15" width="4" height="1" fill="#16171a"/><rect x="9" y="14" width="1" height="1" fill="#16171a"/><rect x="14" y="14" width="1" height="1" fill="#16171a"/>
+                </svg>
+                <p class="bal"><span data-jar>$0</span> <span class="tiny">OF $120</span></p>
+              </div>
+              <div class="meter" role="img" aria-label="Progress to the bike" data-meterlabel><i data-meter style="transform:scaleX(0)"></i></div>
+              <p class="tiny" style="text-align:center" data-left>20 FRIDAYS TO THE BIKE</p>
+              <div class="pocketline"><span>Spend pocket</span><b data-spend>$0</b></div>
+              <div class="grow"></div>
+              <div class="row2">
+                <button type="button" class="btn butter" data-act="friday">Next Friday</button>
+                <button type="button" class="btn primary" data-act="ask">Ask to spend</button>
+              </div>
+            </section>
+
+            <!-- 5 ask to spend -->
+            <section class="scr" data-scr="4" aria-label="Screen 5, Ask to spend" hidden>
+              <div class="topline"><button type="button" class="btn small" data-go="3" aria-label="Back to your jar">←</button><span class="tiny">ASK DAD</span></div>
+              <h3>What do you want to buy?</h3>
+              <fieldset>
+                <legend class="sr-only">Pick a thing to buy</legend>
+                <div class="opts list" id="wantOpts">
+                  <label class="opt"><input type="radio" name="want" value="0" checked><span>Comic book</span><span>$4</span></label>
+                  <label class="opt"><input type="radio" name="want" value="1"><span>Ice cream</span><span>$3</span></label>
+                  <label class="opt"><input type="radio" name="want" value="2"><span>Sticker pack</span><span>$2</span></label>
+                </div>
+              </fieldset>
+              <div class="pocketline"><span>From your spend pocket</span><b data-spend>$0</b></div>
+              <p class="result" data-askmsg aria-live="polite">Jar money stays for the bike.</p>
+              <div class="grow"></div>
+              <button type="button" class="btn primary" data-act="send">Ask Dad</button>
+            </section>
+
+            <!-- 6 parent approves -->
+            <section class="scr parent" data-scr="5" aria-label="Screen 6, Dad's view" hidden>
+              <div class="banner"><span class="who parent">Parent</span> Dad's phone</div>
+              <h3>Requests</h3>
+              <div class="req" data-req>
+                <div class="who-row"><svg class="sprite" viewBox="0 0 16 16" aria-hidden="true"><use href="#px-kid"/></svg><div><b>Mia wants to buy</b><br><span data-reqitem>Comic book</span></div></div>
+                <dl>
+                  <dt>Amount</dt><dd data-reqprice>$4</dd>
+                  <dt>Spend pocket now</dt><dd data-spend>$4</dd>
+                  <dt>After this</dt><dd data-reqafter>$0</dd>
+                  <dt>Jar for the bike</dt><dd data-jar>$6</dd>
+                </dl>
+                <div class="row2">
+                  <button type="button" class="btn" data-act="decline">Not this time</button>
+                  <button type="button" class="btn primary" data-act="approve" aria-haspopup="dialog">Approve</button>
+                </div>
+              </div>
+              <div class="empty" data-noreq hidden><p>No requests right now.</p><p class="tiny">MIA ASKS FROM HER JAR SCREEN</p></div>
+              <div class="grow"></div>
+              <button type="button" class="btn small" data-go="3">Back to Mia's jar</button>
+            </section>
+            <span class="tap" id="tap" aria-hidden="true"></span>
+          </div>
+        </div>
+        <p class="caption" id="caption" aria-live="polite">Screen 1 of 6, Welcome</p>
+        <div class="controls">
+          <button type="button" class="btn small" data-step="-1">← Back</button>
+          <button type="button" class="btn small butter" id="play">▶ Play the flow</button>
+          <button type="button" class="btn small" data-step="1">Next →</button>
+        </div>
+        <div class="controls">
+          <label class="switch"><input type="checkbox" id="taps"> Show tap areas <span class="state" aria-hidden="true">off</span></label>
+          <button type="button" class="btn small" id="reset">↺ Reset</button>
+        </div>
+      </div>
+
+      <div class="flowwrap">
+        <h3>The flow<button type="button" class="i" aria-label="About the flow" data-tip="Six screens, two people|Screens 1 to 5 are on Mia's phone|Screen 6 is on Dad's phone|Arrows show where a tap goes|Two loops bring Mia back to her jar|Why: the jar is home, everything returns to it">i</button></h3>
+        <p>Tap a box to jump the phone there.</p>
+        <ol class="flow" id="flow">
+          <li><button type="button" class="node" data-go="0" aria-label="Screen 1, Welcome, kid"><span class="lid">1</span><span class="shot" aria-hidden="true"><svg class="sprite" viewBox="0 0 16 16"><use href="#px-jar"/></svg></span><b>Welcome</b><span class="who kid">Kid</span></button></li>
+          <li><button type="button" class="node" data-go="1" aria-label="Screen 2, Goal, kid"><span class="lid">2</span><span class="shot" aria-hidden="true"><svg class="sprite" viewBox="0 0 16 16"><use href="#px-bike"/></svg></span><b>Goal</b><span class="who kid">Kid</span></button></li>
+          <li><button type="button" class="node" data-go="2" aria-label="Screen 3, Payday, app"><span class="lid">3</span><span class="shot" aria-hidden="true"><svg class="sprite" viewBox="0 0 16 16"><use href="#px-coin"/></svg></span><b>Payday</b><span class="who app">App</span></button></li>
+          <li><button type="button" class="node" data-go="3" aria-label="Screen 4, Jar, kid"><span class="lid">4</span><span class="shot" aria-hidden="true"><svg class="sprite" viewBox="0 0 16 16"><use href="#px-jarfull"/></svg></span><b>Jar</b><span class="who kid">Kid</span></button></li>
+          <li><button type="button" class="node" data-go="4" aria-label="Screen 5, Ask, kid"><span class="lid">5</span><span class="shot" aria-hidden="true"><svg class="sprite" viewBox="0 0 16 16"><use href="#px-kid"/></svg></span><b>Ask</b><span class="who kid">Kid</span></button></li>
+          <li><button type="button" class="node" data-go="5" aria-label="Screen 6, Approve, parent"><span class="lid">6</span><span class="shot" aria-hidden="true"><svg class="sprite" viewBox="0 0 16 16"><use href="#px-dad"/></svg></span><b>Approve</b><span class="who parent">Parent</span></button></li>
+        </ol>
+        <div class="loops">
+          <span data-loop="fri">↺ <b>4 → 3</b> every Friday</span>
+          <span data-loop="ans">↺ <b>6 → 4</b> after Dad answers</span>
+        </div>
+        <div class="legend"><span class="who kid">Kid</span> Mia's phone <span class="who parent">Parent</span> Dad's phone <span class="who app">App</span> happens by itself</div>
+        <div class="card nowcard"><span class="lab">Design note for this screen</span><p id="nowNote"></p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- the same six screens as numbered stages, with the reasons behind them -->
+  <section id="screens" class="sec" aria-labelledby="screensT">
+    <span class="lab">Screen by screen</span>
+    <h2 id="screensT">Why each screen looks like this</h2>
+    <p>The design reasons, in the order Mia meets them. Each card opens its screen on the phone.</p>
+    <ol class="stages" id="stages"></ol>
+  </section>
+
+  <section id="how" class="sec panel how" aria-labelledby="howT">
+    <div class="bar">
+      <div><span class="lab">How it works</span><h2 id="howT">Follow one Friday's coin<button type="button" class="i" aria-label="About how it works" data-tip="The coin's path|Five steps from Dad's account to the bike|Parent, App and Kid tags say who does each step|The coin pauses on each card|Why: the money only moves when a person says so, apart from payday">i</button></h2></div>
+      <div class="controls"><button type="button" class="btn small" id="howPause">❚❚ Pause</button><button type="button" class="btn small" id="howReset">↺ Reset</button></div>
+    </div>
+    <div class="route">
+      <svg class="token sprite" id="token" viewBox="0 0 16 16" aria-hidden="true"><use href="#px-coin"/></svg>
+      <ol id="route">
+        <li><span class="lid">1</span><span class="who parent">Parent</span><b>Dad sets the allowance</b><p>$10 a week in this sample. He can change it any time.</p></li>
+        <li><span class="lid">2</span><span class="who app">App</span><b>Friday, it lands</b><p>The app adds it at 08:00 and shows Mia the split.</p></li>
+        <li><span class="lid">3</span><span class="who kid">Kid</span><b>Mia drops her share in</b><p>Her goal sets the jar share. The rest goes to her spend pocket.</p></li>
+        <li><span class="lid">4</span><span class="who app">App</span><b>The jar fills</b><p>One step up the glass, and one Friday fewer to the bike.</p></li>
+        <li><span class="lid">5</span><span class="who parent">Parent</span><b>Spending waits for a yes</b><p>Mia asks, Dad approves or says not this time.</p></li>
+      </ol>
+    </div>
+  </section>
+</main>
+
+<footer class="panel wrap">
+  <div class="foot">
+    <div><a class="brand" href="#top">Pocket Money</a><p>A savings app prototype for kids aged 8 to 12. The allowance fills a jar, and a parent approves each spend.</p></div>
+    <div><h5>Data</h5><ul><li>Sample kid, parent and prices</li><li>No real money moves</li><li>Nothing is saved or sent</li></ul></div>
+    <div><h5>Built with</h5><ul><li>Plain HTML, CSS and SVG</li><li>cutify-ui, Picnic theme</li><li>Sour Gummy, Nunito, DM Mono</li></ul></div>
+    <div><h5>Project</h5><ul><li>Example page for cutify-ui</li><li>Not a real product</li></ul></div>
+  </div>
+  <div class="copy"><span>© 2026 cutify-ui example. Every value on this page is a sample.</span><a class="donate" href="https://buy.stripe.com/00w4gr2TU7wC52iaXf18c01" target="_blank" rel="noopener noreferrer"><svg aria-hidden="true" focusable="false" viewBox="0 0 16 16" width="16" height="16" shape-rendering="crispEdges"><path fill="currentColor" d="M3 3h3v1h1v1h2V4h1V3h3v1h1v4h-1v1h-1v1h-1v1h-1v1H9v1H7v-1H6v-1H5V9H4V8H3V7H2V4h1z"/></svg>Support cutify-ui<span class="sr-only"> (opens Stripe in a new tab)</span></a></div>
+</footer>
+
+<dialog id="dlg" aria-labelledby="dlgT">
+  <div class="dh"><svg class="sprite" viewBox="0 0 16 16" width="36" height="36" aria-hidden="true"><use href="#px-dad"/></svg><h2 id="dlgT">Approve this spend?</h2><button type="button" class="btn small" data-close>Close ✕</button></div>
+  <div class="db">
+    <p id="dlgText">Mia spends $4 on a comic book from her spend pocket.</p>
+    <p class="tiny">THE JAR IS NOT TOUCHED. SAMPLE REQUEST.</p>
+    <div class="row2"><button type="button" class="btn" data-close>Not yet</button><button type="button" class="btn primary" id="dlgYes">Yes, approve</button></div>
+  </div>
+</dialog>
+
+<div id="tip" role="tooltip" hidden aria-hidden="true"></div>
+
+<script>
+// ---- pixel sprites (from assets/pixel-sprites.js) ----
+function pixelSprites({ palette, sprites, defsId = 'pixdefs' }) {
+  const defs = document.getElementById(defsId);
+  for (const [id, rows] of Object.entries(sprites)) {
+    let out = `<symbol id="${id}" viewBox="0 0 16 16" shape-rendering="crispEdges">`;
+    rows.forEach((row, y) => [...row].forEach((ch, x) => {
+      if (ch === '.' || !palette[ch]) return;
+      out += `<rect x="${x}" y="${y}" width="1.02" height="1.02" fill="${palette[ch]}"/>`;   // 1.02 hides seams when scaled
+    }));
+    defs.insertAdjacentHTML('beforeend', out + '</symbol>');
+  }
+}
+pixelSprites({
+  palette: { k: '#16171a', h: '#7A4A2A', s: '#F1C7A3', y: '#FFD86E', j: '#4A6FA5', m: '#C2272D', b: '#6F9FE0', w: '#FFFFFF', g: '#CFE3FF',
+    W: '#E3F4FF', c: '#F2B33D', d: '#B7791F', r: '#C2272D', p: '#FF8FAB' },
+  sprites: {
+    'px-kid': ['................', '.....kkkkkk.....', '....khhhhhhk....', '...khhhhhhhhk...', '...khhhhhhhhkkk.', '...khsssssshkhhk', '...ksskssksskhk.', '...kpssssssspk..',
+      '...ksssmmsssk...', '....kssssssk....', '.....kkkkkk.....', '...kyyyyyyyyk...', '..ksyyyyyyyysk..', '..kkjjjjjjjjkk..', '...kjjjkkjjjk...', '...kkkk..kkkk...'],
+    'px-dad': ['................', '....kkkkkkkk....', '...khhhhhhhhk...', '...khhhhhhhhk...', '...kssssssssk...', '...kkgkkgkksk...', '...kssssssssk...', '...kshhhhhhsk...',
+      '....khhmmhhk....', '.....kkkkkk.....', '..kbbbbwwbbbbk..', '.kbbbbbwwbbbbbk.', '.kbbbbbbbbbbbbk.', '.kssbbbbbbbbssk.', '..kjjjjjjjjjjk..', '..kkkkkkkkkkkk..'],
+    'px-jar': ['................', '....kkkkkkkk....', '...kyyyyyyyyk...', '...kyyyyyyyyk...', '....kkkkkkkk....', '...kWWWWWWWWk...', '..kWwWWWWWWWWk..', '..kWwkWWWWkWWk..',
+      '..kWWWkWWkWWWk..', '..kWWWWkkWWWWk..', '..kcccccccccck..', '..kcdccdccdcck..', '..kcccccccccck..', '..kccdccccdcck..', '...kcccccccck...', '....kkkkkkkk....'],
+    'px-jarfull': ['................', '....kkkkkkkk....', '...kyyyyyyyyk...', '...kyyyyyyyyk...', '....kkkkkkkk....', '...kccwcccdck...', '..kcccccccccck..', '..kcdcccdccdck..',
+      '..kcccccccccck..', '..kccdccccdcck..', '..kcccccccccck..', '..kcdccdccdcck..', '..kcccccccccck..', '..kccdccccdcck..', '...kcccccccck...', '....kkkkkkkk....'],
+    'px-coin': ['................', '................', '.....kkkkkk.....', '....kcccccck....', '...kcwwccccdk...', '...kcwccddcdk...', '...kccccdccdk...', '...kccddcccdk...',
+      '...kccccccddk...', '....kddddddk....', '.....kkkkkk.....', '................', '................', '................', '................', '................'],
+    'px-bike': ['................', '................', '................', '................', '................', '....kkkk...kkk..', '......k....k....', '......rrrrrr....',
+      '......r...rr....', '...kkk.r..rrkk..', '..k...kr.rk.r.k.', '.k.....krr..r..k', '.k..rrrrrk..r..k', '.k.....k.k.....k', '..k...k...k...k.', '...kkk.....kkk..'],
+  },
+});
+
+const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// ---- prototype state (all sample values) ----
+const ALLOW = 10, GOAL = 120;
+const WANTS = [['Comic book', 4], ['Ice cream', 3], ['Sticker pack', 2]];
+const NAMES = ['Welcome', 'Pick a goal', 'Allowance day', 'Your jar', 'Ask to spend', "Dad's view"];
+const NOTES = [
+  'Onboarding is one screen. Dad already added Mia and her allowance, so the jar just says hi.',
+  'The goal is shown in Fridays, not percent. Changing the jar share updates the count straight away.',
+  'Payday is an event of its own. Mia taps to drop her share in, so saving is something she does.',
+  'The jar is home. It rises one pixel step per Friday and counts the Fridays left to the bike.',
+  'Requests come from the spend pocket only. If it is short, the screen says wait for Friday.',
+  "Dad's phone, in blue so the switch is obvious. Approving asks once more before any money moves.",
+];
+const start = () => ({ at: 0, save: 6, week: 0, jar: 0, spend: 0, want: null, toast: '', tone: '' });
+let S = start();
+const money = n => '$' + n;
+
+const screens = $$('.scr'), nodes = $$('#flow .node');
+function render() {
+  const weeks = Math.ceil(GOAL / S.save), keep = ALLOW - S.save, pct = Math.min(1, S.jar / GOAL), left = Math.max(0, Math.ceil((GOAL - S.jar) / S.save));
+  $$('[data-weeks]').forEach(e => e.textContent = weeks);
+  $$('[data-keep]').forEach(e => e.textContent = (e.tagName === 'B' ? '+' : '') + money(keep));
+  $$('[data-save]').forEach(e => e.textContent = (e.tagName === 'B' ? '+' : '') + money(S.save));
+  $$('[data-week]').forEach(e => e.textContent = S.week);
+  $$('[data-weeknext]').forEach(e => e.textContent = S.week + 1);
+  $$('[data-jar]').forEach(e => e.textContent = money(S.jar));
+  $$('[data-spend]').forEach(e => e.textContent = money(S.spend));
+  $('[data-fill]').style.transform = `translate(0px,${Math.round((1 - pct) * 19)}px)`;
+  $('[data-meter]').style.transform = `scaleX(${pct})`;
+  $('[data-meterlabel]').setAttribute('aria-label', `${money(S.jar)} of ${money(GOAL)} saved for the bike`);
+  $('[data-jarimg]').setAttribute('aria-label', `Jar, ${Math.round(pct * 100)}% full`);
+  $('[data-left]').textContent = pct >= 1 ? '✓ BIKE DAY! YOU SAVED $120' : `${left} FRIDAYS TO THE BIKE`;
+  $('[data-act="friday"]').disabled = pct >= 1;
+  const t = $('[data-toast]'); t.textContent = S.toast; t.className = 'toast ' + S.tone;
+  // ask screen: check the spend pocket
+  const w = WANTS[+$('#wantOpts input:checked').value], short = w[1] > S.spend, msg = $('[data-askmsg]');
+  msg.className = 'result' + (short ? ' warn' : '');
+  msg.textContent = short ? `! You have ${money(S.spend)} to spend. Wait for Friday or pick something smaller.` : `✓ You have enough. Jar money stays for the bike.`;
+  $('[data-act="send"]').disabled = short;
+  // parent screen
+  $('[data-req]').hidden = !S.want; $('[data-noreq]').hidden = !!S.want;
+  if (S.want) { $('[data-reqitem]').textContent = S.want[0]; $('[data-reqprice]').textContent = money(S.want[1]); $('[data-reqafter]').textContent = money(S.spend - S.want[1]); }
+}
+function go(i, focus) {
+  const fromPhone = $('#phone').contains(document.activeElement);
+  S.at = Math.max(0, Math.min(5, i));
+  screens.forEach((s, k) => { s.hidden = k !== S.at; s.classList.remove('in'); });
+  const cur = screens[S.at]; void cur.offsetWidth; cur.classList.add('in'); cur.scrollTop = 0;
+  nodes.forEach((n, k) => k === S.at ? n.setAttribute('aria-current', 'step') : n.removeAttribute('aria-current'));
+  $$('#flow li').forEach((li, k) => li.classList.toggle('lit', k === S.at - 1));   // the arrow that led here
+  $('[data-loop="fri"]').classList.toggle('lit', S.at === 2 && S.week > 0);
+  $('[data-loop="ans"]').classList.toggle('lit', S.at === 3 && !!S.toast);
+  $('#caption').textContent = `Screen ${S.at + 1} of 6, ${NAMES[S.at]}`;
+  $('#nowNote').textContent = NOTES[S.at];
+  $('[data-step="-1"]').disabled = S.at === 0; $('[data-step="1"]').disabled = S.at === 5;
+  render();
+  // keyboard users land on the new screen's heading instead of a button that just disappeared
+  if (focus || fromPhone) { const h = cur.querySelector('h3, .bubble, .banner'); h.tabIndex = -1; h.focus({ preventScroll: true }); }
+}
+
+const ACT = {
+  start: () => go(1),
+  saveGoal: () => go(2),
+  putIn: () => { S.week++; S.jar = Math.min(GOAL, S.jar + S.save); S.spend += ALLOW - S.save; S.toast = `✓ ${money(S.save)} is in the jar.`; S.tone = 'ok'; go(3); },
+  friday: () => { S.toast = ''; go(2); },
+  ask: () => { S.toast = ''; go(4); },
+  send: () => { S.want = WANTS[+$('#wantOpts input:checked').value]; go(5); },
+  approve: () => { $('#dlgText').textContent = `Mia spends ${money(S.want[1])} on a ${S.want[0].toLowerCase()} from her spend pocket.`; $('#dlg').showModal(); },
+  decline: () => { S.toast = `✕ Dad said not this time. Your ${money(S.want[1])} stays in your spend pocket.`; S.tone = 'no'; S.want = null; go(3); },
+};
+function approved() { S.spend -= S.want[1]; S.toast = `✓ Dad said yes. You bought a ${S.want[0].toLowerCase()} for ${money(S.want[1])}.`; S.tone = 'ok'; S.want = null; go(3); }
+$('#dlgYes').addEventListener('click', () => { $('#dlg').close(); approved(); });
+$$('#dlg [data-close]').forEach(b => b.addEventListener('click', () => $('#dlg').close()));
+$('#dlg').addEventListener('click', e => { if (e.target === e.currentTarget) e.currentTarget.close(); });
+
+$('#phone').addEventListener('click', e => {
+  const a = e.target.closest('[data-act]'), g = e.target.closest('[data-go]');
+  if (a && !a.disabled) ACT[a.dataset.act]();
+  else if (g) go(+g.dataset.go, true);
+});
+$('#phone').addEventListener('change', e => { if (e.target.name === 'save') S.save = +e.target.value; render(); });
+nodes.forEach(n => n.addEventListener('click', () => { stopPlay(); go(+n.dataset.go, true); $('#phone').scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'nearest' }); }));
+$$('[data-step]').forEach(b => b.addEventListener('click', () => { stopPlay(); go(S.at + +b.dataset.step, true); }));
+$('#taps').addEventListener('change', e => { $('#phone').classList.toggle('taps', e.target.checked); e.target.parentElement.querySelector('.state').textContent = e.target.checked ? 'on' : 'off'; });
+function reset() { stopPlay(); S = start(); $('#saveOpts input[value="6"]').checked = true; $('#wantOpts input[value="0"]').checked = true; go(0); }
+$('#reset').addEventListener('click', reset);
+$$('[data-try]').forEach(a => a.addEventListener('click', () => setTimeout(() => $('.node[aria-current]').focus({ preventScroll: true }), reduced ? 0 : 500)));
+
+// ---- "Play the flow": scripted taps with cancellable sleeps ----
+let timers = [], runId = 0;
+const sleep = ms => new Promise(r => timers.push(setTimeout(r, reduced ? Math.min(ms, 120) : ms)));
+function stopPlay() { runId++; timers.forEach(clearTimeout); timers = []; $('#play').textContent = '▶ Play the flow'; }
+async function tap(sel, id) {
+  if (id !== runId) return false;
+  const el = typeof sel === 'string' ? $(sel, screens[S.at]) : sel, glass = $('.glass');
+  if (!el) return false;
+  const r = el.getBoundingClientRect(), g = glass.getBoundingClientRect(), ring = $('#tap');
+  ring.style.left = (r.left - g.left + r.width / 2) + 'px'; ring.style.top = (r.top - g.top + r.height / 2) + 'px';
+  ring.classList.remove('go'); void ring.offsetWidth; ring.classList.add('go');
+  await sleep(380); if (id !== runId) return false;
+  el.click(); await sleep(1100); return id === runId;
+}
+async function play() {
+  if ($('#play').textContent.includes('Stop')) return stopPlay();
+  stopPlay(); const id = runId; $('#play').textContent = '■ Stop';
+  S = start(); $('#saveOpts input[value="6"]').checked = true; $('#wantOpts input[value="0"]').checked = true; go(0);
+  $('#phone').scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'nearest' });
+  await sleep(700);
+  const steps = ['[data-act="start"]', 'label.opt:nth-child(3)', 'label.opt:nth-child(2)', '[data-act="saveGoal"]', '[data-act="putIn"]', '[data-act="friday"]', '[data-act="putIn"]',
+    '[data-act="ask"]', 'label.opt:nth-child(1)', '[data-act="send"]'];
+  for (const s of steps) if (!await tap(s, id)) return;
+  if (!await tap('[data-act="approve"]', id)) return;
+  $('#dlg').close(); approved();   // the script answers the dialog itself, so it never traps focus
+  await sleep(400); if (id === runId) $('#play').textContent = '▶ Play the flow';
+}
+$('#play').addEventListener('click', play);
+$('#phone').addEventListener('pointerdown', e => { if (e.isTrusted && $('#play').textContent.includes('Stop')) stopPlay(); });
+
+// ---- screen-by-screen stages, built from one list ----
+const STAGES = [
+  ['Meet your jar', ['kid'], ['Dad sets up the account', 'Mia opens the app', 'The jar says hi'],
+    'Onboarding is one screen. The jar introduces itself, and the app asks nothing a child can’t answer.',
+    'Why one screen|Kids aged 8 to 12 skip long setups|Dad already added Mia’s name and allowance|The jar is the first face she meets|Why: the first thing Mia sees is the jar, not a form'],
+  ['Pick a goal', ['kid'], ['Pick the bike', 'Choose $4, $6 or $8', 'See the Fridays'],
+    'One goal at a time. Mia picks how much of her $10 goes in the jar, and the screen turns it into Fridays.',
+    'Why Fridays, not percent|A 9-year-old can picture 20 Fridays|A percent means little at that age|Three choices, no slider to fiddle with|Why: the number she sees should be one she can count'],
+  ['Get your allowance', ['app', 'kid'], ['Friday, 08:00', '$10 lands', 'Mia drops her share in'],
+    'Payday is its own screen, so the money arrives as an event. Mia taps to put her share in, so saving is something she did.',
+    'Why a tap|The app could move the money by itself|A tap makes the split a choice she repeats|Coins drop into both pockets so she sees the split|Why: the weekly habit is the product'],
+  ['Watch the jar fill', ['kid'], ['Coins rise a step', 'Fridays left go down', 'Ask to spend'],
+    'The jar is the home screen. It rises one pixel step per Friday and says how many Fridays are left.',
+    'Why a jar|Kids know what a full jar means|A chart needs reading, a jar only needs a look|The bar underneath gives the exact amount|Why: progress has to read at a glance'],
+  ['Ask to spend', ['kid'], ['Pick a thing', 'Check the spend pocket', 'Ask Dad'],
+    'Requests come from the spend pocket only. If there isn’t enough, the screen says so and suggests waiting for Friday.',
+    'Why only the spend pocket|Jar money is for the bike|Spending jar money would undo the goal|Short pockets disable the button and explain why|Why: one rule a kid can remember'],
+  ['Approve the request', ['parent'], ['Dad sees the request', 'Approves or says not this time', 'Mia gets the answer'],
+    'Dad’s view shows what, how much and what’s left after. Approving asks once more in a dialog, so a tap in a pocket can’t spend money.',
+    'Why a second check|Phones get tapped by accident|The dialog repeats the item and the amount|A no is just as clear as a yes|Why: money moves only on a clear yes'],
+];
+const KIND = { kid: 'Kid', parent: 'Parent', app: 'App' };
+$('#stages').innerHTML = STAGES.map(([t, who, ex, body, tip], i) => `<li class="panel" id="st${i + 1}">
+  <div class="step"><span class="n">${i + 1}</span><h3>${t}</h3><button type="button" class="i" aria-label="About stage ${i + 1}, ${t}" data-tip="${tip}">i</button></div>
+  <div class="meta">${who.map(w => `<span class="who ${w}">${KIND[w]}</span>`).join('')}</div>
+  <div class="explain">${ex.map(e => `<span>${e}</span>`).join('<i aria-hidden="true">→</i>')}</div>
+  <p>${body}</p>
+  <button type="button" class="btn small" data-open="${i}">Open on the phone ↑</button></li>`).join('');
+$$('[data-open]').forEach(b => b.addEventListener('click', () => { stopPlay(); go(+b.dataset.open); $('#phone').scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'center' }); setTimeout(() => nodes[S.at].focus({ preventScroll: true }), reduced ? 0 : 500); }));
+
+// ---- tooltips: hover, focus and tap; one floating paper tag that stays on screen ----
+const tip = $('#tip'); let tipFor = null, pinned = false;
+function showTip(el) {
+  const [title, ...lines] = el.dataset.tip.split('|');
+  tip.innerHTML = `<b>${title}</b><ul>${lines.map(l => `<li>${l}</li>`).join('')}</ul>`;
+  tip.hidden = false; tipFor = el;
+  const narrow = innerWidth < 600; tip.classList.toggle('sheet', narrow);
+  if (narrow) return;
+  const r = el.getBoundingClientRect(), w = tip.offsetWidth, h = tip.offsetHeight;
+  let top = r.bottom + 12; if (top + h > innerHeight - 8) top = Math.max(8, r.top - h - 12);
+  tip.style.left = Math.min(Math.max(8, r.left + r.width / 2 - w / 2), document.documentElement.clientWidth - w - 8) + 'px';
+  tip.style.top = top + 'px';
+}
+function hideTip() { tip.hidden = true; tipFor = null; pinned = false; }
+$$('[data-tip]').forEach((el, k) => {
+  const sr = document.createElement('span');
+  sr.id = 'tip-' + k; sr.className = 'sr-only'; sr.textContent = el.dataset.tip.split('|').join('. ');
+  el.after(sr); el.setAttribute('aria-describedby', sr.id);
+  el.addEventListener('mouseenter', () => showTip(el)); el.addEventListener('mouseleave', () => !pinned && document.activeElement !== el && hideTip());
+  el.addEventListener('focus', () => showTip(el)); el.addEventListener('blur', () => tipFor === el && hideTip());
+  el.addEventListener('click', e => { e.preventDefault(); if (tipFor === el && pinned) hideTip(); else { showTip(el); pinned = true; } });
+});
+addEventListener('pointerdown', e => tipFor && !tipFor.contains(e.target) && hideTip());
+addEventListener('keydown', e => { if (e.key === 'Escape') hideTip(); });
+let tipRaf = 0; addEventListener('scroll', () => { if (tipFor) tipRaf ||= requestAnimationFrame(() => { tipRaf = 0; if (tipFor) showTip(tipFor); }); }, { passive: true });
+
+// ---- how it works: a coin walks the route and stops on each card ----
+const cards = $$('#route li'), token = $('#token');
+let step = 0, howTimer = null, howPaused = false, howVisible = false;
+function placeToken() {
+  cards.forEach((c, i) => { c.classList.toggle('on', i === step); c.classList.toggle('done', i < step); });
+  const c = cards[step], wide = innerWidth > 980;
+  token.style.transform = wide ? `translate(${c.offsetLeft + c.offsetWidth - 46}px, ${c.offsetTop - 18}px)` : `translate(${c.offsetLeft + c.offsetWidth - 44}px, ${c.offsetTop + c.offsetHeight - 30}px)`;
+}
+function howTick() { if (document.hidden) return; step = (step + 1) % cards.length; placeToken(); }
+function howRun() { clearInterval(howTimer); if (!howPaused && howVisible && !reduced) howTimer = setInterval(howTick, 2200); }
+$('#howPause').addEventListener('click', e => { howPaused = !howPaused; e.currentTarget.textContent = howPaused ? '▶ Play' : '❚❚ Pause'; howRun(); });
+$('#howReset').addEventListener('click', () => { step = 0; placeToken(); howRun(); });
+if (reduced) { step = cards.length - 1; ['#howPause', '#howReset'].forEach(s => { $(s).disabled = true; $(s).title = 'Animation is off because your device asks for reduced motion'; }); }
+new ResizeObserver(placeToken).observe($('#route'));
+
+// pause loops off screen
+const io = new IntersectionObserver(es => es.forEach(e => {
+  e.target.classList.toggle('is-off', !e.isIntersecting);
+  if (e.target.id === 'how') { howVisible = e.isIntersecting; howRun(); }
+}), { rootMargin: '100% 0px' });
+$$('.hero, #proto, #how').forEach(el => io.observe(el));
+
+go(0); placeToken();
+</script>
+</body>
+</html>

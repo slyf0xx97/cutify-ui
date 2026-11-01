@@ -1,6 +1,6 @@
 {
   "name": "cutify-ui",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Cute, pixel-art, game-like web pages, prototypes and animated process flows. Claude builds them with characters, numbered story stages and motion that shows the product at work, in React, Next.js or plain HTML.",
   "author": {
     "name": "Ghernie Encinas",

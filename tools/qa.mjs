@@ -290,7 +290,7 @@ for (const pg of PAGES) {
     for (const id of dlgIds) {
       await page.evaluate(() => scrollTo(0, 0));
       const trig = await page.evaluate(() => {
-        const t = document.querySelector('#approveBtn:not(dialog *), #reviewBtn, [data-open]');
+        const t = document.querySelector('[aria-haspopup="dialog"]:not(dialog *)') || document.querySelector('#approveBtn:not(dialog *), #reviewBtn, [data-open]');
         if (!t) return null; t.disabled = false; t.removeAttribute('disabled'); t.scrollIntoView({ block: 'center' }); t.id ||= 'qaTrig'; return '#' + t.id;
       });
       if (!trig) { r.dialogs.push({ id, issue: 'no trigger found' }); continue; }

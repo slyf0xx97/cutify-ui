@@ -206,7 +206,7 @@ section.stage { padding: 6px 0 4px; scroll-margin-top: 50px; }
 .fact span { font-size: 14px; color: var(--sub); }
 
 /* stage 2: crew + plan */
-.crew { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; align-items: center; gap: 8px; margin-bottom: 12px; position: relative; }
+.crew { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 8px; margin-bottom: 12px; position: relative; }
 .mate { display: flex; align-items: center; gap: 10px; background: var(--panel-2); border-radius: 6px; padding: 8px 10px; border: 2px solid transparent; min-width: 0; }
 .mate .sprite { width: 52px; height: 52px; flex: none; }
 .mate b { display: block; font: 800 15px var(--display); text-transform: uppercase; }
@@ -234,8 +234,8 @@ section.stage { padding: 6px 0 4px; scroll-margin-top: 50px; }
 @keyframes clin { from { opacity: 0; transform: translateY(4px); } }
 
 /* stage 3: rules */
-.rgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-.rule { display: grid; grid-template-columns: 64px 1fr auto; gap: 10px; align-items: center; padding: 8px 10px; background: var(--panel-2); border-radius: 4px; font-size: 14px; line-height: 1.35; border-left: 3px solid #ffffff20; transition: background .2s, border-color .2s; }
+.rgrid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 6px; }
+.rule { display: grid; grid-template-columns: 64px minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 8px 10px; background: var(--panel-2); border-radius: 4px; font-size: 14px; line-height: 1.35; border-left: 3px solid #ffffff20; transition: background .2s, border-color .2s; }
 .rule .mono { font-size: 12px; color: var(--line); font-weight: 700; }
 .rule.pass { border-left-color: var(--ok); }
 .rule.hit { background: #ff5a4e30; border-left-color: var(--bad); } .rule.hit .mono { color: var(--bad); }
@@ -291,7 +291,7 @@ dialog::backdrop { background: #05070acc; }
 
 /* footer */
 .foot { margin-top: 40px; padding: 26px 0 32px; border-top: 4px solid var(--line); }
-.foot-grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 24px; }
+.foot-grid { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr); gap: 24px; }
 .foot h5 { margin: 0 0 8px; font: 700 11px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--dim); }
 .foot p, .foot li { font-size: 14px; color: var(--body); margin: 0; }
 .foot ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 4px; }
@@ -311,23 +311,23 @@ dialog::backdrop { background: #05070acc; }
 
 @media (max-width: 980px) {
   .hero { padding-top: 16px; }
-  .status { grid-template-columns: 1fr auto; }
+  .status { grid-template-columns: minmax(0, 1fr) auto; }
   .status .readout { grid-column: 1 / -1; grid-row: 2; }
   /* the map narrows back to the art and the intro stacks above it */
   .scene { display: block; --vx: 0; --vw: 640; }
   .intro { width: auto; margin: 0 0 12px; }
-  .two, .how, .rgrid { grid-template-columns: 1fr; }
-  .foot-grid { grid-template-columns: 1fr 1fr; }
+  .two, .how, .rgrid { grid-template-columns: minmax(0, 1fr); }
+  .foot-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
 }
 @media (max-width: 760px) {
   .wrap { padding: 0 16px; }
   nav .navlink { display: none; }
   .kpis, .readout, .cast { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .plan { grid-template-columns: repeat(6, minmax(0, 1fr)); }
-  .crew { grid-template-columns: 1fr; }
+  .crew { grid-template-columns: minmax(0, 1fr); }
   .crew .arrow { transform: rotate(90deg); justify-self: center; line-height: 1; }
   .olab { display: none; }
-  .foot-grid { grid-template-columns: 1fr; }
+  .foot-grid { grid-template-columns: minmax(0, 1fr); }
   h2 { font-size: 28px; }
   .step { gap: 8px; }
   .step h3 { font-size: 18px; }
@@ -339,7 +339,7 @@ dialog::backdrop { background: #05070acc; }
   .who .sprite { width: 28px; height: 28px; }
   .who div { font-size: 11.5px; overflow-wrap: normal; }
   .who .i { margin-left: auto; }
-  .rule { grid-template-columns: 58px 1fr; }
+  .rule { grid-template-columns: 58px minmax(0, 1fr); }
   .rule .pill { grid-column: 2; justify-self: start; }
 }
 </style>
@@ -528,7 +528,7 @@ dialog::backdrop { background: #05070acc; }
       <div><h5>Built with</h5><ul><li>Plain HTML, CSS and SVG</li><li>Pixel sprites from string grids</li><li><a href="../../SKILL.md">cutify-ui</a>, Apron grammar</li></ul></div>
       <div><h5>Project</h5><ul><li>A cutify-ui example</li><li><a href="#how">How it works</a></li><li><a href="#top">Back to top</a></li></ul></div>
     </div>
-    <div class="foot-copy"><p class="copy">© 2026 Gridline example. Not a real grid, not real data.</p><a class="donate" href="https://donate.stripe.com/00w4gr2TU7wC52iaXf18c01" target="_blank" rel="noopener noreferrer"><svg aria-hidden="true" focusable="false" viewBox="0 0 16 16" width="16" height="16" shape-rendering="crispEdges"><path fill="currentColor" d="M3 3h3v1h1v1h2V4h1V3h3v1h1v4h-1v1h-1v1h-1v1h-1v1H9v1H7v-1H6v-1H5V9H4V8H3V7H2V4h1z"/></svg>Support cutify-ui<span class="sr-only"> (opens Stripe in a new tab)</span></a></div>
+    <div class="foot-copy"><p class="copy">© 2026 Gridline example. Not a real grid, not real data.</p><a class="donate" href="https://buy.stripe.com/00w4gr2TU7wC52iaXf18c01" target="_blank" rel="noopener noreferrer"><svg aria-hidden="true" focusable="false" viewBox="0 0 16 16" width="16" height="16" shape-rendering="crispEdges"><path fill="currentColor" d="M3 3h3v1h1v1h2V4h1V3h3v1h1v4h-1v1h-1v1h-1v1h-1v1H9v1H7v-1H6v-1H5V9H4V8H3V7H2V4h1z"/></svg>Support cutify-ui<span class="sr-only"> (opens Stripe in a new tab)</span></a></div>
   </div>
 </footer>
 
