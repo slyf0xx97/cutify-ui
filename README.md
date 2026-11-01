@@ -12,11 +12,11 @@
 ![Plain HTML](https://img.shields.io/badge/plain-HTML%2FCSS%2FSVG-2b8fb3?style=flat-square)
 [![CI](https://img.shields.io/github/actions/workflow/status/slyf0xx97/cutify-ui/ci.yml?style=flat-square&label=checks)](https://github.com/slyf0xx97/cutify-ui/actions)
 
-<p><a href="https://donate.stripe.com/00w4gr2TU7wC52iaXf18c01"><img src="docs/support-button.png" alt="Support cutify-ui: donate with Stripe" width="344"></a></p>
-
 cutify-ui is an open-source [Claude skill](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/overview). Ask Claude for a landing page, a product demo or a portfolio, and the skill gives it six themes, ready components and animation patterns to build from. It works in Claude Code, Claude.ai and the Claude API, and builds in React and Next.js or in plain HTML, CSS and SVG.
 
-🌐 See all twelve examples in the [live gallery](https://slyf0xx97.github.io/cutify-ui/).
+<p align="center"><a href="https://slyf0xx97.github.io/cutify-ui/"><img src="https://img.shields.io/badge/%F0%9F%8C%90%20Open%20the%20live%20gallery-12%20examples-ffb3c7?style=for-the-badge&labelColor=1f2430" alt="Open the live gallery: 12 examples" height="40"></a></p>
+
+<p align="center"><a href="https://donate.stripe.com/00w4gr2TU7wC52iaXf18c01"><img src="docs/support-button.png" alt="Support cutify-ui: donate with Stripe" height="40"></a>&nbsp;&nbsp;<a href="https://ko-fi.com/K6P629UOFQ"><img src="https://ko-fi.com/img/githubbutton_sm.svg" alt="Support me on Ko-fi" height="36"></a></p>
 
 ## Contents
 
@@ -501,9 +501,9 @@ New themes, components and examples are welcome. [CONTRIBUTING.md](CONTRIBUTING.
 
 ## 💖 Support
 
-<p><a href="https://donate.stripe.com/00w4gr2TU7wC52iaXf18c01"><img src="docs/support-button.png" alt="Support cutify-ui: donate with Stripe" width="344"></a></p>
+<p><a href="https://donate.stripe.com/00w4gr2TU7wC52iaXf18c01"><img src="docs/support-button.png" alt="Support cutify-ui: donate with Stripe" height="40"></a>&nbsp;&nbsp;<a href="https://ko-fi.com/K6P629UOFQ"><img src="https://ko-fi.com/img/githubbutton_sm.svg" alt="Support me on Ko-fi" height="36"></a></p>
 
-If cutify-ui saves you time, you can [support it through Stripe](https://donate.stripe.com/00w4gr2TU7wC52iaXf18c01). You choose the amount on Stripe's own checkout page, and the gallery and every example page have the same link in their footer.
+If cutify-ui saves you time, you can support it through [Stripe](https://donate.stripe.com/00w4gr2TU7wC52iaXf18c01) or [Ko-fi](https://ko-fi.com/K6P629UOFQ). You choose the amount on either site. The gallery and every example page also have the Stripe link in their footer.
 
 ## 📄 License
 

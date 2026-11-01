@@ -1,2 +1,3 @@
-# The Sponsor button on the repo page opens a Stripe Payment Link where you choose the amount.
+# The Sponsor button on the repo page lists a Stripe Payment Link and a Ko-fi page. Donors choose the amount on both.
 custom: ["https://donate.stripe.com/00w4gr2TU7wC52iaXf18c01"]
+ko_fi: K6P629UOFQ
