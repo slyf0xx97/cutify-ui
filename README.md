@@ -1,6 +1,6 @@
 <p align="center"><img src="docs/gallery/cover.gif" alt="cutify-ui, a free Claude skill: Claude builds cute, game-like web pages with pixel characters, story stages and motion. Beside the title, three live examples animate, and in the Sprout example a droopy houseplant gets watered and perks up." width="1000"></p>
 
-# 🧸 cutify-ui
+# <img src="docs/logo.svg" alt="" height="40"> cutify-ui
 
 **A Claude skill for cute, game-like web pages with pixel characters, story stages and motion that shows your product at work.**
 
