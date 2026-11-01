@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pricing · Toy Box budgeting</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Outfit:wght@400;500;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+/* Toy Box theme (cutify-ui), inlined from assets/toybox.css, pricing parts only */
+:root {
+  --bg: #FAF7F0; --grid: rgb(43 89 195 / .10); --grid-strong: rgb(43 89 195 / .18);
+  --surface: #FFFFFF; --surface-2: #F3EFE5; --surface-ledge: #D9D3C4;
+  --ink: #1A1A1A; --ink-muted: #4A4A4A;
+  --blue: #2B59C3; --blue-ink: #FFFFFF; --blue-ledge: #1C3D8C;
+  --yellow: #FFC93C; --yellow-ink: #1A1A1A; --yellow-ledge: #C99412;
+  --green: #1F7A47; --red: #C1121F;
+  --radius: 18px; --ledge: 5px;
+  --display: 'Dela Gothic One', system-ui, sans-serif;
+  --body: 'Outfit', system-ui, sans-serif;
+  --mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { background: var(--bg); }
+body {
+  margin: 0; min-height: 100vh; color: var(--ink);
+  font: 400 1.05rem/1.6 var(--body);
+  background:
+    linear-gradient(var(--grid) 1px, transparent 1px) 0 0 / 20px 20px,
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px) 0 0 / 20px 20px,
+    linear-gradient(var(--grid-strong) 1px, transparent 1px) 0 0 / 100px 100px,
+    linear-gradient(90deg, var(--grid-strong) 1px, transparent 1px) 0 0 / 100px 100px,
+    var(--bg);
+}
+h1, h2, h3 { font-family: var(--display); font-weight: 400; line-height: 1.05; margin: 0; }
+:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; border-radius: 8px; }
+button { font: inherit; cursor: pointer; }
+
+.wrap { max-width: 1080px; margin: 0 auto; padding: 3rem 1.25rem 4rem; }
+.lab { font: 700 .75rem var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-muted); }
+
+/* hero */
+.hero { display: grid; gap: 1rem; text-align: center; justify-items: center; margin-bottom: 2.5rem; }
+.hero h1 { font-size: clamp(2rem, 5vw, 3.2rem); }
+.hero p { margin: 0; max-width: 34rem; color: var(--ink-muted); }
+.hl { background: var(--yellow); padding: 0 .2em; border-radius: 6px; }
+
+/* billing toggle (native radios behind a switch) */
+.toggle { display: inline-flex; gap: .25rem; padding: .3rem; background: var(--surface); border-radius: 14px; box-shadow: 0 4px 0 var(--surface-ledge); }
+.toggle input { position: absolute; opacity: 0; pointer-events: none; }
+.toggle label { padding: .45rem 1rem; border-radius: 10px; font: 700 .95rem var(--body); cursor: pointer; }
+.toggle input:checked + label { background: var(--blue); color: var(--blue-ink); box-shadow: 0 3px 0 var(--blue-ledge); }
+.toggle input:focus-visible + label { outline: 3px solid var(--blue); outline-offset: 2px; }
+
+/* plastic pricing cards */
+.plans { display: grid; gap: 1.5rem; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); align-items: stretch; }
+.plan {
+  position: relative; display: flex; flex-direction: column; gap: 1rem;
+  background: var(--surface); border-radius: var(--radius);
+  box-shadow: 0 var(--ledge) 0 var(--surface-ledge);
+  padding: 1.6rem 1.4rem 1.4rem;
+}
+/* two studs on top, like a brick */
+.plan::before {
+  content: ""; position: absolute; top: -8px; left: 22%; width: 56%; height: 9px;
+  background: radial-gradient(circle 5px at 25% 100%, var(--c, var(--blue)) 98%, transparent),
+              radial-gradient(circle 5px at 75% 100%, var(--c, var(--blue)) 98%, transparent);
+}
+.plan.featured { --c: var(--yellow); box-shadow: 0 var(--ledge) 0 var(--yellow-ledge); outline: 3px solid var(--yellow); outline-offset: -3px; }
+.plan.featured::before { background: radial-gradient(circle 5px at 25% 100%, var(--yellow) 98%, transparent), radial-gradient(circle 5px at 75% 100%, var(--yellow) 98%, transparent); }
+
+.plan-head { display: flex; justify-content: space-between; align-items: center; gap: .5rem; flex-wrap: wrap; }
+.plan h2 { font-size: 1.5rem; }
+.badge { display: inline-block; padding: .15rem .6rem; border-radius: 6px; background: var(--yellow); color: var(--yellow-ink); box-shadow: 0 2px 0 var(--yellow-ledge); font: 700 .72rem var(--mono); letter-spacing: .06em; text-transform: uppercase; }
+
+.price { display: flex; align-items: baseline; gap: .35rem; }
+.price b { font: 400 2.6rem/1 var(--display); }
+.price span { color: var(--ink-muted); font-size: .95rem; }
+.plan > p { margin: 0; color: var(--ink-muted); }
+
+.features { list-style: none; padding: 0; margin: 0; display: grid; gap: .55rem; flex: 1; }
+.features li { display: flex; gap: .6rem; align-items: flex-start; }
+.mark { flex: none; display: grid; place-items: center; width: 1.3rem; height: 1.3rem; margin-top: .15rem; border-radius: 5px; background: #D7EFDF; color: var(--green); font: 700 .8rem var(--body); }
+
+/* info tooltip: a real button, with the tip text linked by aria-describedby */
+.i {
+  display: inline-grid; place-items: center; width: 1.3rem; height: 1.3rem; margin-left: .35rem; padding: 0;
+  border: 0; border-radius: 50%; background: var(--blue); color: #fff; font: 700 .75rem var(--body);
+  cursor: help; position: relative; vertical-align: middle; box-shadow: 0 2px 0 var(--blue-ledge);
+}
+.i:hover::after, .i:focus-visible::after {
+  content: attr(data-tip); position: absolute; left: 50%; bottom: calc(100% + 10px); transform: translateX(-50%);
+  width: 260px; padding: .7rem .85rem; background: var(--surface); color: var(--ink); border-radius: 14px;
+  box-shadow: 0 5px 0 var(--surface-ledge), 0 14px 30px #0002;
+  font: 400 .92rem/1.45 var(--body); text-align: left; z-index: 200; pointer-events: none;
+}
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* ledge button that presses down */
+.btn {
+  display: inline-flex; justify-content: center; align-items: center; min-height: 2.9rem; padding: .6rem 1.2rem;
+  border: 0; border-radius: 14px; background: var(--surface); color: var(--ink);
+  font: 700 1rem var(--body); text-decoration: none; margin-top: auto;
+  box-shadow: 0 var(--ledge) 0 var(--surface-ledge); margin-bottom: var(--ledge);
+  transition: transform .06s ease, box-shadow .06s ease, filter .06s ease;
+}
+.btn.primary { background: var(--blue); color: var(--blue-ink); box-shadow: 0 var(--ledge) 0 var(--blue-ledge); }
+.btn.yellow { background: var(--yellow); color: var(--yellow-ink); box-shadow: 0 var(--ledge) 0 var(--yellow-ledge); }
+.btn:hover { filter: brightness(1.04); }
+.btn:active { transform: translateY(var(--ledge)); box-shadow: 0 0 0 transparent; }
+
+.note { margin: 2rem auto 0; max-width: 40rem; text-align: center; color: var(--ink-muted); font-size: .95rem; }
+.note b { font-weight: 700; color: var(--ink); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}
+</style>
+</head>
+<body>
+<main class="wrap">
+
+  <header class="hero">
+    <span class="lab">Pricing · sample</span>
+    <h1>Build a budget that <span class="hl">fits</span> together</h1>
+    <p>Start free, then add the bricks you need. Every plan includes the same envelopes, so you can switch any time without losing a month of data.</p>
+
+    <div class="toggle" role="radiogroup" aria-label="Billing period">
+      <input type="radio" name="billing" id="bill-m" value="monthly" checked>
+      <label for="bill-m">Monthly</label>
+      <input type="radio" name="billing" id="bill-y" value="yearly">
+      <label for="bill-y">Yearly · save 2 months</label>
+    </div>
+  </header>
+
+  <section class="plans" aria-label="Plans">
+
+    <article class="plan" aria-labelledby="p-free">
+      <div class="plan-head">
+        <h2 id="p-free">Starter</h2>
+      </div>
+      <p>For one person getting a handle on the month.</p>
+      <div class="price"><b data-m="0" data-y="0">$0</b><span>/ month</span></div>
+      <ul class="features">
+        <li><span class="mark" aria-hidden="true">✓</span>Up to 2 accounts</li>
+        <li><span class="mark" aria-hidden="true">✓</span>5 budget envelopes</li>
+        <li><span class="mark" aria-hidden="true">✓</span>Weekly spending summary</li>
+        <li><span class="mark" aria-hidden="true">✓</span>
+          Basic sync
+          <button type="button" class="i" aria-label="About basic sync" aria-describedby="tip-sync" data-tip="Changes update on this device when you open the app. Automatic background sync is on Plus.">i</button>
+          <span id="tip-sync" class="sr">Changes update on this device when you open the app. Automatic background sync is on Plus.</span>
+        </li>
+      </ul>
+      <a class="btn" href="#" aria-label="Start with the Starter plan">Start free</a>
+    </article>
+
+    <article class="plan featured" aria-labelledby="p-plus">
+      <div class="plan-head">
+        <h2 id="p-plus">Plus</h2>
+        <span class="badge">Most popular</span>
+      </div>
+      <p>For households that want every envelope and bill in one place.</p>
+      <div class="price"><b data-m="4" data-y="40">$4</b><span>/ month</span></div>
+      <ul class="features">
+        <li><span class="mark" aria-hidden="true">✓</span>Unlimited accounts</li>
+        <li><span class="mark" aria-hidden="true">✓</span>Unlimited envelopes</li>
+        <li><span class="mark" aria-hidden="true">✓</span>Bill reminders before due dates</li>
+        <li><span class="mark" aria-hidden="true">✓</span>
+          Goal jars with progress
+          <button type="button" class="i" aria-label="About goal jars" aria-describedby="tip-goals" data-tip="Each goal fills as you move money into it. You can pause a goal without losing its history.">i</button>
+          <span id="tip-goals" class="sr">Each goal fills as you move money into it. You can pause a goal without losing its history.</span>
+        </li>
+        <li><span class="mark" aria-hidden="true">✓</span>CSV export</li>
+      </ul>
+      <a class="btn yellow" href="#" aria-label="Choose the Plus plan">Choose Plus</a>
+    </article>
+
+    <article class="plan" aria-labelledby="p-family">
+      <div class="plan-head">
+        <h2 id="p-family">Family</h2>
+      </div>
+      <p>For up to five people sharing one budget.</p>
+      <div class="price"><b data-m="8" data-y="80">$8</b><span>/ month</span></div>
+      <ul class="features">
+        <li><span class="mark" aria-hidden="true">✓</span>Everything in Plus</li>
+        <li><span class="mark" aria-hidden="true">✓</span>Up to 5 people</li>
+        <li><span class="mark" aria-hidden="true">✓</span>Kids' allowance envelopes</li>
+        <li><span class="mark" aria-hidden="true">✓</span>Shared shopping list</li>
+      </ul>
+      <a class="btn primary" href="#" aria-label="Choose the Family plan">Choose Family</a>
+    </article>
+
+  </section>
+
+  <p class="note">Prices are <b>sample</b> prices in US dollars, shown before tax. Cancel any time from Settings.</p>
+
+</main>
+
+<script>
+// Switch the prices between monthly and yearly. Prices come from data-m / data-y on each amount.
+const prices = document.querySelectorAll('.price b');
+document.querySelectorAll('input[name="billing"]').forEach(input => {
+  input.addEventListener('change', () => {
+    const key = input.value === 'yearly' ? 'y' : 'm';
+    prices.forEach(el => {
+      const value = el.dataset[key];
+      el.textContent = '$' + value;
+    });
+    document.querySelectorAll('.price span').forEach(el => {
+      el.textContent = input.value === 'yearly' ? '/ year' : '/ month';
+    });
+  });
+});
+</script>
+</body>
+</html>

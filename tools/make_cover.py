@@ -1,4 +1,4 @@
-"""Build docs/gallery/cover.png (a 4 x 3 collage of the gallery screenshots) and docs/social-preview.png (1280 x 640).
+"""Build docs/gallery/cover.png (a 4 x 3 collage of the gallery screenshots). The social preview card is tools/social.html, rendered by make_social.mjs.
 
 Run from the repo root after tools/shots.mjs: python tools/make_cover.py   (needs Pillow)
 """
@@ -38,8 +38,4 @@ for k, n in enumerate(names):
 
 board.save(gallery / "cover.png", optimize=True)
 
-# social preview: 2:1, centred crop of the collage, 1280 x 640
-th = W // 2
-top = max(0, (H - th) // 2)
-board.crop((0, top, W, top + th)).resize((1280, 640), Image.LANCZOS).save(root / "docs" / "social-preview.png", optimize=True)
-print(f"cover.png {W}x{H} with {len(names)} shots; social-preview.png 1280x640")
+print(f"cover.png {W}x{H} with {len(names)} shots")

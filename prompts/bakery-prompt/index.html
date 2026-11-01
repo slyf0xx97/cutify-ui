@@ -1,0 +1,649 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Corner Oven · Pre-order tomorrow's bake</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;700;800&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+/* cutify-ui Picnic theme tokens, with a terrazzo counter backdrop instead of gingham */
+:root {
+  --bg: #F6EFE4; --surface: #FFF4E0; --surface-2: #FFFFFF; --border: #3A2E2A;
+  --ink: #3A2E2A; --ink-muted: #6B5A52;
+  --accent: #C2272D; --accent-ink: #FFFFFF;
+  --accent-2: #FFD86E; --accent-2-ink: #3A2E2A;
+  --ok: #3E7D48; --bad: #C2272D;
+  --crumb: #E8A05A; --you: #FF8FAB;
+  --radius: 14px; --shadow: 3px 4px 0 rgb(58 46 42 / .25); --shadow-hover: 4px 7px 0 rgb(58 46 42 / .25);
+  --ease-pop: cubic-bezier(.34, 1.56, .64, 1);
+  --display: 'Fredoka', system-ui, sans-serif; --body: 'Nunito', system-ui, sans-serif; --mono: 'DM Mono', ui-monospace, monospace;
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { background: var(--bg); scroll-behavior: smooth; }
+body { margin: 0; color: var(--ink); font: 400 1.0625rem/1.6 var(--body); overflow-x: hidden;
+  background:
+    radial-gradient(6px 4px at 12% 18%, #F0A08E 99%, transparent), radial-gradient(4px 6px at 38% 72%, #A8C489 99%, transparent),
+    radial-gradient(5px 3px at 66% 30%, #F2C14E 99%, transparent), radial-gradient(3px 5px at 82% 80%, #9DB5D6 99%, transparent),
+    radial-gradient(4px 4px at 55% 52%, #6B5A52 99%, transparent), var(--bg);
+  background-size: 180px 180px, 220px 220px, 200px 200px, 160px 160px, 240px 240px, auto; }
+h1, h2, h3 { font-family: var(--display); font-weight: 600; line-height: 1.1; }
+a { color: var(--accent); }
+:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; border-radius: 8px; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { animation: none !important; transition: none !important; } }
+.is-off, .is-off *, .is-off *::before, .is-off *::after { animation-play-state: paused !important; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.wrap { width: min(1180px, 100% - 2rem); margin-inline: auto; }
+
+.panel { background: var(--surface); border: 2px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); padding: 1.1rem 1.25rem; }
+.card { background: var(--surface-2); border: 2px solid var(--border); border-radius: 10px; padding: .9rem 1rem; }
+.lab { font: 500 .78rem var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-muted); }
+.hl { background: linear-gradient(transparent 55%, var(--accent-2) 55%, var(--accent-2) 92%, transparent 92%); }
+
+/* buttons: soft blanket offset */
+button { font: inherit; cursor: pointer; color: inherit; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; min-height: 2.75rem; padding: .55rem 1.15rem; border: 2px solid var(--border); border-radius: 999px;
+  background: var(--surface-2); color: var(--ink); font: 700 1rem var(--body); text-decoration: none; box-shadow: var(--shadow); }
+.btn.primary { background: var(--accent); color: var(--accent-ink); }
+.btn.butter { background: var(--accent-2); color: var(--accent-2-ink); }
+.btn:disabled { opacity: .55; cursor: not-allowed; }
+:where(.btn, .qty button, .chip) { transition: transform .16s var(--ease-pop), box-shadow .16s ease; }
+@media (prefers-reduced-motion: no-preference) {
+  :where(.btn, .qty button):not(:disabled):hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); }
+  :where(.btn, .qty button):not(:disabled):active { animation: squash .28s cubic-bezier(.3, 1.6, .5, 1); } }
+@keyframes squash { 30% { transform: scale(1.08, .9); } 60% { transform: scale(.96, 1.04); } }
+
+.kind { display: inline-block; padding: .05rem .5rem; border: 1.5px solid var(--border); border-radius: 999px; font: 500 .72rem var(--mono); letter-spacing: .06em; text-transform: uppercase; vertical-align: middle; }
+.kind.ai { background: #FFE2C2; } .kind.you { background: #FFD6E0; } .kind.baker { background: var(--surface-2); }
+.glyph { display: inline-block; width: .8rem; height: .8rem; border: 2px solid var(--border); vertical-align: -1px; }
+.glyph.circle { border-radius: 50%; background: var(--crumb); } .glyph.square { border-radius: 2px; background: var(--you); }
+
+/* tooltip: a paper tag on a dotted string */
+.i { display: inline-grid; place-items: center; width: 1.4rem; height: 1.4rem; padding: 0; border-radius: 50%; border: 2px solid currentColor; background: var(--surface-2);
+  font: 700 .78rem var(--body); color: var(--accent); cursor: help; position: relative; margin-left: .35rem; vertical-align: middle; }
+.i[data-tip]:is(:hover, :focus-visible, .open)::after { content: attr(data-tip); position: absolute; left: 50%; top: calc(100% + 14px); transform: translateX(-50%) rotate(-1.5deg);
+  width: min(290px, 80vw); padding: .7rem .85rem .7rem 1.4rem; background: var(--surface-2); color: var(--ink); border: 2px solid var(--border); border-radius: 4px 12px 12px 4px;
+  box-shadow: var(--shadow); font: 400 .95rem/1.45 var(--body); text-align: left; white-space: pre-line; z-index: 200; pointer-events: none; text-transform: none; letter-spacing: 0;
+  background-image: radial-gradient(circle at .7rem .9rem, var(--bg) 0 4px, var(--border) 4px 5.5px, transparent 6px); }
+.i[data-tip]:is(:hover, :focus-visible, .open)::before { content: ""; position: absolute; left: 50%; top: 100%; height: 14px; border-left: 2px dotted var(--border); z-index: 201; }
+:has(> .i:is(:hover, :focus-visible, .open)) { position: relative; z-index: 60; }
+@media (max-width: 600px) {
+  .i[data-tip]:is(:hover, :focus-visible, .open)::after { position: fixed; left: 8px; right: 8px; top: auto; bottom: 8px; width: auto; transform: none; }
+  .i[data-tip]:is(:hover, :focus-visible, .open)::before { display: none; } }
+
+.pill { display: inline-block; padding: .1rem .6rem; border-radius: 999px; border: 1.5px solid var(--border); font: 700 .85rem var(--body); background: var(--surface-2); }
+.mono { font-family: var(--mono); letter-spacing: .04em; }
+
+/* pixel art */
+.sprite { image-rendering: pixelated; display: block; }
+@media (prefers-reduced-motion: no-preference) { .bob { animation: bob 3.4s ease-in-out infinite; } .bob.late { animation-delay: -1.7s; } }
+@keyframes bob { 50% { transform: translateY(-4px); } }
+.px-blink { animation: px-blink 3.2s steps(1) infinite; } @keyframes px-blink { 0%, 90% { opacity: 1; } 92% { opacity: 0; } }
+.px-steam { animation: px-steam 1s steps(1) infinite; } @keyframes px-steam { 50% { opacity: 0; } }
+.talking { animation: hop .3s steps(2) infinite alternate; } @keyframes hop { to { transform: translateY(-6px); } }
+
+/* nav */
+nav.top { position: sticky; top: 0; z-index: 100; background: var(--surface); border-bottom: 2px solid var(--border); }
+nav.top .wrap { display: flex; align-items: center; gap: 1rem; min-height: 4rem; }
+.brand { display: flex; align-items: center; gap: .55rem; font: 700 1.3rem var(--display); color: var(--ink); text-decoration: none; margin-right: auto; }
+nav.top a.link { color: var(--ink); font-weight: 700; text-decoration: none; }
+nav.top a.link:hover { text-decoration: underline; }
+.basket-pill { font: 500 .8rem var(--mono); }
+
+/* hero: text left, shop counter scene right */
+.hero { display: grid; grid-template-columns: 1.05fr 1fr; gap: 2.5rem; align-items: center; padding: 3.5rem 0 2rem; }
+.hero h1 { font-size: clamp(2.3rem, 5vw, 3.7rem); margin: .4rem 0 1rem; }
+.hero .lede { font-size: 1.2rem; max-width: 34rem; margin: 0 0 1.2rem; }
+.benefits { list-style: none; padding: 0; margin: 0 0 1.6rem; display: grid; gap: .45rem; }
+.benefits li { display: flex; gap: .6rem; align-items: baseline; }
+.benefits li::before { content: "✓"; font-weight: 800; color: var(--ok); }
+.scene { padding: 0; overflow: hidden; position: relative; }
+.awning { height: 46px; background: repeating-linear-gradient(90deg, var(--accent) 0 34px, #FFF 34px 68px); border-bottom: 2px solid var(--border);
+  --s: 17px; mask: radial-gradient(var(--s) at 50% 100%, #0000 98%, #000) 0 calc(-1 * var(--s)) / calc(2 * var(--s)) 100% repeat-x, linear-gradient(#000 0 0) top / 100% 30px no-repeat; }
+.shelf { display: flex; justify-content: center; gap: .9rem; padding: 1rem 1rem .6rem; border-bottom: 6px solid #B9814F; margin: 0 1.2rem; }
+.shelf svg { width: 40px; height: 40px; }
+.counter { display: flex; justify-content: space-around; align-items: flex-end; padding: 1.4rem 1rem 0; min-height: 190px; position: relative; }
+.counter .who { display: grid; justify-items: center; gap: .3rem; }
+.counter .sprite { width: 104px; height: 104px; }
+.counter-top { height: 22px; background: #B9814F; border-top: 2px solid var(--border); }
+.bubble { position: absolute; top: .6rem; left: 50%; transform: translateX(-50%); max-width: 16rem; background: var(--surface-2); border: 2px solid var(--border); border-radius: 12px 12px 12px 3px;
+  padding: .45rem .75rem; font-size: .95rem; line-height: 1.35; }
+.legend { display: flex; flex-wrap: wrap; gap: .4rem 1.2rem; padding: .8rem 1.2rem; font-size: .95rem; border-top: 2px dashed rgb(58 46 42 / .35); }
+.legend span { display: inline-flex; align-items: center; gap: .4rem; }
+
+/* stages: jar-lid numbers */
+section.stage, .how { padding: 1.2rem 0; scroll-margin-top: 4.5rem; }
+.step { display: flex; align-items: center; flex-wrap: wrap; gap: .8rem; margin: 2rem 0 .5rem; scroll-margin-top: 5rem; }
+.step .n { display: grid; place-items: center; width: 2.6rem; height: 2.6rem; border-radius: 50%; background: var(--accent-2); color: var(--ink);
+  border: 2px solid var(--border); box-shadow: inset 0 -4px 0 rgb(58 46 42 / .15), 0 3px 0 var(--border); font: 700 1.2rem var(--display); }
+.step h2 { margin: 0; font-size: clamp(1.45rem, 2.8vw, 2rem); }
+.explain { margin: 0 0 1rem 3.4rem; font: 500 .8rem var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--ink-muted); display: flex; flex-wrap: wrap; gap: .35rem; align-items: center; }
+.explain b { font-weight: 500; background: var(--surface-2); border: 1.5px solid var(--border); border-radius: 6px; padding: .05rem .45rem; color: var(--ink); }
+
+/* stage 1: ask Crumb */
+.ask { display: grid; grid-template-columns: 210px 1fr; gap: 1.5rem; align-items: start; }
+.ask-crumb { display: grid; justify-items: center; gap: .5rem; text-align: center; }
+.ask-crumb .sprite { width: 112px; height: 112px; }
+.ask-crumb .bubble { position: static; transform: none; border-radius: 12px; }
+fieldset { border: 0; padding: 0; margin: 0 0 1rem; min-width: 0; }
+legend { font-weight: 800; margin-bottom: .45rem; padding: 0; }
+.chips { display: flex; flex-wrap: wrap; gap: .5rem; }
+.chip { position: relative; }
+.chip input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.chip span { display: inline-block; padding: .4rem .9rem; border: 2px solid var(--border); border-radius: 999px; background: var(--surface-2); font-weight: 700; box-shadow: 0 3px 0 rgb(58 46 42 / .25); }
+.chip input:checked + span { background: var(--accent-2); box-shadow: inset 0 3px 0 rgb(58 46 42 / .2); transform: translateY(2px); }
+.chip input:checked + span::before { content: "✓ "; }
+.chip input:focus-visible + span { outline: 3px solid var(--ink); outline-offset: 3px; }
+.suggestions { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 1rem; margin-top: 1.2rem; }
+.sugg { display: grid; gap: .45rem; align-content: start; border-radius: 6px 16px 6px 16px; }
+@media (prefers-reduced-motion: no-preference) { .sugg { animation: out-of-oven .45s var(--ease-pop) both; } .sugg:nth-child(2) { animation-delay: .12s; } .sugg:nth-child(3) { animation-delay: .24s; } }
+@keyframes out-of-oven { from { opacity: 0; transform: translateY(14px) scale(.96); } }
+.sugg h3 { margin: 0; font-size: 1.2rem; display: flex; gap: .5rem; align-items: center; }
+.sugg h3 svg { width: 32px; height: 32px; flex: none; }
+.sugg p { margin: 0; }
+.sugg .why { font-size: .98rem; color: var(--ink-muted); }
+
+/* stage 2: menu board */
+.menu { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: .9rem; list-style: none; padding: 0; margin: 0; }
+.item { display: grid; grid-template-columns: 44px 1fr; gap: .25rem .8rem; align-items: start; }
+.item svg { width: 44px; height: 44px; grid-row: span 3; }
+.item h3 { margin: 0; font-size: 1.1rem; }
+.item .note { margin: 0; font-size: .98rem; color: var(--ink-muted); }
+.item .row { display: flex; justify-content: space-between; align-items: center; gap: .5rem; margin-top: .3rem; }
+.item.picked { background: #FFF8E6; box-shadow: inset 0 0 0 2px var(--accent-2); }
+.price { font: 500 1rem var(--mono); }
+.diet { font: 500 .7rem var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--ok); }
+.qty { display: inline-flex; align-items: center; gap: .4rem; }
+.qty button { width: 2.25rem; height: 2.25rem; border: 2px solid var(--border); border-radius: 50%; background: var(--surface-2); font: 700 1.1rem var(--body); box-shadow: 0 3px 0 rgb(58 46 42 / .25); padding: 0; }
+.qty button.add { background: var(--accent-2); }
+.qty output { min-width: 1.5rem; text-align: center; font: 500 1rem var(--mono); }
+
+/* stage 3 + 4 */
+.slot-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
+label.field { display: grid; gap: .3rem; font-weight: 800; margin-bottom: .8rem; }
+label.field small { font-weight: 400; color: var(--ink-muted); }
+input[type=text], input[type=tel], input[type=email], textarea { font: 400 1.0625rem var(--body); color: var(--ink); padding: .6rem .75rem; border: 2px solid var(--border); border-radius: 10px; background: var(--surface-2); width: 100%; }
+textarea { min-height: 4.5rem; resize: vertical; }
+.summary { display: grid; grid-template-columns: 1.3fr 1fr; gap: 1.2rem; align-items: start; }
+.lines { list-style: none; padding: 0; margin: 0 0 .8rem; }
+.lines li { display: flex; justify-content: space-between; gap: 1rem; padding: .35rem 0; border-bottom: 2px dotted rgb(58 46 42 / .3); }
+.total { display: flex; justify-content: space-between; font: 700 1.3rem var(--display); margin-bottom: 1rem; }
+.problems { color: var(--bad); font-weight: 700; margin: .6rem 0; }
+.problems:empty { display: none; }
+.ticket { display: none; border-style: dashed; background: #FFFDF5; }
+.ticket.show { display: block; }
+.ticket h3 { margin: .2rem 0 .4rem; font-size: 1.5rem; }
+
+dialog { border: 2px solid var(--border); border-radius: 16px; background: var(--surface); color: var(--ink); padding: 1.4rem; width: min(460px, 100% - 2rem); box-shadow: 0 18px 40px rgb(58 46 42 / .3); }
+dialog::backdrop { background: rgb(58 46 42 / .45); }
+dialog h3 { margin: 0 0 .6rem; font-size: 1.5rem; }
+dialog .actions { display: flex; flex-wrap: wrap; gap: .7rem; justify-content: flex-end; margin-top: 1rem; }
+
+/* how it works: a route with a moving bread token */
+.how { padding: 2rem 0 3rem; }
+.how h2 { font-size: clamp(1.6rem, 3vw, 2.2rem); margin: 2rem 0 1rem; }
+.route { container-type: inline-size; }
+.track { position: relative; height: 34px; margin: 0 calc(12.5% - 17px); border-bottom: 3px dotted var(--border); margin-bottom: .8rem; }
+.token { position: absolute; left: 0; bottom: -14px; width: 28px; height: 28px; }
+@media (prefers-reduced-motion: no-preference) { .token { animation: travel 9s ease-in-out infinite; } }
+@keyframes travel { 0%, 14% { transform: translateX(0); } 25%, 39% { transform: translateX(calc((100cqi * .75 - 0px) / 3)); }
+  50%, 64% { transform: translateX(calc((100cqi * .75) / 3 * 2)); } 75%, 100% { transform: translateX(calc(100cqi * .75)); } }
+.route ol { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; counter-reset: r; }
+.route li { counter-increment: r; }
+.route li::before { content: counter(r); display: grid; place-items: center; width: 2rem; height: 2rem; border-radius: 50%; background: var(--accent-2); border: 2px solid var(--border); font: 700 1rem var(--display); margin-bottom: .5rem; }
+.route h3 { margin: 0 0 .3rem; font-size: 1.15rem; }
+.route p { margin: .3rem 0 0; font-size: 1rem; }
+
+footer { background: var(--surface); border-top: 2px solid var(--border); padding: 2rem 0 1.4rem; margin-top: 2rem; }
+footer .wrap { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; }
+footer ul { list-style: none; padding: 0; margin: 0; display: grid; gap: .3rem; }
+footer .legal { grid-column: 1 / -1; font: 500 .78rem var(--mono); color: var(--ink-muted); letter-spacing: .04em; }
+
+@media (max-width: 900px) {
+  .hero, .ask, .slot-grid, .summary { grid-template-columns: 1fr; }
+  .hero { padding-top: 2rem; }
+  .ask-crumb { grid-template-columns: auto 1fr; justify-items: start; text-align: left; align-items: center; }
+  .ask-crumb .sprite { width: 72px; height: 72px; }
+  .route ol { grid-template-columns: 1fr 1fr; }
+  .track { display: none; }
+}
+@media (max-width: 560px) {
+  nav.top a.link, nav.top .btn { display: none; }
+  .brand { white-space: nowrap; font-size: 1.15rem; }
+  .route ol { grid-template-columns: 1fr; }
+  .explain { margin-left: 0; }
+  .counter .sprite { width: 80px; height: 80px; }
+  .bubble { max-width: 13rem; font-size: .9rem; }
+  footer .wrap { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs id="pixdefs"></defs></svg>
+
+<nav class="top" aria-label="Main">
+  <div class="wrap">
+    <a class="brand" href="#top"><svg class="sprite" viewBox="0 0 16 16" width="34" height="34" aria-hidden="true"><use href="#ic-loaf"/></svg>The Corner Oven</a>
+    <a class="link" href="#how">How it works</a>
+    <span class="pill basket-pill" id="navBasket" aria-live="polite">Basket 0</span>
+    <a class="btn primary" href="#ask">Start a pre-order</a>
+  </div>
+</nav>
+
+<main id="top" class="wrap">
+  <header class="hero">
+    <div>
+      <p class="lab">Neighbourhood bakery · pre-orders · <span class="kind baker">sample name and menu</span></p>
+      <h1>Order tonight, <span class="hl">collect it warm</span> tomorrow.</h1>
+      <p class="lede">Tell Crumb, our baking helper, who you're feeding and what you fancy. It suggests a bake from today's menu, you pick a collection slot, and we put your order in the oven first thing.</p>
+      <ul class="benefits">
+        <li>Your loaf is set aside before the door opens, so it never sells out on you.</li>
+        <li>Crumb suggests bakes that fit your table, including vegan and nut-free.</li>
+        <li>Pay when you collect. Order by 6pm for the next morning.</li>
+      </ul>
+      <a class="btn primary" href="#ask">Ask Crumb what to bake</a>
+    </div>
+
+    <div class="panel scene" role="img" aria-label="The bakery counter: Crumb the bread-loaf helper and you, the neighbour, with loaves on the shelf behind">
+      <div class="awning" aria-hidden="true"></div>
+      <div class="shelf" aria-hidden="true">
+        <svg class="sprite" viewBox="0 0 16 16"><use href="#ic-loaf"/></svg>
+        <svg class="sprite" viewBox="0 0 16 16"><use href="#ic-bun"/></svg>
+        <svg class="sprite" viewBox="0 0 16 16"><use href="#ic-tart"/></svg>
+        <svg class="sprite" viewBox="0 0 16 16"><use href="#ic-roll"/></svg>
+        <svg class="sprite" viewBox="0 0 16 16"><use href="#ic-cake"/></svg>
+      </div>
+      <div class="counter" aria-hidden="true">
+        <p class="bubble">“Cardamom buns are on tomorrow. Want two set aside?”</p>
+        <div class="who"><div class="bob"><svg class="sprite" viewBox="0 0 16 16"><use href="#ch-crumb"/></svg></div></div>
+        <div class="who"><div class="bob late"><svg class="sprite" viewBox="0 0 16 16"><use href="#ch-you"/></svg></div></div>
+      </div>
+      <div class="counter-top" aria-hidden="true"></div>
+      <div class="legend">
+        <span><i class="glyph circle" aria-hidden="true"></i><b>Crumb</b> <span class="kind ai">AI helper</span> suggests what to bake</span>
+        <span><i class="glyph square" aria-hidden="true"></i><b>You</b> <span class="kind you">You</span> choose and collect</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- STAGE 1 -->
+  <section class="stage" id="ask" aria-labelledby="s1">
+    <div class="step"><span class="n" aria-hidden="true">1</span><h2 id="s1">Tell Crumb what you fancy</h2>
+      <button type="button" class="i" aria-label="About Crumb's suggestions" aria-describedby="tip-1"
+        data-tip="Crumb reads your answers and picks up to three bakes from tomorrow's menu.&#10;It leaves out anything that breaks a dietary choice.&#10;It's only a suggestion. Add what you like in step 2.&#10;Why: most people know the occasion before they know the bake.">i</button>
+      <span id="tip-1" role="tooltip" class="sr-only">Crumb reads your answers and picks up to three bakes from tomorrow's menu. It leaves out anything that breaks a dietary choice. Why: most people know the occasion before they know the bake.</span>
+      <span class="kind you">You</span> <span class="kind ai">AI</span>
+    </div>
+    <p class="explain" aria-hidden="true"><b>who it's for</b> → <b>tastes</b> → <b>dietary</b> → <b>Crumb suggests</b></p>
+
+    <div class="panel ask">
+      <div class="ask-crumb">
+        <div id="crumbBody"><svg class="sprite" viewBox="0 0 16 16" role="img" aria-label="Crumb, the AI baking helper"><use href="#ch-crumb"/></svg></div>
+        <p class="bubble" id="crumbSays" aria-live="polite">Who are we baking for?</p>
+      </div>
+      <form id="askForm">
+        <fieldset>
+          <legend>Who's it for?</legend>
+          <div class="chips">
+            <label class="chip"><input type="radio" name="occ" value="me" checked><span>Just me</span></label>
+            <label class="chip"><input type="radio" name="occ" value="breakfast"><span>Family breakfast</span></label>
+            <label class="chip"><input type="radio" name="occ" value="party"><span>A party or picnic</span></label>
+            <label class="chip"><input type="radio" name="occ" value="gift"><span>A gift for a neighbour</span></label>
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend>What do you fancy? <span class="lab">pick any</span></legend>
+          <div class="chips">
+            <label class="chip"><input type="checkbox" name="taste" value="sweet"><span>Sweet</span></label>
+            <label class="chip"><input type="checkbox" name="taste" value="savoury"><span>Savoury</span></label>
+            <label class="chip"><input type="checkbox" name="taste" value="spiced"><span>Spiced</span></label>
+            <label class="chip"><input type="checkbox" name="taste" value="fruity"><span>Fruity</span></label>
+            <label class="chip"><input type="checkbox" name="taste" value="chocolate"><span>Chocolate</span></label>
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend>Anything to avoid?</legend>
+          <div class="chips">
+            <label class="chip"><input type="checkbox" name="diet" value="vegan"><span>Vegan only</span></label>
+            <label class="chip"><input type="checkbox" name="diet" value="nutfree"><span>No nuts</span></label>
+          </div>
+        </fieldset>
+        <button class="btn primary" type="submit">Ask Crumb</button>
+      </form>
+    </div>
+    <div class="suggestions" id="suggestions" aria-live="polite"></div>
+  </section>
+
+  <!-- STAGE 2 -->
+  <section class="stage" id="menu" aria-labelledby="s2">
+    <div class="step"><span class="n" aria-hidden="true">2</span><h2 id="s2">Fill your basket</h2>
+      <button type="button" class="i" aria-label="About tomorrow's menu" aria-describedby="tip-2"
+        data-tip="This is everything going in the oven tomorrow.&#10;Prices are per item or per box, as written.&#10;Crumb's picks are highlighted once you add them.&#10;Why: we bake pre-orders first, then fill the shelves.">i</button>
+      <span id="tip-2" role="tooltip" class="sr-only">This is everything going in the oven tomorrow. Prices are per item or per box. Why: we bake pre-orders first, then fill the shelves.</span>
+      <span class="kind you">You</span>
+    </div>
+    <p class="explain" aria-hidden="true"><b>tomorrow's menu</b> → <b>+ / −</b> → <b>basket</b> <span class="kind baker">sample prices</span></p>
+    <ul class="menu" id="menuList"></ul>
+  </section>
+
+  <!-- STAGE 3 -->
+  <section class="stage" id="slot" aria-labelledby="s3">
+    <div class="step"><span class="n" aria-hidden="true">3</span><h2 id="s3">Pick a collection slot</h2>
+      <button type="button" class="i" aria-label="About collection slots" aria-describedby="tip-3"
+        data-tip="Choose a day and a two-hour window.&#10;Your bag waits behind the counter with your name on it.&#10;We use your phone or email only about this order.&#10;Why: slots tell us how much to bake for each hour.">i</button>
+      <span id="tip-3" role="tooltip" class="sr-only">Choose a day and a two-hour window. Your bag waits behind the counter with your name on it. Why: slots tell us how much to bake for each hour.</span>
+      <span class="kind you">You</span>
+    </div>
+    <form class="panel slot-grid" id="slotForm" novalidate>
+      <div>
+        <fieldset>
+          <legend>Day</legend>
+          <div class="chips" id="days"></div>
+        </fieldset>
+        <fieldset>
+          <legend>Time</legend>
+          <div class="chips">
+            <label class="chip"><input type="radio" name="time" value="8–10am" required><span>8–10am</span></label>
+            <label class="chip"><input type="radio" name="time" value="10am–12pm"><span>10am–12pm</span></label>
+            <label class="chip"><input type="radio" name="time" value="12–2pm"><span>12–2pm</span></label>
+          </div>
+        </fieldset>
+      </div>
+      <div>
+        <label class="field">Your name<input type="text" name="name" autocomplete="name" required maxlength="60"></label>
+        <label class="field">Phone or email <small>so we can tell you if something changes</small><input type="text" name="contact" autocomplete="email" required maxlength="80"></label>
+        <label class="field">Note for the baker <small>optional, e.g. "slice the sourdough"</small><textarea name="note" maxlength="300"></textarea></label>
+      </div>
+    </form>
+  </section>
+
+  <!-- STAGE 4 -->
+  <section class="stage" id="confirm" aria-labelledby="s4">
+    <div class="step"><span class="n" aria-hidden="true">4</span><h2 id="s4">Check and send your pre-order</h2>
+      <button type="button" class="i" aria-label="About sending your order" aria-describedby="tip-4"
+        data-tip="Sending opens your email app with the order already written.&#10;Press send there and it reaches the bakery.&#10;Nothing is charged online. You pay at the counter.&#10;Why: no account, no card details, no app to install.">i</button>
+      <span id="tip-4" role="tooltip" class="sr-only">Sending opens your email app with the order already written. Press send there and it reaches the bakery. Nothing is charged online. Why: no account, no card details, no app to install.</span>
+      <span class="kind you">You</span>
+    </div>
+    <div class="summary">
+      <div class="panel">
+        <p class="lab">Your basket</p>
+        <ul class="lines" id="lines"></ul>
+        <div class="total"><span>To pay at collection</span><span class="mono" id="total">£0.00</span></div>
+        <p class="problems" id="problems" role="alert"></p>
+        <button class="btn primary" type="button" id="reviewBtn">Review pre-order</button>
+      </div>
+      <div class="panel ticket" id="ticket" aria-live="polite">
+        <p class="lab">Pre-order written</p>
+        <h3 class="mono" id="ticketId"></h3>
+        <p id="ticketText"></p>
+        <p>If your email app didn't open, <a id="ticketLink" href="#">tap here to send it</a>.</p>
+      </div>
+    </div>
+  </section>
+
+  <dialog id="confirmDlg" aria-labelledby="dlgTitle">
+    <h3 id="dlgTitle">Send this pre-order?</h3>
+    <p id="dlgText"></p>
+    <ul class="lines" id="dlgLines"></ul>
+    <div class="total"><span>At the counter</span><span class="mono" id="dlgTotal"></span></div>
+    <div class="actions">
+      <button class="btn" type="button" id="dlgBack">Change something</button>
+      <button class="btn primary" type="button" id="dlgSend">Send to the bakery</button>
+    </div>
+  </dialog>
+
+  <!-- HOW IT WORKS -->
+  <section class="how" id="how" aria-labelledby="howTitle">
+    <h2 id="howTitle">How it works</h2>
+    <div class="route" id="route">
+      <div class="track" aria-hidden="true"><svg class="sprite token" viewBox="0 0 16 16"><use href="#ic-bun"/></svg></div>
+      <ol>
+        <li class="card"><h3>You say who it's for</h3><span class="kind you">You</span><p>A quiet breakfast, a party, a thank-you for next door.</p></li>
+        <li class="card"><h3>Crumb suggests a bake</h3><span class="kind ai">AI</span><p>Up to three picks from tomorrow's menu, with a line on why each fits.</p></li>
+        <li class="card"><h3>You order and pick a slot</h3><span class="kind you">You</span><p>Choose quantities and a two-hour window, then send.</p></li>
+        <li class="card"><h3>We bake it first thing</h3><span class="kind baker">Baker</span><p>Pre-orders go in the oven at 5am and wait by the till with your name.</p></li>
+      </ol>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div>
+      <a class="brand" href="#top">The Corner Oven</a>
+      <p>A small bakery on the corner of the high street, baking sourdough, buns and bakes for the neighbourhood six days a week. <span class="kind baker">sample</span></p>
+    </div>
+    <ul>
+      <li><a href="#ask">Ask Crumb</a></li>
+      <li><a href="#menu">Tomorrow's menu</a></li>
+      <li><a href="#how">How it works</a></li>
+    </ul>
+    <p class="legal">© 2026 The Corner Oven · Open Tue–Sun, 7am–2pm (sample hours)</p>
+  </div>
+</footer>
+
+<script>
+// ---- pixel sprites (from cutify-ui assets/pixel-sprites.js) ----
+function pixelSprites({ palette, sprites, animate = {} }) {
+  const defs = document.getElementById('pixdefs');
+  for (const [id, rows] of Object.entries(sprites)) {
+    let out = `<symbol id="${id}" viewBox="0 0 16 16" shape-rendering="crispEdges">`;
+    rows.forEach((row, y) => [...row].forEach((ch, x) => {
+      if (ch === '.' || !palette[ch]) return;
+      const cls = animate[ch] ? ` class="${animate[ch]}"` : '';
+      out += `<rect x="${x}" y="${y}" width="1.02" height="1.02" fill="${palette[ch]}"${cls}/>`;
+    }));
+    defs.insertAdjacentHTML('beforeend', out + '</symbol>');
+  }
+}
+const SPRITES = {
+  palette: { k: '#2A201C', e: '#2A201C', w: '#FFFFFF', c: '#B8693A', l: '#E8A05A', h: '#F6CB8C', p: '#FF8FAB', m: '#7A4A33',
+    s: '#F1C7A3', r: '#C2272D', y: '#E3B356', j: '#C2272D', g: '#7BC67E', d: '#5A3B2E', f: '#FFF4E0', t: '#FFFFFF' },
+  animate: { e: 'px-blink', t: 'px-steam' },
+  sprites: {
+    'ch-crumb': [
+      '.....kkkkkk.....', '....kwwwwwwk....', '...kwwwwwwwwk...', '...kwwwwwwwwk...', '....kwwwwwwk....', '....kkkkkkkk....',
+      '...kclhhhhlck...', '..kclhhhhhhlck..', '.kclhheehheehlck', '.kclhheehheehlck', '.kclpphhhhhpplck', '.kcllhhhkkhhllck',
+      '.kccllllllllcck.', '..kccccccccccck.', '...kkkkkkkkkkk..', '................'],
+    'ch-you': [
+      '................', '.....kkkkkk.....', '....kmmmmmmk....', '...kmmmmmmmmk...', '...kmssssssmk...', '...kskssssksk...',
+      '...kssssssssk...', '....kssrrssk....', '.....kkkkkk.....', '...kppppppppk...', '..kppppppppppk..', '..kppkkkkkkppk..',
+      '..kpkyyyyyykpk..', '..kskydyydyksk..', '...kkyyyyyykk...', '....kkkkkkkk....'],
+    'ic-loaf': [
+      '................', '.....t....t.....', '......t....t....', '................', '....kkkkkkkk....', '..kkllhllhllkk..',
+      '.kllhllhllhlllk.', '.klllllllllllck.', 'kclllllllllllcck', 'kccllllllllllcck', 'kcccllllllllccck', '.kccccccccccccck',
+      '..kkkkkkkkkkkkk.', '................', '................', '................'],
+    'ic-bun': [
+      '................', '................', '.....kkkkkk.....', '...kkllllllkk...', '..kllcccccclllk.', '..klcllllllclk..',
+      '.kllcllcccllclk.', '.klcllclllclclk.', '.klcllclcllclck.', '.kllcllcclclllk.', '..klcllllllclk..', '..kllccccccllk..',
+      '...kkllllllkk...', '.....kkkkkk.....', '................', '................'],
+    'ic-tart': [
+      '................', '................', '................', '......kjjk......', '.....kjjjjk.....', '...kkjjjjjjkk...',
+      '..kjjjjjjjjjjk..', '.kfjfjfjfjfjfjk.', 'kllllllllllllllk', 'klhlhlhlhlhlhlck', '.kcccccccccccck.', '..kkkkkkkkkkkk..',
+      '................', '................', '................', '................'],
+    'ic-roll': [
+      '................', '................', '................', '................', '..kkkkkkkkkkkk..', '.khhlhhlhhlhhlk.',
+      'khlllllllllllllk', 'kllkkkkkkkkkkllk', 'klkrrrrrrrrrrklk', 'kllkkkkkkkkkkllk', 'kclllllllllllcck', '.kccccccccccccck',
+      '..kkkkkkkkkkkkk.', '................', '................', '................'],
+    'ic-cake': [
+      '................', '................', '..........kk....', '.........kjjk...', '.......kkkkkkk..', '.....kkffffffk..',
+      '...kkffffffffk..', '.kkffffffffffk..', 'kddddddddddddk..', 'kffffffffffffk..', 'kddddddddddddk..', 'kffffffffffffk..',
+      'kddddddddddddk..', 'kkkkkkkkkkkkkk..', '................', '................'],
+  },
+};
+
+// ---- tomorrow's menu (sample data) ----
+const MENU = [
+  { id: 'sourdough', name: 'Country sourdough', price: 4.8, icon: 'ic-loaf', note: 'Three-day ferment, crackly crust.', tastes: ['savoury'], occ: ['me', 'breakfast'], vegan: true, nutfree: true },
+  { id: 'rye', name: 'Seeded rye', price: 4.2, icon: 'ic-loaf', note: 'Sunflower, pumpkin and flax.', tastes: ['savoury'], occ: ['me', 'breakfast'], vegan: true, nutfree: true },
+  { id: 'cardamom', name: 'Cardamom buns, pair', price: 3.6, icon: 'ic-bun', note: 'Knotted, sugar-crusted, still soft inside.', tastes: ['sweet', 'spiced'], occ: ['me', 'breakfast', 'gift'], vegan: false, nutfree: true },
+  { id: 'knots', name: 'Cinnamon knots, box of 4', price: 6.4, icon: 'ic-bun', note: 'Brown butter and cinnamon sugar.', tastes: ['sweet', 'spiced'], occ: ['breakfast', 'party', 'gift'], vegan: false, nutfree: true },
+  { id: 'tart', name: 'Raspberry & almond tart', price: 3.9, icon: 'ic-tart', note: 'Frangipane, fresh raspberries.', tastes: ['sweet', 'fruity'], occ: ['me', 'gift'], vegan: false, nutfree: false },
+  { id: 'lemon', name: 'Lemon drizzle loaf', price: 9.5, icon: 'ic-cake', note: 'Cuts into ten. Sharp and sticky.', tastes: ['sweet', 'fruity'], occ: ['party', 'gift'], vegan: false, nutfree: true },
+  { id: 'pasty', name: 'Cheese & leek pasty', price: 4.1, icon: 'ic-roll', note: 'Mature cheddar, rough puff.', tastes: ['savoury'], occ: ['me', 'party'], vegan: false, nutfree: true },
+  { id: 'sausage', name: 'Sausage rolls, box of 6', price: 7.2, icon: 'ic-roll', note: 'Pork, sage and black pepper.', tastes: ['savoury'], occ: ['party'], vegan: false, nutfree: true },
+  { id: 'brownie', name: 'Dark chocolate brownies, box of 4', price: 8, icon: 'ic-cake', note: '70% chocolate, fudgy middle.', tastes: ['sweet', 'chocolate'], occ: ['party', 'gift'], vegan: false, nutfree: true },
+  { id: 'hazelnut', name: 'Hazelnut morning buns, pair', price: 4, icon: 'ic-bun', note: 'Chocolate-hazelnut swirl.', tastes: ['sweet', 'chocolate'], occ: ['me', 'breakfast'], vegan: false, nutfree: false },
+  { id: 'banana', name: 'Vegan banana bread', price: 8.5, icon: 'ic-cake', note: 'Walnut-free, dates for sweetness.', tastes: ['sweet', 'fruity'], occ: ['breakfast', 'party'], vegan: true, nutfree: true },
+];
+const OCC_WORDS = { me: 'a treat for yourself', breakfast: 'a family breakfast', party: 'sharing at a party', gift: 'a gift' };
+// shortcut: replace with the bakery's real address before going live
+const BAKERY_EMAIL = 'orders@cornerov.example';
+
+// ---- Crumb: picks up to three bakes ----
+// shortcut: Crumb scores the menu in the browser so the page needs no server or API key; to use a real model,
+// make askCrumb call your own backend (never put an API key in this file) and keep the same return shape.
+function askCrumb({ occ, tastes, diet }) {
+  const allowed = MENU.filter((m) => (!diet.includes('vegan') || m.vegan) && (!diet.includes('nutfree') || m.nutfree));
+  return allowed
+    .map((m) => {
+      const hits = m.tastes.filter((t) => tastes.includes(t));
+      const fits = m.occ.includes(occ);
+      return { item: m, hits, fits, score: hits.length * 2 + (fits ? 2 : 0) };
+    })
+    .filter((s) => s.score > 0)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 3)
+    .map((s) => ({ ...s, why: whyLine(s, occ, diet) }));
+}
+function whyLine({ item, hits, fits }, occ, diet) {
+  const parts = [];
+  if (hits.length) parts.push(`${hits.join(' and ')}, like you asked`);
+  if (fits) parts.push(`it works for ${OCC_WORDS[occ]}`);
+  if (diet.includes('vegan')) parts.push('vegan');
+  if (diet.includes('nutfree')) parts.push('no nuts');
+  const s = parts.join('; ');
+  return s.charAt(0).toUpperCase() + s.slice(1) + '.';
+}
+// self-check for Crumb's rules
+console.assert(askCrumb({ occ: 'party', tastes: ['chocolate', 'sweet'], diet: ['vegan'] }).every((s) => s.item.vegan), 'vegan filter');
+console.assert(!askCrumb({ occ: 'gift', tastes: ['fruity'], diet: ['nutfree'] }).some((s) => s.item.id === 'tart'), 'nut filter');
+console.assert(['cardamom', 'knots'].includes(askCrumb({ occ: 'breakfast', tastes: ['spiced'], diet: [] })[0].item.id), 'spiced breakfast');
+console.assert(askCrumb({ occ: 'me', tastes: [], diet: [] }).length > 0, 'occasion alone still suggests');
+
+// ---- basket ----
+const basket = new Map();
+const money = (n) => '£' + n.toFixed(2);
+const icon = (id, size) => `<svg class="sprite" viewBox="0 0 16 16" width="${size}" height="${size}" aria-hidden="true"><use href="#${id}"/></svg>`;
+const basketTotal = () => [...basket].reduce((sum, [id, q]) => sum + MENU.find((m) => m.id === id).price * q, 0);
+
+function renderMenu() {
+  document.getElementById('menuList').innerHTML = MENU.map((m) => {
+    const q = basket.get(m.id) || 0;
+    const diet = [m.vegan && 'vegan', m.nutfree && 'no nuts'].filter(Boolean).join(' · ');
+    return `<li class="card item${q ? ' picked' : ''}">${icon(m.icon, 44)}
+      <h3>${m.name}</h3><p class="note">${m.note}</p>
+      ${diet ? `<span class="diet">${diet}</span>` : '<span class="diet" style="color:var(--ink-muted)">contains nuts or dairy</span>'}
+      <div class="row" style="grid-column:1/-1"><span class="price">${money(m.price)}</span>
+        <span class="qty"><button type="button" data-id="${m.id}" data-d="-1" aria-label="One fewer ${m.name}" ${q ? '' : 'disabled'}>−</button>
+        <output aria-label="${m.name} in basket">${q}</output>
+        <button type="button" class="add" data-id="${m.id}" data-d="1" aria-label="Add one ${m.name}">+</button></span></div></li>`;
+  }).join('');
+}
+function renderBasket() {
+  const items = [...basket].map(([id, q]) => ({ m: MENU.find((x) => x.id === id), q }));
+  const html = items.length
+    ? items.map(({ m, q }) => `<li><span>${q} × ${m.name}</span><span class="mono">${money(m.price * q)}</span></li>`).join('')
+    : '<li><span>Nothing yet. Ask Crumb or add from the menu.</span></li>';
+  document.getElementById('lines').innerHTML = html;
+  document.getElementById('dlgLines').innerHTML = html;
+  document.getElementById('total').textContent = money(basketTotal());
+  document.getElementById('navBasket').textContent = `Basket ${items.reduce((n, i) => n + i.q, 0)}`;
+}
+function change(id, d) {
+  const q = Math.max(0, Math.min(20, (basket.get(id) || 0) + d));
+  q ? basket.set(id, q) : basket.delete(id);
+  renderMenu(); renderBasket();
+}
+document.getElementById('menuList').addEventListener('click', (e) => {
+  const b = e.target.closest('button[data-id]');
+  if (!b) return;
+  change(b.dataset.id, +b.dataset.d);
+  document.querySelector(`#menuList button[data-id="${b.dataset.id}"][data-d="${b.dataset.d}"]`)?.focus();
+});
+
+// ---- stage 1: ask Crumb ----
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+document.getElementById('askForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const f = new FormData(e.target);
+  const prefs = { occ: f.get('occ'), tastes: f.getAll('taste'), diet: f.getAll('diet') };
+  const body = document.getElementById('crumbBody'), says = document.getElementById('crumbSays'), out = document.getElementById('suggestions');
+  out.innerHTML = '';
+  body.classList.add('talking'); says.textContent = 'Checking the menu…';
+  setTimeout(() => {
+    body.classList.remove('talking');
+    const picks = askCrumb(prefs);
+    if (!picks.length) { says.textContent = 'Nothing on tomorrow\'s menu fits all of that. Try fewer tastes?'; return; }
+    says.textContent = `Here ${picks.length === 1 ? 'is one bake' : `are ${picks.length} bakes`} I'd put in the oven for you.`;
+    out.innerHTML = picks.map((p) => `<article class="card sugg"><span class="kind ai">Crumb suggests</span>
+      <h3>${icon(p.item.icon, 32)}${p.item.name}</h3><p>${p.item.note}</p><p class="why">${p.why}</p>
+      <p class="price">${money(p.item.price)}</p>
+      <button class="btn butter" type="button" data-pick="${p.item.id}">Add to basket</button></article>`).join('');
+  }, reduced ? 0 : 900);
+});
+document.getElementById('suggestions').addEventListener('click', (e) => {
+  const b = e.target.closest('[data-pick]');
+  if (!b) return;
+  change(b.dataset.pick, 1);
+  b.textContent = '✓ Added'; b.disabled = true;
+});
+
+// ---- stage 3: next three days ----
+const days = [1, 2, 3].map((n) => { const d = new Date(); d.setDate(d.getDate() + n); return d.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' }); });
+document.getElementById('days').innerHTML = days.map((d, i) => `<label class="chip"><input type="radio" name="day" value="${d}" ${i ? '' : 'checked'}><span>${i ? d : 'Tomorrow, ' + d}</span></label>`).join('');
+
+// ---- stage 4: check, confirm, send ----
+const slotForm = document.getElementById('slotForm'), dlg = document.getElementById('confirmDlg');
+function readOrder() {
+  const f = new FormData(slotForm);
+  const o = { day: f.get('day'), time: f.get('time'), name: (f.get('name') || '').trim(), contact: (f.get('contact') || '').trim(), note: (f.get('note') || '').trim() };
+  const problems = [];
+  if (!basket.size) problems.push('add at least one bake');
+  if (!o.time) problems.push('pick a collection time');
+  if (!o.name) problems.push('add your name');
+  if (!o.contact) problems.push('add a phone number or email');
+  return { o, problems };
+}
+document.getElementById('reviewBtn').addEventListener('click', () => {
+  const { o, problems } = readOrder();
+  document.getElementById('problems').textContent = problems.length ? 'Nearly there: ' + problems.join(', ') + '.' : '';
+  if (problems.length) return;
+  document.getElementById('dlgText').textContent = `For ${o.name}, collecting ${o.day}, ${o.time}.`;
+  document.getElementById('dlgTotal').textContent = money(basketTotal());
+  dlg.showModal();
+});
+document.getElementById('dlgBack').addEventListener('click', () => dlg.close());
+document.getElementById('dlgSend').addEventListener('click', () => {
+  const { o } = readOrder();
+  const id = 'CO-' + String(Math.floor(1000 + Math.random() * 9000));
+  const lines = [...basket].map(([k, q]) => { const m = MENU.find((x) => x.id === k); return `${q} x ${m.name} (${money(m.price * q)})`; });
+  const body = [`Pre-order ${id}`, `Name: ${o.name}`, `Contact: ${o.contact}`, `Collect: ${o.day}, ${o.time}`, '', ...lines, '', `Total to pay at collection: ${money(basketTotal())}`, o.note ? `Note: ${o.note}` : null].filter((x) => x !== null).join('\n');
+  const href = `mailto:${BAKERY_EMAIL}?subject=${encodeURIComponent(`Pre-order ${id} for ${o.day}`)}&body=${encodeURIComponent(body)}`;
+  dlg.close();
+  document.getElementById('ticketId').textContent = id;
+  document.getElementById('ticketText').textContent = `${o.name}, your order is written up for ${o.day}, ${o.time}. Press send in your email app and we'll set it aside.`;
+  document.getElementById('ticketLink').href = href;
+  document.getElementById('ticket').classList.add('show');
+  location.href = href;
+});
+
+// ---- tooltips: tap toggles, Escape closes ----
+document.addEventListener('click', (e) => {
+  const t = e.target.closest('.i[data-tip]');
+  document.querySelectorAll('.i.open').forEach((o) => o !== t && o.classList.remove('open'));
+  if (t) t.classList.toggle('open');
+});
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') document.querySelectorAll('.i.open').forEach((o) => o.classList.remove('open')); });
+
+// ---- pause loops off screen ----
+const io = new IntersectionObserver((es) => es.forEach((en) => en.target.classList.toggle('is-off', !en.isIntersecting)));
+document.querySelectorAll('.scene, #route, nav.top').forEach((el) => io.observe(el));
+
+pixelSprites(SPRITES);
+renderMenu(); renderBasket();
+</script>
+</body>
+</html>

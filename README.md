@@ -17,7 +17,7 @@ cutify-ui is an open-source [Claude skill](https://docs.claude.com/en/docs/agent
 
 🌐 See all twelve examples in the [live gallery](https://slyf0xx97.github.io/cutify-ui/).
 
-<p align="center"><img src="docs/gallery/demo.gif" alt="The Fleet Queue example page: three pixel robots move along their routes on a warehouse floor while the page explains who plans and who approves" width="800"><br><sub>Fleet Queue, one of the twelve examples, at 1280px. Every animation stops for visitors who ask for reduced motion.</sub></p>
+<p align="center"><img src="docs/gallery/demo.gif" alt="Six example pages in turn, one per theme: StudyBuddy, Fleet Queue, Sunday Spread, Zine Night, Moonlit Market and Beep and Build, each with its pixel characters moving" width="720"><br><sub>Six of the twelve examples, one per theme, recorded at 1280px.</sub></p>
 
 ## Contents
 
@@ -26,7 +26,7 @@ cutify-ui is an open-source [Claude skill](https://docs.claude.com/en/docs/agent
 - [Features](#-features)
 - [Gallery](#%EF%B8%8F-gallery)
 - [Themes](#-themes)
-- [Use it](#-use-it)
+- [Sample prompts](#-sample-prompts)
 - [What's inside](#-whats-inside)
 - [Testing and validation](#-testing-and-validation)
 - [Privacy and limits](#%EF%B8%8F-privacy-and-limits)
@@ -127,14 +127,79 @@ Glass and Apron come from [itsa10but](https://ghernie.com/projects/itsa10but), a
 
 All six themes share the same variable and class names, so a component written for one works in the others.
 
-## 💬 Use it
+## 💬 Sample prompts
 
-Claude loads the skill when a request fits, so you can ask in plain words:
+Each prompt below ran in Claude Code with cutify-ui installed. On the left is the session, redrawn from its log with nothing reworded. On the right is the page it built, unedited, and clicking it opens the page live.
 
-- "Make a cute landing page for my study app with three AI tutors."
-- "Build a dark control-room demo for our warehouse robots, with sample numbers."
-- "I need a playful Next.js page for a meal planner with two AI helpers."
-- "Just a Toy Box pricing card for my budgeting app, please."
+### 1. A landing page for a study app
+
+```
+Use the cutify-ui skill. Make a cute landing page for my study app with three AI tutors. Write it as a single index.html in the current folder.
+```
+
+<table><tr>
+<td width="50%" valign="top"><img src="docs/prompts/studybuddy-prompt-terminal.png" alt="The Claude Code session for this prompt"></td>
+<td width="50%" valign="top"><a href="https://slyf0xx97.github.io/cutify-ui/prompts/studybuddy-prompt/"><img src="docs/prompts/studybuddy-prompt-result.png" alt="The page Claude built for this prompt"></a></td>
+</tr></table>
+
+Claude picked Glass: "I used the Glass theme because the skill matches it to learning apps." About 6 minutes.
+
+### 2. A dark demo for warehouse robots
+
+```
+Build a dark control-room demo for our warehouse robots, with sample numbers. Write it as a single index.html in the current folder.
+```
+
+<table><tr>
+<td width="50%" valign="top"><img src="docs/prompts/warehouse-prompt-terminal.png" alt="The Claude Code session for this prompt"></td>
+<td width="50%" valign="top"><a href="https://slyf0xx97.github.io/cutify-ui/prompts/warehouse-prompt/"><img src="docs/prompts/warehouse-prompt-result.png" alt="The page Claude built for this prompt"></a></td>
+</tr></table>
+
+Claude picked Apron, "the skill's pick for operations/data", built it as an app screen and fixed its own phone overflow. About 5 minutes.
+
+### 3. A pre-order page for a bakery
+
+```
+Use the cutify-ui skill. Make a cosy pre-order page for my neighbourhood bakery, with one AI helper that suggests what to bake. Write it as a single index.html in the current folder.
+```
+
+<table><tr>
+<td width="50%" valign="top"><img src="docs/prompts/bakery-prompt-terminal.png" alt="The Claude Code session for this prompt"></td>
+<td width="50%" valign="top"><a href="https://slyf0xx97.github.io/cutify-ui/prompts/bakery-prompt/"><img src="docs/prompts/bakery-prompt-result.png" alt="The page Claude built for this prompt"></a></td>
+</tr></table>
+
+Claude picked Picnic "because a bakery is about food" and swapped the gingham for a terrazzo counter. About 6 minutes.
+
+### 4. Just one component
+
+```
+Just a Toy Box pricing card for my budgeting app, please. Write it as a single index.html in the current folder.
+```
+
+<table><tr>
+<td width="50%" valign="top"><img src="docs/prompts/pricing-prompt-terminal.png" alt="The Claude Code session for this prompt"></td>
+<td width="50%" valign="top"><a href="https://slyf0xx97.github.io/cutify-ui/prompts/pricing-prompt/"><img src="docs/prompts/pricing-prompt-result.png" alt="The page Claude built for this prompt"></a></td>
+</tr></table>
+
+Claude built only the card, with a yellow brick for the plan name and a button that presses down. About 1 minute.
+
+### The same prompt on three models
+
+Anthropic suggests testing a skill on every model you plan to use, so the pricing-card prompt also ran on Sonnet and Haiku. All three loaded the skill and passed the page linter.
+
+| Model | Time | What it built |
+|---|---|---|
+| Opus 5.5 | 65 s | [One card](https://slyf0xx97.github.io/cutify-ui/prompts/pricing-prompt/) with a brick-shaped plan name and a piggy bank |
+| Sonnet 5.5 | 44 s | [One centred card](https://slyf0xx97.github.io/cutify-ui/prompts/pricing-prompt-sonnet/) with a monthly and yearly switch |
+| Haiku 5.5 | 54 s | [Three plans and a heading](https://slyf0xx97.github.io/cutify-ui/prompts/pricing-prompt-haiku/), more than the prompt asked for |
+
+### What these runs showed
+
+- The study-app and bakery prompts needed "Use the cutify-ui skill." at the start, because Claude reached for other installed skills first. The skill's description now leads with requests like these. Two new prompts in the same style, for a language-learning app and a cake stall, then loaded cutify-ui without being told to.
+- The study-app page has one linter failure, a sprite that moves with `left` instead of `transform`. The other five pages passed.
+- The runs used the author's own Claude Code setup, with other plugins installed, so a clean install may behave a little differently.
+
+### Tips
 
 Claude picks a theme that fits the product and tells you which one it chose. Name a theme in your request if you want a particular look, or ask for three directions to choose from. A screenshot of a site you like also helps, because Claude carries over its spacing and type sizes.
 

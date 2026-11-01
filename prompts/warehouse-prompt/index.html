@@ -1,0 +1,505 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fleet Control · Riverside DC (sample data)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anybody:wdth,wght@50..150,400..900&family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+/* cutify-ui Apron tokens, trimmed to what this screen uses */
+:root {
+  --bg: #121315; --panel: #1b1c1f; --panel-2: #232428;
+  --line: #ffd400; --vis: #ff6b1a; --chalk: #f2f0ea;
+  --dim: #9a9da4; --sub: #c4c6ca; --on-bright: #1e1f22;
+  --ok: #5ccf8a; --bad: #ff5a4e;
+  --hard: 0 4px 0 #00000066;
+  --display: 'Anybody', system-ui, sans-serif;
+  --body: 'Atkinson Hyperlegible', system-ui, sans-serif;
+  --mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { background: var(--bg); }
+/* dark isometric floor: the warehouse slab under the panels */
+body { margin: 0; color: var(--chalk); font: 400 16px/1.5 var(--body);
+  background: linear-gradient(30deg, #0000 49%, #ffffff07 49% 51%, #0000 51%) 0 0 / 40px 23px,
+              linear-gradient(150deg, #0000 49%, #ffffff07 49% 51%, #0000 51%) 0 0 / 40px 23px, var(--bg); }
+.mono { font-family: var(--mono); }
+:focus-visible { outline: 3px solid var(--line); outline-offset: 2px; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+.is-off, .is-off *, .is-off *::before, .is-off *::after { animation-play-state: paused !important; }
+
+.wrap { max-width: 1320px; margin: 0 auto; padding: 0 20px 24px; }
+
+/* top bar */
+.top { position: sticky; top: 0; z-index: 50; background: #121315f0; border-bottom: 4px solid var(--line); }
+.top .wrap { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; padding-top: 12px; padding-bottom: 12px; }
+.brand { display: flex; align-items: center; gap: 12px; margin-right: auto; }
+.brand h1 { margin: 0; font: 900 30px/.9 var(--display); font-stretch: 72%; text-transform: uppercase; letter-spacing: .01em; }
+.brand h1 span { color: var(--line); }
+.brand p { margin: 2px 0 0; font: 500 12px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--dim); }
+.who { display: flex; align-items: center; gap: 10px; }
+.who .lab { line-height: 1.3; }
+.clock { font: 700 22px var(--mono); letter-spacing: .04em; }
+.live { display: inline-flex; align-items: center; gap: 8px; font: 700 12px var(--mono); letter-spacing: .12em; text-transform: uppercase; }
+.live-dot { position: relative; display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: var(--ok); }
+.live-dot::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: var(--ok); animation: live 1.6s ease-out infinite; }
+@keyframes live { from { transform: scale(1); opacity: .65; } to { transform: scale(3.4); opacity: 0; } }
+body.paused .live-dot { background: var(--line); } body.paused .live-dot::after { animation: none; opacity: 0; }
+
+/* surfaces */
+.panel { background: radial-gradient(#ffffff08 1px, transparent 1.5px) 0 0/14px 14px, linear-gradient(135deg, #1e1f22, #161719);
+  border: 1px solid #ffffff14; border-radius: 6px; padding: 14px 16px; }
+.lab { font: 500 12px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--dim); }
+.ph { display: flex; align-items: center; gap: 8px; margin: 0 0 10px; }
+.ph h2 { margin: 0; font: 900 24px/1 var(--display); font-stretch: 78%; text-transform: uppercase; letter-spacing: .02em; }
+.ph .n { display: grid; place-items: center; min-width: 28px; height: 28px; padding: 0 6px; background: var(--line); color: var(--on-bright); font: 800 14px var(--mono); border-radius: 3px; }
+.ph .spacer { margin-left: auto; }
+
+/* buttons: hard sticker offset that presses down */
+button { font: inherit; color: inherit; cursor: pointer; }
+:where(button) { transition: transform .14s ease, box-shadow .14s ease, filter .14s ease, border-color .14s ease, color .14s ease; }
+@media (prefers-reduced-motion: no-preference) {
+  button:not(:disabled):not(.i):hover { transform: translateY(-2px); filter: brightness(1.06); }
+  button:not(:disabled):not(.i):active { transform: translateY(2px); box-shadow: 0 1px 0 #00000066; } }
+.go { background: var(--line); color: var(--on-bright); border: 0; border-radius: 4px; padding: 10px 18px; font: 900 17px var(--display); font-stretch: 80%; text-transform: uppercase; letter-spacing: .03em; box-shadow: var(--hard); }
+.go.stop { background: var(--bad); color: #fff; }
+.btn { background: var(--panel-2); color: var(--chalk); border: 2px solid #ffffff40; border-radius: 4px; padding: 7px 12px; font: 700 13px var(--mono); letter-spacing: .08em; text-transform: uppercase; box-shadow: var(--hard); }
+.btn:hover { border-color: var(--line); color: var(--line); }
+
+/* kind chip: who does it */
+.kind { display: inline-block; font: 700 11px var(--mono); letter-spacing: .1em; text-transform: uppercase; padding: 2px 5px; border-radius: 2px; color: #121315; vertical-align: 2px; }
+.kind.you { background: var(--chalk); } .kind.bot { background: var(--line); } .kind.sample { background: #ffffff1f; color: var(--sub); }
+
+/* tooltip (button + aria-describedby; bubble drawn from data-tip) */
+.i { display: inline-grid; place-items: center; width: 20px; height: 20px; padding: 0; border-radius: 50%; border: 1.5px solid currentColor; background: none;
+  font: 700 11px var(--mono); color: var(--dim); cursor: help; position: relative; flex: none; }
+.i:hover, .i:focus-visible, .i.open { color: var(--line); }
+.i[data-tip]:is(:hover, :focus-visible, .open)::after { content: attr(data-tip); position: absolute; left: 50%; top: calc(100% + 10px); transform: translateX(-50%);
+  width: min(320px, 80vw); padding: 10px 12px; background: var(--chalk); color: var(--on-bright); font: 400 14px/1.45 var(--body);
+  border-radius: 6px; box-shadow: 0 6px 0 #00000055; z-index: 200; white-space: pre-line; pointer-events: none; text-align: left; text-transform: none; letter-spacing: 0; }
+.i.left[data-tip]:is(:hover, :focus-visible, .open)::after { left: auto; right: -10px; transform: none; }
+.i.right[data-tip]:is(:hover, :focus-visible, .open)::after { left: -10px; transform: none; }
+:has(> .i:is(:hover, :focus-visible, .open)) { z-index: 60; position: relative; }
+@media (max-width: 600px) { .i[data-tip]:is(:hover, :focus-visible, .open)::after { position: fixed; left: 8px; right: 8px; top: auto; bottom: 8px; width: auto; transform: none; } }
+
+/* pills and meters: mark + word, never colour alone */
+.pill { display: inline-block; font: 700 12px var(--mono); padding: 3px 8px; border-radius: 3px; white-space: nowrap; }
+.pill.ok { background: var(--ok); color: #10291a; } .pill.bad { background: var(--bad); color: #fff; }
+.pill.amb { background: var(--line); color: #241e00; } .pill.q { background: #ffffff1f; color: var(--sub); }
+.meter { position: relative; display: inline-block; width: 64px; height: 8px; background: #ffffff14; border-radius: 4px; margin-right: 8px; vertical-align: middle; overflow: hidden; }
+.meter i { position: absolute; inset: 0 auto 0 0; border-radius: 4px; background: var(--ok); } .meter i.lo { background: var(--bad); }
+
+/* KPIs */
+.kpis { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin: 16px 0; }
+.kpi { padding: 10px 12px; background: var(--panel-2); border-radius: 6px; border-top: 3px solid #ffffff25; display: flex; flex-direction: column; gap: 2px; }
+.kpi small { font: 700 11px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--dim); display: flex; align-items: center; gap: 6px; }
+.kpi b { font: 900 34px/1 var(--display); font-stretch: 80%; font-variant-numeric: tabular-nums; }
+.kpi span { font-size: 14px; color: var(--sub); }
+.kpi.good { border-top-color: var(--ok); } .kpi.bad { border-top-color: var(--bad); } .kpi.amb { border-top-color: var(--line); }
+
+/* main grid */
+.grid { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 16px; align-items: start; }
+.side { display: grid; gap: 16px; }
+
+/* floor map */
+.mapbox { overflow-x: auto; border-radius: 4px; background: #0d0e10; }
+.map { display: block; width: 100%; min-width: 600px; height: auto; }
+.map .rack { fill: #2a2c31; stroke: #3a3d44; stroke-width: 1; }
+.map .lane { stroke: #ffd40055; stroke-width: 2; stroke-dasharray: 6 6; }
+.map .xlane { stroke: #ffffff22; stroke-width: 16; }
+.map .zone { fill: none; stroke-width: 2; }
+.map .zone.pack { stroke: var(--ok); fill: #5ccf8a1a; } .map .zone.chg { stroke: var(--line); fill: #ffd4001a; }
+.map text { font: 700 11px var(--mono); fill: var(--dim); letter-spacing: .08em; }
+.map .zlab { fill: var(--chalk); font-size: 10px; }
+.bot { transition-property: transform; transition-timing-function: linear; }
+.bot text { fill: var(--chalk); font-size: 11px; }
+.bot .warn { display: none; }
+.bot.is-blocked .warn { display: inline; }
+.bot.is-blocked .warn circle { animation: px-blink 1s steps(1) infinite; }
+.legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 10px; font-size: 14px; color: var(--sub); }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.sw { width: 14px; height: 14px; border: 2px solid; border-radius: 2px; display: inline-block; }
+
+/* sprites */
+.sprite { image-rendering: pixelated; display: block; flex: none; }
+.px-blink { animation: px-blink 1.2s steps(1) infinite; }
+@keyframes px-blink { 50% { opacity: .2; } }
+
+/* alerts and events */
+.alerts { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.alert { background: var(--panel-2); border-left: 4px solid var(--bad); border-radius: 4px; padding: 10px 12px; display: grid; gap: 6px; }
+.alert p { margin: 0; }
+.alert .row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.empty { color: var(--dim); margin: 0; }
+.log { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; font-size: 15px; }
+.log li { display: grid; grid-template-columns: 76px 1fr; gap: 8px; padding: 5px 8px; background: var(--panel-2); border-radius: 3px; }
+.log time { font: 500 12px/1.9 var(--mono); color: var(--line); }
+
+/* fleet table */
+.tbl { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 16px; }
+th { text-align: left; font: 700 11px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--dim); padding: 6px 10px; border-bottom: 2px solid #ffffff20; white-space: nowrap; }
+td { padding: 8px 10px; border-bottom: 1px solid #ffffff10; white-space: nowrap; }
+td.mono { font-size: 14px; }
+tr.blocked td:first-child { box-shadow: inset 4px 0 0 var(--bad); }
+
+/* dialog */
+dialog { background: var(--panel); color: var(--chalk); border: 2px solid var(--line); border-radius: 6px; padding: 20px 22px; max-width: min(460px, 92vw); box-shadow: 0 20px 60px #000a; }
+dialog::backdrop { background: #000a; }
+dialog h2 { margin: 0 0 8px; font: 900 26px/1 var(--display); font-stretch: 78%; text-transform: uppercase; }
+dialog p { margin: 0 0 16px; color: var(--sub); }
+dialog menu { display: flex; justify-content: flex-end; gap: 10px; margin: 0; padding: 0; }
+
+.foot { margin-top: 20px; padding-top: 14px; border-top: 4px solid var(--line); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; color: var(--dim); font-size: 14px; }
+
+@media (max-width: 1100px) { .kpis { grid-template-columns: repeat(3, 1fr); } .grid { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 600px) { .kpis { grid-template-columns: repeat(2, 1fr); } .brand h1 { font-size: 24px; } .who, .ph .lab.spacer { display: none; } .top { position: static; } .wrap { padding-left: 12px; padding-right: 12px; } }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs id="pixdefs"></defs></svg>
+
+<header class="top">
+  <div class="wrap">
+    <div class="brand">
+      <svg class="sprite" viewBox="0 0 16 16" width="48" height="48" role="img" aria-label="Warehouse robot"><use href="#ch-bot"/></svg>
+      <div>
+        <h1>Fleet <span>control</span></h1>
+        <p>Riverside DC · Hall 2 · <span class="kind sample">sample data</span></p>
+      </div>
+    </div>
+    <span class="live"><span class="live-dot" aria-hidden="true"></span><span id="liveText">Live</span></span>
+    <time class="clock" id="clock" aria-label="Local time">--:--:--</time>
+    <div class="who">
+      <svg class="sprite" viewBox="0 0 16 16" width="40" height="40" role="img" aria-label="Shift lead"><use href="#ch-lead"/></svg>
+      <div class="lab">Shift lead<br><span class="kind you">You</span> Dana R. <span class="kind sample">sample</span></div>
+    </div>
+    <button type="button" class="go stop" id="pauseBtn">Pause fleet</button>
+    <button type="button" class="i left" aria-label="About pausing the fleet" aria-describedby="tip-pause"
+      data-tip="Holds every robot in Hall 2.&#10;Each one finishes the move it is on, then stops.&#10;Use it when people need to walk the aisles.&#10;Why: a soft hold is safer than cutting power mid-move.">i</button>
+    <span id="tip-pause" role="tooltip" class="sr-only">Holds every robot in Hall 2. Each one finishes the move it is on, then stops. Use it when people need to walk the aisles. Why: a soft hold is safer than cutting power mid-move.</span>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="kpis" aria-label="Shift numbers">
+    <div class="kpi good"><small>Robots working</small><b class="mono" id="kActive">–</b><span id="kActiveSub">of 8 on shift</span></div>
+    <div class="kpi"><small>Picks today</small><b class="mono" id="kPicks">–</b><span>since 06:00 · sample</span></div>
+    <div class="kpi"><small>Picks / hour
+      <button type="button" class="i" aria-label="About picks per hour" aria-describedby="tip-rate"
+        data-tip="Totes delivered to a pack station in the last 60 minutes.&#10;Target for Hall 2 is 600.&#10;Why: it is the number the floor manager asks for first.">i</button></small>
+      <span id="tip-rate" role="tooltip" class="sr-only">Totes delivered to a pack station in the last 60 minutes. Target for Hall 2 is 600. Why: it is the number the floor manager asks for first.</span>
+      <b class="mono">612</b><span>target 600 · estimate</span></div>
+    <div class="kpi amb"><small>Orders in queue</small><b class="mono" id="kQueue">–</b><span>waiting for a robot</span></div>
+    <div class="kpi"><small>Avg battery</small><b class="mono" id="kBatt">–</b><span>fleet average</span></div>
+    <div class="kpi" id="kBlockedTile"><small>Blocked</small><b class="mono" id="kBlocked">–</b><span>need a person</span></div>
+  </section>
+
+  <div class="grid">
+    <section class="panel" aria-labelledby="h-map">
+      <div class="ph">
+        <span class="n">1</span><h2 id="h-map">Floor map</h2>
+        <button type="button" class="i" aria-label="About the floor map" aria-describedby="tip-map"
+          data-tip="Hall 2 from above. Yellow dashes are the five pick aisles, A to E.&#10;Robots drive an aisle to a rack, pick a tote, then cross to a pack station.&#10;Below 25% battery a robot heads to a charger on its own.&#10;Why: you can see a jam forming before the numbers show it.">i</button>
+        <span id="tip-map" role="tooltip" class="sr-only">Hall 2 from above. Yellow dashes are the five pick aisles, A to E. Robots drive an aisle to a rack, pick a tote, then cross to a pack station. Below 25% battery a robot heads to a charger on its own. Why: you can see a jam forming before the numbers show it.</span>
+        <span class="lab spacer">Hall 2 · 5 aisles</span>
+      </div>
+      <div class="mapbox">
+        <svg class="map" id="map" viewBox="0 0 640 330" role="img" aria-label="Floor map of Hall 2 with robots moving between racks, pack stations and chargers. The fleet table below lists each robot's position."></svg>
+      </div>
+      <div class="legend" aria-hidden="true">
+        <span><span class="sw" style="border-color:var(--ok);background:#5ccf8a1a"></span>Pack station</span>
+        <span><span class="sw" style="border-color:var(--line);background:#ffd4001a"></span>Charger</span>
+        <span><span class="sw" style="border-color:#3a3d44;background:#2a2c31"></span>Rack</span>
+        <span><svg width="14" height="14" viewBox="0 0 14 14"><circle cx="7" cy="7" r="6" fill="#ff5a4e"/><text x="7" y="11" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">!</text></svg>Blocked robot</span>
+      </div>
+    </section>
+
+    <div class="side">
+      <section class="panel" aria-labelledby="h-alerts">
+        <div class="ph">
+          <span class="n">2</span><h2 id="h-alerts">Needs you</h2>
+          <button type="button" class="i left" aria-label="About alerts" aria-describedby="tip-alerts"
+            data-tip="Robots that stopped and cannot sort it out themselves.&#10;Usually something on the floor: pallet wrap, a dropped tote.&#10;Walk the aisle, clear it, then press Clear and resume.&#10;Why: a robot never drives past an obstacle it cannot see around.">i</button>
+          <span id="tip-alerts" role="tooltip" class="sr-only">Robots that stopped and cannot sort it out themselves. Usually something on the floor: pallet wrap, a dropped tote. Walk the aisle, clear it, then press Clear and resume. Why: a robot never drives past an obstacle it cannot see around.</span>
+        </div>
+        <ul class="alerts" id="alerts"></ul>
+      </section>
+
+      <section class="panel" aria-labelledby="h-log">
+        <div class="ph">
+          <span class="n">3</span><h2 id="h-log">Event log</h2>
+          <button type="button" class="i left" aria-label="About the event log" aria-describedby="tip-log"
+            data-tip="The last eight things the fleet did, newest first.&#10;Deliveries, charging and stops all land here.&#10;Why: when a number moves, this tells you which robot moved it.">i</button>
+          <span id="tip-log" role="tooltip" class="sr-only">The last eight things the fleet did, newest first. Deliveries, charging and stops all land here. Why: when a number moves, this tells you which robot moved it.</span>
+        </div>
+        <ol class="log" id="log"></ol>
+      </section>
+    </div>
+  </div>
+
+  <section class="panel" style="margin-top:16px" aria-labelledby="h-fleet">
+    <div class="ph">
+      <span class="n">4</span><h2 id="h-fleet">Fleet</h2>
+      <button type="button" class="i right" aria-label="About the fleet table" aria-describedby="tip-fleet"
+        data-tip="One row per robot, refreshed twice a second.&#10;Status: To pick, Picking, To pack, Charging, Blocked or Holding.&#10;Location is the last aisle or station the robot reached.&#10;Why: the map shows where, this shows what each robot is doing.">i</button>
+      <span id="tip-fleet" role="tooltip" class="sr-only">One row per robot, refreshed twice a second. Status: To pick, Picking, To pack, Charging, Blocked or Holding. Location is the last aisle or station the robot reached. Why: the map shows where, this shows what each robot is doing.</span>
+      <span class="lab spacer">8 robots · <span class="kind bot">AMR</span> autonomous mobile</span>
+    </div>
+    <div class="tbl">
+      <table>
+        <thead><tr><th scope="col">Robot</th><th scope="col">Status</th><th scope="col">Task</th><th scope="col">Battery</th><th scope="col">Location</th></tr></thead>
+        <tbody id="fleet"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <span><b>Fleet control</b> · demo screen for the warehouse robot fleet</span>
+    <span>All robots, orders, names and numbers on this page are made-up sample data.</span>
+  </footer>
+</main>
+
+<dialog id="confirm">
+  <form method="dialog">
+    <h2 id="cTitle"></h2>
+    <p id="cBody"></p>
+    <menu>
+      <button type="submit" class="btn" value="cancel">Cancel</button>
+      <button type="submit" class="go" value="ok" id="cOk"></button>
+    </menu>
+  </form>
+</dialog>
+
+<script>
+// ---- pixel sprites (from cutify-ui pixel-sprites.js, trimmed) ----
+function pixelSprites({ palette, sprites, animate = {} }) {
+  const defs = document.getElementById('pixdefs');
+  for (const [id, rows] of Object.entries(sprites)) {
+    let out = `<symbol id="${id}" viewBox="0 0 16 16" shape-rendering="crispEdges">`;
+    rows.forEach((row, y) => [...row].forEach((ch, x) => {
+      if (ch === '.' || !palette[ch]) return;
+      const cls = animate[ch] ? ` class="${animate[ch]}"` : '';
+      out += `<rect x="${x}" y="${y}" width="1.02" height="1.02" fill="${palette[ch]}"${cls}/>`;
+    }));
+    defs.insertAdjacentHTML('beforeend', out + '</symbol>');
+  }
+}
+pixelSprites({
+  palette: { k: '#16171a', r: '#ff5a4e', y: '#ffd400', b: '#6aa8ff', w: '#cfe3ff', c: '#7df0ff', g: '#5b6472',
+             W: '#f2f0ea', s: '#f1c7a3', m: '#7a3b2e', v: '#ff6b1a', d: '#2d2a4a' },
+  animate: { r: 'px-blink' },
+  sprites: {
+    'ch-bot': ['.......rr.......', '.......kk.......', '..kkkkkkkkkkkk..', '..kbbbbbbbbbbk..', '..kbwbbbbbbwbk..', '.kkkkkkkkkkkkkk.',
+      '.kyyyyyyyyyyyyk.', '.kykkkkkkkkkkyk.', '.kykcckkkkcckyk.', '.kykcckkkkcckyk.', '.kykkkkkkkkkkyk.', '.kyyyyyyyyyyyyk.',
+      '.kggggggggggggk.', '.kkkkkkkkkkkkkk.', '..kgk......kgk..', '...k........k...'],
+    'ch-lead': ['....kkkkkkkk....', '...kWWWWWWWWk...', '..kWWWWWWWWWWk..', '..kkkkkkkkkkkk..', '...kssssssssk...', '...kskksskksk...',
+      '...kssssssssk...', '...ksssmmsssk...', '....kssssssk....', '.....kkkkkk.....', '...kvvvvvvvvk...', '..kvvyvvvvyvvk..',
+      '..kvvyvvvvyvvk..', '..kvvvvvvvvvvk..', '..kddddddddddk..', '..kkkkkkkkkkkk..'],
+  },
+});
+
+// ---- floor layout (SVG user units) ----
+const NS = 'http://www.w3.org/2000/svg';
+const LANES = [40, 100, 160, 220, 280], AISLE = 'ABCDE', WEST = 70, EAST = 520;
+const PACKS = [{ x: 596, y: 100, name: 'Pack 1' }, { x: 596, y: 220, name: 'Pack 2' }];
+const CHARGERS = [{ x: 26, y: 160, name: 'Charger 1' }, { x: 26, y: 280, name: 'Charger 2' }];
+const SPEED = 70; // units per second
+
+// Manhattan route through whichever cross aisle is shorter; every stop sits on an aisle line.
+function route(a, b) {
+  if (a.y === b.y) return [b];
+  const viaW = Math.abs(a.x - WEST) + Math.abs(b.x - WEST), viaE = Math.abs(a.x - EAST) + Math.abs(b.x - EAST);
+  const cx = viaW <= viaE ? WEST : EAST;
+  return [{ x: cx, y: a.y }, { x: cx, y: b.y }, b];
+}
+console.assert(route({ x: 100, y: 40 }, { x: 300, y: 40 }).length === 1, 'same aisle is one leg');
+console.assert(route({ x: 100, y: 40 }, PACKS[1])[0].x === EAST, 'to pack uses east cross aisle');
+console.assert(route({ x: 100, y: 40 }, CHARGERS[0])[0].x === WEST, 'to charger uses west cross aisle');
+
+const map = document.getElementById('map');
+let art = `<line class="xlane" x1="${WEST}" y1="${LANES[0]}" x2="${WEST}" y2="${LANES[4]}"/><line class="xlane" x1="${EAST}" y1="${LANES[0]}" x2="${EAST}" y2="${LANES[4]}"/>`;
+LANES.forEach((y, i) => {
+  art += `<line class="lane" x1="${CHARGERS[0].x}" y1="${y}" x2="${PACKS[0].x}" y2="${y}"/><text x="${WEST + 14}" y="${y - 6}">${AISLE[i]}</text>`;
+  if (i < 4) for (let x = 100; x < 490; x += 40) art += `<rect class="rack" x="${x}" y="${y + 13}" width="34" height="34" rx="2"/>`;
+});
+PACKS.forEach(p => art += `<rect class="zone pack" x="${p.x - 22}" y="${p.y - 22}" width="44" height="44" rx="3"/><text class="zlab" x="${p.x}" y="${p.y + 36}" text-anchor="middle">${p.name.toUpperCase()}</text>`);
+CHARGERS.forEach(c => art += `<rect class="zone chg" x="${c.x - 20}" y="${c.y - 20}" width="40" height="40" rx="3"/><text class="zlab" x="${c.x}" y="${c.y + 32}" text-anchor="middle">CHG ${c.name.slice(-1)}</text>`);
+map.innerHTML = art;
+
+// ---- sample fleet ----
+const START = [[150, 40], [430, 100], [596, 220], [260, 220], [70, 280], [340, 100], [300, 160], [480, 280]];
+const BATT = [82, 64, 91, 47, 73, 28, 55, 88];
+const bots = START.map(([x, y], i) => {
+  const id = `AMR-0${i + 1}`;
+  const g = document.createElementNS(NS, 'g');
+  g.setAttribute('class', 'bot');
+  g.innerHTML = `<use href="#ch-bot" x="-15" y="-17" width="30" height="30"/><text y="-19" text-anchor="middle">${id.slice(-2)}</text>
+    <g class="warn"><circle cx="14" cy="-14" r="7" fill="#ff5a4e"/><text x="14" y="-10" text-anchor="middle" style="fill:#fff;font-size:11px">!</text></g>`;
+  map.appendChild(g);
+  const r = { id, g, pos: { x, y }, batt: BATT[i], status: 'Idle', task: '–', blocked: false, reason: '', blockNext: false };
+  place(r, r.pos, 0);
+  return r;
+});
+bots[6].blocked = true; bots[6].reason = 'Pallet wrap across aisle C'; bots[6].status = 'To pick'; bots[6].task = 'Tote T-4467 · rack C-06';
+
+let picks = 4212, queue = 138, paused = false, tote = 4471;
+const sleep = ms => new Promise(res => setTimeout(res, ms));
+const laneName = y => { const i = LANES.indexOf(y); return i < 0 ? '?' : AISLE[i]; };
+const where = p => [...PACKS, ...CHARGERS].find(s => s.x === p.x && s.y === p.y)?.name
+  ?? (p.x === WEST || p.x === EAST ? `Cross aisle ${p.x === WEST ? 'W' : 'E'} · ${laneName(p.y)}` : `Aisle ${laneName(p.y)}`);
+
+function place(r, p, secs) {
+  r.g.style.transitionDuration = secs + 's';
+  r.g.style.transform = `translate(${p.x}px, ${p.y}px)`;
+}
+// hold while the fleet is paused, the tab is hidden, or this robot is blocked
+async function gate(r) { while (paused || document.hidden || r.blocked) await sleep(250); }
+
+async function go(r, target) {
+  for (const leg of route(r.pos, target)) {
+    await gate(r);
+    if (r.blockNext) { r.blockNext = false; r.blocked = true; r.reason = `Dropped tote in aisle ${laneName(r.pos.y)}`; log(`${r.id} stopped: ${r.reason}`); renderAlerts(); await gate(r); }
+    const d = Math.abs(leg.x - r.pos.x) + Math.abs(leg.y - r.pos.y);
+    place(r, leg, d / SPEED);
+    await sleep(d / SPEED * 1000);
+    r.pos = leg;
+    r.batt = Math.max(5, r.batt - d * 0.012);
+  }
+}
+
+async function life(r) {
+  if (r.blocked) { await go(r, { x: 380, y: 160 }); await pickAndPack(r, true); }
+  for (;;) {
+    await gate(r);
+    if (r.batt < 25) {
+      const c = CHARGERS.reduce((a, b) => Math.abs(b.y - r.pos.y) < Math.abs(a.y - r.pos.y) ? b : a);
+      r.status = 'To charger'; r.task = `Battery ${Math.round(r.batt)}% · ${c.name}`;
+      log(`${r.id} heading to ${c.name} at ${Math.round(r.batt)}%`);
+      await go(r, c);
+      r.status = 'Charging';
+      while (r.batt < 92) { await gate(r); await sleep(300); r.batt += 1.5; r.task = `Charging to 92%`; }
+      log(`${r.id} charged to ${Math.round(r.batt)}%, back in rotation`);
+      continue;
+    }
+    await pickAndPack(r, false);
+  }
+}
+
+async function pickAndPack(r, already) {
+  if (!already) {
+    const lane = LANES[Math.floor(Math.random() * 4) + (Math.random() < .5 ? 0 : 1)];
+    const bay = Math.floor(Math.random() * 10);
+    const t = tote++;
+    r.status = 'To pick'; r.task = `Tote T-${t} · rack ${laneName(lane)}-${String(bay + 1).padStart(2, '0')}`;
+    await go(r, { x: 117 + bay * 40, y: lane });
+  }
+  r.status = 'Picking'; await sleep(1400); await gate(r);
+  const p = PACKS.reduce((a, b) => Math.abs(b.y - r.pos.y) < Math.abs(a.y - r.pos.y) ? b : a);
+  r.status = 'To pack';
+  await go(r, p);
+  await sleep(700);
+  picks++; queue = Math.max(0, queue - 1);
+  log(`${r.id} delivered ${r.task.split(' · ')[0].replace('Tote', 'tote')} to ${p.name}`);
+}
+
+// ---- rendering ----
+const $ = id => document.getElementById(id);
+const logEl = $('log');
+function log(msg, when = new Date()) {
+  const li = document.createElement('li');
+  li.innerHTML = `<time class="mono">${when.toLocaleTimeString([], { hour12: false })}</time><span></span>`;
+  li.lastChild.textContent = msg;
+  logEl.prepend(li);
+  while (logEl.children.length > 8) logEl.lastChild.remove();
+}
+function pill(r) {
+  if (r.blocked) return '<span class="pill bad">✕ Blocked</span>';
+  if (paused) return '<span class="pill q">‖ Holding</span>';
+  return { 'To pick': '<span class="pill ok">→ To pick</span>', 'Picking': '<span class="pill ok">■ Picking</span>',
+    'To pack': '<span class="pill ok">→ To pack</span>', 'To charger': '<span class="pill amb">→ To charger</span>',
+    'Charging': '<span class="pill amb">+ Charging</span>' }[r.status] ?? '<span class="pill q">· Idle</span>';
+}
+function render() {
+  $('fleet').innerHTML = bots.map(r => `<tr class="${r.blocked ? 'blocked' : ''}"><td class="mono">${r.id}</td><td>${pill(r)}</td><td>${r.task}</td>
+    <td><span class="meter" aria-hidden="true"><i class="${r.batt < 30 ? 'lo' : ''}" style="width:${r.batt}%"></i></span><span class="mono">${Math.round(r.batt)}%</span></td>
+    <td class="mono">${where(r.pos)}</td></tr>`).join('');
+  bots.forEach(r => r.g.classList.toggle('is-blocked', r.blocked));
+  const blocked = bots.filter(r => r.blocked).length;
+  const working = paused ? 0 : bots.filter(r => !r.blocked && ['To pick', 'Picking', 'To pack'].includes(r.status)).length;
+  $('kActive').textContent = working;
+  $('kActiveSub').textContent = paused ? 'fleet paused by you' : `of 8 · ${bots.filter(r => r.status === 'Charging' || r.status === 'To charger').length} charging`;
+  $('kPicks').textContent = picks.toLocaleString('en');
+  $('kQueue').textContent = queue;
+  $('kBatt').textContent = Math.round(bots.reduce((s, r) => s + r.batt, 0) / bots.length) + '%';
+  $('kBlocked').textContent = blocked;
+  $('kBlockedTile').className = 'kpi ' + (blocked ? 'bad' : 'good');
+}
+function renderAlerts() {
+  const list = bots.filter(r => r.blocked);
+  $('alerts').innerHTML = list.length ? '' : '<li><p class="empty">✓ Nothing needs you. All robots are moving.</p></li>';
+  list.forEach(r => {
+    const li = document.createElement('li');
+    li.className = 'alert';
+    li.innerHTML = `<div class="row"><span class="pill bad">✕ Blocked</span><b class="mono">${r.id}</b><span class="lab">${where(r.pos)}</span></div>
+      <p></p><div class="row"><span class="kind you">You</span><button type="button" class="btn">Clear and resume</button></div>`;
+    li.querySelector('p').textContent = `${r.reason}. ${r.id} is holding with tote on board.`;
+    li.querySelector('button').onclick = async () => {
+      if (await ask(`Resume ${r.id}?`, `Only resume once someone has walked ${where(r.pos).toLowerCase()} and the floor is clear. ${r.id} will carry on with ${r.task.split(' · ')[0].toLowerCase()}.`, 'Aisle is clear')) {
+        r.blocked = false; log(`You cleared ${r.id}, back on route`); renderAlerts(); render();
+      }
+    };
+    $('alerts').appendChild(li);
+  });
+}
+
+// ---- confirm dialog ----
+const dlg = $('confirm');
+function ask(title, body, ok) {
+  $('cTitle').textContent = title; $('cBody').textContent = body; $('cOk').textContent = ok;
+  dlg.returnValue = ''; dlg.showModal();
+  return new Promise(res => dlg.addEventListener('close', () => res(dlg.returnValue === 'ok'), { once: true }));
+}
+$('pauseBtn').onclick = async () => {
+  if (!paused) {
+    if (!(await ask('Pause the whole fleet?', 'All 8 robots finish the move they are on, then hold where they stop. Totes stop arriving at Pack 1 and Pack 2 until you resume.', 'Pause fleet'))) return;
+    paused = true; log('You paused the fleet');
+  } else { paused = false; log('You resumed the fleet'); }
+  document.body.classList.toggle('paused', paused);
+  $('pauseBtn').textContent = paused ? 'Resume fleet' : 'Pause fleet';
+  $('pauseBtn').classList.toggle('stop', !paused);
+  $('liveText').textContent = paused ? 'Paused' : 'Live';
+  render();
+};
+
+// ---- tooltips: tap toggles, Escape closes ----
+document.addEventListener('click', e => {
+  const t = e.target.closest('.i[data-tip]');
+  document.querySelectorAll('.i.open').forEach(o => o !== t && o.classList.remove('open'));
+  if (t) t.classList.toggle('open');
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') document.querySelectorAll('.i.open').forEach(o => o.classList.remove('open')); });
+document.addEventListener('visibilitychange', () => document.body.classList.toggle('is-off', document.hidden));
+
+// ---- start ----
+const now = Date.now();
+[['AMR-02 delivered tote T-4466 to Pack 1', 95], ['AMR-05 charged to 92%, back in rotation', 70],
+ ['AMR-03 delivered tote T-4469 to Pack 2', 41], ['AMR-07 stopped: Pallet wrap across aisle C', 18]]
+  .forEach(([m, ago]) => log(m, new Date(now - ago * 1000)));
+renderAlerts(); render();
+bots.forEach((r, i) => setTimeout(() => life(r), i * 400));
+setInterval(render, 500);
+setInterval(() => { $('clock').textContent = new Date().toLocaleTimeString([], { hour12: false }); }, 1000);
+setInterval(() => { if (!paused && !document.hidden && Math.random() < .5) queue++; }, 5000);
+// every so often a tote drops, so the "Needs you" flow keeps showing up in the demo
+setInterval(() => {
+  if (paused || document.hidden || bots.some(r => r.blocked || r.blockNext)) return;
+  const pick = bots.filter(r => r.status === 'To pick');
+  if (pick.length) pick[Math.floor(Math.random() * pick.length)].blockNext = true;
+}, 45000);
+</script>
+</body>
+</html>

@@ -1,0 +1,524 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>StudyBuddy: three AI tutors for your own notes</title>
+<meta name="description" content="StudyBuddy turns your class notes into explanations, quizzes and a review plan, with three AI tutors who take turns.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@500&family=Lexend:wght@400;600;700&family=Madimi+One&display=swap" rel="stylesheet">
+<style>
+/* cutify-ui Glass theme, retuned for a study app: Madimi One + Lexend, schoolyard backdrop */
+:root {
+  --sky-soft: #d9f0fb; --leaf-deep: #2d7d46; --link: #0f6a88;
+  --ink: #1f2430; --ink-soft: #3a4955;
+  --teal: #1fa98a; --teal-dark: #167a66; --orange: #e8912d; --orange-dark: #b9651a; --lime: #dbe86a; --coral: #c93a25; --ok: #1f7a4d;
+  --teal-soft: #d7eff2; --mint-soft: #dbf2e5; --coral-soft: #fde4de; --yellow-soft: #fcefc2;
+  /* one colour per tutor, always paired with a shape */
+  --hoot: #8fd6df; --pip: #f6b5a6; --shelly: #a8e2bd; --you: #f6d877;
+  --glass-fill: linear-gradient(145deg, rgb(255 255 255 / 94%), rgb(255 255 255 / 88%));
+  --glass-edge: rgb(255 255 255 / 85%); --glass-card: rgb(255 255 255 / 80%);
+  --glass-shadow: 0 10px 30px rgb(16 70 100 / 18%); --glass-ring: 0 0 0 1px rgb(31 36 48 / 14%);
+  --glass-blur: blur(14px) saturate(1.25);
+  --btn-shadow: 0 3px 0 rgb(16 70 100 / 30%), 0 6px 14px rgb(16 70 100 / 14%);
+  --display: 'Madimi One', 'Trebuchet MS', sans-serif; --body: 'Lexend', ui-sans-serif, system-ui, sans-serif; --mono: 'DM Mono', ui-monospace, monospace;
+  --bg: #a9d8e8; --surface: rgb(255 255 255 / 86%); --surface-2: var(--sky-soft);
+  --ink-muted: var(--ink-soft); --accent: var(--orange); --accent-ink: var(--ink); --accent-2: var(--lime); --accent-2-ink: var(--ink); --bad: var(--coral);
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { background: var(--bg); scroll-padding-top: 5.5rem; scroll-behavior: smooth; }
+body { margin: 0; color: var(--ink); font: 400 1.0625rem/1.6 var(--body); overflow-x: hidden; }
+h1, h2 { font-family: var(--display); font-weight: 400; letter-spacing: .01em; line-height: 1.12; }
+h3 { font-weight: 700; line-height: 1.2; }
+a { color: var(--link); } a:hover { color: var(--coral); }
+:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; border-radius: 6px; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { animation: none !important; transition: none !important; } }
+.is-off, .is-off *, .is-off *::before, .is-off *::after { animation-play-state: paused !important; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* painted schoolyard behind everything */
+.scene-bg { position: fixed; inset: 0; width: 100%; height: 100lvh; z-index: -1; pointer-events: none; }
+
+.wrap { width: min(1180px, 100% - 2rem); margin-inline: auto; }
+.panel { position: relative; background: var(--glass-fill); border: 1.5px solid var(--glass-edge); border-radius: 22px;
+  box-shadow: var(--glass-shadow), var(--glass-ring), inset 0 1px 0 rgb(255 255 255 / 90%); backdrop-filter: var(--glass-blur); padding: 1.25rem 1.4rem; }
+@supports not (backdrop-filter: blur(1px)) { .panel { background: rgb(255 255 255 / 95%); } }
+.panel:has(.i:is(:hover, :focus-visible, .open)) { z-index: 60; }
+.card { background: var(--glass-card); border: 1.5px solid rgb(31 36 48 / 12%); border-radius: 14px; padding: 1rem; }
+.hl, mark { background: linear-gradient(transparent 55%, var(--lime) 55%, var(--lime) 92%, transparent 92%); color: inherit; padding: 0 .1em; }
+.lab { font: 500 .75rem var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-soft); }
+.sample { display: inline-block; padding: .05rem .45rem; border: 1.5px dashed var(--ink-soft); border-radius: 6px; font: 500 .7rem var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-soft); background: rgb(255 255 255 / 70%); }
+
+/* nav */
+.nav { position: sticky; top: .75rem; z-index: 100; margin-top: .75rem; display: flex; align-items: center; gap: 1rem; padding: .55rem .75rem .55rem 1rem; }
+.brand { display: flex; align-items: center; gap: .55rem; font: 400 1.45rem var(--display); color: var(--ink); text-decoration: none; margin-right: auto; }
+.brand svg { width: 34px; height: 34px; }
+.nav a.plain { font-weight: 600; text-decoration: none; color: var(--ink); }
+.nav a.plain:hover { color: var(--link); text-decoration: underline; }
+
+/* buttons: game feel */
+button { font: inherit; cursor: pointer; color: inherit; }
+.btn { display: inline-flex; align-items: center; gap: .5rem; min-height: 2.75rem; padding: .55rem 1.15rem; border: 2px solid var(--ink); border-radius: 12px;
+  background: #fff; color: var(--ink); font: 700 1rem var(--body); text-decoration: none; box-shadow: var(--btn-shadow); }
+.btn.primary { background: var(--orange); } .btn.primary:hover { background: #f2a246; color: var(--ink); } .btn.primary:active { background: var(--orange-dark); color: #fff8e6; }
+.btn.small { min-height: 2.25rem; padding: .3rem .8rem; font-size: .9rem; border-radius: 10px; }
+:where(button, .btn) { transition: transform .14s ease, box-shadow .14s ease, filter .14s ease, background-color .14s ease; }
+@media (prefers-reduced-motion: no-preference) {
+  :where(.btn, .opt):not(:disabled):hover { transform: translateY(-2px); box-shadow: 0 5px 0 rgb(16 70 100 / 30%), 0 10px 18px rgb(16 70 100 / 16%); filter: brightness(1.04); }
+  :where(.btn, .opt):not(:disabled):active { transform: translateY(1px); box-shadow: 0 1px 0 rgb(16 70 100 / 30%); filter: brightness(.97); } }
+
+/* kind chips and tutor glyphs: colour + shape + name */
+.kind { display: inline-block; padding: .08rem .45rem; border: 1.5px solid var(--ink); border-radius: 999px; font: 500 .7rem var(--mono); letter-spacing: .1em; text-transform: uppercase; background: var(--teal-soft); }
+.kind.you { background: var(--orange); }
+.g { display: inline-block; width: .95rem; height: .95rem; border: 2px solid var(--ink); vertical-align: -.12em; flex: none; }
+.g.hoot { background: var(--hoot); border-radius: 2px; }
+.g.pip { background: var(--pip); border-radius: 50%; }
+.g.shelly { background: var(--shelly); clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%); border: 0; box-shadow: inset 0 0 0 2px var(--ink); }
+.g.you { background: var(--you); transform: rotate(45deg) scale(.82); border-radius: 2px; }
+.who { display: inline-flex; align-items: center; gap: .4rem; font-weight: 700; }
+
+/* tooltip */
+.i { display: inline-grid; place-items: center; width: 1.35rem; height: 1.35rem; padding: 0; border-radius: 50%; border: 1.5px solid currentColor; background: #fff;
+  font: 500 .75rem var(--mono); color: var(--teal-dark); cursor: help; position: relative; margin-left: .4rem; vertical-align: middle; flex: none; }
+.i:hover, .i:focus-visible, .i.open { color: var(--coral); }
+.i[data-tip]:is(:hover, :focus-visible, .open)::after { content: attr(data-tip); position: absolute; left: 50%; bottom: calc(100% + 10px); transform: translateX(-50%);
+  width: 300px; padding: .7rem .85rem; background: #fff; color: var(--ink); border: 2px solid var(--ink); border-radius: 14px; font: 400 .95rem/1.45 var(--body);
+  text-align: left; text-transform: none; letter-spacing: 0; box-shadow: 3px 3px 0 rgb(31 36 48 / 20%), 0 12px 28px rgb(16 70 100 / 26%); white-space: pre-line; z-index: 200; pointer-events: none; }
+.i.down[data-tip]:is(:hover, :focus-visible, .open)::after { bottom: auto; top: calc(100% + 10px); }
+@media (max-width: 600px) {
+  /* tip spans its panel, just under the trigger */
+  .i { position: static; }
+  .i[data-tip]:is(:hover, :focus-visible, .open)::after, .i.down[data-tip]:is(:hover, :focus-visible, .open)::after { left: .75rem; right: .75rem; width: auto; transform: none; top: auto; bottom: auto; margin-top: 1.9rem; }
+}
+
+/* hero */
+.hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 1.5rem; align-items: stretch; margin-top: 2rem; }
+.hero-text { display: flex; flex-direction: column; justify-content: center; padding: 1.8rem 1.8rem 1.6rem; }
+.hero h1 { margin: .4rem 0 .8rem; font-size: clamp(2.2rem, 4.6vw, 3.6rem); }
+.lede { margin: 0 0 1.1rem; font-size: 1.15rem; color: var(--ink-soft); max-width: 34ch; }
+.perks { list-style: none; margin: 0 0 1.4rem; padding: 0; display: grid; gap: .55rem; }
+.perks li { display: flex; align-items: center; gap: .6rem; }
+.cta-row { display: flex; flex-wrap: wrap; align-items: center; gap: .9rem; }
+.cta-row small { color: var(--ink-soft); }
+
+.world-panel { padding: .8rem; display: flex; flex-direction: column; gap: .6rem; }
+.world-top { display: flex; align-items: center; justify-content: space-between; gap: .5rem; padding: 0 .3rem; }
+.world { position: relative; flex: 1; min-height: 360px; border-radius: 16px; overflow: hidden;
+  background: linear-gradient(#cdeefa, #e9f7fc 52%, #a8dc8a 52%, #8ccf6c 76%, #7cc65a); box-shadow: inset 0 0 0 1.5px rgb(31 36 48 / 12%); }
+.world .board { position: absolute; left: 6%; right: 6%; top: 7%; min-height: 6.6rem; padding: .8rem 1rem; background: #fff; border: 2px solid var(--ink);
+  border-radius: 14px; box-shadow: 3px 3px 0 rgb(31 36 48 / 22%); }
+.world .board::after { content: ""; position: absolute; bottom: -11px; left: var(--tail, 50%); width: 18px; height: 18px; background: #fff;
+  border-right: 2px solid var(--ink); border-bottom: 2px solid var(--ink); transform: translateX(-50%) rotate(45deg); transition: left .35s ease; }
+.board p { margin: .3rem 0 0; font-size: 1rem; }
+.actor { position: absolute; bottom: 9%; left: var(--x); transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: .3rem; transition: opacity .3s; }
+.actor .sprite { width: 96px; height: 96px; }
+.actor.quiet { opacity: .5; }
+.tag { display: inline-flex; align-items: center; gap: .3rem; padding: .15rem .5rem; background: #fff; border: 2px solid var(--ink); border-radius: 8px; font: 700 .85rem var(--body); white-space: nowrap; }
+.note { position: absolute; width: 34px; height: 34px; bottom: calc(9% + 96px); left: var(--x); margin-left: -17px; opacity: 0; pointer-events: none; }
+.sprite { display: block; image-rendering: pixelated; }
+@media (prefers-reduced-motion: no-preference) {
+  .bob { animation: bob 3.6s ease-in-out infinite; }
+  .actor:nth-of-type(2) .bob { animation-delay: -.9s; } .actor:nth-of-type(3) .bob { animation-delay: -1.8s; } .actor:nth-of-type(4) .bob { animation-delay: -2.7s; }
+  .talking .hop { animation: hop .4s steps(2) infinite alternate; }
+}
+@keyframes bob { 50% { transform: translateY(-4px); } }
+@keyframes hop { to { transform: translateY(-8px); } }
+.px-blink { animation: px-blink 2.4s steps(1) infinite; } @keyframes px-blink { 92% { opacity: 1; } 96% { opacity: 0; } }
+.px-wag { animation: px-wag .5s steps(1) infinite; } @keyframes px-wag { 50% { transform: translateY(-1px); } }
+.legend { display: flex; flex-wrap: wrap; gap: .4rem 1rem; padding: 0 .3rem; font-size: .9rem; color: var(--ink-soft); }
+
+/* stages */
+.stages { list-style: none; margin: 3rem auto 0; padding: 0; display: grid; gap: 1.6rem; }
+.stage { padding: 1.4rem 1.5rem 1.5rem; }
+.stage-head { display: flex; align-items: center; gap: .75rem; flex-wrap: wrap; }
+.num { display: inline-grid; place-items: center; min-width: 2.3rem; height: 2.3rem; padding: 0 .3rem; background: var(--lime); border: 2px solid var(--ink);
+  border-radius: 4px; box-shadow: 2px 2px 0 rgb(31 36 48 / 45%); font: 500 1.15rem var(--mono); }
+.stage h2 { margin: 0; font-size: clamp(1.5rem, 2.8vw, 2rem); }
+.explain { display: flex; flex-wrap: wrap; align-items: center; gap: .45rem; margin: .8rem 0 1.1rem; }
+.explain span { padding: .3rem .65rem; background: var(--sky-soft); border-radius: 8px; font-size: .92rem; }
+.explain i { font-style: normal; font-weight: 700; color: var(--orange-dark); }
+.stage-body { display: grid; grid-template-columns: 7.5rem minmax(0, 1fr); gap: 1.2rem; align-items: start; }
+.host { display: flex; flex-direction: column; align-items: center; gap: .4rem; text-align: center; }
+.host .sprite { width: 96px; height: 96px; }
+.host p { margin: 0; font-size: .85rem; color: var(--ink-soft); }
+
+/* stage 1: notes → topics */
+.notes { display: grid; grid-template-columns: minmax(0, 1.2fr) auto minmax(0, 1fr); gap: 1rem; align-items: center; }
+.paper { background: #fffef9 linear-gradient(90deg, transparent 2.1rem, #f4a6a6 2.1rem 2.2rem, transparent 2.2rem), #fffef9;
+  border: 2px solid var(--ink); border-radius: 6px; padding: .8rem 1rem .8rem 2.8rem; box-shadow: 3px 3px 0 rgb(31 36 48 / 20%); }
+.paper p { margin: 0; line-height: 1.75; background: repeating-linear-gradient(transparent 0 calc(1.75em - 1px), #cfe3f5 calc(1.75em - 1px) 1.75em); }
+.paper .lab { display: block; margin-bottom: .3rem; }
+.arrow { font: 400 2rem var(--display); color: var(--orange-dark); }
+.topics { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: .45rem; }
+.topics li { padding: .3rem .7rem; background: #fff; border: 2px solid var(--ink); border-radius: 999px; font-weight: 600; font-size: .95rem; }
+
+/* stage 2: chat */
+.chat { display: grid; gap: .7rem; }
+.msg { max-width: 38rem; padding: .7rem .9rem; border-radius: 14px; border: 2px solid var(--ink); }
+.msg .who { font-size: .85rem; margin-bottom: .2rem; }
+.msg p { margin: 0; }
+.msg.me { justify-self: end; background: var(--yellow-soft); border-bottom-right-radius: 4px; }
+.msg.tutor { background: #fff; border-bottom-left-radius: 4px; }
+.msg ol { margin: .4rem 0 0; padding-left: 1.3rem; }
+.chips { display: flex; flex-wrap: wrap; gap: .5rem; }
+
+/* stage 3: quiz */
+.quiz { display: grid; gap: .8rem; }
+.quiz fieldset { border: 0; margin: 0; padding: 0; }
+.quiz legend { font-weight: 700; font-size: 1.1rem; margin-bottom: .6rem; padding: 0; }
+.opts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .6rem; }
+.opt { min-height: 3rem; padding: .5rem .8rem; border: 2px solid var(--ink); border-radius: 12px; background: #fff; font-weight: 600; text-align: left; box-shadow: var(--btn-shadow); }
+.opt[aria-pressed="true"].right { background: var(--mint-soft); }
+.opt[aria-pressed="true"].wrong { background: var(--coral-soft); }
+.result { min-height: 3.2rem; margin: 0; padding: .6rem .9rem; border-radius: 12px; background: var(--sky-soft); }
+.pill { display: inline-block; padding: .1rem .55rem; border-radius: 999px; font: 700 .85rem var(--body); margin-right: .35rem; }
+.pill.done { background: var(--mint-soft); color: #14502f; border: 1.5px solid #14502f; }
+.pill.gap { background: var(--coral-soft); color: #7a1f10; border: 1.5px solid #7a1f10; }
+
+/* stage 4: week plan */
+.week { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: .5rem; }
+.week li { min-height: 7.2rem; padding: .55rem; border-radius: 12px; border: 1.5px solid rgb(31 36 48 / 18%); background: rgb(255 255 255 / 70%); font-size: .88rem; display: flex; flex-direction: column; gap: .3rem; }
+.week .day { font: 500 .78rem var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-soft); }
+.week li.has { background: #fff; border: 2px solid var(--ink); box-shadow: 2px 2px 0 rgb(31 36 48 / 25%); }
+.week b { font-weight: 600; }
+.week .mins { font: 500 .75rem var(--mono); color: var(--ink-soft); margin-top: auto; }
+.plan-foot { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem; margin-top: .8rem; font-size: .95rem; }
+
+/* how it works */
+.how { margin-top: 3rem; padding: 1.5rem; }
+.how h2 { margin: 0; font-size: clamp(1.6rem, 3vw, 2.2rem); }
+.route-box { position: relative; margin-top: 1.4rem; }
+.route { position: relative; list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem; }
+.route::before { content: ""; position: absolute; left: 6%; right: 6%; top: 1.6rem; border-top: 3px dashed rgb(31 36 48 / 35%); }
+.route li { position: relative; padding: 2.9rem 1rem 1rem; background: var(--glass-card); border: 1.5px solid rgb(31 36 48 / 14%); border-radius: 14px; }
+.route .num { position: absolute; top: .45rem; left: 1rem; }
+.route h3 { display: flex; margin: 0 0 .4rem; font-size: 1.1rem; }
+.route p { margin: .4rem 0 0; font-size: .95rem; }
+.token { position: absolute; top: .55rem; left: 6%; width: 28px; height: 28px; z-index: 2; }
+@media (prefers-reduced-motion: no-preference) { .token { animation: ride 9s ease-in-out infinite; } }
+@keyframes ride { 0%, 8% { left: 6%; } 25%, 33% { left: calc(31% - 14px); } 50%, 58% { left: calc(56% - 14px); } 75%, 92% { left: calc(81% - 14px); } 100% { left: 6%; } }
+
+/* footer */
+.foot { margin: 3rem auto 1.5rem; display: grid; grid-template-columns: 1.4fr 1fr; gap: 1rem 2rem; align-items: start; }
+.foot p { margin: .3rem 0 0; color: var(--ink-soft); max-width: 44ch; }
+.foot ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: .4rem 1.2rem; justify-content: flex-end; }
+.foot .copy { grid-column: 1 / -1; font: 500 .8rem var(--mono); letter-spacing: .06em; color: var(--ink-soft); border-top: 1.5px dashed rgb(31 36 48 / 18%); padding-top: .8rem; margin: 0; max-width: none; }
+
+@media (max-width: 900px) {
+  .hero { grid-template-columns: 1fr; }
+  .route { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .route::before, .token { display: none; }
+  .week { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+@media (max-width: 640px) {
+  .nav a.plain { display: none; }
+  .hero-text { padding: 1.3rem 1.2rem; }
+  .world { min-height: 330px; }
+  .actor .sprite { width: 52px; height: 52px; }
+  .note { bottom: calc(9% + 50px); width: 28px; height: 28px; margin-left: -14px; }
+  .tag { font-size: .75rem; padding: .1rem .35rem; gap: .2rem; }
+  .tag .g { width: .7rem; height: .7rem; }
+  .stage { padding: 1.1rem; }
+  .stage-body { grid-template-columns: 1fr; }
+  .host { flex-direction: row; text-align: left; }
+  .host .sprite { width: 56px; height: 56px; }
+  .notes { grid-template-columns: 1fr; }
+  .arrow { transform: rotate(90deg); justify-self: center; }
+  .opts { grid-template-columns: 1fr; }
+  .week { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .route { grid-template-columns: 1fr; }
+  .foot { grid-template-columns: 1fr; }
+  .foot ul { justify-content: flex-start; }
+}
+</style>
+</head>
+<body>
+
+<svg class="scene-bg" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+  <defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#bfe6f6"/><stop offset=".7" stop-color="#e3f4fb"/></linearGradient></defs>
+  <rect width="1440" height="900" fill="url(#sky)"/>
+  <circle cx="1210" cy="140" r="62" fill="#fbe38a"/>
+  <g fill="#fff"><ellipse cx="260" cy="150" rx="90" ry="26"/><ellipse cx="310" cy="128" rx="54" ry="32"/><ellipse cx="900" cy="230" rx="110" ry="24"/><ellipse cx="860" cy="210" rx="56" ry="28"/></g>
+  <path d="M0 610 Q360 540 760 600 T1440 580 V900 H0z" fill="#a8dc8a"/>
+  <!-- schoolhouse with a bell tower -->
+  <g transform="translate(1040 470)">
+    <rect x="40" y="0" width="34" height="40" fill="#f6d877" stroke="#1f2430" stroke-width="4"/><path d="M34 2 L57 -26 L80 2z" fill="#c93a25" stroke="#1f2430" stroke-width="4"/>
+    <rect x="0" y="40" width="170" height="96" fill="#f6b5a6" stroke="#1f2430" stroke-width="4"/><path d="M-12 44 L85 -2 L182 44z" fill="#c93a25" stroke="#1f2430" stroke-width="4"/>
+    <rect x="70" y="80" width="30" height="56" fill="#8a5a3c" stroke="#1f2430" stroke-width="4"/>
+    <rect x="18" y="66" width="34" height="30" fill="#d9f0fb" stroke="#1f2430" stroke-width="4"/><rect x="118" y="66" width="34" height="30" fill="#d9f0fb" stroke="#1f2430" stroke-width="4"/>
+  </g>
+  <path d="M0 700 Q420 630 820 700 T1440 680 V900 H0z" fill="#7cc65a"/>
+  <path d="M640 900 Q700 800 900 760 T1140 610" fill="none" stroke="#e8d9a8" stroke-width="38" stroke-linecap="round"/>
+  <!-- tree -->
+  <g transform="translate(170 520)"><rect x="40" y="70" width="26" height="110" fill="#8a5a3c" stroke="#1f2430" stroke-width="4"/>
+    <circle cx="53" cy="50" r="62" fill="#3f9e57" stroke="#1f2430" stroke-width="4"/><circle cx="10" cy="80" r="36" fill="#3f9e57" stroke="#1f2430" stroke-width="4"/><circle cx="98" cy="78" r="38" fill="#3f9e57" stroke="#1f2430" stroke-width="4"/></g>
+</svg>
+
+<div class="wrap">
+  <header class="panel nav">
+    <a class="brand" href="#top" id="top"><svg class="sprite" viewBox="0 0 16 16" aria-hidden="true"><use href="#sp-hoot"/></svg>StudyBuddy</a>
+    <a class="plain" href="#how">How it works</a>
+    <a class="btn primary small" href="#notes">Start with your notes</a>
+  </header>
+
+  <main>
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="panel hero-text">
+        <span class="lab">Study app · three AI tutors</span>
+        <h1 id="hero-title">Three tutors take turns with <span class="hl">your own notes</span>.</h1>
+        <p class="lede">Paste what you wrote in class. One tutor explains it, one quizzes you and one plans when you should look again.</p>
+        <ul class="perks">
+          <li><span class="g hoot" aria-hidden="true"></span><span><b>Hoot</b> explains the hard bits in plain words</span></li>
+          <li><span class="g pip" aria-hidden="true"></span><span><b>Pip</b> quizzes you until it sticks</span></li>
+          <li><span class="g shelly" aria-hidden="true"></span><span><b>Shelly</b> tells you when to review</span></li>
+        </ul>
+        <div class="cta-row">
+          <a class="btn primary" href="#notes">Start with your notes</a>
+          <small>Tutor names and lessons on this page are <span class="sample">sample</span></small>
+        </div>
+      </div>
+
+      <div class="panel world-panel">
+        <div class="world-top">
+          <span class="lab">Watch them take turns <span class="sample">sample</span><button type="button" class="i down" aria-label="About this scene" aria-describedby="tip-scene"
+            data-tip="You hand over one page of notes.&#10;Each tutor takes it in turn: explain, quiz, plan.&#10;The one working hops. The others wait.&#10;Why: you always know who is helping and with what.">i</button></span>
+          <span id="tip-scene" role="tooltip" class="sr-only">You hand over one page of notes. Each tutor takes it in turn: explain, quiz, plan. The one working hops while the others wait. Why: you always know who is helping and with what.</span>
+          <button type="button" class="btn small" id="pause" aria-pressed="false">Pause</button>
+        </div>
+        <div class="world" id="world">
+          <div class="board" id="board" style="--tail: 38%">
+            <span class="who" id="board-who"><span class="g hoot" aria-hidden="true"></span>Hoot <span class="kind">AI</span></span>
+            <p id="board-say">Photosynthesis is a plant making sugar out of light, water and air. Let's take it one step at a time.</p>
+          </div>
+          <div class="actor" data-id="you" style="--x: 12%">
+            <div class="bob"><div class="hop"><svg class="sprite" viewBox="0 0 16 16" role="img" aria-label="You, the student, holding a notebook"><use href="#sp-you"/></svg></div></div>
+            <span class="tag"><span class="g you" aria-hidden="true"></span>You</span>
+          </div>
+          <div class="actor talking" data-id="hoot" style="--x: 38%">
+            <div class="bob"><div class="hop"><svg class="sprite" viewBox="0 0 16 16" role="img" aria-label="Hoot the owl, explainer tutor"><use href="#sp-hoot"/></svg></div></div>
+            <span class="tag"><span class="g hoot" aria-hidden="true"></span>Hoot</span>
+          </div>
+          <div class="actor quiet" data-id="pip" style="--x: 63%">
+            <div class="bob"><div class="hop"><svg class="sprite" viewBox="0 0 16 16" role="img" aria-label="Pip the fox, quiz tutor"><use href="#sp-pip"/></svg></div></div>
+            <span class="tag"><span class="g pip" aria-hidden="true"></span>Pip</span>
+          </div>
+          <div class="actor quiet" data-id="shelly" style="--x: 87%">
+            <div class="bob"><div class="hop"><svg class="sprite" viewBox="0 0 16 16" role="img" aria-label="Shelly the turtle, review planner"><use href="#sp-shelly"/></svg></div></div>
+            <span class="tag"><span class="g shelly" aria-hidden="true"></span>Shelly</span>
+          </div>
+          <svg class="sprite note" id="note" viewBox="0 0 16 16" aria-hidden="true" style="--x: 12%"><use href="#sp-note"/></svg>
+        </div>
+        <div class="legend">
+          <span class="who"><span class="g you" aria-hidden="true"></span><span class="kind you">You</span> bring notes and choose</span>
+          <span class="who"><span class="kind">AI</span> the three tutors</span>
+        </div>
+      </div>
+    </section>
+
+    <ol class="stages">
+      <li class="panel stage" id="notes" aria-labelledby="st1">
+        <div class="stage-head"><span class="num">1</span><h2 id="st1">Bring your notes</h2>
+          <button type="button" class="i" aria-label="About stage 1, bring your notes" aria-describedby="tip-st1"
+            data-tip="Paste text or snap a photo of a page.&#10;Hoot reads it and pulls out the topics.&#10;You can rename or delete any topic.&#10;Why: the tutors teach from what your class covered, not a random textbook.">i</button>
+          <span id="tip-st1" role="tooltip" class="sr-only">Paste text or snap a photo of a page. Hoot reads it and pulls out the topics. You can rename or delete any topic. Why: the tutors teach from what your class covered, not a random textbook.</span>
+        </div>
+        <div class="explain"><span><span class="kind you">You</span> paste a page</span><i>→</i><span><span class="kind">AI</span> Hoot finds the topics</span><i>→</i><span>A list you can edit</span></div>
+        <div class="stage-body">
+          <div class="host"><svg class="sprite" viewBox="0 0 16 16" role="img" aria-label="You, the student"><use href="#sp-you"/></svg><p><span class="kind you">You</span><br>start here</p></div>
+          <div class="notes">
+            <div class="paper"><span class="lab">Biology · ch. 4 <span class="sample">sample</span></span>
+              <p>Plants use light to split water. Chlorophyll in the leaf traps the light. Oxygen leaves through the stomata. The Calvin cycle uses ATP to build sugar from CO₂.</p></div>
+            <span class="arrow" aria-hidden="true">→</span>
+            <div><span class="lab">Topics Hoot found</span>
+              <ul class="topics"><li>Light reactions</li><li>Chlorophyll</li><li>Stomata</li><li>Calvin cycle</li></ul></div>
+          </div>
+        </div>
+      </li>
+
+      <li class="panel stage" aria-labelledby="st2">
+        <div class="stage-head"><span class="num">2</span><h2 id="st2">Hear it explained</h2>
+          <button type="button" class="i" aria-label="About stage 2, Hoot explains" aria-describedby="tip-st2"
+            data-tip="Ask Hoot about any topic from your notes.&#10;Answers come in short numbered steps.&#10;Tap “Simpler” or “Give an example” to change the level.&#10;Why: one idea at a time is easier to hold on to.">i</button>
+          <span id="tip-st2" role="tooltip" class="sr-only">Ask Hoot about any topic from your notes. Answers come in short numbered steps. Tap Simpler or Give an example to change the level. Why: one idea at a time is easier to hold on to.</span>
+        </div>
+        <div class="explain"><span><span class="kind you">You</span> ask a question</span><i>→</i><span><span class="kind">AI</span> Hoot answers in steps</span><i>→</i><span>Ask again, simpler</span></div>
+        <div class="stage-body">
+          <div class="host"><svg class="sprite" viewBox="0 0 16 16" role="img" aria-label="Hoot the owl"><use href="#sp-hoot"/></svg><p><span class="who"><span class="g hoot" aria-hidden="true"></span>Hoot</span><br><span class="kind">AI</span> explainer</p></div>
+          <div class="chat">
+            <span class="sample" style="justify-self:start">sample chat</span>
+            <div class="msg me"><div class="who"><span class="g you" aria-hidden="true"></span>You</div><p>Why does the Calvin cycle need ATP?</p></div>
+            <div class="msg tutor"><div class="who"><span class="g hoot" aria-hidden="true"></span>Hoot <span class="kind">AI</span></div>
+              <p>Think of ATP as a charged battery.</p>
+              <ol><li>The light reactions charge the batteries.</li><li>The Calvin cycle spends that charge to glue CO₂ into sugar.</li><li>No charge, no glue, so no sugar.</li></ol></div>
+            <div class="chips"><span class="btn small" aria-hidden="true">Simpler</span><span class="btn small" aria-hidden="true">Give an example</span></div>
+          </div>
+        </div>
+      </li>
+
+      <li class="panel stage" aria-labelledby="st3">
+        <div class="stage-head"><span class="num">3</span><h2 id="st3">Get quizzed</h2>
+          <button type="button" class="i" aria-label="About stage 3, Pip quizzes" aria-describedby="tip-st3"
+            data-tip="Pip writes questions from your topics.&#10;A wrong answer gets a one-line reason, then a second try later.&#10;Topics you miss go to Shelly.&#10;Why: pulling an answer out of memory makes it stick better than rereading.">i</button>
+          <span id="tip-st3" role="tooltip" class="sr-only">Pip writes questions from your topics. A wrong answer gets a one-line reason, then a second try later. Topics you miss go to Shelly. Why: pulling an answer out of memory makes it stick better than rereading.</span>
+        </div>
+        <div class="explain"><span><span class="kind">AI</span> Pip asks</span><i>→</i><span><span class="kind you">You</span> answer</span><i>→</i><span>Misses go to Shelly</span></div>
+        <div class="stage-body">
+          <div class="host"><svg class="sprite" viewBox="0 0 16 16" role="img" aria-label="Pip the fox"><use href="#sp-pip"/></svg><p><span class="who"><span class="g pip" aria-hidden="true"></span>Pip</span><br><span class="kind">AI</span> quizzer</p></div>
+          <div class="quiz">
+            <fieldset>
+              <legend>Try one: which gas leaves the leaf through the stomata? <span class="sample">sample</span></legend>
+              <div class="opts" id="opts">
+                <button type="button" class="opt" aria-pressed="false" data-why="Carbon dioxide goes in. The plant takes it from the air to build sugar.">Carbon dioxide</button>
+                <button type="button" class="opt" aria-pressed="false" data-right data-why="Splitting water frees oxygen, and the leaf lets it out.">Oxygen</button>
+                <button type="button" class="opt" aria-pressed="false" data-why="Nitrogen passes through, but photosynthesis doesn't make it.">Nitrogen</button>
+              </div>
+            </fieldset>
+            <p class="result" id="result" role="status"><span class="who"><span class="g pip" aria-hidden="true"></span>Pip:</span> pick an answer and I'll tell you why.</p>
+          </div>
+        </div>
+      </li>
+
+      <li class="panel stage" aria-labelledby="st4">
+        <div class="stage-head"><span class="num">4</span><h2 id="st4">Come back at the right time</h2>
+          <button type="button" class="i" aria-label="About stage 4, Shelly plans reviews" aria-describedby="tip-st4"
+            data-tip="Shelly looks at what you missed in Pip's quizzes.&#10;Shaky topics come back sooner, solid ones later.&#10;You set which days you're free, and you can move any session.&#10;Why: short reviews spread over days beat one long cram.">i</button>
+          <span id="tip-st4" role="tooltip" class="sr-only">Shelly looks at what you missed in Pip's quizzes. Shaky topics come back sooner, solid ones later. You set which days you're free, and you can move any session. Why: short reviews spread over days beat one long cram.</span>
+        </div>
+        <div class="explain"><span><span class="kind">AI</span> Shelly reads your quiz misses</span><i>→</i><span>Short sessions on your free days</span><i>→</i><span><span class="kind you">You</span> move or skip any</span></div>
+        <div class="stage-body">
+          <div class="host"><svg class="sprite" viewBox="0 0 16 16" role="img" aria-label="Shelly the turtle"><use href="#sp-shelly"/></svg><p><span class="who"><span class="g shelly" aria-hidden="true"></span>Shelly</span><br><span class="kind">AI</span> planner</p></div>
+          <div>
+            <ul class="week">
+              <li class="has"><span class="day">Mon</span><b>First quiz</b><span><span class="pill done">✓ 4 of 5</span></span><span class="mins">10 min</span></li>
+              <li><span class="day">Tue</span>Free</li>
+              <li class="has"><span class="day">Wed</span><b>Calvin cycle</b><span>you missed this one</span><span class="mins">5 min</span></li>
+              <li><span class="day">Thu</span>Free</li>
+              <li><span class="day">Fri</span>Busy</li>
+              <li class="has"><span class="day">Sat</span><b>Mixed quiz</b><span>all four topics</span><span class="mins">8 min</span></li>
+              <li><span class="day">Sun</span>Free</li>
+            </ul>
+            <p class="plan-foot"><span class="sample">sample week</span><span>Times are an <b>estimate</b>.</span><span class="who"><span class="g shelly" aria-hidden="true"></span>Shelly:</span> “Slow and steady. Five minutes on Wednesday is plenty.”</p>
+          </div>
+        </div>
+      </li>
+    </ol>
+
+    <section class="panel how" id="how" aria-labelledby="how-title">
+      <div class="stage-head"><h2 id="how-title">How it works</h2>
+        <button type="button" class="i" aria-label="About how the tutors share work" aria-describedby="tip-how"
+          data-tip="Your notes travel from tutor to tutor.&#10;Each one adds a single job and hands it on.&#10;Nothing gets scheduled without your free days.&#10;Why: three small jobs are easier to trust than one tutor doing everything.">i</button>
+        <span id="tip-how" role="tooltip" class="sr-only">Your notes travel from tutor to tutor. Each one adds a single job and hands it on. Nothing gets scheduled without your free days. Why: three small jobs are easier to trust than one tutor doing everything.</span>
+      </div>
+      <div class="route-box" id="route"><svg class="sprite token" viewBox="0 0 16 16" aria-hidden="true"><use href="#sp-note"/></svg>
+      <ol class="route">
+        <li><span class="num">1</span><h3 class="who"><span class="g you" aria-hidden="true"></span>You add notes</h3><span class="kind you">You</span><p>Paste a page or snap a photo after class.</p></li>
+        <li><span class="num">2</span><h3 class="who"><span class="g hoot" aria-hidden="true"></span>Hoot explains</h3><span class="kind">AI</span><p>Finds the topics and answers your questions in steps.</p></li>
+        <li><span class="num">3</span><h3 class="who"><span class="g pip" aria-hidden="true"></span>Pip quizzes</h3><span class="kind">AI</span><p>Asks short questions and notes what you missed.</p></li>
+        <li><span class="num">4</span><h3 class="who"><span class="g shelly" aria-hidden="true"></span>Shelly plans</h3><span class="kind">AI</span><p>Books short reviews on the days you said you're free.</p></li>
+      </ol></div>
+    </section>
+  </main>
+
+  <footer class="panel foot">
+    <div><a class="brand" href="#top"><svg class="sprite" viewBox="0 0 16 16" aria-hidden="true"><use href="#sp-hoot"/></svg>StudyBuddy</a>
+      <p>A study app where three AI tutors explain, quiz and plan from the notes you already have.</p></div>
+    <ul><li><a href="#how">How it works</a></li><li><a href="#notes">Get started</a></li><li><a href="#top">Back to top</a></li></ul>
+    <p class="copy">© 2026 StudyBuddy · tutor names and lessons shown are sample</p>
+  </footer>
+</div>
+
+<script>
+// cutify-ui pixel sprites (from assets/pixel-sprites.js): 16x16 string grids → crisp SVG symbols
+function pixelSprites({ palette, sprites, animate = {} }) {
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('width', '0'); svg.setAttribute('height', '0'); svg.setAttribute('aria-hidden', 'true'); svg.style.position = 'absolute';
+  let out = '<defs>';
+  for (const [id, rows] of Object.entries(sprites)) {
+    console.assert(rows.length === 16 && rows.every((r) => r.length === 16), 'sprite ' + id + ' must be 16x16');
+    out += `<symbol id="${id}" viewBox="0 0 16 16" shape-rendering="crispEdges">`;
+    rows.forEach((row, y) => [...row].forEach((ch, x) => {
+      if (ch === '.' || !palette[ch]) return;
+      out += `<rect x="${x}" y="${y}" width="1.02" height="1.02" fill="${palette[ch]}"${animate[ch] ? ` class="${animate[ch]}"` : ''}/>`;
+    }));
+    out += '</symbol>';
+  }
+  svg.innerHTML = out + '</defs>';
+  document.body.prepend(svg);
+}
+pixelSprites({
+  palette: { k: '#16171a', e: '#16171a', b: '#8a5a3c', t: '#e8c48f', w: '#ffffff', o: '#e8912d', q: '#e8912d', g: '#5fb86a', d: '#2d7d46', s: '#a8e2bd',
+    h: '#4a2f22', c: '#f2a246', m: '#c9605a', S: '#f1c7a3', l: '#6aa8e0', y: '#dbe86a' },
+  animate: { e: 'px-blink', q: 'px-wag' },
+  sprites: {
+    'sp-hoot': ['................', '..kk........kk..', '..kbk......kbk..', '..kbbkkkkkkbbk..', '.kbbbbbbbbbbbbk.', '.kbwwwbbbbwwwbk.', '.kbwewbbbbwewbk.', '.kbwwwbbbbwwwbk.',
+      '.kbbbbboobbbbbk.', '.kbbttttttttbbk.', '.kbttttttttttbk.', '.kbbttttttttbbk.', '.kbttttttttttbk.', '..kbttttttttbk..', '...kkkkkkkkkk...', '....oo....oo....'],
+    'sp-pip': ['................', '.kk..........kk.', '.kok........kok.', '.kook......kook.', '.koookkkkkkoook.', '.kooooooooooook.', '.kookookkookook.', '.kwwoooooooowwk.',
+      '..kwwwwkkwwwwk..', '...kwwwwwwwwk...', '....kkkkkkkk....', '...kowwwwwok.qq.', '...kowwwwwokqqw.', '...koooooookqq..', '...kokkkkkokk...', '...kk.....kk....'],
+    'sp-shelly': ['................', '................', '................', '.....kkkkkk.....', '....kgdggdgk....', '...kgdggggdgk...', '..kggdggggdggkk.', '..kddddddddddsek',
+      '..kggdggggdggssk', '.kkkkkkkkkkkkkk.', '.kssk.....kssk..', '.kkkk.....kkkk..', '................', '................', '................', '................'],
+    'sp-you': ['....kkkkkkkk....', '...khhhhhhhhk...', '..khhhhhhhhhhk..', '..khhSSSSSSShk..', '..khSeSSSSeShk..', '..khSSSSSSSShk..', '...kSSSmmSSSk...', '....kSSSSSSk....',
+      '.....kkkkkk.....', '...kcccccccck...', '..kcccwwwwccck..', '..kcccwlwwccck..', '..kccccccccccck.', '..kSkccccccckSk.', '...kddk..kddk...', '...kkkk..kkkk...'],
+    'sp-note': ['................', '..kkkkkkkkk.....', '..kwwwwwwwkk....', '..kwwwwwwwwkk...', '..kwlllllwwwk...', '..kwwwwwwwwwk...', '..kwyyyyyyywk...', '..kwwwwwwwwwk...',
+      '..kwlllllllwk...', '..kwwwwwwwwwk...', '..kwllllwwwwk...', '..kwwwwwwwwwk...', '..kwwwwwwwwwk...', '..kkkkkkkkkkk...', '................', '................'],
+  },
+});
+
+// tooltips: tap toggles, Escape or a tap elsewhere closes
+document.addEventListener('click', (e) => {
+  const t = e.target.closest('.i[data-tip]');
+  document.querySelectorAll('.i.open').forEach((o) => o !== t && o.classList.remove('open'));
+  if (t) t.classList.toggle('open');
+});
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') document.querySelectorAll('.i.open').forEach((o) => o.classList.remove('open')); });
+
+// hero: the note goes from You to each tutor in turn; the one working hops and speaks
+const turns = [
+  { id: 'hoot', name: 'Hoot', say: 'Photosynthesis is a plant making sugar out of light, water and air. Let’s take it one step at a time.' },
+  { id: 'pip', name: 'Pip', say: 'Quick one: which gas leaves the leaf through the stomata? No peeking at your notes!' },
+  { id: 'shelly', name: 'Shelly', say: 'You got 4 of 5. I’ll bring the Calvin cycle back on Wednesday, five minutes.' },
+];
+const world = document.getElementById('world'), note = document.getElementById('note'), board = document.getElementById('board');
+const actors = [...world.querySelectorAll('.actor')];
+const still = matchMedia('(prefers-reduced-motion: reduce)');
+let turn = 0, onScreen = true, paused = false;
+
+function play(i) {
+  const t = turns[i], target = actors.find((a) => a.dataset.id === t.id);
+  actors.forEach((a) => { a.classList.toggle('talking', a === target); a.classList.toggle('quiet', a !== target && a.dataset.id !== 'you'); });
+  board.style.setProperty('--tail', target.style.getPropertyValue('--x'));
+  document.getElementById('board-who').innerHTML = `<span class="g ${t.id}" aria-hidden="true"></span>${t.name} <span class="kind">AI</span>`;
+  document.getElementById('board-say').textContent = t.say;
+  if (!still.matches) {
+    const dx = target.offsetLeft - actors[0].offsetLeft;
+    note.animate([{ transform: 'translate(0,0)', opacity: 1 }, { transform: `translate(${dx / 2}px,-40px)`, opacity: 1, offset: .5 }, { transform: `translate(${dx}px,0)`, opacity: 0 }],
+      { duration: 900, easing: 'ease-in-out' });
+  }
+}
+setInterval(() => { if (onScreen && !paused) play(turn = (turn + 1) % turns.length); }, 3600);
+document.getElementById('pause').addEventListener('click', (e) => {
+  paused = !paused;
+  e.currentTarget.setAttribute('aria-pressed', paused);
+  e.currentTarget.textContent = paused ? 'Play' : 'Pause';
+  world.classList.toggle('is-off', paused);
+});
+
+// pause loops while off screen
+new IntersectionObserver((entries) => entries.forEach((en) => {
+  en.target.classList.toggle('is-off', !en.isIntersecting || (en.target === world && paused));
+  if (en.target === world) onScreen = en.isIntersecting;
+})).observe(world);
+new IntersectionObserver(([en]) => en.target.classList.toggle('is-off', !en.isIntersecting)).observe(document.getElementById('route'));
+
+// stage 3 quiz
+const opts = [...document.querySelectorAll('#opts .opt')];
+console.assert(opts.filter((o) => o.hasAttribute('data-right')).length === 1, 'quiz needs exactly one right answer');
+opts.forEach((o) => o.addEventListener('click', () => {
+  const right = o.hasAttribute('data-right');
+  opts.forEach((x) => { x.setAttribute('aria-pressed', x === o); x.classList.toggle('right', x === o && right); x.classList.toggle('wrong', x === o && !right); });
+  document.getElementById('result').innerHTML = `<span class="pill ${right ? 'done' : 'gap'}">${right ? '✓ Right' : '✕ Not quite'}</span>`
+    + `<span class="who"><span class="g pip" aria-hidden="true"></span>Pip:</span> ${o.dataset.why}${right ? '' : ' I’ll ask again on Wednesday.'}`;
+}));
+</script>
+</body>
+</html>
