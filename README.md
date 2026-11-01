@@ -2,7 +2,7 @@
 
 # <img src="docs/logo.svg" alt="" height="40"> cutify-ui
 
-**A Claude skill for cute, game-like web pages with pixel characters, story stages and motion that shows your product at work.**
+**A Claude Code skill for cute, pixel-art, game-like UI. Claude builds landing pages, prototypes and animated process flows with pixel characters, story stages and motion that shows your product at work.**
 
 [![Live gallery](https://img.shields.io/badge/gallery-cutify.ghernie.com-ff8fab?style=flat-square)](https://cutify.ghernie.com/)
 [![Release](https://img.shields.io/github/v/release/slyf0xx97/cutify-ui?style=flat-square&color=e8912d)](https://github.com/slyf0xx97/cutify-ui/releases/latest)
@@ -22,7 +22,7 @@ cutify-ui is an open-source [Claude skill](https://docs.claude.com/en/docs/agent
 
 <table>
 <tr><th align="left" width="25%">🚀 Start<br><img src="docs/spacer.png" width="240" height="1" alt=""></th><th align="left" width="25%">👀 Look<br><img src="docs/spacer.png" width="240" height="1" alt=""></th><th align="left" width="25%">🔧 Build<br><img src="docs/spacer.png" width="240" height="1" alt=""></th><th align="left" width="25%">📄 About<br><img src="docs/spacer.png" width="240" height="1" alt=""></th></tr>
-<tr><td valign="top"><a href="#%EF%B8%8F-install">Install</a><br><a href="#quickstart">Quickstart</a></td><td valign="top"><a href="#%EF%B8%8F-gallery">Gallery</a><br><a href="#-features">Features</a><br><a href="#-why-it-doesnt-look-ai-made">Why it doesn't look AI-made</a><br><a href="#-themes">Themes</a></td><td valign="top"><a href="#-whats-inside">What's inside</a><br><a href="#-testing-and-validation">Testing and validation</a></td><td valign="top"><a href="#%EF%B8%8F-privacy-and-limits">Privacy and limits</a><br><a href="#-contributing">Contributing</a><br><a href="#-support">Support</a><br><a href="#-license">License</a></td></tr>
+<tr><td valign="top"><a href="#%EF%B8%8F-install">Install</a><br><a href="#quickstart">Quickstart</a></td><td valign="top"><a href="#%EF%B8%8F-gallery">Gallery</a><br><a href="#-features">Features</a><br><a href="#-why-it-doesnt-look-ai-made">Why it doesn't look AI-made</a><br><a href="#-themes">Themes</a></td><td valign="top"><a href="#-whats-inside">What's inside</a><br><a href="#-testing-and-validation">Testing and validation</a></td><td valign="top"><a href="#%EF%B8%8F-privacy-and-limits">Privacy and limits</a><br><a href="#-faq">FAQ</a><br><a href="#-contributing">Contributing</a><br><a href="#-support">Support</a><br><a href="#-license">License</a></td></tr>
 </table>
 
 ## 🛠️ Install
@@ -353,6 +353,43 @@ What to expect
 - Claude still makes the final design decisions, so results vary with the prompt and the model.
 - A page with a lot of animation took Claude about 5 to 10 minutes to build and check.
 - The examples were checked in Chromium, Firefox and WebKit (the engine inside Safari) at phone and desktop widths, with no page errors and no sideways scrolling. They haven't been tried in Safari on an Apple device or with a screen reader yet.
+
+## ❓ FAQ
+
+<details>
+<summary><b>How do I install a Claude skill in Claude Code?</b></summary>
+
+Paste `/plugin install cutify-ui --marketplace slyf0xx97/cutify-ui` into the Claude Code chat. Claude Code adds the cutify-ui marketplace and installs the skill in one step. The [Install](#%EF%B8%8F-install) section covers Claude.ai, the Claude API and other coding agents.
+
+</details>
+
+<details>
+<summary><b>Does cutify-ui work with Cursor, Codex or Gemini CLI?</b></summary>
+
+Yes. Run `npx skills add slyf0xx97/cutify-ui` in your terminal and pick your agent. The skill is plain Markdown, CSS and small scripts, so any agent that reads skills can use it.
+
+</details>
+
+<details>
+<summary><b>Can it build React or Next.js components, or only HTML?</b></summary>
+
+Both. It ships typed React 19 components that work in Next.js, plain HTML, CSS and SVG versions of the same pieces, and a Streamlit helper. Tell Claude which stack you want in your prompt.
+
+</details>
+
+<details>
+<summary><b>How do I stop Claude's UI from looking AI-generated?</b></summary>
+
+The skill lists the usual signs of an AI-made page, such as purple gradients, emoji icons and a centred hero over three feature boxes, and tells Claude to avoid them. It also gives Claude a cast of characters, numbered stages and a theme to build from, so each page has its own look. [Why it doesn't look AI-made](#-why-it-doesnt-look-ai-made) explains each rule.
+
+</details>
+
+<details>
+<summary><b>Is cutify-ui free?</b></summary>
+
+Yes. It's open source under the MIT licence, so you can use it in personal and commercial projects.
+
+</details>
 
 ## 🤝 Contributing
 
