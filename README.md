@@ -22,7 +22,7 @@ cutify-ui is an open-source [Claude skill](https://docs.claude.com/en/docs/agent
 
 <table>
 <tr><th align="left">🚀 Start</th><th align="left">👀 Look</th><th align="left">🔧 Build</th><th align="left">📄 About</th></tr>
-<tr><td valign="top"><a href="#%EF%B8%8F-install">Install</a><br><a href="#quickstart">Quickstart</a><br><a href="#-sample-prompts">Sample prompts</a></td><td valign="top"><a href="#-why-it-doesnt-look-ai-made">Why it doesn't look AI-made</a><br><a href="#-features">Features</a><br><a href="#%EF%B8%8F-gallery">Gallery</a><br><a href="#-themes">Themes</a></td><td valign="top"><a href="#-whats-inside">What's inside</a><br><a href="#-testing-and-validation">Testing and validation</a></td><td valign="top"><a href="#%EF%B8%8F-privacy-and-limits">Privacy and limits</a><br><a href="#-contributing">Contributing</a><br><a href="#-support">Support</a><br><a href="#-license">License</a></td></tr>
+<tr><td valign="top"><a href="#%EF%B8%8F-install">Install</a><br><a href="#quickstart">Quickstart</a><br><a href="#-sample-prompts">Sample prompts</a></td><td valign="top"><a href="#-features">Features</a><br><a href="#-why-it-doesnt-look-ai-made">Why it doesn't look AI-made</a><br><a href="#%EF%B8%8F-gallery">Gallery</a><br><a href="#-themes">Themes</a></td><td valign="top"><a href="#-whats-inside">What's inside</a><br><a href="#-testing-and-validation">Testing and validation</a></td><td valign="top"><a href="#%EF%B8%8F-privacy-and-limits">Privacy and limits</a><br><a href="#-contributing">Contributing</a><br><a href="#-support">Support</a><br><a href="#-license">License</a></td></tr>
 </table>
 
 ## 🛠️ Install
@@ -65,16 +65,6 @@ Make a cute landing page for my study app with three AI tutors.
 
 Have Python 3 installed so Claude can check its page with `scripts/lint_page.py`. If the skill doesn't load, start your prompt with "Use the cutify-ui skill." More prompts are under [Sample prompts](#-sample-prompts).
 
-## 🙅 Why it doesn't look AI-made
-
-Pages that Claude designs on its own often look alike, because it falls back on the safest choice for every font, colour and layout. cutify-ui makes those choices before Claude writes any CSS:
-
-- Each theme fixes exact fonts, hex colours and one kind of depth, so Claude never has to guess at "modern".
-- The skill names the usual tells and tells Claude to avoid them: purple-to-blue gradients, soft-shadowed rounded cards everywhere, emoji as icons, a centred hero over three feature boxes, Inter as the headline font and lorem ipsum.
-- Claude writes the real copy from your brief before the layout, and labels anything made up as "sample".
-- If your project has a `taste.md` file of things you like and dislike, Claude reads it first and offers to add your reactions to it.
-- Before showing you a page, Claude checks the draft against your brief and the list of tells, then screenshots it at 1440px and 390px.
-
 ## ✨ Features
 
 In the order you'll meet them on a page:
@@ -96,6 +86,16 @@ In the order you'll meet them on a page:
 | ⚛️ React 19 | Typed components for React and Next.js: `PixelSprite`, `PixelIcon`, `Popup`, `WordTip`, `StageHeader` and `KindChip` |
 | 🐍 Streamlit | Helpers for hosting the pages inside Streamlit and sending clicks back to Python |
 | 🔎 Page linter | `scripts/lint_page.py`, which Claude runs on each page it builds to catch repainting animations, emoji icons, outside scripts and unlabelled sample data |
+
+### 🙅 Why it doesn't look AI-made
+
+Pages that Claude designs on its own often look alike, because it falls back on the safest choice for every font, colour and layout. cutify-ui makes those choices before Claude writes any CSS:
+
+- Each theme fixes exact fonts, hex colours and one kind of depth, so Claude never has to guess at "modern".
+- The skill names the usual tells and tells Claude to avoid them: purple-to-blue gradients, soft-shadowed rounded cards everywhere, emoji as icons, a centred hero over three feature boxes, Inter as the headline font and lorem ipsum.
+- Claude writes the real copy from your brief before the layout, and labels anything made up as "sample".
+- If your project has a `taste.md` file of things you like and dislike, Claude reads it first and offers to add your reactions to it.
+- Before showing you a page, Claude checks the draft against your brief and the list of tells, then screenshots it at 1440px and 390px.
 
 ## 🖼️ Gallery
 
