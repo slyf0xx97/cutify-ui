@@ -22,7 +22,7 @@ cutify-ui is an open-source [Claude skill](https://docs.claude.com/en/docs/agent
 
 <table>
 <tr><th align="left">🚀 Start</th><th align="left">👀 Look</th><th align="left">🔧 Build</th><th align="left">📄 About</th></tr>
-<tr><td valign="top"><a href="#%EF%B8%8F-install">Install</a><br><a href="#quickstart">Quickstart</a><br><a href="#-sample-prompts">Sample prompts</a></td><td valign="top"><a href="#-features">Features</a><br><a href="#-why-it-doesnt-look-ai-made">Why it doesn't look AI-made</a><br><a href="#%EF%B8%8F-gallery">Gallery</a><br><a href="#-themes">Themes</a></td><td valign="top"><a href="#-whats-inside">What's inside</a><br><a href="#-testing-and-validation">Testing and validation</a></td><td valign="top"><a href="#%EF%B8%8F-privacy-and-limits">Privacy and limits</a><br><a href="#-contributing">Contributing</a><br><a href="#-support">Support</a><br><a href="#-license">License</a></td></tr>
+<tr><td valign="top"><a href="#%EF%B8%8F-install">Install</a><br><a href="#quickstart">Quickstart</a></td><td valign="top"><a href="#-features">Features</a><br><a href="#-why-it-doesnt-look-ai-made">Why it doesn't look AI-made</a><br><a href="#%EF%B8%8F-gallery">Gallery</a><br><a href="#-sample-prompts">Sample prompts</a><br><a href="#-themes">Themes</a></td><td valign="top"><a href="#-whats-inside">What's inside</a><br><a href="#-testing-and-validation">Testing and validation</a></td><td valign="top"><a href="#%EF%B8%8F-privacy-and-limits">Privacy and limits</a><br><a href="#-contributing">Contributing</a><br><a href="#-support">Support</a><br><a href="#-license">License</a></td></tr>
 </table>
 
 ## 🛠️ Install
@@ -226,23 +226,6 @@ A personal portfolio site for "Sam Sample" (a made-up interaction design student
 </table>
 <!-- GALLERY:END -->
 
-## 🎨 Themes
-
-<p align="center"><img src="docs/gallery/demo.gif" alt="Six example pages animating side by side, one per theme: StudyBuddy in Glass, Fleet Queue in Apron, Sunday Spread in Picnic, Zine Night in Riso Club, Moonlit Market in Lantern Night and Beep and Build in Toy Box" width="1000"><br><sub>One example per theme, all running at once.</sub></p>
-
-| Theme | Look | Display font | Depth | Good for |
-|---|---|---|---|---|
-| 🪟 Glass | Frosted glass over painted scenery | Pixelify Sans | Hard sticker shadow | Consumer apps, careers, outdoors |
-| 🛫 Apron | Airfield signage on a dark dot grid | Anybody | Hard sticker shadow | Operations, control rooms, data |
-| 🧺 Picnic | Gingham under napkin cards | Fredoka | Soft blanket shadow | Food, weekends, family |
-| 🖨️ Riso Club | Newsprint and halftone | Bricolage Grotesque | A pink and blue shadow like a slipped print | Events, zines, portfolios |
-| 🏮 Lantern Night | Dusk sky over a dithered skyline | Jersey 10 | Lantern glow and stepped pixel borders | Night, sleep, games |
-| 🧱 Toy Box | Plastic cards on graph paper | Dela Gothic One | A ledge that presses down | Kids, learning, building |
-
-Glass and Apron come from [itsa10but](https://ghernie.com/projects/itsa10but), a résumé reviewer, and [SkyQueue](https://skyqueue.ghernie.com), a multi-agent airport queue planner. The other four came from a survey of playful sites, games and type, and the [inspiration library](docs/INSPIRATION.md) lists every source and what each one taught us.
-
-All six themes share the same variable and class names, so a component written for one works in the others.
-
 ## 💬 Sample prompts
 
 Each prompt below ran in Claude Code with cutify-ui installed. On the left is the prompt, and on the right is the page Claude built, unedited. Click a page to open it live.
@@ -336,6 +319,23 @@ Anthropic suggests testing a skill on every model you plan to use, so the pricin
 Claude picks a theme that fits the product and tells you which one it chose. Name a theme in your request if you want a particular look, or ask for three directions to choose from. A screenshot of a site you like also helps, because Claude carries over its spacing and type sizes.
 
 To steer every page the same way, keep a `taste.md` file in your project with notes like "too busy", "love this spacing" or a link to a site you like.
+
+## 🎨 Themes
+
+<p align="center"><img src="docs/gallery/demo.gif" alt="Six example pages animating side by side, one per theme: StudyBuddy in Glass, Fleet Queue in Apron, Sunday Spread in Picnic, Zine Night in Riso Club, Moonlit Market in Lantern Night and Beep and Build in Toy Box" width="1000"><br><sub>One example per theme, all running at once.</sub></p>
+
+| Theme | Look | Display font | Depth | Good for |
+|---|---|---|---|---|
+| 🪟 Glass | Frosted glass over painted scenery | Pixelify Sans | Hard sticker shadow | Consumer apps, careers, outdoors |
+| 🛫 Apron | Airfield signage on a dark dot grid | Anybody | Hard sticker shadow | Operations, control rooms, data |
+| 🧺 Picnic | Gingham under napkin cards | Fredoka | Soft blanket shadow | Food, weekends, family |
+| 🖨️ Riso Club | Newsprint and halftone | Bricolage Grotesque | A pink and blue shadow like a slipped print | Events, zines, portfolios |
+| 🏮 Lantern Night | Dusk sky over a dithered skyline | Jersey 10 | Lantern glow and stepped pixel borders | Night, sleep, games |
+| 🧱 Toy Box | Plastic cards on graph paper | Dela Gothic One | A ledge that presses down | Kids, learning, building |
+
+Glass and Apron come from [itsa10but](https://ghernie.com/projects/itsa10but), a résumé reviewer, and [SkyQueue](https://skyqueue.ghernie.com), a multi-agent airport queue planner. The other four came from a survey of playful sites, games and type, and the [inspiration library](docs/INSPIRATION.md) lists every source and what each one taught us.
+
+All six themes share the same variable and class names, so a component written for one works in the others.
 
 ## 📁 What's inside
 
