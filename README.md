@@ -1,4 +1,4 @@
-<p align="center"><img src="docs/gallery/cover.gif" alt="cutify-ui, a free Claude skill: Claude builds cute, game-like web pages with pixel characters, story stages and motion. Beside the title, three live examples animate, and in the Sprout example a droopy houseplant gets watered and perks up." width="1000"></p>
+<p align="center"><img src="docs/gallery/cover.gif" alt="cutify-ui, a free and open source Claude skill: Make your sites, prototypes and demos cuter and animated. The card shows the pixel logo, a short description, the Claude Code install command and the eight stacks it builds in, next to four live example pages (Snooze Log, Pantry Pals, Sprout and Fleet Queue) that animate." width="1000"></p>
 
 # <img src="docs/logo.svg" alt="" height="40"> cutify-ui
 
