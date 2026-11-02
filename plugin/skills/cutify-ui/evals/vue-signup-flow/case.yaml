@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: vue-signup-flow
+expected_outcome: |
+  A Vue 3 + Vite project (App.vue, components, one global stylesheet) in a playful style: script-setup SFCs, pixel-art helper characters, numbered sign-up steps, accessible tooltips and a native dialog opened through a template ref, reduced-motion handling, AI/You tags.

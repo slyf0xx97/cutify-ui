@@ -63,11 +63,7 @@ Inside SVG, crop the same sheet with a nested `<svg viewBox="x y w h">` around a
 
 ## Designing a cast
 
-- One sprite per actor the brief describes (the AI helpers, the user, a mascot). Two to four works best. Don't add actors to fill a scene.
-- Give each a silhouette you can tell apart at 24px: a hat shape, a held prop (binoculars, clipboard, wands), a body shape. A non-person actor (a parser, a reader) can be an object, like a diamond or a scroll, so it reads as a tool.
-- Outline every sprite with the same near-black (`#16171a`), then two or three fills. Keep one accent pixel group for animation.
-- Pair each sprite with its theme colour and a geometric glyph (square, circle, hexagon via `clip-path`) for places too small for the sprite.
-- Never put real brand logos, airline liveries or agency marks on characters.
+Draw a new cast for every product, from the brief only. `references/cast.md` has the method: body plans, role cues for common verbs, palette slots, expressions and a silhouette check. Read it before drawing any sprite, and keep the outline, grid size and no-brand rules there.
 
 ## Idle behaviours
 

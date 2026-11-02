@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: astro-event-page
+expected_outcome: |
+  An Astro 5 page with a layout, .astro components and a global stylesheet in a playful style: pixel-art characters rendered crisp, numbered schedule stages, accessible tooltips, a native dialog for sign-up, reduced-motion handling, AI/You tags, and little JavaScript (at most one client island).

@@ -1,6 +1,6 @@
 # cutify-ui
 
-A Claude skill for cute, pixel-art, game-like web pages. Ask Claude for a landing page, a prototype, a product demo or an animated process flow, and the skill gives it themes, pixel characters, numbered story stages, tooltips and motion patterns to build from. Claude builds in React 19, Next.js or plain HTML, CSS and SVG.
+A Claude skill for cute, pixel-art, game-like web pages. Ask Claude for a landing page, a prototype, a product demo or an animated process flow, and the skill gives it themes, pixel characters, numbered story stages, tooltips and motion patterns to build from. Claude builds in React 19, Next.js, Vue 3, Svelte 5, Astro, Tailwind CSS v4 or plain HTML, CSS and SVG.
 
 See the example pages at [cutify.ghernie.com](https://cutify.ghernie.com/). The full project, with the gallery, tests and contributing guide, is at [github.com/slyf0xx97/cutify-ui](https://github.com/slyf0xx97/cutify-ui).
 

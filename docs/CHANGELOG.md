@@ -2,6 +2,18 @@
 
 All notable changes to cutify-ui are listed here. The project uses [semantic versioning](https://semver.org).
 
+## [0.6.0] (2026-11-02)
+
+### Added
+
+- `references/cast.md`, a method for drawing an original pixel cast from each brief: five body plans, 30 role cues that turn what an actor does into a prop or hat, six states built from one grid, rules that tell AI, You and Code apart without colour, and a worked example. The skill still has no ready-made characters.
+- `references/stories.md`, 12 story templates for the stages and Play sample, such as an agent hand-off, onboarding, approval, checkout, order tracking and a pipeline, each with a reduced-motion version.
+- `references/stacks.md`, adding Vue 3, Svelte 5, Astro and Tailwind CSS v4. Each new stack has a test prompt, and all four projects built, type-checked where the stack has a checker, and loaded with no errors at 390px and 1280px.
+
+### Changed
+
+- The skill description names the new stacks and the story templates.
+
 ## [0.5.1] (2026-11-01)
 
 ### Changed

@@ -14,6 +14,10 @@
 ![React 19](https://img.shields.io/badge/React-19-20232a?style=flat-square&logo=react&logoColor=61DAFB)
 ![Next.js](https://img.shields.io/badge/-Next.js-000000?style=flat-square&labelColor=000000&logo=nextdotjs&logoColor=white)
 ![Streamlit](https://img.shields.io/badge/-Streamlit-ff4b4b?style=flat-square&labelColor=ff4b4b&logo=streamlit&logoColor=white)
+![Vue](https://img.shields.io/badge/-Vue-42b883?style=flat-square&labelColor=42b883&logo=vuedotjs&logoColor=white)
+![Svelte](https://img.shields.io/badge/-Svelte-ff3e00?style=flat-square&labelColor=ff3e00&logo=svelte&logoColor=white)
+![Astro](https://img.shields.io/badge/-Astro-1f2430?style=flat-square&labelColor=1f2430&logo=astro&logoColor=white)
+![Tailwind](https://img.shields.io/badge/-Tailwind-0b7ea6?style=flat-square&labelColor=0b7ea6&logo=tailwindcss&logoColor=white)
 ![HTML/CSS](https://img.shields.io/badge/-HTML%2FCSS-e34f26?style=flat-square&labelColor=e34f26&logo=html5&logoColor=white)
 [![CI](https://img.shields.io/github/actions/workflow/status/slyf0xx97/cutify-ui/ci.yml?style=flat-square&label=checks)](https://github.com/slyf0xx97/cutify-ui/actions)
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/slyf0xx97/cutify-ui/badge)](https://scorecard.dev/viewer/?uri=github.com/slyf0xx97/cutify-ui)
@@ -82,6 +86,22 @@ Have Python 3 installed so Claude can check its page with `scripts/lint_page.py`
 <p align="center"><img src="docs/features.png" width="900" alt="Features of cutify-ui: a pixel cast of characters from your brief, numbered story stages, motion that shows the work, any look from Glass or Riso to one you describe, React 19, Next.js or plain HTML, and lint plus screenshots before you see the page. Instead of the usual AI look, it uses a fixed palette for each theme in place of purple gradients, pixel characters in place of emoji icons, a painted scene and a story in stages in place of a centred hero over three boxes, a display font with character in place of Inter, one kind of depth per theme in place of soft shadows everywhere, and real copy with made-up data labelled in place of lorem ipsum."></p>
 
 Six themes come ready to use: Glass, Apron, Picnic, Riso Club, Lantern Night and Toy Box. Claude can also make a new theme from your brief, as Snooze Log and Penpal Post in the gallery show. Glass and Apron come from [itsa10but](https://ghernie.com/projects/itsa10but) and [SkyQueue](https://skyqueue.ghernie.com), and the [inspiration library](docs/INSPIRATION.md) credits the sources behind the rest.
+
+| In the skill | Count |
+|---|---|
+| Ready themes, or one made from your brief | 6 |
+| Extra palettes with checked text contrast | 8 |
+| Backdrops | 19 |
+| Font pairings | 10 |
+| Body plans for drawing a cast from your brief | 5 |
+| Role cues, from "plans" to "delivers" | 30 |
+| Character states, such as thinking and done | 6 |
+| Story templates for stages and Play sample | 12 |
+| Animation engines | 5 |
+| UI components | 14 |
+| Stacks | 8 |
+
+The 8 stacks are React 19, Next.js, Vue 3, Svelte 5, Astro, Tailwind CSS v4, Streamlit and plain HTML. The skill has no ready-made characters. It gives Claude a method for drawing an original cast from each brief.
 
 ## 🖼️ Gallery
 
@@ -246,10 +266,13 @@ plugin/                    the Claude Code plugin, the only part an install down
       themes.md            the six themes, their palettes, and how to make your own
       backgrounds.md       19 backdrops and how to choose one
       fonts.md             font pairings and readability rules
-      pixel-art.md         sprites, pixel icons and designing characters
+      pixel-art.md         sprites and pixel icons
+      cast.md              how to draw an original cast from the brief
+      stories.md           12 story templates for the stages and Play sample
       motion.md            motion rules, animation patterns and small interactions
       components.md        tooltips, buttons, stage headers, number tiles, charts, dialogs and loaders
       react.md             React 19 and Next.js patterns
+      stacks.md            Vue 3, Svelte 5, Astro and Tailwind v4
       streamlit.md         plain HTML pages and hosting them in Streamlit
       voice.md             how labels and copy should read
     scripts/
@@ -263,7 +286,8 @@ plugin/                    the Claude Code plugin, the only part an install down
     evals/                 test prompts and graders for the skill
 .claude-plugin/            marketplace.json, which points Claude Code at plugin/
 examples/                  the gallery pages, each with its brief
-docs/INSPIRATION.md        the sources behind the themes
+site/                      the cutify.ghernie.com gallery page
+docs/                      the changelog, the sources behind the themes, and gallery media
 tools/                     repo checks, layout QA and gallery screenshot scripts
 ```
 
@@ -372,6 +396,15 @@ The skill is tested the way Anthropic's skill-creator suggests. The same prompts
 | Library reservation flow with rules | 12 / 12 | 11 / 12, rules had no IDs | not run |
 
 A second test checks when the skill switches on. 20 prompts ran twice each: 10 that should use the skill and 10 near-misses that shouldn't, such as a corporate dashboard, a Godot sprite sheet and a cute birthday message. The v0.4 description caught 19 of 20 and missed a game-jam site. The v0.5 description caught 20 of 20 and still left all 10 near-misses alone.
+
+v0.6 added four stacks, and each got its own test prompt. Claude built each one with the skill, then the project was installed, built, type-checked where the stack has a checker, and loaded in a browser at 390px and 1280px.
+
+| v0.6 stack test | Build | Type check | Browser |
+|---|---|---|---|
+| Seedling Swap sign-up flow, Vue 3 | passes | `vue-tsc` clean | no errors, no sideways scroll |
+| Crumb Run order tracker, Svelte 5 | passes | `svelte-check` 0 errors | no errors, no sideways scroll |
+| Lantern Jam event page, Astro 5 | passes, no client islands | | no errors, no sideways scroll |
+| Kettle Notes pricing, Tailwind v4 | passes | | no errors, no sideways scroll |
 
 Each prompt ran once per version, so read these as a direction, not a benchmark. The starter page in v0.5 didn't make builds faster: tokens fell about 3% and time didn't improve. The prompts and graders are in [`evals/`](plugin/skills/cutify-ui/evals).
 

@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: svelte-order-tracker
+expected_outcome: |
+  A Svelte 5 page (components plus global CSS) in a playful style that uses runes throughout: pixel-art helper characters, numbered order stages, accessible tooltips, a native dialog, reduced-motion handling that also covers JavaScript and Svelte transitions, AI/You tags.
