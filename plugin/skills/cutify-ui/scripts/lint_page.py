@@ -40,12 +40,8 @@ def hue(hex_code):
 STRING_ARRAY = re.compile(r"""\[((?:\s*(["'`])[^"'`\n]*\2\s*,?){8,})\s*\]""")
 PIXEL_ROW = re.compile(r"""^[^\s"'`]+$""")
 PHONE_PX = 340  # a 375px phone minus a little padding
-# Parse a classic inline script without running it. The page line of the first line is passed in, so errors point at the page.
-NODE_PARSE = (
-    "const vm=require('vm');let s='';process.stdin.on('data',d=>s+=d).on('end',()=>{"
-    "try{new vm.Script(s,{filename:'page',lineOffset:+process.argv[1]})}"
-    "catch(e){const m=/page:(\\d+)/.exec(e.stack||'');console.log((m?m[1]:'?')+' '+e.message);process.exit(1)}})"
-)
+# Parses a classic inline script without running it. The page line of its first line is passed in, so errors point at the page.
+NODE_PARSE = Path(__file__).with_name("parse_js.cjs")
 
 
 def sprite_rows(text):
@@ -75,7 +71,7 @@ def js_errors(text):
         if "src=" in attrs or re.search(r"type=[\"']?(module|application/json|application/ld\+json|importmap|text/plain)", attrs, re.I) or not body.strip():
             continue
         first = text.count("\n", 0, m.start(2))
-        r = subprocess.run([node, "-e", NODE_PARSE, str(first)], input=body, capture_output=True, text=True, encoding="utf-8", timeout=30)
+        r = subprocess.run([node, str(NODE_PARSE), str(first)], input=body, capture_output=True, text=True, encoding="utf-8", timeout=30)
         if r.returncode:
             line, _, msg = r.stdout.strip().partition(" ")
             errors.append((int(line) if line.isdigit() else None, msg))

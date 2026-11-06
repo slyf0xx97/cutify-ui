@@ -21,7 +21,7 @@ The plugin has one skill, `skills/cutify-ui`:
 - `SKILL.md`, the workflow Claude follows
 - `references/`, Markdown guides that Claude reads when a request needs them
 - `assets/`, a starter page, theme stylesheets, a pixel sprite helper, typed React components and Streamlit helpers that Claude copies into the pages it builds
-- `scripts/lint_page.py`, a checker that uses only the Python standard library
+- `scripts/lint_page.py`, a checker that uses only the Python standard library, and `scripts/parse_js.cjs`, which it hands to Node to check inline scripts for syntax errors
 - `evals/`, test prompts for `claude plugin eval`
 
 ## What it runs and sends

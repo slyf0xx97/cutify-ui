@@ -106,7 +106,7 @@ document.getElementById('play').onclick = () => story()?.APP.play();
 Inject one `<style>` block with `st.markdown(..., unsafe_allow_html=True)` and target containers by key (`st.container(key="nav")` gets the class `.st-key-nav`):
 - Hide chrome: `[data-testid="stSidebar"], [data-testid="stToolbar"], [data-testid="stHeader"] { display: none; }`, app background `#121315`, `iframe { border: 0; display: block; }`.
 - Pin a nav iframe: `.st-key-navbar { position: fixed; top: 0; left: 0; right: 0; z-index: 999980; height: 64px; }`.
-- Float native widgets (an API key input, a Run button) over the nav: `.st-key-nav { position: fixed; top: 12px; right: 28px; z-index: 999990; }` with fixed 40px control heights.
+- Float native widgets (a text input, a Run button) over the nav: `.st-key-nav { position: fixed; top: 12px; right: 28px; z-index: 999990; }` with fixed 40px control heights.
 - Hide the "Press Enter to apply" hint: `[data-testid="InputInstructions"] { display: none; }`.
 - Let `st.pills` wrap: `[data-testid="stButtonGroup"] > div { flex-wrap: wrap !important; }`.
 - Give native containers the panel look: `.st-key-setup { background: #1b1c1f; border: 1px solid #ffffff14; border-top: 4px solid #ffd400; border-radius: 6px; padding: 18px 20px; }`.
@@ -130,7 +130,7 @@ Zoom the content block. Zooming `<html>` shrinks Streamlit's full-height scroll 
 
 ## Instant feedback before Python reruns
 
-Python only renders after a rerun starts, so anything slow (switching a dataset) should show a loader from the browser at once. From a frame, add a capture-phase click listener on the parent, inject the loading screen (`references/components.md`), and let the page that renders the new data remove it (`P.document.getElementById('load-js')?.remove()`), with a safety timeout. Do the same for inputs: when a pasted value looks complete (for example an API key matching `/^sk-[\w-]{30,}$/`), dispatch Enter so it applies without the user pressing it.
+Python only renders after a rerun starts, so anything slow (switching a dataset) should show a loader from the browser at once. From a frame, add a capture-phase click listener on the parent, inject the loading screen (`references/components.md`), and let the page that renders the new data remove it (`P.document.getElementById('load-js')?.remove()`), with a safety timeout. Do the same for inputs: when a pasted value looks complete (for example a full URL matching `/^https?:\/\/\S+\.\S+$/`), dispatch Enter so it applies without the user pressing it.
 
 ## Deploying
 
